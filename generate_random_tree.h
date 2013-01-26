@@ -25,12 +25,10 @@ struct random_symbol_generator
     random_symbol_generator( const std::vector< T > &symbols , Rng &rng , size_t arity )
         : m_symbols( symbols ) , m_rng( rng ) , m_arity( arity ) { assert( !m_symbols.empty() ); }
 
-    node< T > operator()( void )
+    tree_node< T >* operator()( void )
     {
         std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
-        node< T > n;
-        n.arity = m_arity;
-        n.value = m_symbols[ dist( m_rng ) ];
+        tree_node< T >* n = new tree_node< T >( m_symbols[ dist( m_rng ) ] , m_arity );
         return n;
     }
 };
@@ -45,36 +43,33 @@ void generate_random_tree(
 {
     using namespace std;
     typedef typename Tree::node_type node_type;
-    typedef typename Tree::vector_type vector_type;
-
-    vector_type &data = t.data();
 
     std::uniform_int_distribution<> dice( 0 , 1 );
     std::uniform_int_distribution<> thrice( 0 , 2 );
 
     // first - index of node
     // first - how many childs still have to be created
-    stack< pair< size_t , size_t > > gen_stack; 
+    stack< pair< node_type* , size_t > > gen_stack; 
 
     // initialize
-    data.push_back( binary_gen() );
-    gen_stack.push( make_pair( 0 , 0 ) );
-    size_t count = 0;
+    node_type *n = binary_gen();
+    t.m_data = n;
+    gen_stack.push( make_pair( n , 0 ) );
+
     size_t height = 0;
 
     while( !gen_stack.empty() )
     {
-        if( data[ gen_stack.top().first ].arity == gen_stack.top().second )
+        if( gen_stack.top().first->arity == gen_stack.top().second )
         {
             gen_stack.pop();
             height--;
             continue;
         }
 
-        ++count;
         ++height;
 
-        node_type n;
+        node_type *n;
         if( height < min_height )
         {
             if( dice( rng ) == 0 ) n = unary_gen();
@@ -92,14 +87,11 @@ void generate_random_tree(
             n = terminal_gen();
         }
 
-        if( gen_stack.top().second > 0 )
-            data[ gen_stack.top().first ].child_index[ gen_stack.top().second - 1 ] = count;
-
+        gen_stack.top().first->children[ gen_stack.top().second ] = n;
         gen_stack.top().second++;
 
-        if( n.arity > 0 ) gen_stack.push( make_pair( count , 0 ) );
+        if( n->arity > 0 ) gen_stack.push( make_pair( n , 0 ) );
         else height--;
-        data.push_back( n );
     }
 
 

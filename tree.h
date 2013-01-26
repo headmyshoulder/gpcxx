@@ -9,23 +9,85 @@
 
 #include <vector>
 #include <cstddef>
+#include <array>
+#include <algorithm>
+
 
 template< typename T >
-struct node
+struct tree_node
 {
-    const static size_t max_arity = 2;
+    const static size_t max_arity = 3;
 
     T value;
     size_t arity;
-    size_t child_index[ max_arity - 1 ];
+    std::array< tree_node< T >* , max_arity > children;
+    tree_node< T > *parent;
+    size_t num_elements;
+    size_t height;
     size_t level;
-    size_t length;
-    size_t subtree_height;
-    int parent_index;
 
-    node( void )
-        : value() , arity( 0 ) , child_index() , level( 0 ) , length( 1 ) , subtree_height( 0 ) , parent_index( -1 )
-    { }
+
+    tree_node( T v )
+        : value( v ) , arity( 0 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
+    {
+        std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+    }
+
+    tree_node( T v , size_t a )
+        : value( v ) , arity( a ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
+    {
+        std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+    }
+
+    
+    tree_node( T v , tree_node *n1 )
+        : value( v ) , arity( 1 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
+    {
+        std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+        children[0] = n1;
+    }
+    
+    tree_node( T v , tree_node *n1 , tree_node *n2 ) 
+        : value( v ) , arity( 2 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
+    {
+        std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+        children[0] = n1;
+        children[1] = n2;
+    }
+
+    tree_node( T v , tree_node *n1 , tree_node *n2 , tree_node *n3 )
+        : value( v ) , arity( 3 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
+    {
+        std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+        children[0] = n1;
+        children[1] = n2;
+        children[2] = n3;
+    }
+
+
+    // tree_node( const tree_node &n )
+    //     : value( n.value ) , arity( n.arity ) , children() 
+    // {
+    //     std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+    //     for( size_t i=0 ; i<arity ; ++i )
+    //         children[i] = new tree_node( n.children[i] );
+    // }
+
+    ~tree_node( void )
+    {
+        for( size_t i=0 ; i<arity ; ++i ) delete children[i];
+    }
+
+    // const tree_node& operator=( const tree_node &n )
+    // {
+    //     value = n.value;
+    //     arity = n.arity;
+    //     std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+    //     for( size_t i=0 ; i<arity ; ++i )
+    //         children[i] = new tree_node( n.children[i] );
+    //     return *this;
+    // }
+
 };
 
 
@@ -36,18 +98,42 @@ class tree
 public:
 
     typedef T value_type;
-    typedef node< value_type > node_type;
-    typedef std::vector< node_type > vector_type;
+    typedef tree_node< value_type > node_type;
 
-    tree( void ) : m_data() { }
+    node_type *m_data;
 
-    vector_type& data( void ) { return m_data; }
-    const vector_type& data( void ) const { return m_data; }
-
-private:
-
-    vector_type m_data;
+    tree( void ) : m_data( 0 ) { }
 };
+
+
+namespace detail
+{
+
+    template< class T >
+    tree_node< T >* find_node_to_index_impl( tree_node< T > *node , size_t index , size_t &count )
+    {
+        if( index == count ) return node;
+        for( size_t i=0 ; i<node->arity ; ++i )
+        {
+            ++count;
+            tree_node< T > *n = find_node_to_index_impl( node->children[i] , index , count );
+            if( n != 0 ) return n;
+        }
+        return 0;
+    }
+
+}
+
+
+template< class T >
+tree_node< T >* find_node_to_index( tree_node< T > *start , size_t index )
+{
+    if( start == 0 ) return 0;
+
+    size_t count = 0;
+    return detail::find_node_to_index_impl( start , index , count );
+}
+
 
 
 #endif // TREE_H_INCLUDED
