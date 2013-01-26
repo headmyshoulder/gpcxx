@@ -2,6 +2,13 @@
  * main.cpp
  * Date: 2013-01-25
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
+ *
+ * ToDo :
+ * * mutation
+ * * evaluation, symbol
+ * * genetic algorithm
+ * * testdata for nonlinear function
+ *
  */
 
 #include "tree.h"
