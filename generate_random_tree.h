@@ -27,9 +27,14 @@ struct random_symbol_generator
 
     tree_node< T >* operator()( void )
     {
-        std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
-        tree_node< T >* n = new tree_node< T >( m_symbols[ dist( m_rng ) ] , m_arity );
+        tree_node< T >* n = new tree_node< T >( random_symbol() , m_arity );
         return n;
+    }
+
+    T random_symbol( void )
+    {
+        std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
+        return m_symbols[ dist( m_rng ) ];
     }
 };
 

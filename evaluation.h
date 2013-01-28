@@ -24,12 +24,12 @@ struct eval_base
 
 struct eval_three : public eval_base
 {
-    struct context
+    struct context_t
     {
         double x , y , z;
     };
 
-    double eval( const tree_node< char > *n , context &c ) const
+    static double eval( const tree_node< char > *n , context_t &c )
     {
         switch( n->value )
         {
@@ -40,14 +40,14 @@ struct eval_three : public eval_base
         case 'x' : return c.x;
         case 'y' : return c.y;
         case 'z' : return c.z;
-        case 'e' : return exp( this->eval( n->children[0] , c ) );
-        case 's' : return sin( this->eval( n->children[0] , c ) );
-        case 't' : return cos( this->eval( n->children[0] , c ) );
-        case 'n' : return -( this->eval( n->children[0] , c ) );
-        case '+' : return this->eval( n->children[0] , c ) + this->eval( n->children[1] , c );
-        case '-' : return this->eval( n->children[0] , c ) - this->eval( n->children[1] , c );
-        case '*' : return this->eval( n->children[0] , c ) * this->eval( n->children[1] , c );
-        case '/' : return this->eval( n->children[0] , c ) / this->eval( n->children[1] , c );
+        case 'e' : return exp( eval( n->children[0] , c ) );
+        case 's' : return sin( eval( n->children[0] , c ) );
+        case 't' : return cos( eval( n->children[0] , c ) );
+        case 'n' : return -( eval( n->children[0] , c ) );
+        case '+' : return eval( n->children[0] , c ) + eval( n->children[1] , c );
+        case '-' : return eval( n->children[0] , c ) - eval( n->children[1] , c );
+        case '*' : return eval( n->children[0] , c ) * eval( n->children[1] , c );
+        case '/' : return eval( n->children[0] , c ) / eval( n->children[1] , c );
         }
     }
 };

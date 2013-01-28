@@ -20,3 +20,5 @@ endif()
 include_directories ( ${Boost_INCLUDE_DIRS} )
 
 add_executable( main main.cpp )
+add_executable( test_copy test_copy.cpp )
+add_executable( main_optimize main_optimize.cpp )

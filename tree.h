@@ -16,9 +16,11 @@
 template< typename T >
 struct tree_node
 {
+    typedef T value_type;
+
     const static size_t max_arity = 3;
 
-    T value;
+    value_type value;
     size_t arity;
     std::array< tree_node< T >* , max_arity > children;
     tree_node< T > *parent;
@@ -65,28 +67,28 @@ struct tree_node
     }
 
 
-    // tree_node( const tree_node &n )
-    //     : value( n.value ) , arity( n.arity ) , children() 
-    // {
-    //     std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
-    //     for( size_t i=0 ; i<arity ; ++i )
-    //         children[i] = new tree_node( n.children[i] );
-    // }
+    tree_node( const tree_node &n )
+        : value( n.value ) , arity( n.arity ) , children() 
+    {
+        std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+        for( size_t i=0 ; i<arity ; ++i )
+            children[i] = ( ( n.children[i] != 0 ) ? new tree_node( *( n.children[i] ) ) : 0 );
+    }
 
     ~tree_node( void )
     {
         for( size_t i=0 ; i<arity ; ++i ) delete children[i];
     }
 
-    // const tree_node& operator=( const tree_node &n )
-    // {
-    //     value = n.value;
-    //     arity = n.arity;
-    //     std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
-    //     for( size_t i=0 ; i<arity ; ++i )
-    //         children[i] = new tree_node( n.children[i] );
-    //     return *this;
-    // }
+    const tree_node& operator=( const tree_node &n )
+    {
+        value = n.value;
+        arity = n.arity;
+        std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
+        for( size_t i=0 ; i<arity ; ++i )
+            children[i] = ( ( n.children[i] != 0 ) ? new tree_node( *( n.children[i] ) ) : 0 );
+        return *this;
+    }
 
 };
 
@@ -103,6 +105,9 @@ public:
     node_type *m_data;
 
     tree( void ) : m_data( 0 ) { }
+    tree( const tree &t ) : m_data( ( t.m_data != 0 ) ? new node_type( *( t.m_data ) ) : 0 ) { }
+    ~tree( void ) { delete m_data; }
+    const tree& operator=( const tree &t ) { delete m_data; m_data = ( ( t.m_data != 0 ) ? new node_type( *( t.m_data ) ) : 0 ); return *this; }
 };
 
 
