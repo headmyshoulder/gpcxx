@@ -68,7 +68,7 @@ struct tree_node
 
 
     tree_node( const tree_node &n )
-        : value( n.value ) , arity( n.arity ) , children() 
+        : value( n.value ) , arity( n.arity ) , children() , num_elements( n.num_elements ) , height( n.height ) , level( n.level )
     {
         std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
         for( size_t i=0 ; i<arity ; ++i )
@@ -87,12 +87,32 @@ struct tree_node
         std::fill( children.begin() , children.end() , static_cast< tree_node* >( 0 ) );
         for( size_t i=0 ; i<arity ; ++i )
             children[i] = ( ( n.children[i] != 0 ) ? new tree_node( *( n.children[i] ) ) : 0 );
+        num_elements = n.num_elements;
+        height = n.height;
+        level = n.level;
         return *this;
     }
 
 };
 
+template< class T >
+size_t get_num_elements( const tree_node< T > *n )
+{
+    if( n == 0 ) return 0;
+    size_t val = 1;
+    for( size_t i=0 ; i<n->arity ; ++i ) val += get_num_elements( n->children[i] );
+    return val;
+}
 
+namespace detail {
+
+    template< class T >
+    void fill_parent( tree_node< T > *n , tree_node< T > *parent )
+    {
+        n->parent = parent;
+        for( size_t i=0 ; i<n->arity ; ++i ) fill_parent( n->children[i] , n );
+    }
+}
 
 template< class T >
 class tree
@@ -105,9 +125,18 @@ public:
     node_type *m_data;
 
     tree( void ) : m_data( 0 ) { }
-    tree( const tree &t ) : m_data( ( t.m_data != 0 ) ? new node_type( *( t.m_data ) ) : 0 ) { }
+    tree( const tree &t ) : m_data( ( t.m_data != 0 ) ? new node_type( *( t.m_data ) ) : 0 )
+    {
+        if( m_data != 0 ) detail::fill_parent( m_data , static_cast< node_type* >( 0 ) );
+    }
     ~tree( void ) { delete m_data; }
-    const tree& operator=( const tree &t ) { delete m_data; m_data = ( ( t.m_data != 0 ) ? new node_type( *( t.m_data ) ) : 0 ); return *this; }
+    const tree& operator=( const tree &t )
+    {
+        delete m_data;
+        m_data = ( ( t.m_data != 0 ) ? new node_type( *( t.m_data ) ) : 0 );
+        if( m_data != 0 ) detail::fill_parent( m_data , static_cast< node_type* >( 0 )  );
+        return *this;
+    }
 };
 
 

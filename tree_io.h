@@ -82,5 +82,34 @@ void print_graph( const tree< T > &t , const std::string &filename )
 }
 
 
+template< class T >
+void print_formula( const tree_node< T > *t , std::ostream &out )
+{
+    if( t->arity == 0 ) out << t->value;
+    else if( t->arity == 1 )
+    {
+        out << " " << t->value << " ( ";
+        print_formula( t->children[0] , out );
+        out << " ) ";
+    }
+    else if( t->arity == 2 )
+    {
+        out << " ( ";
+        print_formula( t->children[0] , out );
+        out << " ) " << t->value << " ( ";
+        print_formula( t->children[1] , out );
+        out << " ) ";
+    }
+
+}
+
+
+template< class T >
+void print_formula( const tree< T >& t , std::ostream &out )
+{
+    print_formula( t.m_data , out );
+}
+
+
 
 #endif // TREE_IO_H_INCLUDED

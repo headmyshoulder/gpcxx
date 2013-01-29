@@ -8,6 +8,7 @@
 #define GENETIC_OPTIMIZER_H_INCLUDED
 
 #include "tree.h"
+#include "tree_io.h"
 #include "evaluation.h"
 #include "generate_random_tree.h"
 #include "mutation.h"
@@ -84,17 +85,18 @@ public:
         std::mt19937 m_rng;
     };
 
-    void iterate( const vector_t &y , const vector_t &x1 , const vector_t &x2 , const vector_t &x3 )
+    void calc_fitness( const vector_t &y , const vector_t &x1 , const vector_t &x2 , const vector_t &x3 )
     {
         for( size_t i=0 ; i<m_pop.size() ; ++i )
-        {
-            cout << i << " from " << m_pop.size() << endl;
             m_fitness_vector[i] = fitness_t::fitness( m_pop[i] , y , x1 , x2 , x3 );
-        }
+    }
 
+    void iterate( const vector_t &y , const vector_t &x1 , const vector_t &x2 , const vector_t &x3 )
+    {
         reproduce( m_pop , m_fitness_vector );
-//        mutate( m_pop );
+        mutate( m_pop );
         cross_over( m_pop );
+        calc_fitness( y , x1 , x2 , x3 );
     }
 
     void reproduce( population_t &p , fitness_vector_t &fitness )
@@ -103,8 +105,12 @@ public:
         auto iter = sort_indexes( fitness , idx );
         size_t n_repro = size_t( double( m_pop.size() ) * m_reproduction_rate );
         auto iter2 = std::min( idx.begin() + n_repro , iter );
+        population_t tmp_pop;
+        for_each( iter2 , iter2 + 20 , [&]( size_t i ) { tmp_pop.push_back( m_pop[ idx[i] ] ); } );
         std::uniform_int_distribution< size_t > dist( 0 , iter2 - idx.begin() - 1 );
         for_each( iter2 , idx.end() , [&]( size_t i ) { m_pop[i] = m_pop[ idx[ dist(m_fitness.m_rng) ] ]; } );
+        std::uniform_int_distribution< size_t > dist2( 0 , m_pop.size() - 1);
+        for_each( tmp_pop.begin() , tmp_pop.end() , [&]( const pheno_t &t ) { m_pop[ dist2(m_fitness.m_rng) ] = t; } );
     }
 
     void mutate( population_t &p )
@@ -122,9 +128,27 @@ public:
     void cross_over( population_t &p )
     {
         size_t n_cross = size_t( double( m_pop.size() ) * m_crossover_rate );
+        index_vector_t idx;
+        create_random_indexes( idx , m_pop.size() , n_cross );
+        for( size_t i=0 ; i<idx.size() ; i+=2 )
+            ::cross_over( m_pop[ idx[i] ] , m_pop[ idx[i+1] ] , m_fitness.m_rng , m_max_height );
+    }
+
+    void report_population( std::ostream &out )
+    {
+        index_vector_t idx;
+        auto iter = sort_indexes( m_fitness_vector , idx );
+        for( size_t i=0 ; i<10 ; ++i )
+        {
+            out << i << " " << m_fitness_vector[ idx[i] ] << " : ";
+            print_formula( m_pop[ idx[i] ] , out );
+            out << endl;
+        }
+        out << endl;
     }
 
     const fitness_vector_t fitness_vector( void ) const { return m_fitness_vector; }
+    const population_t& population( void ) const { return m_pop; }
 
 
 private:

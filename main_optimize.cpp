@@ -36,10 +36,16 @@ int main( int argc , char *argv[] )
 
 
     vector_t x1 , x2 , x3 , y;
-    generate_test_data( y , x1 , x2 , x3 , 10000 , rng , []( double x1 , double x2 , double x3 ) { return x1 + 2.0 * x2 - 0.33 * x3; } );
+    generate_test_data( y , x1 , x2 , x3 , 10000 , rng , []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
 
-    genetic_optimizer optimizer( 600 , 3 , 12 , 0.05 , 0.3 , 0.65 );
-    optimizer.iterate( y , x1 , x2 , x3 );
+    genetic_optimizer optimizer( 600 , 3 , 15 , 0.05 , 0.3 , 0.65 );
+    optimizer.calc_fitness( y , x1 , x2 , x3 );
+    for( size_t i=0 ; i<100 ; ++i )
+    {
+        optimizer.iterate( y , x1 , x2 , x3 );
+        cout << "Iteration " << i + 1 << endl;
+        optimizer.report_population( cout );
+    }
     // genetic_optimizer::fitness_vector_t fitness = optimizer.fitness_vector();
     // sort( fitness.begin() , fitness.end() );
     // for( auto f : fitness ) cout << f << endl;

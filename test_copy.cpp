@@ -31,6 +31,8 @@ int main( int argc , char *argv[] )
 
     tree< char > t2( t );
 
+    cout << t.m_data->num_elements << " " << t2.m_data->num_elements << " " << get_num_elements( t.m_data ) << " " << get_num_elements( t2.m_data ) << "\n";
+
     tree< char > t3;
     tree< char > t4( t3 );
     tree< char > t5;

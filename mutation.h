@@ -23,7 +23,7 @@ namespace detail {
             if( v != t ) { return v; }
             ++count;
         }
-        if( count == 1000 ) throw std::runtime_error( "Ups - terminal" );
+        if( count == 1000 ) throw std::runtime_error( "Ups - " );
         return T(); // dummy
     }
 
@@ -33,11 +33,11 @@ namespace detail {
         typedef typename Node::value_type value_type;
         if( node->arity == 0 )
         {
-            node->value = mutate_value( node->value , terminal_gen );
+//            node->value = mutate_value( node->value , terminal_gen );
         }
         else if( node->arity == 1 )
         {
-            node->value = mutate_value( node->value , unary_gen );
+//            node->value = mutate_value( node->value , unary_gen );
         }
         else
         {
