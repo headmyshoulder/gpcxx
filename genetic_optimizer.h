@@ -7,6 +7,16 @@
 #ifndef GENETIC_OPTIMIZER_H_INCLUDED
 #define GENETIC_OPTIMIZER_H_INCLUDED
 
+#include "tree.h"
+#include "evaluation.h"
+#include "generate_random_tree.h"
+#include "mutation.h"
+#include "cross_over.h"
+#include "helpers.h"
+
+#include <random>
+#include <iostream>
+using namespace std;
 /*
 Algorithm
 
@@ -25,13 +35,16 @@ class genetic_optimizer
 public:
 
     typedef std::vector< double > vector_t;
+    typedef std::vector< size_t > index_vector_t;
     typedef tree< char > pheno_t;
     typedef std::vector< pheno_t > population_t;
     typedef std::vector< double > fitness_vector_t;
 
-    genetic_optimizer( size_t population_size , size_t min_height , size_t max_height )
-        : m_pop() ,
-          m_min_height( min_height ) , m_max_height( max_height )
+    genetic_optimizer( size_t population_size , size_t min_height , size_t max_height ,
+                       double reproduction_rate , double mutation_rate , double crossover_rate )
+        : m_pop() , m_fitness() ,
+          m_min_height( min_height ) , m_max_height( max_height ) ,
+          m_reproduction_rate( reproduction_rate ) , m_mutation_rate( mutation_rate ) , m_crossover_rate( crossover_rate )
     {
         initialize( population_size );
     }
@@ -75,24 +88,40 @@ public:
     {
         for( size_t i=0 ; i<m_pop.size() ; ++i )
         {
+            cout << i << " from " << m_pop.size() << endl;
             m_fitness_vector[i] = fitness_t::fitness( m_pop[i] , y , x1 , x2 , x3 );
         }
 
         reproduce( m_pop , m_fitness_vector );
-        mutate( m_pop );
+//        mutate( m_pop );
         cross_over( m_pop );
     }
 
-    void reproduce( population_t &p , const fitness_vector_t &fitness  )
+    void reproduce( population_t &p , fitness_vector_t &fitness )
     {
+        index_vector_t idx;
+        auto iter = sort_indexes( fitness , idx );
+        size_t n_repro = size_t( double( m_pop.size() ) * m_reproduction_rate );
+        auto iter2 = std::min( idx.begin() + n_repro , iter );
+        std::uniform_int_distribution< size_t > dist( 0 , iter2 - idx.begin() - 1 );
+        for_each( iter2 , idx.end() , [&]( size_t i ) { m_pop[i] = m_pop[ idx[ dist(m_fitness.m_rng) ] ]; } );
     }
 
     void mutate( population_t &p )
     {
+        size_t n_mut = size_t( double( m_pop.size() ) * m_mutation_rate );
+        index_vector_t idx;
+        create_random_indexes( idx , m_pop.size() , n_mut );
+        random_symbol_generator< char , std::mt19937 > terminal_gen( m_fitness.m_eval.terminal_symbols , m_fitness.m_rng , 0 );
+        random_symbol_generator< char , std::mt19937 > unary_gen( m_fitness.m_eval.unary_symbols , m_fitness.m_rng , 1 );
+        random_symbol_generator< char , std::mt19937 > binary_gen( m_fitness.m_eval.binary_symbols , m_fitness.m_rng , 2 );
+        for( size_t i=0 ; i<idx.size() ; ++i )
+            mutation( m_pop[ idx[i] ] , m_fitness.m_rng , terminal_gen , unary_gen , binary_gen );
     }
 
     void cross_over( population_t &p )
     {
+        size_t n_cross = size_t( double( m_pop.size() ) * m_crossover_rate );
     }
 
     const fitness_vector_t fitness_vector( void ) const { return m_fitness_vector; }
@@ -113,9 +142,10 @@ private:
     }
 
     population_t m_pop;
+    fitness_t m_fitness;
     fitness_vector_t m_fitness_vector;
     size_t m_min_height , m_max_height;
-    fitness_t m_fitness;
+    double m_reproduction_rate , m_mutation_rate , m_crossover_rate;
 };
 
 #endif // GENETIC_OPTIMIZER_H_INCLUDED

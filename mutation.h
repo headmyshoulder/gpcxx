@@ -9,6 +9,7 @@
 
 #include "tree.h"
 
+#include <stdexcept>
 
 namespace detail {
 
