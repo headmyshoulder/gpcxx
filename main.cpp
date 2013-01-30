@@ -33,7 +33,7 @@ int main( int argc , char *argv[] )
     size_t pop_size = 600;
     size_t min_height = 12;
     size_t max_height = 15;
-    genetic_optimizer optimizer( 600 , 12 , 15 );
+    genetic_optimizer optimizer( 600 , 3 , 15 );
 
     for( size_t i=0 ; i<10 ; ++i )
     {

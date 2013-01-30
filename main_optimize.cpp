@@ -36,9 +36,9 @@ int main( int argc , char *argv[] )
 
 
     vector_t x1 , x2 , x3 , y;
-    generate_test_data( y , x1 , x2 , x3 , 10000 , rng , []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
+    generate_test_data( y , x1 , x2 , x3 , 10000 , rng , []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.333 * x3; } );
 
-    genetic_optimizer optimizer( 600 , 3 , 15 , 0.05 , 0.3 , 0.65 );
+    genetic_optimizer optimizer( 1024 , 2 , 12 , 0.05 , 0.3 , 0.65 );
     optimizer.calc_fitness( y , x1 , x2 , x3 );
     for( size_t i=0 ; i<100 ; ++i )
     {
