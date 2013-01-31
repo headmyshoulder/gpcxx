@@ -47,7 +47,7 @@ int main( int argc , char *argv[] )
         optimizer.iterate( y , x1 , x2 , x3 );
         cout << "Iteration " << i + 1 << endl;
         optimizer.report_population( cout );
-        break;
+//        break;
     }
 
 

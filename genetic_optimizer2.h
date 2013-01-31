@@ -70,6 +70,9 @@ public:
         fitness_prob< fitness_vector_t > prob( fitness );
         size_t n = p.size();
 
+        // for( size_t i=0 ; i<prob.prob().size() ; ++i )
+        //     cout << prob.prob()[i] << endl;
+
         random_symbol_generator< char , std::mt19937 > terminal_gen( m_fitness.m_eval.terminal_symbols , m_fitness.m_rng , 0 );
         random_symbol_generator< char , std::mt19937 > unary_gen( m_fitness.m_eval.unary_symbols , m_fitness.m_rng , 1 );
         random_symbol_generator< char , std::mt19937 > binary_gen( m_fitness.m_eval.binary_symbols , m_fitness.m_rng , 2 );

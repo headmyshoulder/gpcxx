@@ -12,6 +12,10 @@
 #include <algorithm>
 #include <cassert>
 
+#include <iostream>
+#define tab "\t"
+using namespace std;
+
 template< class Fitness >
 class fitness_prob
 {
@@ -21,7 +25,7 @@ public:
     typedef std::vector< size_t > index_t;
 
     fitness_prob( const fitness_t &fitness )
-        : m_fitness( fitness ) , m_indices( fitness.size() ) , m_prob( fitness.size() )
+        : m_fitness( fitness ) , m_indices( fitness.size() ) , m_prob(  )
     {
         initialize();
     }
@@ -35,7 +39,7 @@ public:
 
         double val = dist( rng );
 
-        auto i2 = lower_bound( m_prob.begin() , m_prob.end() , val );
+        auto i2 = lower_bound( m_prob.begin() , m_prob.end() , val , []( double i1 , double i2 ) { return i1 > i2; } );
         auto i1 = i2;
         if( i1 != m_prob.begin() ) --i1;
         
@@ -64,15 +68,19 @@ private:
         assert( n >= 0 );
 
         std::sort( m_indices.begin() , iter ,
-                   [&m_fitness]( size_t i , size_t j ) { return m_fitness[i] > m_fitness[j]; } );
+                   [&m_fitness]( size_t i , size_t j ) { return m_fitness[i] < m_fitness[j]; } );
 
         double s = std::accumulate( m_indices.begin() , iter , 0.0 ,
                                     [&m_fitness]( double s , size_t i ) { return s + m_fitness[i]; } );
         double start = m_fitness[ m_indices[0] ];
-        std::fill( m_prob.begin() , m_prob.end() , 1.0 / 0.0 );
+        m_prob.resize( n );
         std::transform( m_indices.begin() , iter , m_prob.begin() ,
                         [n,s,start,&m_fitness]( size_t i ) { return ( m_fitness[i] - start ) / ( s - double( n ) * start ); } );
         std::partial_sum( m_prob.begin() , m_prob.end() , m_prob.begin() );
+//        std::transform( m_prob.begin() , m_prob.end() , m_prob.begin() , []( double p ) { return 1.0 - p; } );
+
+        for( size_t i=0 ; i<n ; ++i )
+            cout << i << tab << m_fitness[i] << tab << m_fitness[ m_indices[i] ] << tab << m_prob[i] << endl;
     }
 
     const fitness_t &m_fitness ;
