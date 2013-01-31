@@ -5,6 +5,7 @@
  */
 
 #include "genetic_optimizer.h"
+#include "genetic_optimizer2.h"
 
 #include <iostream>
 #include <random>
@@ -38,17 +39,27 @@ int main( int argc , char *argv[] )
     vector_t x1 , x2 , x3 , y;
     generate_test_data( y , x1 , x2 , x3 , 10000 , rng , []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.333 * x3; } );
 
-    genetic_optimizer optimizer( 1024 , 2 , 12 , 0.05 , 0.3 , 0.65 );
+    genetic_optimizer2 optimizer( 128 , 2 , 12 , 0.05 , 0.3 , 0.65 );
     optimizer.calc_fitness( y , x1 , x2 , x3 );
+    optimizer.report_population( cout );
     for( size_t i=0 ; i<100 ; ++i )
     {
         optimizer.iterate( y , x1 , x2 , x3 );
         cout << "Iteration " << i + 1 << endl;
         optimizer.report_population( cout );
+        break;
     }
-    // genetic_optimizer::fitness_vector_t fitness = optimizer.fitness_vector();
-    // sort( fitness.begin() , fitness.end() );
-    // for( auto f : fitness ) cout << f << endl;
+
+
+    // genetic_optimizer optimizer( 1024 , 2 , 12 , 0.05 , 0.3 , 0.65 );
+    // optimizer.calc_fitness( y , x1 , x2 , x3 );
+    // for( size_t i=0 ; i<100 ; ++i )
+    // {
+    //     optimizer.iterate( y , x1 , x2 , x3 );
+    //     cout << "Iteration " << i + 1 << endl;
+    //     optimizer.report_population( cout );
+    // }
+
 
     return 0;
 }
