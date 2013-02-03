@@ -23,7 +23,10 @@ struct random_symbol_generator
 
 
     random_symbol_generator( const std::vector< T > &symbols , Rng &rng , size_t arity )
-        : m_symbols( symbols ) , m_rng( rng ) , m_arity( arity ) { assert( !m_symbols.empty() ); }
+        : m_symbols( symbols ) , m_rng( rng ) , m_arity( arity )
+    {
+        assert( !m_symbols.empty() );
+    }
 
     tree_node< T >* operator()( void )
     {
@@ -33,9 +36,12 @@ struct random_symbol_generator
 
     T random_symbol( void )
     {
+        assert( !m_symbols.empty() );
         std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
         return m_symbols[ dist( m_rng ) ];
     }
+
+    operator bool () const { return !m_symbols.empty(); }
 };
 
 
@@ -77,8 +83,9 @@ void generate_random_tree(
         node_type *n;
         if( height < min_height )
         {
-            if( dice( rng ) == 0 ) n = unary_gen();
-            else n = binary_gen();
+            // if( dice( rng ) == 0 ) n = unary_gen();
+            // else n = binary_gen();
+            n = binary_gen();
         }
         else if( height < max_height )
         {
@@ -86,6 +93,8 @@ void generate_random_tree(
             if( r == 0 ) n = terminal_gen();
             else if( r == 1 ) n = unary_gen();
             else n = binary_gen();
+            // if( dice( rng ) == 0 ) n = terminal_gen();
+            // else n = binary_gen();
         }
         else 
         {

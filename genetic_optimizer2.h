@@ -18,8 +18,12 @@
 #include "fitness_prob.h"
 
 #include <random>
+
+
 #include <iostream>
 using namespace std;
+
+
 /*
 Algorithm
 
@@ -70,6 +74,9 @@ public:
         fitness_prob< fitness_vector_t > prob( fitness );
         size_t n = p.size();
 
+        // for( size_t i=0 ; i<n ; ++i )
+        //     cout << fitness[ prob.indices()[i] ] << endl;
+
         random_symbol_generator< char , std::mt19937 > terminal_gen( m_fitness.m_eval.terminal_symbols , m_fitness.m_rng , 0 );
         random_symbol_generator< char , std::mt19937 > unary_gen( m_fitness.m_eval.unary_symbols , m_fitness.m_rng , 1 );
         random_symbol_generator< char , std::mt19937 > binary_gen( m_fitness.m_eval.binary_symbols , m_fitness.m_rng , 2 );
@@ -113,14 +120,27 @@ public:
     {
         index_vector_t idx;
         auto iter = sort_indexes( m_fitness_vector , idx );
-        for( size_t i=0 ; i<m_fitness_vector.size() ; ++i )
-//        for( size_t i=0 ; i<10 ; ++i )
+//        for( size_t i=0 ; i<m_fitness_vector.size() ; ++i )
+        for( size_t i=0 ; i<5 ; ++i )
         {
             out << i << " " << m_fitness_vector[ idx[i] ] << " : ";
-//            print_formula( m_pop[ idx[i] ] , out );
+            print_formula( m_pop[ idx[i] ] , out );
             out << endl;
         }
-        out << endl;
+    }
+
+    void report_statistics( std::ostream &out )
+    {
+        double height_mean = 0.0 , height_sqmean = 0.0;
+        for( const auto &p : m_pop )
+        {
+            double h = double( p.m_data->height );
+            height_mean += h;
+            height_sqmean += h * h; 
+        }
+        height_mean /= double( m_pop.size() );
+        height_sqmean /= double( m_pop.size() );
+        out << "Mean height : " << height_mean << " , height stdev " << sqrt( height_sqmean - height_mean * height_mean ) << "\n\n\n";
     }
 
 

@@ -16,9 +16,13 @@ struct eval_base
     std::vector< char > binary_symbols;
 
     eval_base( void )
-        : terminal_symbols( { '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , 'x' , 'y' , 'z' } ) ,
-          unary_symbols( { 'e' , 's' , 'c' } ) ,
-          binary_symbols( { '+' , '-' , '*' , '/' } )
+        : 
+        terminal_symbols( { '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , 'x' , 'y' , 'z' } ) ,
+//        terminal_symbols( { 'x' , 'y' , 'z' } ) ,
+//        terminal_symbols( { '1' , '3' , 'x' , 'y' , 'z' } ) ,
+        unary_symbols( { 'e' } ) ,
+//        unary_symbols( { 'e' , 's' , 'c' } ) ,
+        binary_symbols( { '+' , '-' , '*' , '/' } )
     { }
 };
 

@@ -28,20 +28,23 @@ namespace detail {
     }
 
     template< class Node , class TerminalGen , class UnaryGen , class BinaryGen >
-    void mutation_impl( Node *node , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
+    bool mutation_impl( Node *node , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
     {
         typedef typename Node::value_type value_type;
         if( node->arity == 0 )
         {
-//            node->value = mutate_value( node->value , terminal_gen );
+            node->value = mutate_value( node->value , terminal_gen );
+            return true;
         }
         else if( node->arity == 1 )
         {
 //            node->value = mutate_value( node->value , unary_gen );
+            return false;
         }
         else
         {
             node->value = mutate_value( node->value , binary_gen );
+            return true;
         }
     }
 
@@ -50,12 +53,12 @@ namespace detail {
 
 
 template< class Tree , class TerminalGen , class UnaryGen , class BinaryGen >
-void mutation( Tree &t , size_t i , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
+bool mutation( Tree &t , size_t i , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
 {
     typedef typename Tree::node_type node_type;
     node_type *n = find_node_to_index( t.m_data , i );
     assert( n != 0 );
-    detail::mutation_impl( n , terminal_gen , unary_gen , binary_gen );
+    return detail::mutation_impl( n , terminal_gen , unary_gen , binary_gen );
 }
 
 template< class Tree , class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
@@ -64,8 +67,19 @@ void mutation( Tree &t , Rng &rng , TerminalGen &terminal_gen , UnaryGen &unary_
     typedef typename Tree::node_type node_type;
 
     std::uniform_int_distribution< size_t > dist( 0 , t.m_data->num_elements - 1 );
-    size_t index = dist( rng );
-    mutation( t , index , terminal_gen , unary_gen , binary_gen );
+
+    if( t.m_data->height < 2 ) return;
+
+    size_t count = 0 ;
+    bool ok = true;
+    do
+    {
+        size_t index = dist( rng );
+        ok = mutation( t , index , terminal_gen , unary_gen , binary_gen );
+    }
+    while( !ok && ( count < 128 ) );
+
+    if( count == 128 ) throw std::runtime_error( "Maximal number of mutation trials reached" );
 }
 
 

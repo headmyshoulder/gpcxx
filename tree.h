@@ -13,6 +13,8 @@
 #include <algorithm>
 
 
+
+
 template< typename T >
 struct tree_node
 {
@@ -167,6 +169,11 @@ tree_node< T >* find_node_to_index( tree_node< T > *start , size_t index )
     size_t count = 0;
     return detail::find_node_to_index_impl( start , index , count );
 }
+
+
+
+
+
 
 
 
