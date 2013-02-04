@@ -12,6 +12,10 @@
 #include <algorithm>
 #include <cassert>
 
+#include <iostream>
+#define tab "\t"
+using namespace std;
+
 template< class Fitness >
 class fitness_prob
 {
@@ -72,10 +76,11 @@ private:
         double s = std::accumulate( m_indices.begin() , iter , 0.0 ,
                                     [&m_fitness]( double s , size_t i ) { return s + m_fitness[i]; } );
         double start = m_fitness[ m_indices[0] ];
-        std::fill( m_prob.begin() , m_prob.end() , 1.0 / 0.0 );
+        m_prob.resize( n );
         std::transform( m_indices.begin() , iter , m_prob.begin() ,
                         [n,s,start,&m_fitness]( size_t i ) { return ( m_fitness[i] - start ) / ( s - double( n ) * start ); } );
         std::partial_sum( m_prob.begin() , m_prob.end() , m_prob.begin() );
+
 
         std::vector< double > weights;
         for( size_t i=0 ; i<n ; ++i )

@@ -77,6 +77,7 @@ public:
         // for( size_t i=0 ; i<n ; ++i )
         //     cout << fitness[ prob.indices()[i] ] << endl;
 
+
         random_symbol_generator< char , std::mt19937 > terminal_gen( m_fitness.m_eval.terminal_symbols , m_fitness.m_rng , 0 );
         random_symbol_generator< char , std::mt19937 > unary_gen( m_fitness.m_eval.unary_symbols , m_fitness.m_rng , 1 );
         random_symbol_generator< char , std::mt19937 > binary_gen( m_fitness.m_eval.binary_symbols , m_fitness.m_rng , 2 );
