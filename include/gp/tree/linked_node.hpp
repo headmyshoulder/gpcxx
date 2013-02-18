@@ -7,10 +7,8 @@
 #ifndef LINKED_NODE_HPP_INCLUDED
 #define LINKED_NODE_HPP_INCLUDED
 
-#include <gp/core/node.hpp>
-
 #include <array>
-
+#include <cstddef>
 
 namespace gp {
 
@@ -95,45 +93,6 @@ namespace gp {
         }
     };
 
-    template< class T >
-    struct arity_impl< linked_node< T > >
-    {
-        static inline size_t apply( const T &t ) { return t.arity; }
-    };
-
-    template< class T >
-    struct num_elements_impl< linked_node< T > >
-    {
-        static inline size_t apply( const T &t ) { return t.num_elements; }
-    };
-    
-    template< size_t I , class T >
-    struct children_impl< I , linked_node< T > >
-    {
-        typedef linked_node< T >* type;
-        static inline type apply( const T &t ) { return t.children[I]; }
-    };
-
-    template< size_t I , class T >
-    struct children_impl< I , linked_node< T > const >
-    {
-        typedef linked_node< T > const* type;
-        static inline type apply( const T &t ) { return t.children[I]; }
-    };
-
-    template< class T >
-    struct parent_impl< linked_node< T > >
-    {
-        typedef linked_node< T >* type;
-        static inline type apply( const T &t ) { return t.parent; }
-    };
-
-    template< class T >
-    struct parent_impl< linked_node< T > const >
-    {
-        typedef linked_node< T > const* type;
-        static inline type apply( const T &t ) { return t.parent; }
-    };
 
 } // namespace gp
 
