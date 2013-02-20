@@ -7,9 +7,8 @@
 #ifndef MUTATION_H_INCLUDED
 #define MUTATION_H_INCLUDED
 
-#include "tree.h"
-
 #include <stdexcept>
+#include <random>
 
 namespace detail {
 

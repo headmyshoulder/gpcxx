@@ -5,34 +5,12 @@
  */
 
 #include <gp/tree/complete_linked_tree_structure.hpp>
+#include "../common/test_tree.hpp"
 
 #include <gtest/gtest.h>
 
 using namespace std;
 
-struct test_tree
-{
-    typedef gp::linked_node_tree< std::string > tree_type;
-    typedef tree_type::node_type node_type;
-
-    test_tree( void )
-    {
-        data.set_data(
-            new node_type (
-                "plus" , 
-                new node_type( "sin" ,
-                               new node_type( "x" ) ) ,
-                new node_type( "minus" ,
-                               new node_type( "y" ) ,
-                               new node_type( "2" ) 
-                    )
-                ) );
-    }
-
-    ~test_tree( void ) { }
-
-    tree_type data;
-};
 
 TEST( tree_tests , complete_linked_tree_structure1 )
 {

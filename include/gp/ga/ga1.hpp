@@ -1,11 +1,11 @@
 /*
- * genetic_optimizer.h
+ * ga1.hpp
  * Date: 2013-01-27
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef GENETIC_OPTIMIZER2_H_INCLUDED
-#define GENETIC_OPTIMIZER2_H_INCLUDED
+#ifndef GA1_HPP_INCLUDED
+#define GA1_HPP_INCLUDED
 
 #include "tree.h"
 #include "tree_io.h"
@@ -170,4 +170,4 @@ private:
     double m_elite_rate , m_mutation_rate , m_crossover_rate;
 };
 
-#endif // GENETIC_OPTIMIZER2_H_INCLUDED
+#endif // GA1_HPP_INCLUDED

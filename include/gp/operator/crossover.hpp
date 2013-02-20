@@ -1,13 +1,11 @@
 /*
- * cross_over.h
+ * crossover.h
  * Date: 2013-01-26
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef CROSS_OVER_H_INCLUDED
-#define CROSS_OVER_H_INCLUDED
-
-#include "tree.h"
+#ifndef CROSSOVER_H_INCLUDED
+#define CROSSOVER_H_INCLUDED
 
 #include <random>
 #include <stdexcept>
@@ -21,7 +19,7 @@ namespace gp {
 namespace detail {
 
     template< class Tree >
-    void cross_over_impl( Tree &v1 , Tree &v2 , typename Tree::node_type *n1 , typename Tree::node_type *n2 )
+    void crossover_impl( Tree &v1 , Tree &v2 , typename Tree::node_type *n1 , typename Tree::node_type *n2 )
     {
         typedef typename Tree::node_type node_type;
         node_type *p1 = n1->parent;
@@ -74,21 +72,21 @@ namespace detail {
 
 
 template< class Tree >
-void cross_over( Tree &v1 , Tree &v2 , size_t i1 , size_t i2 )
+void crossover( Tree &v1 , Tree &v2 , size_t i1 , size_t i2 )
 {
     typedef typename Tree::node_type node_type;
     node_type *n1 = find_node_to_index( v1.m_data , i1 );
     node_type *n2 = find_node_to_index( v2.m_data , i2 );
     if( ( n1 == 0 ) || ( n2 == 0 ) ) return;
-    detail::cross_over_impl( v1 , v2 , n1 , n2 );
+    detail::crossover_impl( v1 , v2 , n1 , n2 );
     complete_tree_structure( v1 );
     complete_tree_structure( v2 );
 }
 
-template< class T , class Rng >
-void cross_over( tree< T > &t1 , tree< T > &t2 , Rng &rng , size_t max_height )
+template< class Tree , class Rng >
+void crossover( Tree &t1 , Tree &t2 , Rng &rng , size_t max_height )
 {
-    typedef typename tree< T >::node_type node_type;
+    typedef typename Tree::node_type node_type;
 
     if( t1.m_data == 0 ) return;
     if( t2.m_data == 0 ) return;
@@ -117,7 +115,7 @@ void cross_over( tree< T > &t1 , tree< T > &t2 , Rng &rng , size_t max_height )
 
     if( iter == 1000 ) throw std::runtime_error( "No nodes suitable for cross over found!" );
 
-    detail::cross_over_impl( t1 , t2 , n1 , n2 );
+    detail::crossover_impl( t1 , t2 , n1 , n2 );
     complete_tree_structure( t1 );
     complete_tree_structure( t2 );
 }
@@ -125,4 +123,4 @@ void cross_over( tree< T > &t1 , tree< T > &t2 , Rng &rng , size_t max_height )
 
 } // namespace gp
 
-#endif // CROSS_OVER_H_INCLUDED
+#endif // CROSSOVER_H_INCLUDED
