@@ -9,6 +9,6 @@ add_executable ( operator_tests mutation.cpp crossover.cpp )
 
 target_link_libraries ( operator_tests gtest gtest_main )
 
-add_test( NAME operator_tests COMMAND operatortests )
+add_test( NAME operator_tests COMMAND operator_tests )
 
 # add_custom_command(TARGET UtilTests POST_BUILD COMMAND UtilTests )

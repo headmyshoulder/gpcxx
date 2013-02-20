@@ -7,8 +7,13 @@
 #ifndef MUTATION_H_INCLUDED
 #define MUTATION_H_INCLUDED
 
+#include <gp/tree/find_node_to_index.hpp>
+
 #include <stdexcept>
 #include <random>
+#include <cassert>
+
+namespace gp {
 
 namespace detail {
 
@@ -37,7 +42,7 @@ namespace detail {
         }
         else if( node->arity == 1 )
         {
-//            node->value = mutate_value( node->value , unary_gen );
+            node->value = mutate_value( node->value , unary_gen );
             return false;
         }
         else
@@ -55,7 +60,7 @@ template< class Tree , class TerminalGen , class UnaryGen , class BinaryGen >
 bool mutation( Tree &t , size_t i , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
 {
     typedef typename Tree::node_type node_type;
-    node_type *n = find_node_to_index( t.m_data , i );
+    node_type *n = find_node_to_index( t.data() , i );
     assert( n != 0 );
     return detail::mutation_impl( n , terminal_gen , unary_gen , binary_gen );
 }
@@ -81,5 +86,6 @@ void mutation( Tree &t , Rng &rng , TerminalGen &terminal_gen , UnaryGen &unary_
     if( count == 128 ) throw std::runtime_error( "Maximal number of mutation trials reached" );
 }
 
+} // namespace gp
 
 #endif // MUTATION_H_INCLUDED
