@@ -12,14 +12,32 @@
 namespace gp {
 
 
-    template< class T >
-    struct linked_node_tree
-    {
-        typedef T value_type;
-        typedef linked_node< T >* node_type;
+template< class T >
+class linked_node_tree
+{
+public:
 
-        node_type data;
-    };
+    typedef T value_type;
+    typedef linked_node< T > node_type;
+    typedef node_type* node_pointer;
+    typedef node_type const* const_node_pointer;
+    typedef node_type& node_reference;
+    typedef node_type const& const_node_reference;
+
+
+    linked_node_tree( void ) : m_data( nullptr ) { }
+    ~linked_node_tree( void ) { delete m_data; }
+
+    node_pointer data( void ) { return m_data; }
+    void set_data( node_pointer data ) { delete m_data; m_data = data; }
+
+    node_reference root( void ) { return *m_data; }
+    const_node_reference root( void ) const { return *m_data; }
+
+private:
+
+    node_pointer m_data;
+};
 
 
 

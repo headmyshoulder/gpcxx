@@ -1,0 +1,14 @@
+# Date: 2013-01-25
+# Author: Karsten Ahnert (karsten.ahnert@gmx.de)
+
+include_directories ( ${gtest_SOURCE_DIR}/include )
+include_directories ( ${gtest_SOURCE_DIR} )
+
+
+add_executable ( tree_tests linked_node.cpp linked_node_tree.cpp complete_linked_tree_structure.cpp )
+
+target_link_libraries ( tree_tests gtest gtest_main )
+
+add_test( NAME tree_tests COMMAND tree_tests )
+
+# add_custom_command(TARGET UtilTests POST_BUILD COMMAND UtilTests )

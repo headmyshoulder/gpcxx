@@ -15,6 +15,8 @@
 
 
 
+namespace gp {
+
 
 namespace detail {
 
@@ -119,5 +121,8 @@ void cross_over( tree< T > &t1 , tree< T > &t2 , Rng &rng , size_t max_height )
     complete_tree_structure( t1 );
     complete_tree_structure( t2 );
 }
+
+
+} // namespace gp
 
 #endif // CROSS_OVER_H_INCLUDED
