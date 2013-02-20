@@ -31,8 +31,17 @@ public:
     node_pointer data( void ) { return m_data; }
     void set_data( node_pointer data ) { delete m_data; m_data = data; }
 
+
     node_reference root( void ) { return *m_data; }
     const_node_reference root( void ) const { return *m_data; }
+
+    void swap( linked_node_tree &n )
+    {
+        node_pointer tmp = n.m_data;
+        n.m_data = m_data;
+        m_data = tmp;
+    }
+    void set_raw_data( node_pointer data ) { m_data = data; }
 
 private:
 

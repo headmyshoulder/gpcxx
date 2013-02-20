@@ -14,7 +14,7 @@
 
 using namespace std;
 
-TEST( operator_test , mutation1 )
+TEST( operator_tests , mutation1 )
 {
     test_tree tree;
     test_generator gen;
@@ -49,3 +49,10 @@ TEST( operator_test , mutation1 )
     EXPECT_TRUE( not_equal_x );
 }
 
+TEST( operator_tests , mutation2 )
+{
+    test_tree tree;
+    test_generator gen;
+
+    mutation( tree.data , gen.rng , gen.gen0 , gen.gen1 , gen.gen2 );
+}

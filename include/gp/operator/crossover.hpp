@@ -7,6 +7,9 @@
 #ifndef CROSSOVER_H_INCLUDED
 #define CROSSOVER_H_INCLUDED
 
+#include <gp/tree/find_node_to_index.hpp>
+#include <gp/tree/complete_linked_tree_structure.hpp>
+
 #include <random>
 #include <stdexcept>
 #include <algorithm>
@@ -14,7 +17,6 @@
 
 
 namespace gp {
-
 
 namespace detail {
 
@@ -27,12 +29,12 @@ namespace detail {
 
         if( ( p1 == 0 ) && ( p2 == 0 ) )
         {
-            std::swap( v1.m_data , v2.m_data );
+            v1.swap( v2 );
         }
         else if( ( p1 == 0 ) )
         {
-            node_type *tmp = v1.m_data;
-            v1.m_data = n2;
+            node_type *tmp = v1.data();
+            v1.set_raw_data( n2 );
             for( size_t i=0 ; i<p2->arity ; ++i )
             {
                 if( p2->children[i] == n2 )
@@ -46,8 +48,8 @@ namespace detail {
         }
         else if( p2 == 0 )
         {
-            node_type *tmp = v2.m_data;
-            v2.m_data = n1;
+            node_type *tmp = v2.data();
+            v2.set_raw_data( n1 );
             for( size_t i=0 ; i<p1->arity ; ++i )
             {
                 if( p1->children[i] == n1 )
@@ -75,12 +77,12 @@ template< class Tree >
 void crossover( Tree &v1 , Tree &v2 , size_t i1 , size_t i2 )
 {
     typedef typename Tree::node_type node_type;
-    node_type *n1 = find_node_to_index( v1.m_data , i1 );
-    node_type *n2 = find_node_to_index( v2.m_data , i2 );
+    node_type *n1 = find_node_to_index( v1.data() , i1 );
+    node_type *n2 = find_node_to_index( v2.data() , i2 );
     if( ( n1 == 0 ) || ( n2 == 0 ) ) return;
     detail::crossover_impl( v1 , v2 , n1 , n2 );
-    complete_tree_structure( v1 );
-    complete_tree_structure( v2 );
+    complete_linked_tree_structure( v1 );
+    complete_linked_tree_structure( v2 );
 }
 
 template< class Tree , class Rng >
@@ -88,11 +90,11 @@ void crossover( Tree &t1 , Tree &t2 , Rng &rng , size_t max_height )
 {
     typedef typename Tree::node_type node_type;
 
-    if( t1.m_data == 0 ) return;
-    if( t2.m_data == 0 ) return;
+    if( t1.data() == 0 ) return;
+    if( t2.data() == 0 ) return;
 
-    std::uniform_int_distribution< size_t > dist1( 0 , t1.m_data->num_elements - 1 );
-    std::uniform_int_distribution< size_t > dist2( 0 , t2.m_data->num_elements - 1 );
+    std::uniform_int_distribution< size_t > dist1( 0 , t1.data()->num_elements - 1 );
+    std::uniform_int_distribution< size_t > dist2( 0 , t2.data()->num_elements - 1 );
 
     
 
@@ -104,8 +106,8 @@ void crossover( Tree &t1 , Tree &t2 , Rng &rng , size_t max_height )
         size_t i1 = dist1( rng );
         size_t i2 = dist2( rng );
 
-        n1 = find_node_to_index( t1.m_data , i1 );
-        n2 = find_node_to_index( t2.m_data , i2 );
+        n1 = find_node_to_index( t1.data() , i1 );
+        n2 = find_node_to_index( t2.data() , i2 );
 
         size_t nh1 = n1->level + n2->height - 1;
         size_t nh2 = n2->level + n1->height - 1;
@@ -116,8 +118,8 @@ void crossover( Tree &t1 , Tree &t2 , Rng &rng , size_t max_height )
     if( iter == 1000 ) throw std::runtime_error( "No nodes suitable for cross over found!" );
 
     detail::crossover_impl( t1 , t2 , n1 , n2 );
-    complete_tree_structure( t1 );
-    complete_tree_structure( t2 );
+    complete_linked_tree_structure( t1 );
+    complete_linked_tree_structure( t2 );
 }
 
 

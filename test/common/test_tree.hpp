@@ -8,6 +8,7 @@
 #define TEST_TREE_HPP_INCLUDED
 
 #include <gp/tree/linked_node_tree.hpp>
+#include <gp/tree/complete_linked_tree_structure.hpp>
 
 #include <string>
 
@@ -28,11 +29,22 @@ struct test_tree
                                new node_type( "2" ) 
                     )
                 ) );
+
+        data2.set_data(
+            new node_type (
+                "minus" ,
+                new node_type( "cos" , new node_type( "y" ) ) ,
+                new node_type( "x" )
+                ) ) ;
+
+        gp::complete_linked_tree_structure( data );
+        gp::complete_linked_tree_structure( data2 );
     }
 
     ~test_tree( void ) { }
 
     tree_type data;
+    tree_type data2;
 };
 
 

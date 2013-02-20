@@ -70,9 +70,9 @@ void mutation( Tree &t , Rng &rng , TerminalGen &terminal_gen , UnaryGen &unary_
 {
     typedef typename Tree::node_type node_type;
 
-    std::uniform_int_distribution< size_t > dist( 0 , t.m_data->num_elements - 1 );
+    std::uniform_int_distribution< size_t > dist( 0 , t.data()->num_elements - 1 );
 
-    if( t.m_data->height < 2 ) return;
+    if( t.data()->height < 2 ) return;
 
     size_t count = 0 ;
     bool ok = true;
