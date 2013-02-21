@@ -126,6 +126,26 @@ struct crossover
     }
 };
 
+template< class Rng >
+struct crossover_binder
+{
+    Rng &m_rng;
+    size_t m_max_height;
+    crossover_binder( Rng &rng , size_t max_height ) : m_rng( rng ) , m_max_height( max_height ) { }
+
+    template< class Tree >
+    void operator()( Tree &t1 , Tree &t2 ) const
+    {
+        return crossover()( t1 , t2 , m_rng , m_max_height );
+    }
+};
+
+template< class Rng >
+crossover_binder< Rng > make_crossover_binder( Rng &rng , size_t max_height )
+{
+    return crossover_binder< Rng >( rng , max_height );
+}
+
 } // namespace gp
 
 #endif // CROSSOVER_H_INCLUDED

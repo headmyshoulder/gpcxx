@@ -33,11 +33,20 @@ public:
     // const linked_node_tree& operator=( const linked_node_tree &l ) = delete;
     // const linked_node_tree& operator=( linked_node_tree && ) = delete;
 
-    linked_node_tree( const linked_node_tree &l ) : m_data( ( l.m_data != 0 ) ? new node_type( *l.m_data ) : nullptr ) { }
+    linked_node_tree( const linked_node_tree &l )
+        : m_data( ( ( l.m_data != 0 ) ? new node_type( *( l.m_data ) ) : nullptr ) )
+    {
+        if( m_data != 0 )
+            detail::complete_linked_tree_structure_impl( m_data , static_cast< node_type* >( 0 ) , 0 );
+    }
+
     const linked_node_tree& operator=( const linked_node_tree &l )
     {
         delete m_data;
         m_data = ( ( l.m_data != 0 ) ? new node_type( *l.m_data ) : nullptr );
+        if( m_data != 0 )
+            detail::complete_linked_tree_structure_impl( m_data , static_cast< node_type* >( 0 ) , 0 );
+        return *this;
     }
 
     node_pointer data( void ) { return m_data; }
@@ -59,7 +68,6 @@ private:
 
     node_pointer m_data;
 };
-
 
 
 

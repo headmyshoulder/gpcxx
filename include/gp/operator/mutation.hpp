@@ -90,6 +90,31 @@ struct mutation
     }
 };
 
+template< class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
+struct mutation_binder
+{
+    Rng &m_rng;
+    TerminalGen &m_gen1;
+    UnaryGen &m_gen2;
+    BinaryGen &m_gen3;
+    mutation_binder( Rng &rng , TerminalGen &gen1 , UnaryGen &gen2 , BinaryGen &gen3 )
+        : m_rng( rng ) , m_gen1( gen1 ) , m_gen2( gen2 ) , m_gen3( gen3 )
+    { }
+
+    template< class Tree >
+    void operator()( Tree &t ) const
+    {
+        mutation()( t , m_rng , m_gen1 , m_gen2 , m_gen3 );
+    }
+};
+
+template< class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
+mutation_binder< Rng , TerminalGen , UnaryGen , BinaryGen >
+make_mutation_binder( Rng &rng , TerminalGen &gen1 , UnaryGen &gen2 , BinaryGen &gen3 )
+{
+    return mutation_binder< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen1 , gen2 , gen3 );
+}
+
 } // namespace gp
 
 #endif // MUTATION_H_INCLUDED

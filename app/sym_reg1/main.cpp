@@ -92,9 +92,7 @@ int main( int argc , char *argv[] )
     size_t min_tree_height = 2 , max_tree_height = 10;
 
     std::function< void( tree_type& ) > tree_generator;
-    tree_generator = std::bind( gp::generate_random_linked_tree() , pl::_1 ,
-                                std::ref( gen.gen0 ) , std::ref( gen.gen1 ) , std::ref( gen.gen2 ) , std::ref( rng ) ,
-                                min_tree_height , max_tree_height );
+    tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height );
 
     evolver_type evolver( elite_rate , mutation_rate , crossover_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
@@ -102,10 +100,8 @@ int main( int argc , char *argv[] )
 
 
     evolver.fitness_function() = fitness_function();
-    evolver.mutation_function() = std::bind( gp::mutation() , pl::_1 ,
-                                             std::ref( rng ) , std::ref( gen.gen0 ) , std::ref( gen.gen1 ) , std::ref( gen.gen2 ) );
-    evolver.crossover_function() = std::bind( gp::crossover() , pl::_1 , pl::_2 ,
-                                              std::ref( rng ) , max_tree_height );
+    evolver.mutation_function() = gp::make_mutation_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 );
+    evolver.crossover_function() = gp::make_crossover_binder( rng , max_tree_height );
     evolver.random_individual_function() = tree_generator;
 
 
@@ -120,7 +116,6 @@ int main( int argc , char *argv[] )
     {
         cout << i << endl;
         evolver.next_generation( population , fitness , c );
-        cout << i << endl;
         // report_population( population , cout );
         // report_statistics( population , cout );
     }

@@ -86,6 +86,36 @@ struct generate_random_linked_tree
     }
 };
 
+template< class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
+struct tree_generator_binder
+{
+    Rng &m_rng;
+    TerminalGen &m_gen0;
+    UnaryGen &m_gen1;
+    BinaryGen &m_gen2;
+    size_t m_min_height , m_max_height;
+    tree_generator_binder( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
+                           size_t min_height , size_t max_height )
+        : m_rng( rng ) , m_gen0( gen0 ) , m_gen1( gen1 ) , m_gen2( gen2 ) ,
+          m_min_height( min_height ) , m_max_height( max_height )
+    {
+    }
+
+    template< class Tree >
+    void operator()( Tree &t ) const
+    {
+        generate_random_linked_tree()( t , m_gen0 , m_gen1 , m_gen2 , m_rng , m_min_height , m_max_height );
+    }
+};
+
+template< class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
+tree_generator_binder< Rng , TerminalGen , UnaryGen , BinaryGen >
+make_tree_generator_binder( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
+                           size_t min_height , size_t max_height )
+{
+    return tree_generator_binder< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen0 , gen1 , gen2 , min_height , max_height );
+}
+
 
 
 } // namespace gp

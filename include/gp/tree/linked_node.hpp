@@ -10,6 +10,7 @@
 #include <array>
 #include <cstddef>
 
+
 namespace gp {
 
 template< class T >
@@ -33,7 +34,6 @@ struct linked_node
         std::fill( children.begin() , children.end() , nullptr );
     }
 
-
     linked_node( T v )
         : value( v ) , arity( 0 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
     {
@@ -45,7 +45,6 @@ struct linked_node
     {
         std::fill( children.begin() , children.end() , nullptr );
     }
-
     
     linked_node( T v , linked_node *n1 )
         : value( v ) , arity( 1 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
@@ -74,7 +73,7 @@ struct linked_node
     linked_node( linked_node && ) = delete ;
 
     linked_node( const linked_node &n )
-        : value( n.value ) , arity( n.arity ) , children() , num_elements( n.num_elements ) , height( n.height ) , level( n.level )
+        : value( n.value ) , arity( n.arity ) , children() , parent( 0 ) , num_elements( n.num_elements ) , height( n.height ) , level( n.level )
     {
         std::fill( children.begin() , children.end() , nullptr );
         for( size_t i=0 ; i<arity ; ++i )
@@ -101,6 +100,30 @@ struct linked_node
         return *this;
     }
 };
+
+namespace detail {
+
+template< class T >
+void complete_linked_tree_structure_impl( linked_node< T > *n , linked_node< T > *parent , size_t level )
+{
+    n->parent = parent;
+
+    size_t elems = 0;
+
+    size_t subtree_height = 0;
+    for( size_t i=0 ; i<n->arity ; ++i )
+    {
+        complete_linked_tree_structure_impl( n->children[i] , n , level + 1 );
+        elems += n->children[i]->num_elements;
+        subtree_height = std::max( subtree_height , n->children[i]->height );
+    }
+    n->num_elements = 1 + elems;
+    n->height = 1 + subtree_height;
+    n->level = level;
+}
+
+} // namespace detail
+
 
 
 } // namespace gp
