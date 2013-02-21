@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 
-TEST( TestName , TestCase )
+TEST( tree_tests , generate_radnom_linked_tree_test1 )
 {
     test_generator gen;
 
