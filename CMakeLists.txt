@@ -19,6 +19,7 @@ include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 # add_subdirectory ( stuff )
 
+add_subdirectory ( app )
 
 if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/gtest )
   
