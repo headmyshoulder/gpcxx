@@ -24,7 +24,7 @@ TEST( operator_tests , mutation1 )
 
     for( size_t i=0 ; i<100 ; ++i )
     {
-        mutation( tree.data , 0 , gen.gen0 , gen.gen1 , gen.gen2 );
+        gp::mutation::mutation_impl( tree.data , 0 , gen.gen0 , gen.gen1 , gen.gen2 );
         if( root->value != "plus" ) not_equal_plus = true;
         EXPECT_TRUE( contains( gen.binary_symbols , root->value ) );
     }
@@ -33,7 +33,7 @@ TEST( operator_tests , mutation1 )
     auto c1 = root->children[0];
     for( size_t i=0 ; i<100 ; ++i )
     {
-        mutation( tree.data , 1 , gen.gen0 , gen.gen1 , gen.gen2 );
+        gp::mutation::mutation_impl( tree.data , 1 , gen.gen0 , gen.gen1 , gen.gen2 );
         if( c1->value != "sin" ) not_equal_sin = true;
         EXPECT_TRUE( contains( gen.unary_symbols , c1->value ) );
     }
@@ -42,7 +42,7 @@ TEST( operator_tests , mutation1 )
     auto c2 = c1->children[0];
     for( size_t i=0 ; i<100 ; ++i )
     {
-        mutation( tree.data , 2 , gen.gen0 , gen.gen1 , gen.gen2 );
+        gp::mutation::mutation_impl( tree.data , 2 , gen.gen0 , gen.gen1 , gen.gen2 );
         if( c2->value != "x" ) not_equal_x = true;
         EXPECT_TRUE( contains( gen.term_symbols , c2->value ) );
     }
@@ -54,5 +54,5 @@ TEST( operator_tests , mutation2 )
     test_tree tree;
     test_generator gen;
 
-    mutation( tree.data , gen.rng , gen.gen0 , gen.gen1 , gen.gen2 );
+    gp::mutation()( tree.data , gen.rng , gen.gen0 , gen.gen1 , gen.gen2 );
 }

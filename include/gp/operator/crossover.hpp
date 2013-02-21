@@ -73,55 +73,58 @@ namespace detail {
 } // namespace detail;
 
 
-template< class Tree >
-void crossover( Tree &v1 , Tree &v2 , size_t i1 , size_t i2 )
+
+struct crossover
 {
-    typedef typename Tree::node_type node_type;
-    node_type *n1 = find_node_to_index( v1.data() , i1 );
-    node_type *n2 = find_node_to_index( v2.data() , i2 );
-    if( ( n1 == 0 ) || ( n2 == 0 ) ) return;
-    detail::crossover_impl( v1 , v2 , n1 , n2 );
-    complete_linked_tree_structure( v1 );
-    complete_linked_tree_structure( v2 );
-}
+    template< class Tree >
+    static void crossover_impl( Tree &v1 , Tree &v2 , size_t i1 , size_t i2 )
+    {
+        typedef typename Tree::node_type node_type;
+        node_type *n1 = find_node_to_index( v1.data() , i1 );
+        node_type *n2 = find_node_to_index( v2.data() , i2 );
+        if( ( n1 == 0 ) || ( n2 == 0 ) ) return;
+        detail::crossover_impl( v1 , v2 , n1 , n2 );
+        complete_linked_tree_structure( v1 );
+        complete_linked_tree_structure( v2 );
+    }
 
-template< class Tree , class Rng >
-void crossover( Tree &t1 , Tree &t2 , Rng &rng , size_t max_height )
-{
-    typedef typename Tree::node_type node_type;
+    template< class Tree , class Rng >
+    void operator()( Tree &t1 , Tree &t2 , Rng &rng , size_t max_height )
+    {
+        typedef typename Tree::node_type node_type;
 
-    if( t1.data() == 0 ) return;
-    if( t2.data() == 0 ) return;
+        if( t1.data() == 0 ) return;
+        if( t2.data() == 0 ) return;
 
-    std::uniform_int_distribution< size_t > dist1( 0 , t1.data()->num_elements - 1 );
-    std::uniform_int_distribution< size_t > dist2( 0 , t2.data()->num_elements - 1 );
+        std::uniform_int_distribution< size_t > dist1( 0 , t1.data()->num_elements - 1 );
+        std::uniform_int_distribution< size_t > dist2( 0 , t2.data()->num_elements - 1 );
 
     
 
-    bool good = true;
-    size_t iter = 0;
-    node_type *n1 = 0 , *n2 = 0;
-    do
-    {
-        size_t i1 = dist1( rng );
-        size_t i2 = dist2( rng );
+        bool good = true;
+        size_t iter = 0;
+        node_type *n1 = 0 , *n2 = 0;
+        do
+        {
+            size_t i1 = dist1( rng );
+            size_t i2 = dist2( rng );
 
-        n1 = find_node_to_index( t1.data() , i1 );
-        n2 = find_node_to_index( t2.data() , i2 );
+            n1 = find_node_to_index( t1.data() , i1 );
+            n2 = find_node_to_index( t2.data() , i2 );
 
-        size_t nh1 = n1->level + n2->height - 1;
-        size_t nh2 = n2->level + n1->height - 1;
-        good = ( ( nh1 <= max_height ) && ( nh2 <= max_height ) );
+            size_t nh1 = n1->level + n2->height - 1;
+            size_t nh2 = n2->level + n1->height - 1;
+            good = ( ( nh1 <= max_height ) && ( nh2 <= max_height ) );
+        }
+        while( ( iter < 1000 ) && ( good == false ) );
+
+        if( iter == 1000 ) throw std::runtime_error( "No nodes suitable for cross over found!" );
+
+        detail::crossover_impl( t1 , t2 , n1 , n2 );
+        complete_linked_tree_structure( t1 );
+        complete_linked_tree_structure( t2 );
     }
-    while( ( iter < 1000 ) && ( good == false ) );
-
-    if( iter == 1000 ) throw std::runtime_error( "No nodes suitable for cross over found!" );
-
-    detail::crossover_impl( t1 , t2 , n1 , n2 );
-    complete_linked_tree_structure( t1 );
-    complete_linked_tree_structure( t2 );
-}
-
+};
 
 } // namespace gp
 

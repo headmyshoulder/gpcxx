@@ -4,8 +4,13 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
+#include "eval.hpp"
+
 #include <gp/ga/ga1.hpp>
 #include <gp/tree/linked_node_tree.hpp>
+#include <gp/tree/generate_random_linked_tree.hpp>
+#include <gp/operator/mutation.hpp>
+#include <gp/operator/crossover.hpp>
 
 #include <iostream>
 #include <random>
@@ -14,9 +19,6 @@
 #define tab "\t"
 
 using namespace std;
-
-typedef std::vector< double > vector_t;
-
 
 
 template< class Rng , class Func >
@@ -63,43 +65,62 @@ void normalize( vector_t &x1 , vector_t &x2 , vector_t &x3 )
 }
 
 
-struct context
-{
-    vector_t x1 , x2 , x3 , y;
-};
 
-typedef gp::linked_node_tree< char > tree_type;
-
-
+namespace pl = std::placeholders;
 
 int main( int argc , char *argv[] )
 {
-    std::mt19937 rng;
+    typedef std::mt19937 rng_type ;
+    typedef fitness_function::context_type context_type;
+    typedef gp::genetic_evolver1< tree_type , fitness_function::context_type , std::mt19937 > evolver_type;
 
-    context c;
+
+    rng_type rng;
+
+    context_type c;
     generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
                         []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
 //    generate_test_data( y , x1 , x2 , x3 , 10000 , rng , []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.3 * x3; } );
 //    normalize( x1 , x2 , x3 );
 
-    
+    generators< rng_type > gen( rng );
+
     size_t population_size = 200;
     double elite_rate = 0.001;
     double mutation_rate = 0.2;
-    double crossover_rate = 06;
-    gp::genetic_evolver1< tree_type , context , std::mt19937 > evolver( elite_rate , mutation_rate , crossover_rate , rng );
+    double crossover_rate = 0.6;
+    size_t min_tree_height = 2 , max_tree_height = 10;
+
+    std::function< void( tree_type& ) > tree_generator;
+    tree_generator = std::bind( gp::generate_random_linked_tree() , pl::_1 ,
+                                std::ref( gen.gen0 ) , std::ref( gen.gen1 ) , std::ref( gen.gen2 ) , std::ref( rng ) ,
+                                min_tree_height , max_tree_height );
+
+    evolver_type evolver( elite_rate , mutation_rate , crossover_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
 
-    // evolver.fitness_function() = abc;
-    // evolver.mutation_function() = xyz;
-    // evolver.crossover_function() = abc;
-    // evolver.random_individual_function() = abc;
 
-//    initialize( population , context );
+    evolver.fitness_function() = fitness_function();
+    evolver.mutation_function() = std::bind( gp::mutation() , pl::_1 ,
+                                             std::ref( rng ) , std::ref( gen.gen0 ) , std::ref( gen.gen1 ) , std::ref( gen.gen2 ) );
+    evolver.crossover_function() = std::bind( gp::crossover() , pl::_1 , pl::_2 ,
+                                              std::ref( rng ) , max_tree_height );
+    evolver.random_individual_function() = tree_generator;
+
+
+    // initialize population with random trees and evaluate fitness
+    for( size_t i=0 ; i<population.size() ; ++i )
+    {
+        tree_generator( population[i] );
+        fitness[i] = fitness_function()( population[i] , c );
+    }
+    
     for( size_t i=0 ; i<200 ; ++i )
     {
+        cout << i << endl;
         evolver.next_generation( population , fitness , c );
+        cout << i << endl;
         // report_population( population , cout );
         // report_statistics( population , cout );
     }

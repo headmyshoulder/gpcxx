@@ -28,6 +28,18 @@ public:
     linked_node_tree( void ) : m_data( nullptr ) { }
     ~linked_node_tree( void ) { delete m_data; }
 
+    // linked_node_tree( const linked_node_tree &l ) = delete;
+    // linked_node_tree( linked_node_tree && ) = delete;
+    // const linked_node_tree& operator=( const linked_node_tree &l ) = delete;
+    // const linked_node_tree& operator=( linked_node_tree && ) = delete;
+
+    linked_node_tree( const linked_node_tree &l ) : m_data( ( l.m_data != 0 ) ? new node_type( *l.m_data ) : nullptr ) { }
+    const linked_node_tree& operator=( const linked_node_tree &l )
+    {
+        delete m_data;
+        m_data = ( ( l.m_data != 0 ) ? new node_type( *l.m_data ) : nullptr );
+    }
+
     node_pointer data( void ) { return m_data; }
     void set_data( node_pointer data ) { delete m_data; m_data = data; }
 

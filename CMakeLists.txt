@@ -9,15 +9,12 @@ if ( CMAKE_COMPILER_IS_GNUCXX )
   set ( CMAKE_CXX_FLAGS "-std=c++0x" )
 endif ()
 
+set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR} )
+
+find_package ( Boost )
+
 include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
-
-# add_executable ( main main.cpp )
-# add_executable ( test_copy test_copy.cpp )
-# add_executable ( main_optimize main_optimize.cpp )
-# add_executable ( test_prob test_prob.cpp )
-
-# add_subdirectory ( stuff )
 
 add_subdirectory ( app )
 

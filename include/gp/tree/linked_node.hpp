@@ -27,6 +27,12 @@ struct linked_node
     size_t height;
     size_t level;
 
+    linked_node( void )
+        : value() , arity( 0 ) , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
+    {
+        std::fill( children.begin() , children.end() , nullptr );
+    }
+
 
     linked_node( T v )
         : value( v ) , arity( 0 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
@@ -65,6 +71,7 @@ struct linked_node
         children[2] = n3;
     }
 
+    linked_node( linked_node && ) = delete ;
 
     linked_node( const linked_node &n )
         : value( n.value ) , arity( n.arity ) , children() , num_elements( n.num_elements ) , height( n.height ) , level( n.level )
@@ -78,6 +85,8 @@ struct linked_node
     {
         for( size_t i=0 ; i<arity ; ++i ) delete children[i];
     }
+
+    const linked_node& operator=( linked_node && ) = delete;
 
     const linked_node& operator=( const linked_node &n )
     {
