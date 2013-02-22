@@ -11,6 +11,7 @@
 #include <gp/tree/generate_random_linked_tree.hpp>
 #include <gp/operator/mutation.hpp>
 #include <gp/operator/crossover.hpp>
+#include <gp/stat/population_statistics.hpp>
 
 #include <iostream>
 #include <random>
@@ -78,18 +79,19 @@ int main( int argc , char *argv[] )
     rng_type rng;
 
     context_type c;
+    // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
+    //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
     generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
-                        []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
-//    generate_test_data( y , x1 , x2 , x3 , 10000 , rng , []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.3 * x3; } );
+                        []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.3 * x3; } );
 //    normalize( x1 , x2 , x3 );
 
     generators< rng_type > gen( rng );
 
-    size_t population_size = 200;
-    double elite_rate = 0.001;
+    size_t population_size = 2000;
+    double elite_rate = double( 2 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 2 , max_tree_height = 10;
+    size_t min_tree_height = 2 , max_tree_height = 8;
 
     std::function< void( tree_type& ) > tree_generator;
     tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height );
@@ -116,7 +118,7 @@ int main( int argc , char *argv[] )
     {
         cout << i << endl;
         evolver.next_generation( population , fitness , c );
-        // report_population( population , cout );
+        gp::report_population( population , fitness , cout );
         // report_statistics( population , cout );
     }
 

@@ -21,47 +21,13 @@ typedef gp::linked_node< node_value_type > node_type;
 typedef gp::linked_node_tree< node_value_type > tree_type;
 
 
-template< class Rng >
-struct random_terminal_generator
-{
-    std::vector< char > m_symbols;
-    Rng &m_rng;
-    
-    random_terminal_generator( const std::vector< char > &symbols , Rng &rng )
-        : m_symbols( symbols ) , m_rng( rng )
-    { }
-
-    node_type* operator()( void )
-    {
-        assert( !m_symbols.empty() );
-        return new node_type( random_symbol() , size_t( 0 ) );
-    }
-
-    node_value_type random_symbol( void )
-    {
-        std::uniform_int_distribution<> dice( 0 , 1 );
-        if( dice( m_rng ) == 0 )
-        {
-            std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
-            node_value_type v = m_symbols[ dist( m_rng ) ];
-            return v;
-        }
-        else
-        {
-            std::uniform_real_distribution< double > dist( -5.0 , 5.0 );
-            node_value_type v = dist( m_rng );
-            return v;
-        }
-    }
-};
-
 
 template< class Rng >
 struct generators
 {
     generators( Rng &rng )
         : 
-        gen0( { 'x' , 'y' , 'z' } , rng , 0 ) ,
+        gen0( { 'x' , 'y' , 'z' , '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' } , rng , 0 ) ,
         gen1( { 'e' } , rng , 1 ) ,
         gen2( { '+' , '-' , '*' , '/' } , rng , 2 )
     { }
@@ -91,6 +57,15 @@ struct tree_eval
             case 'x' : return m_c.x;
             case 'y' : return m_c.y;
             case 'z' : return m_c.z;
+            case '1' : return 1.0;
+            case '2' : return 2.0;
+            case '3' : return 3.0;
+            case '4' : return 4.0;
+            case '5' : return 5.0;
+            case '6' : return 6.0;
+            case '7' : return 7.0;
+            case '8' : return 8.0;
+            case '9' : return 9.0;
             case 'e' : return exp( eval( m_n->children[0] , m_c ) );
             case 's' : return sin( eval( m_n->children[0] , m_c ) );
             case 'c' : return cos( eval( m_n->children[0] , m_c ) );

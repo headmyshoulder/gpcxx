@@ -50,6 +50,7 @@ public:
     }
 
     node_pointer data( void ) { return m_data; }
+    const_node_pointer data( void ) const { return m_data; }
     void set_data( node_pointer data ) { delete m_data; m_data = data; }
 
 
