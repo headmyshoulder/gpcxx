@@ -119,32 +119,6 @@ struct tree_eval
 
 
 
-typedef std::vector< double > vector_t;
-
-struct fitness_function
-{
-    struct context_type
-    {
-        vector_t x1 , x2 , x3 , y;
-    };
-
-    double operator()( tree_type &t , const context_type &c ) const
-    {
-        double chi2 = 0.0;
-        for( size_t i=0 ; i<c.x1.size() ; ++i )
-        {
-            tree_eval::context_type cc;
-            cc.x = c.x1[i];
-            cc.y = c.x2[i];
-            cc.z = c.x3[i];
-            double yy = tree_eval::eval( t.data() , cc );
-            chi2 += ( yy - c.y[i] ) * ( yy - c.y[i] );
-        }
-        chi2 /= double( c.x1.size() );
-        return - 1.0 / ( 1.0 + chi2 );
-    }
-};
-
 
 
 
