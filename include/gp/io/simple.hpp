@@ -43,17 +43,21 @@ void print_simple_node( const Node *t , std::ostream &out )
     if( t->arity == 0 ) out << t->value;
     else if( t->arity == 1 )
     {
-        out << " " << t->value << " ( ";
+        out << t->value << "( ";
         print_simple_node( t->children[0] , out );
-        out << " ) ";
+        out << " )";
     }
     else if( t->arity == 2 )
     {
-        out << " ( ";
+        if( t->children[0]->arity == 2 ) out << "( ";
         print_simple_node( t->children[0] , out );
-        out << " ) " << t->value << " ( ";
+        if( t->children[0]->arity == 2 ) out << " )";
+
+        out << " " << t->value << " ";
+
+        if( t->children[1]->arity == 2 ) out << "( ";
         print_simple_node( t->children[1] , out );
-        out << " ) ";
+        if( t->children[1]->arity == 2 ) out << " )";
     }
 
 }
@@ -65,6 +69,31 @@ void print_simple( const Tree& t , std::ostream &out )
     const auto *ptr = t.data();
     print_simple_node( ptr , out );
 }
+
+
+// ToDo: schick machen
+template< class Tree >
+struct simple_printer
+{
+    const Tree &m_t;
+    simple_printer( const Tree &t ) : m_t( t ) { }
+    std::ostream& operator()( std::ostream& out ) const
+    {
+        print_simple( m_t , out );
+        return out;
+    }
+};
+
+template< class T >
+simple_printer< T > simple( const T &t ) { return simple_printer< T >( t ); }
+
+template< class T >
+std::ostream& operator<<( std::ostream& out , const simple_printer< T > &p )
+{
+    return p( out );
+}
+
+
 
 
 } // namespace gp

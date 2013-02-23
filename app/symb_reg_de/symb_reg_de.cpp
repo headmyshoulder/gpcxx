@@ -19,7 +19,7 @@
 #include <boost/numeric/odeint/integrate/integrate_const.hpp>
 #include <boost/array.hpp>
 
-
+#include <fstream>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -65,7 +65,7 @@ void generate_lorenz( fitness_function::context_type &c )
     const double dt = 0.01;
     const size_t emb_dim = 3;
     const size_t emb_tau = 9;
-    const size_t N = 1000;
+    const size_t N = 10000;
 
     state_type x = { 10.0 , 10.0 , 10.0 };
 
@@ -91,10 +91,10 @@ void generate_lorenz( fitness_function::context_type &c )
 
     for( unsigned int i=0 ; i<N ; i++ )
     {
-        c.y[i] = buf.back().first;
-        c.x1[i] = buf[ 0 * emb_dim ].second;
-        c.x2[i] = buf[ 1 * emb_dim ].second;
-        c.x3[i] = buf[ 2 * emb_dim ].second;
+        c.x1[i] = buf[ 0 * emb_dim ].first;
+        c.x2[i] = buf[ 1 * emb_dim ].first;
+        c.x3[i] = buf[ 2 * emb_dim ].first;
+        c.y[i] = buf.back().second;
 
         rk4.do_step( lorenz , x , dxdt , 0.0 , dt );
         lorenz( x , dxdt , 0.0 );
@@ -126,9 +126,27 @@ void normalize( fitness_function::vector_type &x1 , fitness_function::vector_typ
     auto p1 = normalize( x1 );
     auto p2 = normalize( x2 );
     auto p3 = normalize( x3 );
-    cout << p1.first << " " << p1.second << endl;
-    cout << p2.first << " " << p2.second << endl;
-    cout << p3.first << " " << p3.second << endl;
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::INIT ) << "Normalize input x1, mean = " << p1.first << ", stdev = " << p1.second;
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::INIT ) << "Normalize input x2, mean = " << p2.first << ", stdev = " << p2.second;
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::INIT ) << "Normalize input x3, mean = " << p3.first << ", stdev = " << p3.second;
+}
+
+std::vector< boost::shared_ptr< std::ostream > > streams;
+
+void init_logging( void )
+{
+    using namespace Amboss::Log;
+    LoggerCollection &logger = GlobalLogger::getInstance();
+    logger.data().clear();
+    
+    auto filter = []( const LogEntry &e ) { return ( e.logLevel >= NOISE ); };
+    std::shared_ptr< OStreamLogger > l( std::make_shared< OStreamLogger >( std::cerr , gp::DefaultFormatter() , filter ) );
+    logger.data().push_back( std::shared_ptr< ILogger >( l ) );
+
+    boost::shared_ptr< std::ostream > s = boost::make_shared< std::ofstream >( "log.dat" );
+    streams.push_back( s );
+    std::shared_ptr< OStreamLogger > ll = std::make_shared< OStreamLogger >( *s , gp::DefaultFormatter() , filter );
+    logger.data().push_back( std::shared_ptr< ILogger >( ll ) );
 }
 
 
@@ -137,9 +155,14 @@ namespace pl = std::placeholders;
 
 int main( int argc , char *argv[] )
 {
+    init_logging();
+
     typedef std::mt19937 rng_type ;
     typedef fitness_function::context_type context_type;
     typedef gp::genetic_evolver1< tree_type , fitness_function::context_type , std::mt19937 > evolver_type;
+
+
+
 
 
     rng_type rng;
@@ -149,8 +172,8 @@ int main( int argc , char *argv[] )
     //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
     // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
     //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.3 * x3; } );
-    // normalize( x1 , x2 , x3 );
     generate_lorenz( c );
+    normalize( c.x1 , c.x2 , c.x3 );
 
     generators< rng_type > gen( rng );
 
@@ -175,6 +198,7 @@ int main( int argc , char *argv[] )
 
 
     // initialize population with random trees and evaluate fitness
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Initialization!";
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         // if( i == 0 )
@@ -202,13 +226,20 @@ int main( int argc , char *argv[] )
         tree_generator( population[i] );
         fitness[i] = fitness_function()( population[i] , c );
     }
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Initialization!";
     
     for( size_t i=0 ; i<200 ; ++i )
     {
-        cout << i << endl;
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
+
         evolver.next_generation( population , fitness , c );
-        gp::report_population( population , fitness , cout );
-        // report_statistics( population , cout );
+
+        std::vector< size_t > idx;
+        auto iter = gp::sort_indices( fitness , idx );
+        for( size_t i=0 ; i<10 ; ++i )
+            GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
+                << "Individual " << i << " " << gp::simple( population[ idx[i] ] ) << " : " << fitness[ idx[i] ];
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << "!";
     }
 
     return 0;

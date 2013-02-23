@@ -58,14 +58,26 @@ struct fitness_function
     {
         node_vector double_terminals;
         find_double_terminals( t , double_terminals );
+
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
+        //     << "Calculating fitness for " << gp::simple( t )
+        //     << ". Number of double terminals " << double_terminals.size();
+
+        double f = 0.0;
         if( double_terminals.empty() )
         {
-            return fitness( t , c );
+            f = fitness( t , c );
         }
         else
         {
-            return de_optimization( double_terminals , t , c );
+            f = de_optimization( double_terminals , t , c );
         }
+
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
+        //     << "Fitness for " << gp::simple( t )
+        //     << " is " << f;
+
+        return f;
     }
 
 
@@ -129,9 +141,9 @@ struct fitness_function
         const size_t vars_count = double_terminals.size();
         const size_t population_size = 500;
 
-        std::cout << "Starting optimization for ";
-        print_simple( t , std::cout );
-        std::cout << ". Fitness before " << fitness( t , c ) << std::endl;
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
+        //     << "Starting optimization for " << gp::simple( t )
+        //     << ". Fitness befor de optimization " << fitness( t , c );
 
         de::constraints_ptr constraints( boost::make_shared< de::constraints >( vars_count , -1.0e6, 1.0e6 ) );
         for( size_t i=0 ; i<vars_count ; ++i )
@@ -144,7 +156,7 @@ struct fitness_function
         de::processor_listener_ptr processor_listener( boost::make_shared< de::null_processor_listener >() );
 
         de::processors< objective_function_ptr >::processors_ptr processors(
-            boost::make_shared< de::processors< objective_function_ptr > >( 4, of, processor_listener ) );
+            boost::make_shared< de::processors< objective_function_ptr > >( 1 , of, processor_listener ) );
 
         de::termination_strategy_ptr terminationStrategy( boost::make_shared< de::max_gen_termination_strategy >( 30 ) );
         de::selection_strategy_ptr selectionStrategy( boost::make_shared< de::best_parent_child_selection_strategy >() );
@@ -158,16 +170,16 @@ struct fitness_function
 
         de::individual_ptr best( de.best() );
 
-        std::cout << "Finished optimization for ";
-        print_simple( t , std::cout );
-        std::cout << ". Fitness after " << fitness( t , c ) << ", " << best->cost() << std::endl;;
-        
+        // we have to copy the result back into the tree, since the result is selected from more then one de generation
+        const auto &res = *best->vars();
+        for( size_t i=0 ; i<vars_count ; ++i )
+            double_terminals[i]->value = res[i];
 
-        // std::cout << "minimum value for ";
-        // print_simple( t , std::cout );
-        // cout << "( ";
-        // for( size_t i=0 ; i<vars_count ; ++i ) cout << ( *best->vars() )[i] << " ";
-        // cout << " ), chi2 = " << best->cost() << std::endl;
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
+        //     << "Finished optimization for " << gp::simple( t )
+        //     << ". Fitness after de optimization " << fitness( t , c ) << " , " << best->cost();
+
+        return best->cost();
     }
 
 };
