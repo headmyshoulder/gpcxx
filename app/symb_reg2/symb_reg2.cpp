@@ -82,16 +82,16 @@ int main( int argc , char *argv[] )
     // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
     //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
     generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
-                        []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.3 * x3; } );
+                        []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
 //    normalize( x1 , x2 , x3 );
 
     generators< rng_type > gen( rng );
 
-    size_t population_size = 2000;
+    size_t population_size = 1000;
     double elite_rate = double( 1 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 2 , max_tree_height = 8;
+    size_t min_tree_height = 8 , max_tree_height = 8;
 
     std::function< void( tree_type& ) > tree_generator;
     tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height );
@@ -114,7 +114,7 @@ int main( int argc , char *argv[] )
         fitness[i] = fitness_function()( population[i] , c );
     }
     
-    for( size_t i=0 ; i<200 ; ++i )
+    for( size_t i=0 ; i<100 ; ++i )
     {
         cout << i << endl;
         evolver.next_generation( population , fitness , c );
