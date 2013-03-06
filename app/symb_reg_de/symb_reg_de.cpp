@@ -170,14 +170,14 @@ int main( int argc , char *argv[] )
     context_type c;
     // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
     //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
-    // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
-    //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - 0.3 * x3; } );
-    generate_lorenz( c );
-    normalize( c.x1 , c.x2 , c.x3 );
+    generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
+                        []( double x1 , double x2 , double x3 ) { return x1 * x1 + 0.5 * x1 + x2 + 0.3 * x3 + 1.0; } );
+    // generate_lorenz( c );
+    // normalize( c.x1 , c.x2 , c.x3 );
 
     generators< rng_type > gen( rng );
 
-    size_t population_size = 200;
+    size_t population_size = 500;
     double elite_rate = double( 2 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
@@ -228,7 +228,7 @@ int main( int argc , char *argv[] )
     }
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Initialization!";
     
-    for( size_t i=0 ; i<200 ; ++i )
+    for( size_t i=0 ; i<5 ; ++i )
     {
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
 
@@ -236,9 +236,9 @@ int main( int argc , char *argv[] )
 
         std::vector< size_t > idx;
         auto iter = gp::sort_indices( fitness , idx );
-        for( size_t i=0 ; i<10 ; ++i )
+        for( size_t j=0 ; j<10 ; ++j )
             GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
-                << "Individual " << i << " " << gp::simple( population[ idx[i] ] ) << " : " << fitness[ idx[i] ];
+                << "Individual " << j << " " << gp::simple( population[ idx[j] ] ) << " : " << fitness[ idx[j] ];
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << "!";
     }
 

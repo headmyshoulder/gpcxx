@@ -13,12 +13,26 @@
 
 namespace gp {
 
+
+template< class T >
+struct node_base
+{
+    const static size_t max_arity = 4;
+    typedef T* node_ptr;
+
+    size_t arity;
+    std::array< node_ptr , max_arity > children;
+    node_ptr parent;
+
+
+};
+
 template< class T >
 struct linked_node
 {
     typedef T value_type;
     typedef T* child_type;
-    const static size_t max_arity = 3;
+    const static size_t max_arity = 4;
 
     size_t arity;
     std::array< linked_node< T >* , max_arity > children;
