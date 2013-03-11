@@ -12,6 +12,7 @@
 #include <random>
 #include <stack>
 #include <cassert>
+#include <array>
 
 namespace gp {
 
@@ -23,13 +24,17 @@ struct generate_random_linked_tree
         Tree &t ,
         TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen , 
         Rng &rng , 
-        size_t min_height , size_t max_height )
+        size_t min_height , size_t max_height , const std::array< int , 3 > &gen_weights )
     {
         using namespace std;
         typedef typename Tree::node_type node_type;
 
-        std::uniform_int_distribution<> dice( 0 , 1 );
-        std::uniform_int_distribution<> thrice( 0 , 2 );
+        std::array< int , 2 > weights_dice = {{ gen_weights[1] , gen_weights[2] }};
+        std::array< int , 3 > weights_thrice = gen_weights;
+
+                                             
+        std::discrete_distribution<> dice( weights_dice.begin() , weights_dice.end() );
+        std::discrete_distribution<> thrice( weights_thrice.begin() , weights_thrice.end() );
 
         // first - index of node
         // first - how many childs still have to be created
@@ -84,6 +89,19 @@ struct generate_random_linked_tree
 
         complete_linked_tree_structure( t );
     }
+
+
+    template< class Tree , class TerminalGen , class UnaryGen , class BinaryGen , class Rng >
+    void operator()( 
+        Tree &t ,
+        TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen , 
+        Rng &rng , 
+        size_t min_height , size_t max_height )
+    {
+        std::array< int , 3 > weights = {{ 1 , 1 , 1 }};
+        return (*this)( t , terminal_gen , unary_gen , binary_gen , rng , min_height , max_height , weights );
+    }
+
 };
 
 template< class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
@@ -94,17 +112,28 @@ struct tree_generator_binder
     UnaryGen &m_gen1;
     BinaryGen &m_gen2;
     size_t m_min_height , m_max_height;
+    std::array< int , 3 > m_gen_weights;
     tree_generator_binder( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
                            size_t min_height , size_t max_height )
         : m_rng( rng ) , m_gen0( gen0 ) , m_gen1( gen1 ) , m_gen2( gen2 ) ,
-          m_min_height( min_height ) , m_max_height( max_height )
+          m_min_height( min_height ) , m_max_height( max_height ) ,
+          m_gen_weights( {{ 1 , 1 , 1 }} )
     {
     }
+
+    tree_generator_binder( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
+                           size_t min_height , size_t max_height , std::array< int , 3 > &gen_weights )
+        : m_rng( rng ) , m_gen0( gen0 ) , m_gen1( gen1 ) , m_gen2( gen2 ) ,
+          m_min_height( min_height ) , m_max_height( max_height ) ,
+          m_gen_weights( gen_weights )
+    {
+    }
+
 
     template< class Tree >
     void operator()( Tree &t ) const
     {
-        generate_random_linked_tree()( t , m_gen0 , m_gen1 , m_gen2 , m_rng , m_min_height , m_max_height );
+        generate_random_linked_tree()( t , m_gen0 , m_gen1 , m_gen2 , m_rng , m_min_height , m_max_height , m_gen_weights );
     }
 };
 
@@ -114,6 +143,14 @@ make_tree_generator_binder( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , Bina
                            size_t min_height , size_t max_height )
 {
     return tree_generator_binder< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen0 , gen1 , gen2 , min_height , max_height );
+}
+
+template< class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
+tree_generator_binder< Rng , TerminalGen , UnaryGen , BinaryGen >
+make_tree_generator_binder( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
+                            size_t min_height , size_t max_height , std::array< int , 3 > gen_weights )
+{
+    return tree_generator_binder< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen0 , gen1 , gen2 , min_height , max_height , gen_weights );
 }
 
 

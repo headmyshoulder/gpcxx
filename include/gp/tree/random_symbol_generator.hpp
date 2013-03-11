@@ -42,6 +42,8 @@ struct random_symbol_generator
 
     explicit operator bool () const { return !m_symbols.empty(); }
 
+    size_t num_symbols( void ) const { return m_symbols.size(); }
+
 private:
 
     std::vector< value_type > m_symbols;
