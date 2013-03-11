@@ -117,7 +117,10 @@ int main( int argc , char *argv[] )
     size_t min_tree_height = 2 , max_tree_height = 8;
 
     std::function< void( tree_type& ) > tree_generator;
-    tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , gen.weights() );
+    std::array< int , 3 > weights = {{ 2 * int( gen.gen0.num_symbols() ) ,
+                                       int( gen.gen1.num_symbols() ) , 
+                                       int( gen.gen2.num_symbols() ) }};
+    tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , weights );
 
     evolver_type evolver( elite_rate , mutation_rate , crossover_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
