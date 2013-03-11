@@ -114,7 +114,7 @@ int main( int argc , char *argv[] )
     double elite_rate = double( 2 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 2 , max_tree_height = 8;
+    size_t min_tree_height = 4 , max_tree_height = 8;
 
     std::function< void( tree_type& ) > tree_generator;
     std::array< int , 3 > weights = {{ 2 * int( gen.gen0.num_symbols() ) ,
