@@ -53,6 +53,8 @@ struct random_terminal_generator
             return v;
         }
     }
+
+    size_t num_symbols( void ) const { return m_symbols.size() + 1; }
 };
 
 
@@ -68,6 +70,13 @@ struct generators
 
     random_terminal_generator< Rng > gen0;
     gp::random_symbol_generator< node_type , Rng > gen1 , gen2;
+
+    std::array< int , 3 > weights( void ) const
+    {
+        return {{ int( gen0.num_symbols() ) ,
+                    int( gen1.num_symbols() ) , 
+                    int( gen2.num_symbols() ) }};
+    }
 };
 
 

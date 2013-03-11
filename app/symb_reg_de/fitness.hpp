@@ -139,7 +139,7 @@ struct fitness_function
         typedef boost::shared_ptr< objective_function > objective_function_ptr;
 
         const size_t vars_count = double_terminals.size();
-        const size_t population_size = 10;
+        const size_t population_size = 100;
 
         // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
         //     << "Starting optimization for " << gp::simple( t )
@@ -158,7 +158,7 @@ struct fitness_function
         de::processors< objective_function_ptr >::processors_ptr processors(
             boost::make_shared< de::processors< objective_function_ptr > >( 1 , of, processor_listener ) );
 
-        de::termination_strategy_ptr terminationStrategy( boost::make_shared< de::max_gen_termination_strategy >( 3 ) );
+        de::termination_strategy_ptr terminationStrategy( boost::make_shared< de::max_gen_termination_strategy >( 50 ) );
         de::selection_strategy_ptr selectionStrategy( boost::make_shared< de::best_parent_child_selection_strategy >() );
 
         de::mutation_strategy_arguments mutation_arguments( 0.5, 0.9 );

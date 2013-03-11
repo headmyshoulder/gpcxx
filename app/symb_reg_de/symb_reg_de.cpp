@@ -170,8 +170,10 @@ int main( int argc , char *argv[] )
     context_type c;
     // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
     //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
+    // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
+    //                     []( double x1 , double x2 , double x3 ) { return x1 * x1 + 0.5 * x1 + x2 + 0.3 * x3 + 1.0; } );
     generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
-                        []( double x1 , double x2 , double x3 ) { return x1 * x1 + 0.5 * x1 + x2 + 0.3 * x3 + 1.0; } );
+                        []( double x1 , double x2 , double x3 ) { return x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
     // generate_lorenz( c );
     // normalize( c.x1 , c.x2 , c.x3 );
 
@@ -184,7 +186,7 @@ int main( int argc , char *argv[] )
     size_t min_tree_height = 2 , max_tree_height = 6;
 
     std::function< void( tree_type& ) > tree_generator;
-    tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height );
+    tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , gen.weights() );
 
     evolver_type evolver( elite_rate , mutation_rate , crossover_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
@@ -238,7 +240,7 @@ int main( int argc , char *argv[] )
         auto iter = gp::sort_indices( fitness , idx );
         for( size_t j=0 ; j<10 ; ++j )
             GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
-                << "Individual " << j << " " << gp::simple( population[ idx[j] ] ) << " : " << fitness[ idx[j] ];
+                << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << "!";
     }
 

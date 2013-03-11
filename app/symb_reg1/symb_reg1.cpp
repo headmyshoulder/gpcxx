@@ -151,9 +151,9 @@ int main( int argc , char *argv[] )
 
         std::vector< size_t > idx;
         auto iter = gp::sort_indices( fitness , idx );
-        for( size_t i=0 ; i<10 ; ++i )
+        for( size_t j=0 ; j<10 ; ++j )
             GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
-                << "Individual " << i << " : " << fitness[ idx[i] ] << " : " << gp::simple( population[ idx[i] ] );
+                << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << "!";
     }
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing main loop!";
