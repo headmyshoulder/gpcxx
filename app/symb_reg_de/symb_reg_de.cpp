@@ -230,7 +230,7 @@ int main( int argc , char *argv[] )
     }
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Initialization!";
     
-    for( size_t i=0 ; i<5 ; ++i )
+    for( size_t i=0 ; i<50 ; ++i )
     {
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
 
