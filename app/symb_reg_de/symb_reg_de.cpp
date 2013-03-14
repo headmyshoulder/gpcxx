@@ -136,17 +136,12 @@ std::vector< boost::shared_ptr< std::ostream > > streams;
 void init_logging( void )
 {
     using namespace Amboss::Log;
-    LoggerCollection &logger = GlobalLogger::getInstance();
-    logger.data().clear();
-    
+
     auto filter = []( const LogEntry &e ) { return ( e.logLevel >= NOISE ); };
-    std::shared_ptr< OStreamLogger > l( std::make_shared< OStreamLogger >( std::cerr , gp::DefaultFormatter() , filter ) );
-    logger.data().push_back( std::shared_ptr< ILogger >( l ) );
 
     boost::shared_ptr< std::ostream > s = boost::make_shared< std::ofstream >( "log.dat" );
     streams.push_back( s );
-    std::shared_ptr< OStreamLogger > ll = std::make_shared< OStreamLogger >( *s , gp::DefaultFormatter() , filter );
-    logger.data().push_back( std::shared_ptr< ILogger >( ll ) );
+    gp::GPLogger::getInstance().data().push_back( std::make_shared< OStreamLogger >( *s , gp::DefaultFormatter() , filter ) );
 }
 
 
@@ -155,7 +150,7 @@ namespace pl = std::placeholders;
 
 int main( int argc , char *argv[] )
 {
-    init_logging();
+    // init_logging();
 
     typedef std::mt19937 rng_type ;
     typedef fitness_function::context_type context_type;
@@ -172,9 +167,9 @@ int main( int argc , char *argv[] )
     //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
     // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
     //                     []( double x1 , double x2 , double x3 ) { return x1 * x1 + 0.5 * x1 + x2 + 0.3 * x3 + 1.0; } );
-    generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
-                        []( double x1 , double x2 , double x3 ) { return x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
-    // generate_lorenz( c );
+    // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
+    //                     []( double x1 , double x2 , double x3 ) { return x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+    generate_lorenz( c );
     // normalize( c.x1 , c.x2 , c.x3 );
 
     generators< rng_type > gen( rng );
@@ -193,7 +188,7 @@ int main( int argc , char *argv[] )
     std::vector< tree_type > population( population_size );
 
 
-    evolver.fitness_function() = fitness_function();
+    evolver.fitness_function() = fitness_function( true , 20 , 20 );
     evolver.mutation_function() = gp::make_mutation_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 );
     evolver.crossover_function() = gp::make_crossover_binder( rng , max_tree_height );
     evolver.random_individual_function() = tree_generator;
@@ -203,34 +198,16 @@ int main( int argc , char *argv[] )
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Initialization!";
     for( size_t i=0 ; i<population.size() ; ++i )
     {
-        // if( i == 0 )
-        // {
-        //     population[0].set_data(
-        //         new node_type( '+' ,
-        //                        new node_type( '*' , new node_type( 1.23 ) , new node_type( 'x' ) ) ,
-        //                        new node_type( '+'  ,
-        //                                       new node_type( '*' , new node_type( 1.44 ) , new node_type( 'y' )  ) ,
-        //                                       new node_type( '*' , new node_type( 1.66 ) , new node_type( 'z' )  )
-        //                            )
-        //             )
-        //         );
-
-        //     fitness_function::node_vector nodes;
-        //     fitness_function::find_double_terminals( population[i] , nodes );
-
-        //     print_simple( population[i] , cout );
-        //     cout << endl;
-        //     for( auto n : nodes ) cout << n << " " << n->value << endl;
-        //     fitness[i] = fitness_function()( population[i] , c );
-        //     return -1;
-        // }
-
         tree_generator( population[i] );
         fitness[i] = fitness_function()( population[i] , c );
     }
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Initialization!";
     
+<<<<<<< HEAD
+    for( size_t i=0 ; i<200 ; ++i )
+=======
     for( size_t i=0 ; i<50 ; ++i )
+>>>>>>> c5cde69c9f9d9f0391e0f50780051eb6dce99389
     {
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
 
