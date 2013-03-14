@@ -144,11 +144,7 @@ struct fitness_function
         typedef boost::shared_ptr< objective_function > objective_function_ptr;
 
         const size_t vars_count = double_terminals.size();
-<<<<<<< HEAD
         const size_t population_size = m_de_population_size;
-=======
-        const size_t population_size = 20;
->>>>>>> c5cde69c9f9d9f0391e0f50780051eb6dce99389
 
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
             << "Starting optimization for " << gp::simple( t )
