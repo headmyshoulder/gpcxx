@@ -179,11 +179,11 @@ int main( int argc , char *argv[] )
 
     generators< rng_type > gen( rng );
 
-    size_t population_size = 500;
+    size_t population_size = 5000;
     double elite_rate = double( 2 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 2 , max_tree_height = 6;
+    size_t min_tree_height = 2 , max_tree_height = 8;
 
     std::function< void( tree_type& ) > tree_generator;
     tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , gen.weights() );
