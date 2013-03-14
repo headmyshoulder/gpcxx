@@ -33,10 +33,15 @@ struct fitness_function
 {
     typedef std::vector< node_type* > node_vector;
     typedef std::vector< double > vector_type;
+
     struct context_type
     {
         vector_type x1 , x2 , x3 , y;
     };
+
+    fitness_function( bool use_de = false , size_t de_population_size = 20 , size_t de_iterations = 40 )
+        : m_use_de( use_de ) , m_de_population_size( de_population_size ) , m_de_iterations( de_iterations )
+    { }
 
     static double fitness( tree_type &t , const context_type &c )
     {
@@ -59,12 +64,12 @@ struct fitness_function
         node_vector double_terminals;
         find_double_terminals( t , double_terminals );
 
-        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
-        //     << "Calculating fitness for " << gp::simple( t )
-        //     << ". Number of double terminals " << double_terminals.size();
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
+            << "Calculating fitness for " << gp::simple( t )
+            << ". Number of double terminals " << double_terminals.size();
 
         double f = 0.0;
-        if( double_terminals.empty() )
+        if( double_terminals.empty() || ( ! m_use_de ) )
         {
             f = fitness( t , c );
         }
@@ -73,9 +78,9 @@ struct fitness_function
             f = de_optimization( double_terminals , t , c );
         }
 
-        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
-        //     << "Fitness for " << gp::simple( t )
-        //     << " is " << f;
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
+            << "Fitness for " << gp::simple( t )
+            << " is " << f;
 
         return f;
     }
@@ -131,7 +136,7 @@ struct fitness_function
     };
 
 
-    static double de_optimization( node_vector &double_terminals , tree_type &t , const context_type &c )
+    double de_optimization( node_vector &double_terminals , tree_type &t , const context_type &c ) const
     {
         std::cout.precision( 14 );
 
@@ -139,11 +144,11 @@ struct fitness_function
         typedef boost::shared_ptr< objective_function > objective_function_ptr;
 
         const size_t vars_count = double_terminals.size();
-        const size_t population_size = 100;
+        const size_t population_size = m_de_population_size;
 
-        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
-        //     << "Starting optimization for " << gp::simple( t )
-        //     << ". Fitness befor de optimization " << fitness( t , c );
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
+            << "Starting optimization for " << gp::simple( t )
+            << ". Fitness befor de optimization " << fitness( t , c );
 
         de::constraints_ptr constraints( boost::make_shared< de::constraints >( vars_count , -1.0e6, 1.0e6 ) );
         for( size_t i=0 ; i<vars_count ; ++i )
@@ -151,7 +156,6 @@ struct fitness_function
 
         objective_function_ptr of( boost::make_shared< de_fitness_function >( c , t , double_terminals ) );
 
-        // de::listener_ptr listener( boost::make_shared< my_listener >( std::cout ) );
         de::listener_ptr listener( boost::make_shared< de::null_listener >() );
         de::processor_listener_ptr processor_listener( boost::make_shared< de::null_processor_listener >() );
 
@@ -175,13 +179,18 @@ struct fitness_function
         for( size_t i=0 ; i<vars_count ; ++i )
             double_terminals[i]->value = res[i];
 
-        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
-        //     << "Finished optimization for " << gp::simple( t )
-        //     << ". Fitness after de optimization " << fitness( t , c ) << " , " << best->cost();
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
+            << "Finished optimization for " << gp::simple( t )
+            << ". Fitness after de optimization " << fitness( t , c ) << " , " << best->cost();
 
         return best->cost();
     }
 
+private:
+
+    bool m_use_de;
+    size_t m_de_population_size;
+    size_t m_de_iterations;
 };
 
 
