@@ -64,9 +64,9 @@ struct fitness_function
         node_vector double_terminals;
         find_double_terminals( t , double_terminals );
 
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
-            << "Calculating fitness for " << gp::simple( t )
-            << ". Number of double terminals " << double_terminals.size();
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
+        //     << "Calculating fitness for " << gp::simple( t )
+        //     << ". Number of double terminals " << double_terminals.size();
 
         double f = 0.0;
         if( double_terminals.empty() || ( ! m_use_de ) )
@@ -78,9 +78,9 @@ struct fitness_function
             f = de_optimization( double_terminals , t , c );
         }
 
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
-            << "Fitness for " << gp::simple( t )
-            << " is " << f;
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::FITNESS )
+        //     << "Fitness for " << gp::simple( t )
+        //     << " is " << f;
 
         return f;
     }
@@ -146,9 +146,9 @@ struct fitness_function
         const size_t vars_count = double_terminals.size();
         const size_t population_size = m_de_population_size;
 
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
-            << "Starting optimization for " << gp::simple( t )
-            << ". Fitness befor de optimization " << fitness( t , c );
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
+        //     << "Starting optimization for " << gp::simple( t )
+        //     << ". Fitness befor de optimization " << fitness( t , c );
 
         de::constraints_ptr constraints( boost::make_shared< de::constraints >( vars_count , -1.0e6, 1.0e6 ) );
         for( size_t i=0 ; i<vars_count ; ++i )
@@ -179,9 +179,9 @@ struct fitness_function
         for( size_t i=0 ; i<vars_count ; ++i )
             double_terminals[i]->value = res[i];
 
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
-            << "Finished optimization for " << gp::simple( t )
-            << ". Fitness after de optimization " << fitness( t , c ) << " , " << best->cost();
+        // GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::DE )
+        //     << "Finished optimization for " << gp::simple( t )
+        //     << ". Fitness after de optimization " << fitness( t , c ) << " , " << best->cost();
 
         return best->cost();
     }

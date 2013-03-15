@@ -139,7 +139,7 @@ void init_logging( void )
 
     auto filter = []( const LogEntry &e ) { return ( e.logLevel >= NOISE ); };
 
-    boost::shared_ptr< std::ostream > s = boost::make_shared< std::ofstream >( "log.dat" );
+    boost::shared_ptr< std::ostream > s = boost::make_shared< std::ofstream >( "log3.dat" );
     streams.push_back( s );
     gp::GPLogger::getInstance().data().push_back( std::make_shared< OStreamLogger >( *s , gp::DefaultFormatter() , filter ) );
 }
@@ -170,15 +170,15 @@ int main( int argc , char *argv[] )
     // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
     //                     []( double x1 , double x2 , double x3 ) { return x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
     generate_lorenz( c );
-    // normalize( c.x1 , c.x2 , c.x3 );
+    normalize( c.x1 , c.x2 , c.x3 );
 
     generators< rng_type > gen( rng );
 
-    size_t population_size = 5000;
-    double elite_rate = double( 2 ) / double( population_size );
+    size_t population_size = 10000;
+    double elite_rate = double( 4 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 2 , max_tree_height = 8;
+    size_t min_tree_height = 2 , max_tree_height = 12;
 
     std::function< void( tree_type& ) > tree_generator;
     tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , gen.weights() );
@@ -188,7 +188,7 @@ int main( int argc , char *argv[] )
     std::vector< tree_type > population( population_size );
 
 
-    evolver.fitness_function() = fitness_function( true , 20 , 20 );
+    evolver.fitness_function() = fitness_function( false );
     evolver.mutation_function() = gp::make_mutation_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 );
     evolver.crossover_function() = gp::make_crossover_binder( rng , max_tree_height );
     evolver.random_individual_function() = tree_generator;
@@ -203,7 +203,7 @@ int main( int argc , char *argv[] )
     }
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Initialization!";
     
-    for( size_t i=0 ; i<200 ; ++i )
+    for( size_t i=0 ; i<1000 ; ++i )
     {
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
 
