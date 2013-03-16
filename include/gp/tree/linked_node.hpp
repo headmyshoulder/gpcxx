@@ -9,137 +9,369 @@
 
 #include <array>
 #include <cstddef>
+#include <cassert>
+#include <iterator>
+
+#include <boost/iterator/transform_iterator.hpp>
+
+
 
 
 namespace gp {
 
-
-template< class T >
-struct node_base
-{
-    const static size_t max_arity = 4;
-    typedef T* node_ptr;
-
-    size_t arity;
-    std::array< node_ptr , max_arity > children;
-    node_ptr parent;
-
-
-};
-
-template< class T >
-struct linked_node
-{
-    typedef T value_type;
-    typedef T* child_type;
-    const static size_t max_arity = 4;
-
-    size_t arity;
-    std::array< linked_node< T >* , max_arity > children;
-    linked_node< T > *parent;
-    value_type value;
-    size_t num_elements;
-    size_t height;
-    size_t level;
-
-    linked_node( void )
-        : value() , arity( 0 ) , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
-    {
-        std::fill( children.begin() , children.end() , nullptr );
-    }
-
-    linked_node( T v )
-        : value( v ) , arity( 0 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
-    {
-        std::fill( children.begin() , children.end() , nullptr );
-    }
-
-    linked_node( T v , size_t a )
-        : value( v ) , arity( a ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
-    {
-        std::fill( children.begin() , children.end() , nullptr );
-    }
-    
-    linked_node( T v , linked_node *n1 )
-        : value( v ) , arity( 1 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
-    {
-        std::fill( children.begin() , children.end() , nullptr );
-        children[0] = n1;
-    }
-    
-    linked_node( T v , linked_node *n1 , linked_node *n2 ) 
-        : value( v ) , arity( 2 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
-    {
-        std::fill( children.begin() , children.end() , nullptr );
-        children[0] = n1;
-        children[1] = n2;
-    }
-
-    linked_node( T v , linked_node *n1 , linked_node *n2 , linked_node *n3 )
-        : value( v ) , arity( 3 ) , children() , parent( 0 ) , num_elements( 0 ) , height( 0 ) , level( 0 )
-    {
-        std::fill( children.begin() , children.end() , nullptr );
-        children[0] = n1;
-        children[1] = n2;
-        children[2] = n3;
-    }
-
-    linked_node( linked_node && ) = delete ;
-
-    linked_node( const linked_node &n )
-        : value( n.value ) , arity( n.arity ) , children() , parent( 0 ) , num_elements( n.num_elements ) , height( n.height ) , level( n.level )
-    {
-        std::fill( children.begin() , children.end() , nullptr );
-        for( size_t i=0 ; i<arity ; ++i )
-            children[i] = ( ( n.children[i] != 0 ) ? new linked_node( *( n.children[i] ) ) : nullptr );
-    }
-
-    ~linked_node( void )
-    {
-        for( size_t i=0 ; i<arity ; ++i ) delete children[i];
-    }
-
-    const linked_node& operator=( linked_node && ) = delete;
-
-    const linked_node& operator=( const linked_node &n )
-    {
-        value = n.value;
-        arity = n.arity;
-        std::fill( children.begin() , children.end() , nullptr );
-        for( size_t i=0 ; i<arity ; ++i )
-            children[i] = ( ( n.children[i] != 0 ) ? new linked_node( *( n.children[i] ) ) : nullptr );
-        num_elements = n.num_elements;
-        height = n.height;
-        level = n.level;
-        return *this;
-    }
-};
-
 namespace detail {
 
-template< class T >
-void complete_linked_tree_structure_impl( linked_node< T > *n , linked_node< T > *parent , size_t level )
-{
-    n->parent = parent;
-
-    size_t elems = 0;
-
-    size_t subtree_height = 0;
-    for( size_t i=0 ; i<n->arity ; ++i )
+    struct dereference_node
     {
-        complete_linked_tree_structure_impl( n->children[i] , n , level + 1 );
-        elems += n->children[i]->num_elements;
-        subtree_height = std::max( subtree_height , n->children[i]->height );
-    }
-    n->num_elements = 1 + elems;
-    n->height = 1 + subtree_height;
-    n->level = level;
-}
+        template< typename > struct result;
+
+        template< typename F , typename T >
+        struct result< F ( T*& ) > { typedef T& type; };
+
+        template< typename F , typename T >
+        struct result< F ( T const*& ) > { typedef T const& type; };
+
+        template< typename T >
+        T&  operator()( T *t ) const { return *t; }
+    };
 
 } // namespace detail
 
 
 
+
+
+
+
+template< typename T , size_t MaxArity = 2 >
+class linked_node
+{
+public:
+
+    const static size_t max_arity = MaxArity;
+
+    typedef T value_type;
+    typedef value_type* pointer;
+    typedef value_type const* const_pointer;
+    typedef value_type& reference;
+    typedef value_type const& const_reference;
+
+    using node_type = linked_node< value_type , MaxArity >;
+    typedef node_type* node_pointer;
+    typedef node_type& node_reference;
+    typedef node_type const* const_node_pointer;
+    typedef node_type const& const_node_reference;
+
+    typedef std::array< node_pointer , max_arity > children_container;
+
+    typedef typename boost::transform_iterator<
+        detail::dereference_node ,
+        typename children_container::iterator > child_iterator;
+    typedef typename boost::transform_iterator<
+        detail::dereference_node ,
+        typename children_container::const_iterator > const_child_iterator;
+
+
+    // constructors
+    linked_node( void );
+    linked_node( value_type const& value );
+    linked_node( const_node_reference n );
+    linked_node( node_type&& ) = delete ;
+
+
+    // destructor
+    ~linked_node( void );
+
+
+    // assign operators
+    const_node_reference operator=( const_node_reference n );
+    const_node_reference operator=( node_type&& ) = delete;
+
+
+    // queries
+    size_t arity( void ) { return m_arity; }
+    size_t num_elements( void ) { return m_num_elements; }
+    size_t height( void ) { return m_height; }
+    size_t level( void ) { return m_level; }
+
+    reference value( void ) { return m_value; }
+    const_reference value( void ) const { return m_value; }
+
+    node_reference children( size_t i ) { return *m_children[i]; }
+    const_node_reference children( size_t i ) const { return *m_children[i]; }
+
+    node_pointer children_ptr( size_t i ) { return m_children[i]; }
+    const_node_pointer children_ptr( size_t i ) const { return m_children[i]; }
+
+    node_pointer parent_ptr( void ) { return m_parent; }
+    const_node_pointer parent_ptr( void ) const { return m_parent; }
+
+    bool empty( void ) { return ( m_arity == 0 ); }
+    size_t size( void ) { return m_arity; }
+
+
+    // modifiers
+    child_iterator emplace( value_type const & value );
+    child_iterator emplace_inconsistent( value_type const & value );
+    child_iterator insert( const_node_reference child );
+
+    void swap( node_reference n ) { swap( &n ); }
+    void swap( child_iterator i )  { swap( *i ); }
+    void swap( node_pointer n );
+
+    void make_consistent( void );
+
+
+    // iterators
+    child_iterator begin( void ) { return m_children.begin(); }
+    child_iterator end( void ) { return m_children.end(); }
+
+    const_child_iterator begin( void ) const { return m_children.begin(); }
+    const_child_iterator end( void ) const { return m_children.end(); }
+
+private:
+
+    void update_height_and_num_elements( size_t m_height , ptrdiff_t diff );
+    void update_level( size_t level );
+    void delete_children( void );
+
+    void make_consistent_impl( node_reference &node ); 
+
+    size_t m_arity;
+    children_container m_children;
+    node_pointer m_parent;
+    value_type m_value;
+    size_t m_num_elements;
+    size_t m_height;
+    size_t m_level;
+
+};
+
+
+
+// default constructor
+template< typename T , size_t MaxArity >
+linked_node< T , MaxArity >::linked_node( void )
+    : m_value()
+    , m_arity( 0 )
+    , m_parent( nullptr )
+    , m_num_elements( 0 )
+    , m_height( 1 )
+    , m_level( 0 )
+{
+    std::fill( m_children.begin() , m_children.end() , nullptr );
+}
+
+// emplace constructor
+template< typename T , size_t MaxArity >
+linked_node< T , MaxArity >::linked_node( value_type const& value )
+    : m_value( value )
+    , m_arity( 0 )
+    , m_parent( nullptr )
+    , m_num_elements( 1 )
+    , m_height( 1 )
+    , m_level( 0 )
+{
+    std::fill( m_children.begin() , m_children.end() , nullptr );
+}
+
+// copy constructor
+template< typename T , size_t MaxArity >
+linked_node< T , MaxArity >::linked_node( linked_node< T , MaxArity > const& n )
+    : m_value( n.m_value )
+    , m_arity( n.m_arity )
+    , m_children()
+    , m_parent( nullptr )
+    , m_num_elements( n.m_num_elements )
+    , m_height( n.m_height )
+    , m_level( 0 )
+{
+    std::fill( m_children.begin() , m_children.end() , nullptr );
+    for( size_t i=0 ; i<m_arity ; ++i )
+    {
+        m_children[i] = ( ( n.m_children[i] != 0 ) ? new linked_node< T , MaxArity >( *( n.m_children[i] ) ) : nullptr );
+        m_children[i]->update_level( 1 );
+        m_children[i]->m_parent = this;
+    }
+    
+}
+
+// destructor
+template< typename T , size_t MaxArity >
+linked_node< T , MaxArity >::~linked_node( void )
+{
+    delete_children();
+}
+
+// assignment operator
+template< typename T , size_t MaxArity >
+const linked_node< T , MaxArity >& linked_node< T , MaxArity >::operator=( const linked_node< T , MaxArity > &n )
+{   
+    delete_children();
+
+    m_value = n.m_value;
+    m_arity = n.m_arity;
+    for( size_t i=0 ; i<m_arity ; ++i )
+    {
+        m_children[i] = ( ( n.m_children[i] != 0 ) ? new linked_node< T , MaxArity >( *( n.m_children[i] ) ) : nullptr );
+        m_children[i]->update_level( m_level + 1 );
+        m_children[i]->m_parent = this;
+    }
+    ptrdiff_t num_elems_diff = ptrdiff_t( n.m_num_elements ) - ptrdiff_t( m_num_elements );
+    m_num_elements = n.m_num_elements;
+    m_height = n.m_height;
+
+    if( m_parent != nullptr )
+    {
+        m_parent->update_height_and_num_elements( m_height , num_elems_diff );
+    }
+    
+    return *this;
+}
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::delete_children( void )
+{
+    for( size_t i=0 ; i<m_arity ; ++i ) delete m_children[i];
+    std::fill( m_children.begin() , m_children.end() , nullptr );
+    m_arity = 0;
+}
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::update_height_and_num_elements( size_t height , ptrdiff_t diff )
+{
+    if( m_height < height ) m_height = height;
+    assert( diff < m_num_elements );
+    m_num_elements += diff;
+
+    if( m_parent != nullptr )
+        m_parent->update_height_and_num_elements( height + 1 , diff );
+}
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::update_level( size_t level )
+{
+    m_level = level;
+    for( size_t i=0 ; i<m_arity ; ++i )
+        if( m_children[i] != nullptr )
+            m_children[i]->update_level( level + 1 );
+}
+
+template< typename T , size_t MaxArity >
+typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >::emplace( value_type const & value )
+{
+    assert( m_arity < max_arity );
+
+    // create new node
+    node_pointer new_node = new node_type( value );
+    new_node->m_parent = this;
+
+    // update node informations of this node
+    new_node->m_level = m_level + 1;
+    if( m_height == 1 ) m_height = 2;
+    ++m_num_elements;
+
+    // update node informations of parent
+    if( m_parent != nullptr )
+        m_parent->update_height_and_num_elements( m_height + 1 , 1 );
+
+    // add node to all children
+    m_children[ m_arity ] = new_node;
+    ++m_arity;
+
+    return child_iterator( m_children.begin() + m_arity - 1 );
+}
+
+
+// num_of_elements and height is not set, use make_consistent to set these values
+template< typename T , size_t MaxArity >
+typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >::emplace_inconsistent( value_type const & value )
+{
+    assert( m_arity < max_arity );
+
+    // create new node
+    node_pointer new_node = new node_type( value );
+    new_node->m_parent = this;
+
+    // update node informations of this node
+    new_node->m_level = m_level + 1;
+
+    // add node to all children
+    m_children[ m_arity ] = new_node;
+    ++m_arity;
+
+    return child_iterator( m_children.begin() + m_arity - 1 );
+}
+
+template< typename T , size_t MaxArity >
+typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >::insert( const linked_node< T , MaxArity > &n )
+{
+    assert( m_arity < max_arity );
+
+    node_pointer new_node = new node_type( n );
+
+    // update node informations of this node
+    new_node->m_parent = this;
+    new_node->update_level( m_level + 1 );
+
+    // do we have to update the parent ?
+    m_height = new_node->m_height + 1;
+    m_num_elements = m_num_elements + new_node->m_num_elements ;
+
+    // update node informations of parent
+    if( m_parent != nullptr )
+        m_parent->update_height_and_num_elements( m_height + 1 , new_node->m_num_elements );
+
+    // add node to all children
+    m_children[ m_arity ] = new_node;
+    ++m_arity;
+
+    return child_iterator( m_children.begin() + m_arity - 1 );
+}
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity > swap( linked_node< T , MaxArity > *n )
+{
+    // swap all children and its parents
+    std::swap( m_children , n->m_children );
+    std::swap( m_arity , n->m_arity );
+    for( size_t i=0 ; i<m_arity ; ++i ) 
+        m_children[i]->m_parent = this;
+    for( size_t i=0 ; i<n->m_arity ; ++i )
+        n->m_children[i]->m_parent = n;
+
+    // swap parents
+
+    // propagate height and num_elements to top
+
+    // propagate levels to bottom
+}
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::make_consistent( void )
+{
+    make_consistent_impl( *this );
+}
+
+// calculates and returns height and num_of_elements of node
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::make_consistent_impl( node_reference node )
+{
+    node.m_num_elements = 1;
+    node.m_height = 1;
+    for( size_t i=0 ; i<node.arity() ; ++i )
+    {
+        node_reference sub_node = node.children( i );
+        make_consistent_impl( sub_node );
+        node.m_num_elements += sub_node.m_num_elements;
+        node.m_height = std::max( node.m_height , sub_node.m_height + 1 );
+    }
+}
+
+
+
+
 } // namespace gp
+
 
 #endif // LINKED_NODE_HPP_INCLUDED

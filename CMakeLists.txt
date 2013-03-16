@@ -1,6 +1,10 @@
 # Date: 2013-01-25
 # Author: Karsten Ahnert (karsten.ahnert@gmx.de)
 
+set ( CMAKE_C_COMPILER "/usr/bin/gcc-4.7" )
+set ( CMAKE_CXX_COMPILER "/usr/bin/g++-4.7" )
+
+
 project ( genetic_programming )
 cmake_minimum_required ( VERSION 2.8 )
 
@@ -11,10 +15,8 @@ set ( CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
   )
 
+set ( CMAKE_CXX_FLAGS "-std=c++11" )
 
-if ( CMAKE_COMPILER_IS_GNUCXX )
-  set ( CMAKE_CXX_FLAGS "-std=c++0x" )
-endif ()
 
 set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR} )
 
@@ -25,7 +27,7 @@ include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 include_directories ( ${AMBOSS_INCLUDE_DIR} )
 
-add_subdirectory ( app )
+# add_subdirectory ( app )
 
 
 if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest )
