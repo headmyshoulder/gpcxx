@@ -30,7 +30,7 @@ struct random_symbol_generator
 
     node_pointer operator()( void )
     {
-        return new node_type( random_symbol() , m_arity );
+        return new node_type( random_symbol() );
     }
 
     value_type random_symbol( void )

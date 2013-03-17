@@ -7,44 +7,39 @@
 #ifndef TEST_TREE_HPP_INCLUDED
 #define TEST_TREE_HPP_INCLUDED
 
-#include <gp/tree/linked_node_tree.hpp>
-#include <gp/tree/complete_linked_tree_structure.hpp>
+#include <gp/tree/linked_node.hpp>
 
 #include <string>
 
 struct test_tree
 {
-    typedef gp::linked_node_tree< std::string > tree_type;
-    typedef tree_type::node_type node_type;
+    typedef gp::linked_node< std::string > node_type;
+
 
     test_tree( void )
+        : data() , data2()
     {
-        data.set_data(
-            new node_type (
-                "plus" , 
-                new node_type( "sin" ,
-                               new node_type( "x" ) ) ,
-                new node_type( "minus" ,
-                               new node_type( "y" ) ,
-                               new node_type( "2" ) 
-                    )
-                ) );
+        {
+            data.value() = "plus";
+            auto i1 = data.emplace( "sin" );
+            i1->emplace( "x" );
+            auto i3 = data.emplace( "minus" );
+            i3->emplace( "y" );
+            i3->emplace( "2" );
+        }
 
-        data2.set_data(
-            new node_type (
-                "minus" ,
-                new node_type( "cos" , new node_type( "y" ) ) ,
-                new node_type( "x" )
-                ) ) ;
-
-        gp::complete_linked_tree_structure( data );
-        gp::complete_linked_tree_structure( data2 );
+        {
+            data2.value() = "minus";
+            auto i1 = data2.emplace( "cos" );
+            i1->emplace( "y" );
+            data2.emplace( "x" );
+        }
     }
 
     ~test_tree( void ) { }
 
-    tree_type data;
-    tree_type data2;
+    node_type data;
+    node_type data2;
 };
 
 

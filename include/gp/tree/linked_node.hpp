@@ -56,7 +56,7 @@ public:
     typedef value_type& reference;
     typedef value_type const& const_reference;
 
-    using node_type = linked_node< value_type , MaxArity >;
+    typedef linked_node< value_type , MaxArity > node_type;
     typedef node_type* node_pointer;
     typedef node_type& node_reference;
     typedef node_type const* const_node_pointer;
@@ -118,6 +118,12 @@ public:
     void swap( node_reference n ) { swap( &n ); }
     void swap( child_iterator i )  { swap( *i ); }
     void swap( node_pointer n );
+
+    // void swap_children( size_t i1 , size_t i2 );
+    // void swap_children( child_iterator i1 , child_iterator i2 );
+
+    // void erase( size_t i );
+    // void erase( child_iterator i );
 
     void make_consistent( void );
 
@@ -330,7 +336,7 @@ typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >
 }
 
 template< typename T , size_t MaxArity >
-void linked_node< T , MaxArity > swap( linked_node< T , MaxArity > *n )
+void linked_node< T , MaxArity >::swap( linked_node< T , MaxArity > *n )
 {
     // swap all children and its parents
     std::swap( m_children , n->m_children );
