@@ -1,8 +1,11 @@
 # Date: 2013-01-25
 # Author: Karsten Ahnert (karsten.ahnert@gmx.de)
 
-set ( CMAKE_C_COMPILER "/usr/bin/gcc-4.7" )
-set ( CMAKE_CXX_COMPILER "/usr/bin/g++-4.7" )
+# set ( CMAKE_C_COMPILER "/usr/bin/gcc-4.7" )
+# set ( CMAKE_CXX_COMPILER "/usr/bin/g++-4.7" )
+
+set ( CMAKE_C_COMPILER "/home/karsten/boost/testing/gcc-4.7.0/build/bin/gcc" )
+set ( CMAKE_CXX_COMPILER "//home/karsten/boost/testing/gcc-4.7.0/build/bin/g++" )
 
 
 project ( genetic_programming )

@@ -47,7 +47,8 @@ struct generate_random_linked_tree
 
         while( !gen_stack.empty() )
         {
-            if( gen_stack.top().first->arity() == gen_stack.top().second )
+            node_type *current = gen_stack.top().first;
+            if( current->arity() == gen_stack.top().second )
             {
                 gen_stack.pop();
                 height--;
@@ -56,33 +57,32 @@ struct generate_random_linked_tree
 
             ++height;
 
-            node_type *n;
+
+            node_type *n = nullptr;
+            size_t new_arity = 0;
             if( height < min_height )
             {
-                if( dice( rng ) == 0 ) n = unary_gen();
-                else n = binary_gen();
+                if( dice( rng ) == 0 ) { n = &( *current->emplace_inconsistent( unary_gen.random_symbol() ) ) ; new_arity = 1; }
+                else { n = &( *current->emplace_inconsistent( binary_gen.random_symbol() ) ) ; new_arity = 2; }
             }
             else if( height < max_height )
             {
                 int r = thrice( rng );
-                if( r == 0 ) n = terminal_gen();
-                else if( r == 1 ) n = unary_gen();
-                else n = binary_gen();
+                if( r == 0 ) { n = &( *current->emplace_inconsistent( terminal_gen.random_symbol() ) ); new_arity = 0; }
+                else if( r == 1 ) { n = &( *current->emplace_inconsistent( unary_gen.random_symbol() ) ); new_arity = 1; }
+                else { n = &( *current->emplace_inconsistent( binary_gen.random_symbol() ) ); new_arity = 2; }
             }
             else 
             {
-                n = terminal_gen();
+                n = &( *current->emplace_inconsistent( terminal_gen.random_symbol() ) ); new_arity = 0;
             }
 
-            gen_stack.top().first->children[ gen_stack.top().second ] = n;
-            gen_stack.top().second++;
-
-            if( n->arity > 0 ) gen_stack.push( make_pair( n , 0 ) );
+            if( new_arity > 0 ) gen_stack.push( make_pair( n , new_arity ) );
             else height--;
         }
 
 
-        complete_linked_tree_structure( t );
+        t.make_consistent();
     }
 
 
