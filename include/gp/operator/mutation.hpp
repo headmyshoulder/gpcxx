@@ -35,19 +35,19 @@ namespace detail {
     bool mutation_impl( Node *node , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
     {
         typedef typename Node::value_type value_type;
-        if( node->arity == 0 )
+        if( node->arity() == 0 )
         {
-            node->value = mutate_value( node->value , terminal_gen );
+            node->value() = mutate_value( node->value() , terminal_gen );
             return true;
         }
-        else if( node->arity == 1 )
+        else if( node->arity() == 1 )
         {
-            node->value = mutate_value( node->value , unary_gen );
+            node->value() = mutate_value( node->value() , unary_gen );
             return false;
         }
         else
         {
-            node->value = mutate_value( node->value , binary_gen );
+            node->value() = mutate_value( node->value() , binary_gen );
             return true;
         }
     }
@@ -63,9 +63,8 @@ struct mutation
     static bool mutation_impl( Tree &t , size_t i , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
     {
         typedef typename Tree::node_type node_type;
-        node_type *n = find_node_to_index( t.data() , i );
-        assert( n != 0 );
-        return detail::mutation_impl( n , terminal_gen , unary_gen , binary_gen );
+        node_type &n = t[i];
+        return detail::mutation_impl( &n , terminal_gen , unary_gen , binary_gen );
     }
 
     template< class Tree , class Rng , class TerminalGen , class UnaryGen , class BinaryGen >
@@ -73,9 +72,9 @@ struct mutation
     {
         typedef typename Tree::node_type node_type;
 
-        std::uniform_int_distribution< size_t > dist( 0 , t.data()->num_elements - 1 );
+        std::uniform_int_distribution< size_t > dist( 0 , t.num_elements() - 1 );
 
-        if( t.data()->height < 2 ) return;
+        if( t.height() < 2 ) return;
 
         size_t count = 0 ;
         bool ok = true;

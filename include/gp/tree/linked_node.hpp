@@ -89,10 +89,10 @@ public:
 
 
     // queries
-    size_t arity( void ) { return m_arity; }
-    size_t num_elements( void ) { return m_num_elements; }
-    size_t height( void ) { return m_height; }
-    size_t level( void ) { return m_level; }
+    size_t arity( void ) const { return m_arity; }
+    size_t num_elements( void ) const { return m_num_elements; }
+    size_t height( void ) const { return m_height; }
+    size_t level( void ) const { return m_level; }
 
     reference value( void ) { return m_value; }
     const_reference value( void ) const { return m_value; }

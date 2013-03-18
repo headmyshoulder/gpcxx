@@ -26,38 +26,28 @@ inline std::string indent( size_t level )
 
 
 
-// template< class T >
-// void pretty_print( const tree< T > &t , std::ostream &out = std::cout )
-// {
-//     const typename tree< T >::vector_type &data = t.data();
-//     if( !t.data().empty() )
-//         detail::pretty_print( data , out , size_t ( 0 ) , size_t( 0 ) );
-// }
-
-
-
 
 template< class Node >
-void print_simple_node( const Node *t , std::ostream &out )
+void print_simple_node( const Node &t , std::ostream &out )
 {
-    if( t->arity == 0 ) out << t->value;
-    else if( t->arity == 1 )
+    if( t.arity() == 0 ) out << t.value();
+    else if( t.arity() == 1 )
     {
-        out << t->value << "( ";
-        print_simple_node( t->children[0] , out );
+        out << t.value() << "( ";
+        print_simple_node( t.children( 0 ) , out );
         out << " )";
     }
-    else if( t->arity == 2 )
+    else if( t.arity() == 2 )
     {
-        if( t->children[0]->arity == 2 ) out << "( ";
-        print_simple_node( t->children[0] , out );
-        if( t->children[0]->arity == 2 ) out << " )";
+        if( t.children( 0 ).arity() == 2 ) out << "( ";
+        print_simple_node( t.children( 0 ) , out );
+        if( t.children( 0 ).arity() == 2 ) out << " )";
 
-        out << " " << t->value << " ";
+        out << " " << t.value() << " ";
 
-        if( t->children[1]->arity == 2 ) out << "( ";
-        print_simple_node( t->children[1] , out );
-        if( t->children[1]->arity == 2 ) out << " )";
+        if( t.children( 1 ).arity() == 2 ) out << "( ";
+        print_simple_node( t.children( 1 ) , out );
+        if( t.children( 1 ).arity() == 2 ) out << " )";
     }
 
 }
@@ -66,8 +56,7 @@ void print_simple_node( const Node *t , std::ostream &out )
 template< class Tree >
 void print_simple( const Tree& t , std::ostream &out )
 {
-    const auto *ptr = t.data();
-    print_simple_node( ptr , out );
+    print_simple_node( t , out );
 }
 
 
