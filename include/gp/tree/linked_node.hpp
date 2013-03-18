@@ -93,6 +93,9 @@ public:
     size_t num_elements( void ) const { return m_num_elements; }
     size_t height( void ) const { return m_height; }
     size_t level( void ) const { return m_level; }
+    bool empty( void ) const { return ( m_arity == 0 ); }
+    size_t size( void ) const { return m_arity; }
+
 
     reference value( void ) { return m_value; }
     const_reference value( void ) const { return m_value; }
@@ -105,10 +108,6 @@ public:
 
     node_pointer parent_ptr( void ) { return m_parent; }
     const_node_pointer parent_ptr( void ) const { return m_parent; }
-
-    bool empty( void ) { return ( m_arity == 0 ); }
-    size_t size( void ) { return m_arity; }
-
 
     node_reference at( size_t i );
     const_node_reference at( size_t i ) const;

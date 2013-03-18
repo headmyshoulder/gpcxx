@@ -4,7 +4,7 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gp/tree/find_node_to_index.hpp>
+#include <gp/tree/linked_node.hpp>
 #include "../common/test_tree.hpp"
 
 #include <gtest/gtest.h>

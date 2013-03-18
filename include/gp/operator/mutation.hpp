@@ -7,8 +7,6 @@
 #ifndef MUTATION_H_INCLUDED
 #define MUTATION_H_INCLUDED
 
-#include <gp/tree/find_node_to_index.hpp>
-
 #include <stdexcept>
 #include <random>
 #include <cassert>
