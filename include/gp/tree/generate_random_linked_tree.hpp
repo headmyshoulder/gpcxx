@@ -7,8 +7,6 @@
 #ifndef GENERATE_RANDOM_LINKED_TREE_H_INCLUDED
 #define GENERATE_RANDOM_LINKED_TREEE_H_INCLUDED
 
-#include <gp/tree/complete_linked_tree_structure.hpp>
-
 #include <random>
 #include <stack>
 #include <cassert>
@@ -27,7 +25,7 @@ struct generate_random_linked_tree
         size_t min_height , size_t max_height , const std::array< int , 3 > &gen_weights )
     {
         using namespace std;
-        typedef typename Tree::node_type node_type;
+        typedef Tree node_type;
 
         std::array< int , 2 > weights_dice = {{ gen_weights[1] , gen_weights[2] }};
         std::array< int , 3 > weights_thrice = gen_weights;
@@ -41,15 +39,15 @@ struct generate_random_linked_tree
         stack< pair< node_type* , size_t > > gen_stack; 
 
         // initialize
-        node_type *n = binary_gen();
-        t.set_data( n );
-        gen_stack.push( make_pair( n , 0 ) );
+        t.value() = binary_gen.random_symbol();
+            
+        gen_stack.push( make_pair( &t , 2 ) );
 
         size_t height = 1;
 
         while( !gen_stack.empty() )
         {
-            if( gen_stack.top().first->arity == gen_stack.top().second )
+            if( gen_stack.top().first->arity() == gen_stack.top().second )
             {
                 gen_stack.pop();
                 height--;
@@ -63,7 +61,6 @@ struct generate_random_linked_tree
             {
                 if( dice( rng ) == 0 ) n = unary_gen();
                 else n = binary_gen();
-                // n = binary_gen();
             }
             else if( height < max_height )
             {
@@ -71,8 +68,6 @@ struct generate_random_linked_tree
                 if( r == 0 ) n = terminal_gen();
                 else if( r == 1 ) n = unary_gen();
                 else n = binary_gen();
-                // if( dice( rng ) == 0 ) n = terminal_gen();
-                // else n = binary_gen();
             }
             else 
             {

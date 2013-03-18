@@ -11,6 +11,11 @@
 
 #include <string>
 
+
+
+#include <iostream>
+using namespace std;
+
 struct test_tree
 {
     typedef gp::linked_node< std::string > node_type;

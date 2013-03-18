@@ -110,6 +110,13 @@ public:
     size_t size( void ) { return m_arity; }
 
 
+    node_reference at( size_t i );
+    const_node_reference at( size_t i ) const;
+
+    node_reference operator[]( size_t i );
+    const_node_reference operator[]( size_t i ) const;
+
+
     // modifiers
     child_iterator emplace( value_type const & value );
     child_iterator emplace_inconsistent( value_type const & value );
@@ -161,7 +168,7 @@ linked_node< T , MaxArity >::linked_node( void )
     : m_value()
     , m_arity( 0 )
     , m_parent( nullptr )
-    , m_num_elements( 0 )
+    , m_num_elements( 1 )
     , m_height( 1 )
     , m_level( 0 )
 {
@@ -247,7 +254,6 @@ template< typename T , size_t MaxArity >
 void linked_node< T , MaxArity >::update_height_and_num_elements( size_t height , ptrdiff_t diff )
 {
     if( m_height < height ) m_height = height;
-    assert( diff < m_num_elements );
     m_num_elements += diff;
 
     if( m_parent != nullptr )
@@ -264,7 +270,7 @@ void linked_node< T , MaxArity >::update_level( size_t level )
 }
 
 template< typename T , size_t MaxArity >
-typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >::emplace( value_type const & value )
+auto linked_node< T , MaxArity >::emplace( value_type const & value ) -> child_iterator
 {
     assert( m_arity < max_arity );
 
@@ -291,7 +297,7 @@ typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >
 
 // num_of_elements and height is not set, use make_consistent to set these values
 template< typename T , size_t MaxArity >
-typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >::emplace_inconsistent( value_type const & value )
+auto linked_node< T , MaxArity >::emplace_inconsistent( value_type const & value ) -> child_iterator
 {
     assert( m_arity < max_arity );
 
@@ -310,7 +316,7 @@ typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >
 }
 
 template< typename T , size_t MaxArity >
-typename linked_node< T , MaxArity >::child_iterator linked_node< T , MaxArity >::insert( const linked_node< T , MaxArity > &n )
+auto linked_node< T , MaxArity >::insert( const linked_node< T , MaxArity > &n ) -> child_iterator
 {
     assert( m_arity < max_arity );
 
@@ -373,6 +379,44 @@ void linked_node< T , MaxArity >::make_consistent_impl( node_reference node )
         node.m_height = std::max( node.m_height , sub_node.m_height + 1 );
     }
 }
+
+template< typename T , size_t MaxArity >
+auto linked_node< T , MaxArity >::at( size_t index ) -> node_reference
+{
+    if( index >= m_num_elements ) throw std::out_of_range( "index larger then elements in node" );
+    return (*this)[index];
+}
+
+template< typename T , size_t MaxArity >
+auto linked_node< T , MaxArity >::at( size_t index ) const -> const_node_reference
+{
+    return const_cast< node_reference >( *this ).at( index );
+}
+
+template< typename T , size_t MaxArity >
+auto linked_node< T , MaxArity >::operator[]( size_t index ) -> node_reference
+{
+    assert( index < m_num_elements );
+    if( index == 0 ) return *this;
+    else 
+    {
+        size_t start = 1;
+        for( size_t j=0 ; j<m_arity ; ++j )
+        {
+            if( index < ( start + m_children[j]->m_num_elements ) )
+                return m_children[j]->at( index - start );
+            start += m_children[j]->m_num_elements;
+        }
+    }
+}
+
+template< typename T , size_t MaxArity >
+auto linked_node< T , MaxArity >::operator[]( size_t index ) const -> const_node_reference
+{
+    assert( index < m_num_elements );
+    return const_cast< node_reference >( *this )[index];
+}
+
 
 
 

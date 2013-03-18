@@ -12,18 +12,48 @@
 TEST( tree_tests , find_node_to_index1 )
 {
     test_tree tree;
-    // auto *n = gp::find_node_to_index( tree.data.data() , 0 );
-    // EXPECT_EQ( n->value , "plus" );
-    // n = gp::find_node_to_index( tree.data.data() , 1 );
-    // EXPECT_EQ( n->value , "sin" );
-    // n = gp::find_node_to_index( tree.data.data() , 2 );
-    // EXPECT_EQ( n->value , "x" );
-    // n = gp::find_node_to_index( tree.data.data() , 3 );
-    // EXPECT_EQ( n->value , "minus" );
-    // n = gp::find_node_to_index( tree.data.data() , 4 );
-    // EXPECT_EQ( n->value , "y" );
-    // n = gp::find_node_to_index( tree.data.data() , 5 );
-    // EXPECT_EQ( n->value , "2" );
 
+    auto &n1 = tree.data.at( 0 );
+    EXPECT_EQ( n1.value() , "plus" );
+    EXPECT_EQ( tree.data[0].value() , "plus" );
+    auto &n2 = tree.data.at( 1 );
+    EXPECT_EQ( n2.value() , "sin" );
+    EXPECT_EQ( tree.data[1].value() , "sin" );
+    auto &n3 = tree.data.at( 2 );
+    EXPECT_EQ( n3.value() , "x" );
+    EXPECT_EQ( tree.data[2].value() , "x" );
+    auto &n4 = tree.data.at( 3 );
+    EXPECT_EQ( n4.value() , "minus" );
+    EXPECT_EQ( tree.data[3].value() , "minus" );
+    auto &n5 = tree.data.at( 4 );
+    EXPECT_EQ( n5.value() , "y" );
+    EXPECT_EQ( tree.data[4].value() , "y" );
+    auto &n6 = tree.data.at( 5 );
+    EXPECT_EQ( n6.value() , "2" );
+    EXPECT_EQ( tree.data[5].value() , "2" );
+}
+
+TEST( tree_tests , find_node_to_index2 )
+{
+    const test_tree tree;
+
+    auto &n1 = tree.data.at( 0 );
+    EXPECT_EQ( n1.value() , "plus" );
+    EXPECT_EQ( tree.data[0].value() , "plus" );
+    auto &n2 = tree.data.at( 1 );
+    EXPECT_EQ( n2.value() , "sin" );
+    EXPECT_EQ( tree.data[1].value() , "sin" );
+    auto &n3 = tree.data.at( 2 );
+    EXPECT_EQ( n3.value() , "x" );
+    EXPECT_EQ( tree.data[2].value() , "x" );
+    auto &n4 = tree.data.at( 3 );
+    EXPECT_EQ( n4.value() , "minus" );
+    EXPECT_EQ( tree.data[3].value() , "minus" );
+    auto &n5 = tree.data.at( 4 );
+    EXPECT_EQ( n5.value() , "y" );
+    EXPECT_EQ( tree.data[4].value() , "y" );
+    auto &n6 = tree.data.at( 5 );
+    EXPECT_EQ( n6.value() , "2" );
+    EXPECT_EQ( tree.data[5].value() , "2" );
 }
 
