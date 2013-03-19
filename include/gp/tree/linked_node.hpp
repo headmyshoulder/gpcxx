@@ -9,11 +9,10 @@
 
 #include <array>
 #include <cstddef>
-#include <cassert>
 #include <iterator>
 
 #include <boost/iterator/transform_iterator.hpp>
-
+#include <boost/assert.hpp>
 
 
 
@@ -115,6 +114,9 @@ public:
     node_reference operator[]( size_t i );
     const_node_reference operator[]( size_t i ) const;
 
+    node_pointer root_ptr( void ) { return ( m_parent == nullptr ) ? this : m_parent->root_ptr() ; }
+    const_node_pointer root_ptr( void ) const { return ( m_parent == nullptr ) ? this : m_parent->root_ptr() ; }
+
 
     // modifiers
     child_iterator emplace( value_type const & value );
@@ -147,7 +149,14 @@ private:
     void update_level( size_t level );
     void delete_children( void );
 
-    void make_consistent_impl( node_reference &node ); 
+    void make_consistent_impl( node_reference &node );
+
+    static void swap_real( node_pointer n1 , node_pointer n2 );   // swaps the real nodes
+    static void swap_real_impl( node_pointer n1 , node_pointer n2 );   // swaps the real nodes
+    static void swap_one( node_pointer n1 , node_pointer n2 );    // reallocate one node
+    static void swap_two( node_pointer n1 , node_pointer n2 );    // reallocates both nodes
+
+
 
     size_t m_arity;
     children_container m_children;
@@ -262,6 +271,7 @@ void linked_node< T , MaxArity >::update_height_and_num_elements( size_t height 
 template< typename T , size_t MaxArity >
 void linked_node< T , MaxArity >::update_level( size_t level )
 {
+    if( m_level == level ) return;
     m_level = level;
     for( size_t i=0 ; i<m_arity ; ++i )
         if( m_children[i] != nullptr )
@@ -271,7 +281,7 @@ void linked_node< T , MaxArity >::update_level( size_t level )
 template< typename T , size_t MaxArity >
 auto linked_node< T , MaxArity >::emplace( value_type const & value ) -> child_iterator
 {
-    assert( m_arity < max_arity );
+    BOOST_ASSERT(( m_arity < max_arity ));
 
     // create new node
     node_pointer new_node = new node_type( value );
@@ -298,7 +308,7 @@ auto linked_node< T , MaxArity >::emplace( value_type const & value ) -> child_i
 template< typename T , size_t MaxArity >
 auto linked_node< T , MaxArity >::emplace_inconsistent( value_type const & value ) -> child_iterator
 {
-    assert( m_arity < max_arity );
+    BOOST_ASSERT(( m_arity < max_arity ));
 
     // create new node
     node_pointer new_node = new node_type( value );
@@ -317,7 +327,7 @@ auto linked_node< T , MaxArity >::emplace_inconsistent( value_type const & value
 template< typename T , size_t MaxArity >
 auto linked_node< T , MaxArity >::insert( const linked_node< T , MaxArity > &n ) -> child_iterator
 {
-    assert( m_arity < max_arity );
+    BOOST_ASSERT(( m_arity < max_arity ));
 
     node_pointer new_node = new node_type( n );
 
@@ -343,20 +353,114 @@ auto linked_node< T , MaxArity >::insert( const linked_node< T , MaxArity > &n )
 template< typename T , size_t MaxArity >
 void linked_node< T , MaxArity >::swap( linked_node< T , MaxArity > *n )
 {
-    // swap all children and its parents
-    std::swap( m_children , n->m_children );
-    std::swap( m_arity , n->m_arity );
-    for( size_t i=0 ; i<m_arity ; ++i ) 
-        m_children[i]->m_parent = this;
-    for( size_t i=0 ; i<n->m_arity ; ++i )
-        n->m_children[i]->m_parent = n;
-
-    // swap parents
-
-    // propagate height and num_elements to top
-
-    // propagate levels to bottom
+    if( ( m_parent == nullptr ) && ( n->m_parent == nullptr ) )
+    {
+        swap_real( this , n );
+    }
+    else if( m_parent == 0 )  //  ( n->m_parent != nullptr ) 
+    {
+        swap_one( this , n );
+    }
+    else if( n->m_parent == 0 ) // ( m_parent != nullptr )
+    {
+        swap_one( n , this );
+    }
+    else // ( m_parent != nullptr ) && ( n->m_parent != nullptr )
+    {
+        swap_two( this , n );
+    }
 }
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::swap_real( linked_node< T , MaxArity > *n1 , linked_node< T , MaxArity > *n2 )
+{
+    BOOST_ASSERT(( n1->m_parent == nullptr ));
+    BOOST_ASSERT(( n2->m_parent == nullptr ));
+    swap_real_impl( n1 , n2 );
+}
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::swap_real_impl( linked_node< T , MaxArity > *n1 , linked_node< T , MaxArity > *n2 )
+{
+    if( n1 == n2 ) return;
+    std::swap( n1->m_arity , n2->m_arity );
+    std::swap( n1->m_children , n2->m_children );
+    std::swap( n1->m_value , n2->m_value );
+    std::swap( n1->m_num_elements , n2->m_num_elements );
+    std::swap( n1->m_height , n2->m_height );
+    std::swap( n1->m_level , n2->m_level );
+
+    for( size_t i=0 ; i<n1->m_arity ; ++i ) n1->children(i).m_parent = n1;
+    for( size_t i=0 ; i<n2->m_arity ; ++i ) n2->children(i).m_parent = n2;
+}
+
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::swap_one( linked_node< T , MaxArity > *n1 , linked_node< T , MaxArity > *n2 )
+{
+    BOOST_ASSERT(( n1->root_ptr() != n2->root_ptr() ));
+    BOOST_ASSERT(( n1->m_parent == nullptr ));
+    BOOST_ASSERT(( n2->m_parent != nullptr ));
+
+    size_t n2_level = n2->m_level;
+    swap_real_impl( n1 , n2 );
+
+    n1->update_level( 0 );
+    n2->update_level( n2_level );
+    n2->m_parent->update_height_and_num_elements( n2->m_height + 1 , ptrdiff_t( n2->m_num_elements ) - ptrdiff_t( n1->m_num_elements ) );
+}
+
+template< typename T , size_t MaxArity >
+void linked_node< T , MaxArity >::swap_two( linked_node< T , MaxArity > *n1 , linked_node< T , MaxArity > *n2 )
+{
+    BOOST_ASSERT(( n1->m_parent != nullptr ));
+    BOOST_ASSERT(( n2->m_parent != nullptr ));
+
+    if( n1 == n2 ) return;
+
+    if( n1->m_parent == n2->m_parent )
+    {
+        size_t i1 = 0;
+        size_t i2 = 0;
+        for( size_t i=0 ; i<n1->m_parent->m_arity ; ++i )
+        {
+            if( n1->m_parent->m_children[i] == n1 ) i1 = i;
+            if( n1->m_parent->m_children[i] == n2 ) i2 = i;
+        }
+        BOOST_ASSERT(( ( i1 != 0 ) || ( i2 != 0 ) ));
+        n1->m_parent->m_children[i1] = n2;
+        n1->m_parent->m_children[i2] = n1;
+    }
+    else
+    {
+        for( size_t i=0 ; i<n1->m_parent->m_arity ; ++i )
+        {
+            if( n1->m_parent->m_children[i] == n1 )
+            { 
+                n1->m_parent->m_children[i] = n2;
+                break;
+            }
+        }
+
+        for( size_t i=0 ; i<n2->m_parent->m_arity ; ++i )
+        {
+            if( n2->m_parent->m_children[i] == n2 )
+            {
+                n2->m_parent->m_children[i] = n1;
+                break;
+            }
+        }
+        std::swap( n1->m_parent , n2->m_parent );
+
+        size_t n1_level = n1->m_level;
+        n1->update_level( n2->m_level );
+        n2->update_level( n1_level );
+        n1->m_parent->update_height_and_num_elements( n1->m_height , ptrdiff_t( n1->m_num_elements ) - ptrdiff_t( n2->m_num_elements ) );
+        n2->m_parent->update_height_and_num_elements( n2->m_height , ptrdiff_t( n2->m_num_elements ) - ptrdiff_t( n1->m_num_elements ) );
+    }
+
+}
+
 
 template< typename T , size_t MaxArity >
 void linked_node< T , MaxArity >::make_consistent( void )
@@ -395,7 +499,7 @@ auto linked_node< T , MaxArity >::at( size_t index ) const -> const_node_referen
 template< typename T , size_t MaxArity >
 auto linked_node< T , MaxArity >::operator[]( size_t index ) -> node_reference
 {
-    assert( index < m_num_elements );
+    BOOST_ASSERT(( index < m_num_elements ));
     if( index == 0 ) return *this;
     else 
     {
@@ -412,7 +516,7 @@ auto linked_node< T , MaxArity >::operator[]( size_t index ) -> node_reference
 template< typename T , size_t MaxArity >
 auto linked_node< T , MaxArity >::operator[]( size_t index ) const -> const_node_reference
 {
-    assert( index < m_num_elements );
+    BOOST_ASSERT(( index < m_num_elements ));
     return const_cast< node_reference >( *this )[index];
 }
 

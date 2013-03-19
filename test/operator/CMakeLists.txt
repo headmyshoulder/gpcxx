@@ -7,7 +7,7 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 add_executable ( operator_tests
   mutation.cpp
-  crossover.cpp
+#  crossover.cpp
 #  fitness_prob.cpp
   )
 

@@ -4,9 +4,13 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
+#include "../common/test_tree.hpp"
+
 #include <gp/tree/linked_node.hpp>
 
 #include <gtest/gtest.h>
+
+
 
 #define TEST_NODE( n , VALUE , ARITY , NUM_ELEMENTS , HEIGHT , LEVEL , PARENT ) \
     EXPECT_EQ( (n).value() , VALUE );                                   \
@@ -17,6 +21,7 @@
     EXPECT_EQ( (n).empty() , ( ARITY == 0 ) );     \
     EXPECT_EQ( (n).size() , ARITY );   \
     EXPECT_EQ( (n).parent_ptr() , PARENT )
+
 
 using namespace std;
 
@@ -235,4 +240,134 @@ TEST( tree_tests , linked_emplace_inconsistent )
     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
+}
+
+
+
+TEST( tree_tests , swap_real_1 )
+{
+    test_tree tree;
+    tree.data.swap( tree.data2 );
+
+    TEST_NODE( tree.data                         , "minus" , 2 , 4 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
+    TEST_NODE( tree.data.children(1)             , "x"     , 0 , 1 , 1 , 1 , &tree.data );
+
+    TEST_NODE( tree.data2                         , "plus"  , 2 , 6 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data2.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
+    TEST_NODE( tree.data2.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
+    TEST_NODE( tree.data2.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
+}
+
+TEST( tree_tests , swap_real_2 )
+{
+    test_tree tree;
+    tree.data.swap( tree.data );
+
+    TEST_NODE( tree.data2                         , "minus" , 2 , 4 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data2.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
+    TEST_NODE( tree.data2.children(1)             , "x"     , 0 , 1 , 1 , 1 , &tree.data2 );
+
+    TEST_NODE( tree.data                         , "plus"  , 2 , 6 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
+    TEST_NODE( tree.data.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
+    TEST_NODE( tree.data.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
+}
+
+
+
+TEST( tree_tests , swap_one_1 )
+{
+    test_tree tree;
+    tree.data.swap( tree.data2.at(1) );
+
+    TEST_NODE( tree.data                           , "cos" , 1 , 2 , 2 , 0 , nullptr );
+    TEST_NODE( tree.data.children(0)               , "y"   , 0 , 1 , 1 , 1 , &tree.data );
+
+    TEST_NODE( tree.data2                          , "minus" , 2 , 8 , 4 , 0 , nullptr );
+    TEST_NODE( tree.data2.children(0)              , "plus"  , 2 , 6 , 3 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(0).children(0)  , "sin"   , 1 , 2 , 2 , 2 , tree.data2.children_ptr(0) );
+    TEST_NODE( tree.data2.children(0).children(1)  , "minus" , 2 , 3 , 2 , 2 , tree.data2.children_ptr(0) );
+    TEST_NODE( tree.data2.children(1)              , "x"     , 0 , 1 , 1 , 1 , &tree.data2 );
+
+    TEST_NODE( tree.data2.children(0).children(0).children(0)  , "x" , 0 , 1 , 1 , 3 , tree.data2.children(0).children_ptr(0) );
+    TEST_NODE( tree.data2.children(0).children(1).children(0)  , "y" , 0 , 1 , 1 , 3 , tree.data2.children(0).children_ptr(1) );
+    TEST_NODE( tree.data2.children(0).children(1).children(1)  , "2" , 0 , 1 , 1 , 3 , tree.data2.children(0).children_ptr(1) );
+}
+
+TEST( tree_tests , swap_one_2 )
+{
+    test_tree tree;
+    tree.data2.swap( tree.data.at(3) );
+
+    TEST_NODE( tree.data                         , "plus"  , 2 , 7 , 4 , 0 , nullptr );
+    TEST_NODE( tree.data.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
+    TEST_NODE( tree.data.children(1)             , "minus" , 2 , 4 , 3 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(1).children(0) , "cos"   , 1 , 2 , 2 , 2 , tree.data.children_ptr(1) );
+    TEST_NODE( tree.data.children(1).children(1) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
+
+    TEST_NODE( tree.data.children(1).children(0).children(0) , "y" , 0 , 1 , 1 , 3 , tree.data.children(1).children_ptr(0) );
+
+    TEST_NODE( tree.data2                         , "minus"  , 2 , 3 , 2 , 0 , nullptr );
+    TEST_NODE( tree.data2.children(0)             , "y"      , 0 , 1 , 1 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(1)             , "2"      , 0 , 1 , 1 , 1 , &tree.data2 );
+}
+
+
+TEST( tree_tests , swap_two_1 )
+{
+    test_tree tree;
+    tree.data.at(1).swap( tree.data2.at(3) );
+
+    TEST_NODE( tree.data                         , "plus"  , 2 , 5 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data.children(0)             , "x"     , 0 , 1 , 1 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
+    TEST_NODE( tree.data.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
+
+    TEST_NODE( tree.data2                         , "minus" , 2 , 5 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data2.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(1)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
+    TEST_NODE( tree.data2.children(1).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
+}
+
+TEST( tree_tests , swap_two_2 )
+{
+    test_tree tree;
+    tree.data.at(3).swap( tree.data2.at(3) );
+
+    TEST_NODE( tree.data                         , "plus"  , 2 , 4 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(1)             , "x"     , 0 , 1 , 1 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
+
+    TEST_NODE( tree.data2                         , "minus" , 2 , 6 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data2.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data2 );
+    TEST_NODE( tree.data2.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
+    TEST_NODE( tree.data2.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
+    TEST_NODE( tree.data2.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
+}
+
+
+
+TEST( tree_tests , swap_two_3 )
+{
+    test_tree tree;
+    tree.data.at(1).swap( tree.data.at(3) );
+
+    TEST_NODE( tree.data                         , "plus"  , 2 , 6 , 3 , 0 , nullptr );
+    TEST_NODE( tree.data.children(0)             , "minus" , 2 , 3 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(1)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
+    TEST_NODE( tree.data.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
+    TEST_NODE( tree.data.children(0).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
+    TEST_NODE( tree.data.children(1).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
 }

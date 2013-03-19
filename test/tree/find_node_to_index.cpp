@@ -56,4 +56,3 @@ TEST( tree_tests , find_node_to_index2 )
     EXPECT_EQ( n6.value() , "2" );
     EXPECT_EQ( tree.data[5].value() , "2" );
 }
-
