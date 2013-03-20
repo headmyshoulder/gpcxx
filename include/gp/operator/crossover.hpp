@@ -16,61 +16,6 @@
 
 namespace gp {
 
-namespace detail {
-
-    template< class Tree >
-    void crossover_impl( Tree &v1 , Tree &v2 , typename Tree::node_type *n1 , typename Tree::node_type *n2 )
-    {
-        typedef typename Tree::node_type node_type;
-        node_type *p1 = n1->parent_ptr();
-        node_type *p2 = n2->parent_ptr();
-
-        if( ( p1 == 0 ) && ( p2 == 0 ) )
-        {
-            v1.swap( v2 );
-        }
-        else if( ( p1 == 0 ) )
-        {
-            node_type *tmp = v1;
-            v1.set_raw_data( n2 );
-            for( size_t i=0 ; i<p2->arity ; ++i )
-            {
-                if( p2->children[i] == n2 )
-                {
-                    p2->children[i] = tmp;
-                    break;
-                }
-            }
-            n1->parent = p2;
-            n2->parent = 0;
-        }
-        else if( p2 == 0 )
-        {
-            node_type *tmp = v2.data();
-            v2.set_raw_data( n1 );
-            for( size_t i=0 ; i<p1->arity ; ++i )
-            {
-                if( p1->children[i] == n1 )
-                {
-                    p1->children[i] = tmp;
-                    break;
-                }
-            }
-            n2->parent = p1;
-            n1->parent = 0;
-        }
-        else
-        {
-            for( size_t i=0 ; i<p1->arity ; ++i )
-                if( p1->children[i] == n1 ) { p1->children[i] = n2; n2->parent = p1; break; }
-            for( size_t i=0 ; i<p2->arity ; ++i )
-                if( p2->children[i] == n2 ) { p2->children[i] = n1; n1->parent = p2; break; }
-        }
-    }
-
-} // namespace detail;
-
-
 
 struct crossover
 {
@@ -78,10 +23,7 @@ struct crossover
     static void crossover_impl( Tree &v1 , Tree &v2 , size_t i1 , size_t i2 )
     {
         typedef typename Tree::node_type node_type;
-        node_type *n1 = &v1[ i1 ];
-        node_type *n2 = &v2[ i2 ];
-        if( ( n1 == 0 ) || ( n2 == 0 ) ) return;
-        detail::crossover_impl( v1 , v2 , n1 , n2 );
+        v1[ i1 ].swap( v2[i2] );
     }
 
     template< class Tree , class Rng >
@@ -113,7 +55,7 @@ struct crossover
 
         if( iter == 1000 ) throw std::runtime_error( "No nodes suitable for cross over found!" );
 
-        detail::crossover_impl( t1 , t2 , n1 , n2 );
+        n1->swap( n2 );
     }
 };
 

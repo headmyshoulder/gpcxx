@@ -7,7 +7,7 @@
 #ifndef EVAL_HPP_INCLUDED
 #define EVAL_HPP_INCLUDED
 
-#include <gp/tree/linked_node_tree.hpp>
+#include <gp/tree/linked_node.hpp>
 #include <gp/tree/random_symbol_generator.hpp>
 
 #include <boost/variant.hpp>
@@ -18,7 +18,7 @@
 
 typedef boost::variant< char , double > node_value_type;
 typedef gp::linked_node< node_value_type > node_type;
-typedef gp::linked_node_tree< node_value_type > tree_type;
+
 
 
 template< class Rng >
@@ -101,14 +101,14 @@ struct tree_eval
             case 'x' : return m_c.x;
             case 'y' : return m_c.y;
             case 'z' : return m_c.z;
-            case 'e' : return exp( eval( m_n->children[0] , m_c ) );
-            case 's' : return sin( eval( m_n->children[0] , m_c ) );
-            case 'c' : return cos( eval( m_n->children[0] , m_c ) );
-//        case 'n' : return -( eval( m_n->children[0] , c ) );
-            case '+' : return eval( m_n->children[0] , m_c ) + eval( m_n->children[1] , m_c );
-            case '-' : return eval( m_n->children[0] , m_c ) - eval( m_n->children[1] , m_c );
-            case '*' : return eval( m_n->children[0] , m_c ) * eval( m_n->children[1] , m_c );
-            case '/' : return eval( m_n->children[0] , m_c ) / eval( m_n->children[1] , m_c );
+            case 'e' : return exp( eval( m_n->children_ptr( 0 ) , m_c ) );
+            case 's' : return sin( eval( m_n->children_ptr( 0 ) , m_c ) );
+            case 'c' : return cos( eval( m_n->children_ptr( 0 ) , m_c ) );
+//        case 'n' : return -( eval( m_n->children_ptr( 0 ) , c ) );
+            case '+' : return eval( m_n->children_ptr( 0 ) , m_c ) + eval( m_n->children_ptr( 1 ) , m_c );
+            case '-' : return eval( m_n->children_ptr( 0 ) , m_c ) - eval( m_n->children_ptr( 1 ) , m_c );
+            case '*' : return eval( m_n->children_ptr( 0 ) , m_c ) * eval( m_n->children_ptr( 1 ) , m_c );
+            case '/' : return eval( m_n->children_ptr( 0 ) , m_c ) / eval( m_n->children_ptr( 1 ) , m_c );
             default:
                 throw std::runtime_error( "Unknown char" );
             }
@@ -122,7 +122,7 @@ struct tree_eval
 
     static double eval( const node_type *n , context_type &c )
     {
-        return boost::apply_visitor( variant_visitor( n , c ) , n->value );
+        return boost::apply_visitor( variant_visitor( n , c ) , n->value() );
     }
 };
 
@@ -137,7 +137,7 @@ struct fitness_function
         vector_t x1 , x2 , x3 , y;
     };
 
-    double operator()( tree_type &t , const context_type &c ) const
+    double operator()( node_type &t , const context_type &c ) const
     {
         double chi2 = 0.0;
         for( size_t i=0 ; i<c.x1.size() ; ++i )
@@ -146,7 +146,7 @@ struct fitness_function
             cc.x = c.x1[i];
             cc.y = c.x2[i];
             cc.z = c.x3[i];
-            double yy = tree_eval::eval( t.data() , cc );
+            double yy = tree_eval::eval( &t , cc );
             chi2 += ( yy - c.y[i] ) * ( yy - c.y[i] );
         }
         chi2 /= double( c.x1.size() );

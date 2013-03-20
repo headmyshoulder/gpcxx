@@ -95,7 +95,8 @@ private:
         // random
         for( size_t i=new_pop.size() ; i<n ; ++i )
         {
-            new_pop.push_back( individual_type() );
+            individual_type e;
+            new_pop.push_back( e );
             m_random_individual_function( new_pop.back() );
         }
 

@@ -7,7 +7,7 @@
 #include "eval.hpp"
 
 #include <gp/ga/ga1.hpp>
-#include <gp/tree/linked_node_tree.hpp>
+#include <gp/tree/linked_node.hpp>
 #include <gp/tree/generate_random_linked_tree.hpp>
 #include <gp/operator/mutation.hpp>
 #include <gp/operator/crossover.hpp>
@@ -20,6 +20,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <chrono>
 
 #define tab "\t"
 
@@ -90,14 +91,26 @@ void init_logging( void )
     logger.data().push_back( std::shared_ptr< ILogger >( ll ) );
 }
 
+typedef std::chrono::high_resolution_clock clock_type;
+
+
+template< class T >
+double get_seconds( T t )
+{
+    return double( std::chrono::duration_cast< std::chrono::milliseconds >( t ).count() ) / 1000.0;
+}
+
 int main( int argc , char *argv[] )
 {
     typedef std::mt19937 rng_type ;
     typedef fitness_function::context_type context_type;
-    typedef gp::genetic_evolver1< tree_type , fitness_function::context_type , std::mt19937 > evolver_type;
+    typedef gp::genetic_evolver1< node_type , fitness_function::context_type , std::mt19937 > evolver_type;
+
 
     init_logging();
 
+    clock_type::time_point t1 , t2;
+    
 
     rng_type rng;
 
@@ -114,9 +127,9 @@ int main( int argc , char *argv[] )
     double elite_rate = double( 2 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 4 , max_tree_height = 8;
+    size_t min_tree_height = 2 , max_tree_height = 6;
 
-    std::function< void( tree_type& ) > tree_generator;
+    std::function< void( node_type& ) > tree_generator;
     std::array< int , 3 > weights = {{ 2 * int( gen.gen0.num_symbols() ) ,
                                        int( gen.gen1.num_symbols() ) , 
                                        int( gen.gen2.num_symbols() ) }};
@@ -124,7 +137,7 @@ int main( int argc , char *argv[] )
 
     evolver_type evolver( elite_rate , mutation_rate , crossover_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
-    std::vector< tree_type > population( population_size );
+    std::vector< node_type > population( population_size );
 
 
     evolver.fitness_function() = fitness_function();
@@ -135,17 +148,25 @@ int main( int argc , char *argv[] )
 
     // initialize population with random trees and evaluate fitness
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting initialization!";
+    t1 = clock_type::now();
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
         fitness[i] = fitness_function()( population[i] , c );
     }
-    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing initialization!";
+    std::vector< size_t > idx;
+    auto iter = gp::sort_indices( fitness , idx );
+    for( size_t j=0 ; j<10 ; ++j )
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
+            << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
+    t2 = clock_type::now();
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finished initialization in " << get_seconds( t2 - t1 ) << " s!";
     
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting main loop!";
-    for( size_t i=0 ; i<100 ; ++i )
+    for( size_t i=0 ; i<3 ; ++i )
     {
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
+        t1 = clock_type::now();
 
         evolver.next_generation( population , fitness , c );
 
@@ -154,7 +175,9 @@ int main( int argc , char *argv[] )
         for( size_t j=0 ; j<10 ; ++j )
             GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
                 << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << "!";
+
+        t2 = clock_type::now();
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << " in " << get_seconds( t2 - t1 ) << " s!";
     }
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing main loop!";
 

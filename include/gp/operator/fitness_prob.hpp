@@ -11,6 +11,7 @@
 #include <random>
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 
 namespace gp {
 
@@ -46,12 +47,12 @@ private:
 
         for( size_t i=0 ; i<m_indices.size() ; ++i ) m_indices[i] = i;
         std::vector< size_t >::iterator iter = std::partition( m_indices.begin() , m_indices.end() ,
-                                                               [&m_fitness]( size_t i ) { return isfinite( m_fitness[i] ); } );
+                                                               [this]( size_t i ) { return std::isfinite( m_fitness[i] ); } );
         auto n = std::distance( m_indices.begin() , iter );
         assert( n >= 0 );
 
         std::sort( m_indices.begin() , iter ,
-                   [&m_fitness]( size_t i , size_t j ) { return m_fitness[i] < m_fitness[j]; } );
+                   [this]( size_t i , size_t j ) { return m_fitness[i] < m_fitness[j]; } );
 
         std::vector< double > weights;
         for( size_t i=0 ; i<n ; ++i )

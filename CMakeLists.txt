@@ -30,7 +30,7 @@ include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 include_directories ( ${AMBOSS_INCLUDE_DIR} )
 
-# add_subdirectory ( app )
+add_subdirectory ( app )
 
 
 if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest )
