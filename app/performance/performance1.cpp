@@ -66,17 +66,17 @@ int main( int argc , char *argv[] )
     rng_type rng;
 
     context_type c;
-    generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
+    generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1000 , rng ,
                         []( double x1 , double x2 , double x3 ) {
                             return x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
 
     generators< rng_type > gen( rng );
 
-    size_t population_size = 4000;
+    size_t population_size = 5;
     double elite_rate = double( 2 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 4 , max_tree_height = 8;
+    size_t min_tree_height = 3 , max_tree_height = 6;
 
     std::function< void( node_type& ) > tree_generator;
     std::array< int , 3 > weights = {{ 2 * int( gen.gen0.num_symbols() ) ,
@@ -84,15 +84,15 @@ int main( int argc , char *argv[] )
                                        int( gen.gen2.num_symbols() ) }};
     tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , weights );
 
-    // evolver_type evolver( elite_rate , mutation_rate , crossover_rate , rng );
+    evolver_type evolver( elite_rate , mutation_rate , crossover_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
     std::vector< node_type > population( population_size );
 
 
-    // evolver.fitness_function() = fitness_function();
-    // evolver.mutation_function() = gp::make_mutation_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 );
-    // evolver.crossover_function() = gp::make_crossover_binder( rng , max_tree_height );
-    // evolver.random_individual_function() = tree_generator;
+    evolver.fitness_function() = fitness_function();
+    evolver.mutation_function() = gp::make_mutation_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 );
+    evolver.crossover_function() = gp::make_crossover_binder( rng , max_tree_height );
+    evolver.random_individual_function() = tree_generator;
 
 
     // initialize population with random trees and evaluate fitness
@@ -104,12 +104,12 @@ int main( int argc , char *argv[] )
     }
 
 
-    // for( size_t i=0 ; i<3 ; ++i )
-    // {
-    //     std::vector< size_t > idx;
-    //     auto iter = gp::sort_indices( fitness , idx );
-    //     cout << fitness[ idx[0] ] << " : " << gp::simple( population[ idx[0] ] ) << "\n";
-    // }
+    for( size_t i=0 ; i<3 ; ++i )
+    {
+        evolver.next_generation( population , fitness , c );
+        for( size_t j=0 ; j<population.size() ; ++j )
+            cout << fitness[j] << " " << gp::simple( population[j] ) << "\n";
+    }
 
     return 0;
 }
