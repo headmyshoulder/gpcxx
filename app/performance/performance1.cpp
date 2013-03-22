@@ -73,9 +73,9 @@ int main( int argc , char *argv[] )
     generators< rng_type > gen( rng );
 
     size_t population_size = 5;
-    double elite_rate = double( 2 ) / double( population_size );
-    double mutation_rate = 0.2;
-    double crossover_rate = 0.6;
+    double elite_rate = double( 1 ) / double( population_size );
+    double mutation_rate = double( 2 ) / double( population_size );
+    double crossover_rate = double( 2 ) / double( population_size );
     size_t min_tree_height = 3 , max_tree_height = 6;
 
     std::function< void( node_type& ) > tree_generator;
@@ -100,15 +100,18 @@ int main( int argc , char *argv[] )
     {
         tree_generator( population[i] );
         fitness[i] = fitness_function()( population[i] , c );
-//        cout << fitness[i] << " " << gp::simple( population[i] ) << "\n";
+        cout << fitness[i] << " " << gp::simple( population[i] ) << "\n";
     }
+    cout << "\n";
 
 
-    for( size_t i=0 ; i<3 ; ++i )
+    for( size_t i=0 ; i<2 ; ++i )
     {
         evolver.next_generation( population , fitness , c );
         for( size_t j=0 ; j<population.size() ; ++j )
             cout << fitness[j] << " " << gp::simple( population[j] ) << "\n";
+
+        cout << "\n";
     }
 
     return 0;

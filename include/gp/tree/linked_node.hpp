@@ -14,6 +14,15 @@
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/assert.hpp>
 
+#ifdef GP_DEBUG
+
+#include <iostream>
+#define tab "\t"
+using namespace std;
+
+#endif 
+
+
 
 
 namespace gp {
@@ -72,50 +81,52 @@ public:
 
 
     // constructors
-    linked_node( void );
-    linked_node( value_type const& value );
-    linked_node( const_node_reference n );
-    linked_node( node_type&& ) = delete ;
+    inline linked_node( void );
+    inline linked_node( value_type const& value );
+    inline linked_node( const_node_reference n );
+    inline linked_node( node_type&& n );
+    // linked_node( node_type&& ) = delete ;
 
 
     // destructor
-    ~linked_node( void );
+    inline ~linked_node( void );
 
 
     // assign operators
-    const_node_reference operator=( const_node_reference n );
-    const_node_reference operator=( node_type&& ) = delete;
+    inline const_node_reference operator=( const_node_reference n );
+    inline const_node_reference operator=( node_type&& );
+    // const_node_reference operator=( node_type&& ) = delete;
 
 
     // queries
-    size_t arity( void ) const { return m_arity; }
-    size_t num_elements( void ) const { return m_num_elements; }
-    size_t height( void ) const { return m_height; }
-    size_t level( void ) const { return m_level; }
-    bool empty( void ) const { return ( m_arity == 0 ); }
-    size_t size( void ) const { return m_arity; }
+    inline size_t arity( void ) const { return m_arity; }
+    inline size_t num_elements( void ) const { return m_num_elements; }
+    inline size_t height( void ) const { return m_height; }
+    inline size_t level( void ) const { return m_level; }
+    inline bool empty( void ) const { return ( m_arity == 0 ); }
+    inline size_t size( void ) const { return m_arity; }
 
 
-    reference value( void ) { return m_value; }
-    const_reference value( void ) const { return m_value; }
+    inline reference value( void ) { return m_value; }
+    inline const_reference value( void ) const { return m_value; }
 
-    node_reference children( size_t i ) { return *m_children[i]; }
-    const_node_reference children( size_t i ) const { return *m_children[i]; }
+    inline node_reference children( size_t i ) { return *m_children[i]; }
+    inline const_node_reference children( size_t i ) const { return *m_children[i]; }
 
-    node_pointer children_ptr( size_t i ) { return m_children[i]; }
-    const_node_pointer children_ptr( size_t i ) const { return m_children[i]; }
+    inline node_pointer children_ptr( size_t i ) { return m_children[i]; }
+    inline const_node_pointer children_ptr( size_t i ) const { return m_children[i]; }
 
-    node_pointer parent_ptr( void ) { return m_parent; }
-    const_node_pointer parent_ptr( void ) const { return m_parent; }
+    inline node_pointer parent_ptr( void ) { return m_parent; }
+    inline const_node_pointer parent_ptr( void ) const { return m_parent; }
 
-    node_reference at( size_t i );
-    const_node_reference at( size_t i ) const;
+    inline node_reference at( size_t i );
+    inline const_node_reference at( size_t i ) const;
 
-    node_reference operator[]( size_t i );
-    const_node_reference operator[]( size_t i ) const;
+    inline node_reference operator[]( size_t i );
+    inline const_node_reference operator[]( size_t i ) const;
 
-    node_pointer root_ptr( void ) { return ( m_parent == nullptr ) ? this : m_parent->root_ptr() ; }
-    const_node_pointer root_ptr( void ) const { return ( m_parent == nullptr ) ? this : m_parent->root_ptr() ; }
+    inline node_pointer root_ptr( void ) { return ( m_parent == nullptr ) ? this : m_parent->root_ptr() ; }
+    inline const_node_pointer root_ptr( void ) const { return ( m_parent == nullptr ) ? this : m_parent->root_ptr() ; }
 
 
     // modifiers
@@ -145,11 +156,11 @@ public:
 
 private:
 
-    void update_height_and_num_elements( size_t m_height , ptrdiff_t diff );
-    void update_level( size_t level );
-    void delete_children( void );
+    inline void update_height_and_num_elements( size_t m_height , ptrdiff_t diff );
+    inline void update_level( size_t level );
+    inline void delete_children( void );
 
-    void make_consistent_impl( node_reference &node );
+    inline void make_consistent_impl( node_reference &node );
 
     static void swap_real( node_pointer n1 , node_pointer n2 );   // swaps the real nodes
     static void swap_real_impl( node_pointer n1 , node_pointer n2 );   // swaps the real nodes
@@ -180,6 +191,9 @@ linked_node< T , MaxArity >::linked_node( void )
     , m_height( 1 )
     , m_level( 0 )
 {
+    #ifdef GP_DEBUG
+    cout << "linked_node( void ) " << this << endl;
+    #endif
     std::fill( m_children.begin() , m_children.end() , nullptr );
 }
 
@@ -193,12 +207,15 @@ linked_node< T , MaxArity >::linked_node( value_type const& value )
     , m_height( 1 )
     , m_level( 0 )
 {
+    #ifdef GP_DEBUG
+    cout << "linked_node( value_type const& value ) " << this << endl;
+    #endif
     std::fill( m_children.begin() , m_children.end() , nullptr );
 }
 
 // copy constructor
 template< typename T , size_t MaxArity >
-linked_node< T , MaxArity >::linked_node( linked_node< T , MaxArity > const& n )
+linked_node< T , MaxArity >::linked_node( const_node_reference n )
     : m_value( n.m_value )
     , m_arity( n.m_arity )
     , m_children()
@@ -207,34 +224,60 @@ linked_node< T , MaxArity >::linked_node( linked_node< T , MaxArity > const& n )
     , m_height( n.m_height )
     , m_level( 0 )
 {
+    #ifdef GP_DEBUG
+    cout << "linked_node( const_node_reference n ) " << this << " " << m_value << endl;
+    #endif 
     std::fill( m_children.begin() , m_children.end() , nullptr );
     for( size_t i=0 ; i<m_arity ; ++i )
     {
-        m_children[i] = ( ( n.m_children[i] != 0 ) ? new linked_node< T , MaxArity >( *( n.m_children[i] ) ) : nullptr );
+        m_children[i] = ( ( n.m_children[i] != 0 ) ? new node_type( *( n.m_children[i] ) ) : nullptr );
         m_children[i]->update_level( 1 );
         m_children[i]->m_parent = this;
     }
     
 }
 
+// copy constructor
+template< typename T , size_t MaxArity >
+linked_node< T , MaxArity >::linked_node( node_type&& n )
+    : m_value( std::move( n.m_value ) )
+  , m_arity( n.m_arity )
+  , m_children( std::move( n.m_children ) )
+  , m_parent( n.m_parent )
+  , m_num_elements( n.m_num_elements )
+  , m_height( n.m_height )
+  , m_level( 0 )
+{
+    #ifdef GP_DEBUG
+    cout << "linked_node( node_type&& n )  " << this << endl;
+    #endif 
+    for( size_t i=0 ; i<n.m_arity ; ++i ) n.m_children[i] = nullptr;
+}
+
 // destructor
 template< typename T , size_t MaxArity >
 linked_node< T , MaxArity >::~linked_node( void )
 {
+    #ifdef GP_DEBUG
+    cout << "~linked_node( void ) " << this << endl;
+    #endif
     delete_children();
 }
 
 // assignment operator
 template< typename T , size_t MaxArity >
-const linked_node< T , MaxArity >& linked_node< T , MaxArity >::operator=( const linked_node< T , MaxArity > &n )
+const linked_node< T , MaxArity >& linked_node< T , MaxArity >::operator=( const_node_reference n )
 {   
+    #ifdef GP_DEBUG
+    cout << "operator=( const_node_reference n ) " << this << endl;
+    #endif
     delete_children();
 
     m_value = n.m_value;
     m_arity = n.m_arity;
     for( size_t i=0 ; i<m_arity ; ++i )
     {
-        m_children[i] = ( ( n.m_children[i] != 0 ) ? new linked_node< T , MaxArity >( *( n.m_children[i] ) ) : nullptr );
+        m_children[i] = ( ( n.m_children[i] != 0 ) ? new node_type( *( n.m_children[i] ) ) : nullptr );
         m_children[i]->update_level( m_level + 1 );
         m_children[i]->m_parent = this;
     }

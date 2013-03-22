@@ -13,9 +13,6 @@
 
 
 
-#include <iostream>
-using namespace std;
-
 namespace gp {
 
 
@@ -72,14 +69,18 @@ private:
         // elite
         size_t n_elite = size_t( double( n ) * m_elite_rate );
         for( size_t i=0 ; i<n_elite ; ++i )
-            new_pop.push_back( pop[ prob.indices()[i] ] );
+        {
+            size_t index = prob.indices()[i] ;
+            new_pop.push_back( pop[ index ] );
+        }
 
 
         // mutate
         size_t n_mutate = size_t( double( n ) * m_mutation_rate );
         for( size_t i=0 ; i<n_mutate ; ++i )
         {
-            new_pop.push_back(  pop[ prob.random_index() ] );
+            size_t index = prob.random_index();
+            new_pop.push_back( pop[index] );
             m_mutation_function( new_pop.back() );
         }
 
@@ -87,8 +88,10 @@ private:
         size_t n_crossover = size_t( double( n ) * m_crossover_rate );
         for( size_t i=0 ; i<n_crossover ; i+=2 )
         {
-            new_pop.push_back( pop[ prob.random_index() ] );
-            new_pop.push_back( pop[ prob.random_index() ] );
+            size_t i1 = prob.random_index();
+            size_t i2 = prob.random_index();
+            new_pop.push_back( pop[ i1 ] );
+            new_pop.push_back( pop[ i2 ] );
             m_crossover_function( new_pop[ new_pop.size()-1 ] , new_pop[ new_pop.size()-2 ] );
         }
 
@@ -100,7 +103,7 @@ private:
             m_random_individual_function( new_pop.back() );
         }
 
-        pop = new_pop;
+        pop = std::move( new_pop );
     }
 
 

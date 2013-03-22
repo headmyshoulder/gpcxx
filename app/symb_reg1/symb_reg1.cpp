@@ -109,6 +109,11 @@ int main( int argc , char *argv[] )
 
     init_logging();
 
+
+    cout.precision( 14 );
+    cerr.precision( 14 );
+
+
     clock_type::time_point t1 , t2;
     
 
@@ -161,6 +166,9 @@ int main( int argc , char *argv[] )
             << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
     t2 = clock_type::now();
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finished initialization in " << get_seconds( t2 - t1 ) << " s!";
+    
+
+
     
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting main loop!";
     for( size_t i=0 ; i<3 ; ++i )

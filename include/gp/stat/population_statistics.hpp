@@ -25,7 +25,7 @@ void report_population( const Pop& p , const Fitness &f , std::ostream &out )
     {
         out << i << " " << f[ idx[i] ] << " : ";
         print_simple( p[ idx[i] ] , out );
-        out << endl;
+        out << "\n";
     }
 }
 
