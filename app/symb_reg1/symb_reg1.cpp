@@ -14,6 +14,11 @@
 #include <gp/stat/population_statistics.hpp>
 #include <gp/util/log.hpp>
 
+#include <boost/circular_buffer.hpp>
+#include <boost/numeric/odeint/stepper/runge_kutta4.hpp>
+#include <boost/numeric/odeint/integrate/integrate_const.hpp>
+#include <boost/array.hpp>
+
 #include <boost/make_shared.hpp>
 
 #include <fstream>
@@ -41,6 +46,62 @@ void generate_test_data( vector_t &y , vector_t &x1 , vector_t &x2 , vector_t &x
     }
 }
 
+void generate_lorenz( fitness_function::context_type &c )
+{
+    using namespace boost::numeric::odeint;
+
+    typedef boost::array< double , 3 > state_type;
+    runge_kutta4< state_type > rk4;
+    auto lorenz = []( const state_type &x , state_type &dxdt , double t ) {
+        const double sigma = 10.0;
+        const double R = 28.0;
+        const double b = 8.0 / 3.0;
+        dxdt[0] = sigma * ( x[1] - x[0] );
+        dxdt[1] = R * x[0] - x[1] - x[0] * x[2];
+        dxdt[2] = -b * x[2] + x[0] * x[1];
+    };
+
+    const double dt = 0.01;
+    const size_t emb_dim = 3;
+    const size_t emb_tau = 9;
+    const size_t N = 10000;
+
+    state_type x = { 10.0 , 10.0 , 10.0 };
+
+    // transients
+    integrate_const( rk4 , lorenz , x , 0.0 , 100.0 , dt );
+    
+    state_type dxdt;
+    lorenz( x , dxdt , 0.0 );
+
+    // initially full buffer
+    boost::circular_buffer< std::pair< double , double > > buf( ( emb_dim - 1 ) * emb_tau +  1 );
+    for( size_t i=0 ; i<buf.size() + 1 ; ++i )
+    {
+        rk4.do_step( lorenz , x , dxdt , 0.0 , dt );
+        lorenz( x , dxdt , 0.0 );
+        buf.push_back( std::make_pair( x[0] , dxdt[0] ) );
+    }
+
+    c.x1.resize( N );
+    c.x2.resize( N );
+    c.x3.resize( N );
+    c.y.resize( N );
+
+    for( unsigned int i=0 ; i<N ; i++ )
+    {
+        c.x1[i] = buf[ 0 * emb_dim ].first;
+        c.x2[i] = buf[ 1 * emb_dim ].first;
+        c.x3[i] = buf[ 2 * emb_dim ].first;
+        c.y[i] = buf.front().second;
+
+        rk4.do_step( lorenz , x , dxdt , 0.0 , dt );
+        lorenz( x , dxdt , 0.0 );
+        buf.push_back( std::make_pair( x[0] , dxdt[0] ) );
+    }
+}
+
+
 std::pair< double , double > normalize( vector_t &x )
 {
     double mean = 0.0 , sq_mean = 0.0;
@@ -59,17 +120,18 @@ std::pair< double , double > normalize( vector_t &x )
     return make_pair( mean , stdev );
 }
 
-
-void normalize( vector_t &x1 , vector_t &x2 , vector_t &x3 )
+void normalize( vector_t &y , vector_t &x1 , vector_t &x2 , vector_t &x3 )
 {
     auto p1 = normalize( x1 );
     auto p2 = normalize( x2 );
     auto p3 = normalize( x3 );
-    // cout << p1.first << " " << p1.second << endl;
-    // cout << p2.first << " " << p2.second << endl;
-    // cout << p3.first << " " << p3.second << endl;
-}
+    auto p4 = normalize( y );
+    cout << p4.first << " " << p4.second << endl;
+    cout << p1.first << " " << p1.second << endl;
+    cout << p2.first << " " << p2.second << endl;
+    cout << p3.first << " " << p3.second << endl;
 
+}
 
 
 namespace pl = std::placeholders;
@@ -100,6 +162,19 @@ double get_seconds( T t )
     return double( std::chrono::duration_cast< std::chrono::milliseconds >( t ).count() ) / 1000.0;
 }
 
+// overall number of node, average depth, averade number of node/tree
+template< typename NodeContainer >
+std::tuple< double , double , double > tree_statistics( const NodeContainer &nodes )
+{
+    size_t num = 0 , av_depth = 0;
+    for( const auto &node : nodes )
+    {
+        num += node.num_elements();
+        av_depth += node.height();
+    }
+    return std::make_tuple( double( num ) , double( av_depth ) / double( nodes.size() ) , double( num ) / double( nodes.size() ) );
+}
+
 int main( int argc , char *argv[] )
 {
     typedef std::mt19937 rng_type ;
@@ -122,17 +197,18 @@ int main( int argc , char *argv[] )
     context_type c;
     // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
     //                     []( double x1 , double x2 , double x3 ) { return x1 + x2 - x3; } );
-    generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
-                        []( double x1 , double x2 , double x3 ) { return x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
-//    normalize( x1 , x2 , x3 );
+    // generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 10000 , rng ,
+    //                     []( double x1 , double x2 , double x3 ) { return x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+    generate_lorenz( c );
+    normalize( c.y , c.x1 , c.x2 , c.x3 );
 
     generators< rng_type > gen( rng );
 
-    size_t population_size = 5000;
+    size_t population_size = 10000;
     double elite_rate = double( 2 ) / double( population_size );
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
-    size_t min_tree_height = 2 , max_tree_height = 6;
+    size_t min_tree_height = 2 , max_tree_height = 17;
 
     std::function< void( node_type& ) > tree_generator;
     std::array< int , 3 > weights = {{ 2 * int( gen.gen0.num_symbols() ) ,
@@ -166,12 +242,15 @@ int main( int argc , char *argv[] )
             << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
     t2 = clock_type::now();
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finished initialization in " << get_seconds( t2 - t1 ) << " s!";
+    auto t = tree_statistics( population );
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Number of nodes = " << std::get< 0 >( t ) <<
+        ", Average depth = " << std::get< 1 >( t ) << ", Average nodes = " << std::get< 2 >( t );
     
 
 
     
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting main loop!";
-    for( size_t i=0 ; i<3 ; ++i )
+    for( size_t i=0 ; i<100 ; ++i )
     {
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
         t1 = clock_type::now();
@@ -186,6 +265,9 @@ int main( int argc , char *argv[] )
 
         t2 = clock_type::now();
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << " in " << get_seconds( t2 - t1 ) << " s!";
+        auto t = tree_statistics( population );
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Number of nodes = " << std::get< 0 >( t ) <<
+            ", Average depth = " << std::get< 1 >( t ) << ", Average nodes = " << std::get< 2 >( t );
     }
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing main loop!";
 
