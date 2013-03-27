@@ -23,6 +23,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <chrono>
 
 #define tab "\t"
 
@@ -145,6 +146,15 @@ void init_logging( void )
 }
 
 
+typedef std::chrono::high_resolution_clock clock_type;
+
+
+template< class T >
+double get_seconds( T t )
+{
+    return double( std::chrono::duration_cast< std::chrono::milliseconds >( t ).count() ) / 1000.0;
+}
+
 
 namespace pl = std::placeholders;
 
@@ -196,16 +206,19 @@ int main( int argc , char *argv[] )
 
     // initialize population with random trees and evaluate fitness
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Initialization!";
+    t1 = clock_type::now();
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
         fitness[i] = fitness_function()( population[i] , c );
     }
-    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Initialization!";
+    t2 = clock_type::now();
+    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finished initialization in " << get_seconds( t2 - t1 ) << " s!";
     
     for( size_t i=0 ; i<1000 ; ++i )
     {
         GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
+        t1 = clock_type::now();
 
         evolver.next_generation( population , fitness , c );
 
@@ -214,7 +227,9 @@ int main( int argc , char *argv[] )
         for( size_t j=0 ; j<10 ; ++j )
             GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
                 << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << "!";
+
+        t2 = clock_type::now();
+        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << " in " << get_seconds( t2 - t1 ) << " s!";
     }
 
     return 0;
