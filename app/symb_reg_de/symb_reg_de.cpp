@@ -206,13 +206,13 @@ int main( int argc , char *argv[] )
 
     // initialize population with random trees and evaluate fitness
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Initialization!";
-    t1 = clock_type::now();
+    clock_type::time_point t1 = clock_type::now();
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
         fitness[i] = fitness_function()( population[i] , c );
     }
-    t2 = clock_type::now();
+    clock_type::time_point t2 = clock_type::now();
     GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finished initialization in " << get_seconds( t2 - t1 ) << " s!";
     
     for( size_t i=0 ; i<1000 ; ++i )
