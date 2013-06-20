@@ -21,11 +21,9 @@ set ( CMAKE_MODULE_PATH
 set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR} )
 
 find_package ( Boost REQUIRED COMPONENTS thread system )
-find_package ( Amboss REQUIRED )
 
 include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
-include_directories ( ${AMBOSS_INCLUDE_DIR} )
 
 add_subdirectory ( app )
 

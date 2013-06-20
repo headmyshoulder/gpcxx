@@ -12,7 +12,6 @@
 #include <gp/operator/mutation.hpp>
 #include <gp/operator/one_point_crossover_strategy.hpp>
 #include <gp/stat/population_statistics.hpp>
-#include <gp/util/log.hpp>
 
 #include <boost/circular_buffer.hpp>
 #include <boost/numeric/odeint/stepper/runge_kutta4.hpp>
@@ -137,21 +136,6 @@ void normalize( vector_t &y , vector_t &x1 , vector_t &x2 , vector_t &x3 )
 namespace pl = std::placeholders;
 std::vector< boost::shared_ptr< std::ostream > > streams;
 
-void init_logging( void )
-{
-    using namespace Amboss::Log;
-    LoggerCollection &logger = GlobalLogger::getInstance();
-    logger.removeAllLoggers();
-    
-    auto filter = []( const LogEntry &e ) { return ( e.logLevel >= NOISE ); };
-    std::shared_ptr< OStreamLogger > l( std::make_shared< OStreamLogger >( std::cerr , gp::DefaultFormatter() , filter ) );
-    logger.addLogger( std::shared_ptr< ILogger >( l ) );
-
-    boost::shared_ptr< std::ostream > s = boost::make_shared< std::ofstream >( "log.dat" );
-    streams.push_back( s );
-    std::shared_ptr< OStreamLogger > ll = std::make_shared< OStreamLogger >( *s , gp::DefaultFormatter() , filter );
-    logger.addLogger( std::shared_ptr< ILogger >( ll ) );
-}
 
 typedef std::chrono::high_resolution_clock clock_type;
 
@@ -180,9 +164,6 @@ int main( int argc , char *argv[] )
     typedef std::mt19937 rng_type ;
     typedef fitness_function::context_type context_type;
     typedef gp::genetic_evolver1< node_type , fitness_function::context_type , std::mt19937 > evolver_type;
-
-
-    init_logging();
 
 
     cout.precision( 14 );
@@ -228,7 +209,7 @@ int main( int argc , char *argv[] )
 
 
     // initialize population with random trees and evaluate fitness
-    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting initialization!";
+    cout << "Starting initialization!";
     t1 = clock_type::now();
     for( size_t i=0 ; i<population.size() ; ++i )
     {
@@ -238,21 +219,20 @@ int main( int argc , char *argv[] )
     std::vector< size_t > idx;
     auto iter = gp::sort_indices( fitness , idx );
     for( size_t j=0 ; j<10 ; ++j )
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
-            << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
+        cout << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
     t2 = clock_type::now();
-    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finished initialization in " << get_seconds( t2 - t1 ) << " s!";
+    cout << "Finished initialization in " << get_seconds( t2 - t1 ) << " s!";
     auto t = tree_statistics( population );
-    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Number of nodes = " << std::get< 0 >( t ) <<
+    cout << "Number of nodes = " << std::get< 0 >( t ) <<
         ", Average depth = " << std::get< 1 >( t ) << ", Average nodes = " << std::get< 2 >( t );
     
 
 
     
-    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting main loop!";
+    cout << "Starting main loop!";
     for( size_t i=0 ; i<100 ; ++i )
     {
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Starting Iteration " << i << "!";
+        cout << "Starting Iteration " << i << "!";
         t1 = clock_type::now();
 
         evolver.next_generation( population , fitness , c );
@@ -260,16 +240,15 @@ int main( int argc , char *argv[] )
         std::vector< size_t > idx;
         auto iter = gp::sort_indices( fitness , idx );
         for( size_t j=0 ; j<10 ; ++j )
-            GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN )
-                << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
+            cout << "Individual " << j << " : " << fitness[ idx[j] ] << " : " << gp::simple( population[ idx[j] ] );
 
         t2 = clock_type::now();
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing Iteration " << i << " in " << get_seconds( t2 - t1 ) << " s!";
+        cout << "Finishing Iteration " << i << " in " << get_seconds( t2 - t1 ) << " s!";
         auto t = tree_statistics( population );
-        GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Number of nodes = " << std::get< 0 >( t ) <<
+        cout << "Number of nodes = " << std::get< 0 >( t ) <<
             ", Average depth = " << std::get< 1 >( t ) << ", Average nodes = " << std::get< 2 >( t );
     }
-    GP_LOG_LEVEL_MODULE( gp::LogLevel::PROGRESS , gp::MAIN ) << "Finishing main loop!";
+    cout << "Finishing main loop!";
 
     return 0;
 }

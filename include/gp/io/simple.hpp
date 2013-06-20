@@ -11,20 +11,6 @@
 
 namespace gp {
 
-namespace detail {
-
-inline std::string indent( size_t level )
-{
-    std::string ret = "";
-    for( size_t i=0 ; i<level ; ++i ) ret += "  ";
-    return ret;    
-}
-
-
-
-} // namespace detail
-
-
 
 
 template< class Node >
