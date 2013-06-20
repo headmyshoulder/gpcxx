@@ -10,7 +10,7 @@
 #include <gp/tree/linked_node.hpp>
 #include <gp/tree/generate_random_linked_tree.hpp>
 #include <gp/operator/mutation.hpp>
-#include <gp/operator/crossover.hpp>
+#include <gp/operator/one_point_crossover_strategy.hpp>
 #include <gp/stat/population_statistics.hpp>
 #include <gp/util/log.hpp>
 
@@ -141,16 +141,16 @@ void init_logging( void )
 {
     using namespace Amboss::Log;
     LoggerCollection &logger = GlobalLogger::getInstance();
-    logger.data().clear();
+    logger.removeAllLoggers();
     
     auto filter = []( const LogEntry &e ) { return ( e.logLevel >= NOISE ); };
     std::shared_ptr< OStreamLogger > l( std::make_shared< OStreamLogger >( std::cerr , gp::DefaultFormatter() , filter ) );
-    logger.data().push_back( std::shared_ptr< ILogger >( l ) );
+    logger.addLogger( std::shared_ptr< ILogger >( l ) );
 
     boost::shared_ptr< std::ostream > s = boost::make_shared< std::ofstream >( "log.dat" );
     streams.push_back( s );
     std::shared_ptr< OStreamLogger > ll = std::make_shared< OStreamLogger >( *s , gp::DefaultFormatter() , filter );
-    logger.data().push_back( std::shared_ptr< ILogger >( ll ) );
+    logger.addLogger( std::shared_ptr< ILogger >( ll ) );
 }
 
 typedef std::chrono::high_resolution_clock clock_type;

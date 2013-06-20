@@ -10,7 +10,7 @@
 #include <gp/tree/linked_node.hpp>
 #include <gp/tree/generate_random_linked_tree.hpp>
 #include <gp/operator/mutation.hpp>
-#include <gp/operator/crossover.hpp>
+#include <gp/operator/one_point_crossover_strategy.hpp>
 #include <gp/stat/population_statistics.hpp>
 
 #include <boost/make_shared.hpp>

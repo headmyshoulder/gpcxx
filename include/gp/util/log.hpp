@@ -84,11 +84,11 @@ private:
         using namespace Amboss::Log;
 
         std::shared_ptr< LoggerCollection > logger = std::make_shared< LoggerCollection >();
-        logger->data().clear();
+        logger->removeAllLoggers();
 
         auto filter = []( const LogEntry &e ) { return ( e.logLevel >= NOISE ); };
 
-        logger->data().push_back( std::make_shared< OStreamLogger >( std::cout , gp::DefaultFormatter() , filter ) );
+        logger->addLogger( std::make_shared< OStreamLogger >( std::cout , gp::DefaultFormatter() , filter ) );
 
         // boost::shared_ptr< std::ostream > s = boost::make_shared< std::ofstream >( "log.dat" );
         // streams.push_back( s );
