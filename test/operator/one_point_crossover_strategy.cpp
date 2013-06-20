@@ -16,6 +16,6 @@ TEST( operator_tests , one_point_crossover_strategy_instanciation )
 {
     test_tree tree;
     test_generator gen;
-    gp::crossover()( tree.data , tree.data2 , gen.rng , 10 );
-
+    auto c = gp::make_one_point_crossover_strategy( gen.rng , 10 );
+    c( tree.data , tree.data2 );
 }

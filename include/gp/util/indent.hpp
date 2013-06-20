@@ -16,7 +16,7 @@
 
 namespace gp {
 
-inline std::string indent( size_t count , std::string const& indent_string )
+inline std::string indent( size_t count , std::string const& indent_string = "  " )
 {
     std::string ret = "";
     for( size_t i=0 ; i<count ; ++i )

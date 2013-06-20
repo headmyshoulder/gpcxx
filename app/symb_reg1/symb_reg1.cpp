@@ -11,7 +11,8 @@
 #include <gp/tree/generate_random_linked_tree.hpp>
 #include <gp/operator/mutation.hpp>
 #include <gp/operator/one_point_crossover_strategy.hpp>
-#include <gp/stat/population_statistics.hpp>
+#include <gp/util/sort_indices.hpp>
+#include <gp/io/simple.hpp>
 
 #include <boost/circular_buffer.hpp>
 #include <boost/numeric/odeint/stepper/runge_kutta4.hpp>
@@ -204,7 +205,7 @@ int main( int argc , char *argv[] )
 
     evolver.fitness_function() = fitness_function();
     evolver.mutation_function() = gp::make_mutation_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 );
-    evolver.crossover_function() = gp::make_crossover_binder( rng , max_tree_height );
+    evolver.crossover_function() = gp::make_one_point_crossover_strategy( rng , max_tree_height );
     evolver.random_individual_function() = tree_generator;
 
 
