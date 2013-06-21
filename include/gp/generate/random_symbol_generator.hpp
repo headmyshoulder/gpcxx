@@ -4,8 +4,8 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef RANDOM_SYMBOL_GENERATOR_HPP_INCLUDED
-#define RANDOM_SYMBOL_GENERATOR_HPP_INCLUDED
+#ifndef GP_GENERATE_RANDOM_SYMBOL_GENERATOR_HPP_INCLUDED
+#define GP_GENERATE_RANDOM_SYMBOL_GENERATOR_HPP_INCLUDED
 
 #include <vector>
 #include <cassert>
@@ -57,4 +57,4 @@ private:
 
 } // namespace gp
 
-#endif // RANDOM_SYMBOL_GENERATOR_HPP_INCLUDED
+#endif // GP_GENERATE_RANDOM_SYMBOL_GENERATOR_HPP_INCLUDED

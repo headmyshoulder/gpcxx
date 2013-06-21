@@ -4,7 +4,7 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gp/tree/random_symbol_generator.hpp>
+#include <gp/generate/random_symbol_generator.hpp>
 #include <gp/tree/linked_node.hpp>
 #include "../common/test_generator.hpp"
 

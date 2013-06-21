@@ -8,7 +8,7 @@
 
 #include <gp/ga/ga2.hpp>
 #include <gp/tree/linked_node.hpp>
-#include <gp/tree/generate_random_linked_tree.hpp>
+#include <gp/generate/ramp.hpp>
 #include <gp/operator/mutation.hpp>
 #include <gp/operator/one_point_crossover_strategy.hpp>
 #include <gp/operator/crossover.hpp>
@@ -80,7 +80,7 @@ int main( int argc , char *argv[] )
     std::array< int , 3 > weights = {{ int( gen.gen0.num_symbols() ) ,
                                        int( gen.gen1.num_symbols() ) , 
                                        int( gen.gen2.num_symbols() ) }};
-    std::function< void( node_type& ) > tree_generator = make_tree_generator_binder( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , weights );
+    std::function< void( node_type& ) > tree_generator = gp::make_ramp( rng , gen.gen0 , gen.gen1 , gen.gen2 , min_tree_height , max_tree_height , 0.5 , weights );
 
     evolver_type evolver( elite_rate , mutation_rate , crossover_rate , reproduction_rate , rng );
     fitness_type fitness( population_size , 0.0 );

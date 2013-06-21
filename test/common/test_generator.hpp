@@ -7,7 +7,7 @@
 #ifndef TEST_GENERATOR_HPP_INCLUDED
 #define TEST_GENERATOR_HPP_INCLUDED
 
-#include <gp/tree/random_symbol_generator.hpp>
+#include <gp/generate/random_symbol_generator.hpp>
 
 #include <random>
 #include <vector>

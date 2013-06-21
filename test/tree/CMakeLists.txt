@@ -7,9 +7,7 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 add_executable ( tree_tests
   linked_node.cpp
-  random_symbol_generator.cpp
   find_node_to_index.cpp 
-  generate_random_linked_tree.cpp
   )
 
 target_link_libraries ( tree_tests gtest gtest_main )

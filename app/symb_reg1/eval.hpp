@@ -8,7 +8,7 @@
 #define EVAL_HPP_INCLUDED
 
 #include <gp/tree/linked_node.hpp>
-#include <gp/tree/random_symbol_generator.hpp>
+#include <gp/generate/random_symbol_generator.hpp>
 
 #include <boost/variant.hpp>
 
