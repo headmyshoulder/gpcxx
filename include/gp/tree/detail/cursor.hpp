@@ -31,6 +31,15 @@ struct node_value_getter : public boost::mpl::eval_if<
 };
 
 template< typename Node >
+struct node_base_getter : public boost::mpl::eval_if<
+    std::is_const< Node > ,
+    std::add_const< typename Node::node_base_type > ,
+    boost::mpl::identity< typename Node::node_base_type >
+    >
+{
+};
+
+template< typename Node >
 class node_cursor : public boost::iterator_facade<
     node_cursor< Node > ,                              // Derived-Iterator
     typename node_value_getter< Node >::type ,         // Value
@@ -41,11 +50,16 @@ class node_cursor : public boost::iterator_facade<
 {
     
     friend class boost::iterator_core_access;
+    template<typename U> friend class node_cursor;
     
     typedef Node node_type;
     typedef node_type* node_pointer;
+    typedef typename std::remove_const< Node >::type real_node_type;    
     
-    typedef typename std::remove_const< Node >::type real_node_type;
+    typedef typename node_base_getter< Node >::type node_base;
+    typedef node_base* node_base_pointer;
+    
+
     
     typedef boost::iterator_facade<
         node_cursor< Node > ,                              // Derived-Iterator
@@ -54,6 +68,11 @@ class node_cursor : public boost::iterator_facade<
         typename node_value_getter< Node >::type& ,        // Reference
         ptrdiff_t
     > base_type;
+    
+    template< typename OtherNode >
+    struct other_node_enabler : public std::enable_if< std::is_convertible< typename OtherNode::value_type* , typename base_type::value_type* >::value >
+    {
+    };
     
 public:
     
@@ -67,9 +86,12 @@ public:
 
     // typedef ascending_random_access_cursor_tag type;
     
-    node_cursor( node_pointer node = nullptr , size_type pos = 0 )
+    node_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
     : m_node( node ) , m_pos( pos ) { }
 
+    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
+    node_cursor( node_cursor< OtherNode > const& other )
+    : m_node( other.m_node ) , m_pos( other.m_pos ) {}
     
     // emtpy()
     // size()
@@ -86,6 +108,11 @@ public:
     // a.cend() const_cursor
     // a.parity() size_type   (std::distance(b.begin(), a) if b is a's parent.)
     // a.parent() const_cursor / cursor
+    
+    node_base_pointer parent( void )
+    {
+        // return 
+    }
     
 private:
     
@@ -120,7 +147,7 @@ private:
     }
     
     
-    node_pointer m_node;
+    node_base_pointer m_node;
     size_type m_pos;
 };
 

@@ -18,6 +18,7 @@
 #include <memory>
 #include <cstddef>
 
+#include <vector>
 
 namespace gp {
 
@@ -26,9 +27,12 @@ template< typename T , typename Allocator = std::allocator< T > >
 class basic_tree
 {
     typedef basic_tree< T , Allocator > self_type;
-    
-    typedef detail::node< T , 2 >                                   node_type;
+
+    static const size_t max_arity = 2;
+    typedef detail::node< T , max_arity >                           node_type;
+    typedef node_type*                                              node_pointer;
     typedef typename node_type::node_base_type                      node_base_type;
+    typedef node_base_type*                                         node_base_pointer;
     typedef typename Allocator::template rebind< node_type >::other node_allocator_type;
     
 public:
@@ -38,8 +42,8 @@ public:
     typedef Allocator                                                       allocator_type;
     typedef value_type&                                                     reference;
     typedef const value_type&                                               const_reference;
-    typedef detail::node_cursor< self_type >                                cursor;
-    typedef detail::node_cursor< self_type const >                          const_cursor;
+    typedef detail::node_cursor< node_type >                                cursor;
+    typedef detail::node_cursor< node_type const >                          const_cursor;
     typedef size_t                                                          size_type;
     typedef ptrdiff_t                                                       difference_type;
     typedef typename std::allocator_traits< allocator_type >::pointer       pointer;
@@ -55,7 +59,7 @@ public:
     
     // construct:
     explicit basic_tree( allocator_type const& allocator = allocator_type() )
-    : m_node_allocator( allocator ) , m_header() , m_size( 0 )
+    : m_node_allocator( allocator ) , m_header() 
     {
     }
     
@@ -63,19 +67,30 @@ public:
     basic_tree( InputCursor subtree , allocator_type const& allocator = allocator_type() )
     : basic_tree( allocator )
     {
-        // TODO : implement
+        insert_below( root() , subtree );
+    }
+    
+    basic_tree( basic_tree const& tree )
+    : basic_tree( tree.get_allocator() )
+    {
+        if( !tree.empty() )
+            insert_below( root() , tree.root() );
     }
     
     basic_tree( basic_tree const& tree , allocator_type const& allocator = allocator_type() )
     : basic_tree( allocator )
     {
-        // TODO : implement        
+        if( !tree.empty() )
+            insert_below( root() , tree.root() );
     }
+    
+    basic_tree( basic_tree&& tree )
+    : m_node_allocator( tree.get_allocator() , 
     
     basic_tree( basic_tree&& tree , allocator_type const& allocator = allocator_type() )
     : basic_tree( allocator )
     {
-        // TODO : implement        
+        m_header.children().swap( tree.m_header.children() );
     }
 
     
@@ -84,15 +99,25 @@ public:
     // destroy:
     ~basic_tree( void )
     {
-        // TODO : implement        
+        clear();
     }
 
     
     
     
     // copy:
-//     basic_tree& operator=( basic_tree const& tree );
-//     basic_tree& operator=( basic_tree&& tree );
+    basic_tree& operator=( basic_tree const& tree )
+    {
+        // TODO : implement
+        return *this;
+    }
+    
+    
+    basic_tree& operator=( basic_tree&& tree )
+    {
+        // TODO : implement
+        return *this;
+    }
     
     
     
@@ -150,12 +175,12 @@ public:
     // capacity:
     bool empty( void ) const noexcept
     {
-        return ( m_size == 0 );
+        // TODO : implement
     }
         
     size_type size( void ) const noexcept
     {
-        return m_size;
+        // TODO : implement
     }
     
     size_type max_size( void ) const noexcept
@@ -167,20 +192,51 @@ public:
  
  
     // modifiers:
-//     cursor    insert(const_cursor position, const T&);
-//     cursor    insert(const_cursor position, T&&);
-//     template <class InputCursor>
-//       cursor  insert(const_cursor position, InputCursor subtree);
-//     void      rotate(const_cursor position);
-//     void      swap(binary_tree&);
-//     void      clear(cursor position);
-//     void      clear();
+    cursor insert_below( const_cursor position , const value_type& val )
+    {
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , val );
+        
+        node_base_pointer parent_node = position.parent_node();
+
+
+//         node_pointer p_node = m_node_alloc.allocate( 1 , nullptr );
+//         *p_node = node_type( val );
+//         detail::attach(pos.parent_node(), pos.child_node(), p_node, p_node->m_children[pos.index()]);
+//         return pos; 
+    }
+    
+    cursor insert_below( const_cursor position , value_type &&val )
+    {
+        // TODO : implement
+    }
+
+    template< typename InputCursor >
+    cursor insert_below( const_cursor position , InputCursor subtree )
+    {
+        // TODO : implement
+    }
+
+
+    void swap( basic_tree& other )
+    {
+        // TODO : implement
+    }
+    
+    void clear( cursor position )
+    {
+        // TODO : implement
+    }
+
+    void clear( void )
+    {
+        // TODO : implement
+    }
 
 private:
     
     node_allocator_type m_node_allocator;
     node_base_type m_header;
-    size_type m_size;    
 };
 
 

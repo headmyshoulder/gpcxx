@@ -23,3 +23,10 @@ TEST( tree_tests , basic_tree_default_construct )
     auto root = tree.root();
 }
 
+TEST( tree_tests , basic_tree_insert )
+{
+    basic_tree< int > tree;
+    auto root = tree.root();
+    tree.insert_below( root , 10 );
+}
+
