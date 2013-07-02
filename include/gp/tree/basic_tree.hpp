@@ -63,35 +63,35 @@ public:
     {
     }
     
-    template< typename InputCursor >
-    basic_tree( InputCursor subtree , allocator_type const& allocator = allocator_type() )
-    : basic_tree( allocator )
-    {
-        insert_below( root() , subtree );
-    }
+//    template< typename InputCursor >
+//    basic_tree( InputCursor subtree , allocator_type const& allocator = allocator_type() )
+//    : basic_tree( allocator )
+//    {
+//        insert_below( root() , subtree );
+//    }
     
-    basic_tree( basic_tree const& tree )
-    : basic_tree( tree.get_allocator() )
-    {
-        if( !tree.empty() )
-            insert_below( root() , tree.root() );
-    }
+//    basic_tree( basic_tree const& tree )
+//    : basic_tree( tree.get_allocator() )
+//    {
+//        if( !tree.empty() )
+//            insert_below( root() , tree.root() );
+//    }
     
-    basic_tree( basic_tree const& tree , allocator_type const& allocator = allocator_type() )
-    : basic_tree( allocator )
-    {
-        if( !tree.empty() )
-            insert_below( root() , tree.root() );
-    }
+//    basic_tree( basic_tree const& tree , allocator_type const& allocator = allocator_type() )
+//    : basic_tree( allocator )
+//    {
+//        if( !tree.empty() )
+//            insert_below( root() , tree.root() );
+//    }
     
-    basic_tree( basic_tree&& tree )
-    : m_node_allocator( tree.get_allocator() , 
+//    basic_tree( basic_tree&& tree )
+//    : m_node_allocator( tree.get_allocator() ,
     
-    basic_tree( basic_tree&& tree , allocator_type const& allocator = allocator_type() )
-    : basic_tree( allocator )
-    {
-        m_header.children().swap( tree.m_header.children() );
-    }
+//    basic_tree( basic_tree&& tree , allocator_type const& allocator = allocator_type() )
+//    : basic_tree( allocator )
+//    {
+//        m_header.children().swap( tree.m_header.children() );
+//    }
 
     
     
@@ -197,7 +197,11 @@ public:
         node_pointer new_node = m_node_allocator.allocate( 1 );
         m_node_allocator.construct( new_node , val );
         
-        node_base_pointer parent_node = position.parent_node();
+        if( position.size() == position.max_size() )
+            throw std::length_error( "Maximal number of children reached" );
+
+        // attached parent
+        // append into array of childs
 
 
 //         node_pointer p_node = m_node_alloc.allocate( 1 , nullptr );
