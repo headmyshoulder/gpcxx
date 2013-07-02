@@ -13,6 +13,7 @@
 #define GP_TREE_DETAIL_NODE_HPP_DEFINED
 
 #include <array>
+#include <algorithm>
 
 
 namespace gp {
@@ -29,30 +30,63 @@ public:
     typedef node_base< max_arity > node_base_type;
     typedef std::array< node_base_type* , max_arity > children_type;
     
-    node_base( node_base_type *parent = nullptr )
+    
+    node_base( node_base_type *parent = nullptr ) noexcept
     : m_parent( parent ) , m_children()
     {
         for( size_t i=0 ; i<max_arity ; ++i ) m_children[i] = nullptr;
     }
     
-    children_type& children( void )
+    
+    node_base_type* children( size_t i ) noexcept
     {
-        return m_children;
+        return m_children[i];
     }
     
-    children_type const& children( void ) const
+    
+    node_base_type const* children( size_t i ) const noexcept
     {
-        return m_children;
+        return m_children[i];
     }
     
-    node_base_type* parent( void ) 
+    
+    node_base_type* parent( void ) noexcept
     {
         return m_parent;
     }
     
-    node_base_type const* parent( void ) const
+    
+    node_base_type const* parent( void ) const noexcept
     {
         return m_parent;
+    }
+    
+    
+    size_t max_size( void ) const noexcept
+    {
+        return max_arity;
+    }
+    
+    
+    size_t size( void ) const noexcept
+    {
+        return std::count_if( m_children.begin() , m_children.end() , []( node_base_type* ptr ) { return ptr != nullptr; } );
+    }
+    
+    
+    size_t attach_child( node_base_type *child )
+    {
+        typename children_type::iterator iter = std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr != nullptr; } );
+        if( iter == m_children.end() )
+            throw std::runtime_error( "No free children." );
+        *iter = child;
+        return std::distance( m_children.begin() , iter );
+    }
+    
+    
+    void attach_parent( node_base_type *parent )
+    {
+        m_parent = parent;
     }
 
     
@@ -85,6 +119,8 @@ public:
     const_reference operator*() const { return m_data; } 
     
     node( value_type data , node_base_type *parent = nullptr ) : node_base_type( parent ) ,  m_data( std::move( data ) ) {}
+    
+    
  
 private:
 

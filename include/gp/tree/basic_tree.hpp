@@ -18,7 +18,12 @@
 #include <memory>
 #include <cstddef>
 
+// debugging stuff
 #include <vector>
+#include <iostream>
+using namespace std;
+const char tab = '\t';
+
 
 namespace gp {
 
@@ -192,28 +197,30 @@ public:
  
  
     // modifiers:
-    cursor insert_below( const_cursor position , const value_type& val )
+    cursor insert_below( cursor position , const value_type& val )
     {
-        node_pointer new_node = m_node_allocator.allocate( 1 );
-        m_node_allocator.construct( new_node , val );
+        // checl of position is valid
         
         if( position.size() == position.max_size() )
             throw std::length_error( "Maximal number of children reached" );
 
-        // attached parent
-        // append into array of childs
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , val );
 
-
-//         node_pointer p_node = m_node_alloc.allocate( 1 , nullptr );
-//         *p_node = node_type( val );
-//         detail::attach(pos.parent_node(), pos.child_node(), p_node, p_node->m_children[pos.index()]);
-//         return pos; 
+        new_node->attach_parent( position.node() );
+        size_type index = position.node()->attach_child( new_node );
+        
+        return cursor( position.node() , index );
     }
     
-    cursor insert_below( const_cursor position , value_type &&val )
+    cursor insert( cursor position , const value_type &val )
     {
-        // TODO : implement
     }
+    
+    // cursor insert_below( const_cursor position , value_type &&val )
+    // {
+    //     // TODO : implement
+    // }
 
     template< typename InputCursor >
     cursor insert_below( const_cursor position , InputCursor subtree )

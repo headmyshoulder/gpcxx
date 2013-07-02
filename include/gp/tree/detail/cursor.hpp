@@ -58,6 +58,8 @@ class node_cursor : public boost::iterator_facade<
     
     typedef typename node_base_getter< Node >::type node_base;
     typedef node_base* node_base_pointer;
+    typedef typename std::remove_const< node_base >::type real_node_base;
+    typedef real_node_base* real_node_base_pointer;
     
 
     
@@ -109,9 +111,34 @@ public:
     // a.parity() size_type   (std::distance(b.begin(), a) if b is a's parent.)
     // a.parent() const_cursor / cursor
     
-    node_base_pointer parent( void )
+    size_type size( void ) const noexcept
     {
-        // return 
+        return m_node->size();
+    }
+    
+    size_type max_size( void ) const noexcept
+    {
+        return m_node->max_size();
+    }
+    
+    real_node_base_pointer parent_node( void ) noexcept
+    {
+        return m_node;
+    }
+    
+    const real_node_base_pointer parent_node( void ) const noexcept
+    {
+        return m_node;
+    }
+    
+    real_node_base_pointer node( void ) noexcept
+    {
+        return m_node->children( m_pos );
+    }
+    
+    const real_node_base_pointer node( void ) const noexcept
+    {
+        return m_node->children( m_pos );
     }
     
 private:
