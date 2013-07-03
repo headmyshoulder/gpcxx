@@ -9,17 +9,16 @@
 
 #include <ostream>
 
+
 namespace gp {
 
 
-
-template< class Cursor >
-void print_simple_cursor( const Cursor &t , std::ostream &out )
+template< typename Cursor >
+void print_simple_cursor( Cursor t , std::ostream &out )
 {
     if( t.size() == 0 ) out << *t;
     else if( t.size() == 1 )
     {
-
         Cursor child = t.begin();
         out << *t << "( ";
         print_simple_cursor( child , out );
@@ -28,8 +27,8 @@ void print_simple_cursor( const Cursor &t , std::ostream &out )
     else if( t.size() == 2 )
     {
         Cursor left = t.begin();
-        Cursor right = left + 1 ;
-        
+        Cursor right = left + 1;
+
         if( left.size() == 2 ) out << "( ";
         print_simple_cursor( left , out );
         if( left.size() == 2 ) out << " )";
@@ -44,8 +43,8 @@ void print_simple_cursor( const Cursor &t , std::ostream &out )
 }
 
 
-template< class Tree >
-void print_simple( const Tree& t , std::ostream &out )
+template< typename Tree >
+void print_simple( Tree const& t , std::ostream &out )
 {
     print_simple_cursor( t.root() , out );
 }
@@ -55,8 +54,8 @@ void print_simple( const Tree& t , std::ostream &out )
 template< class Tree >
 struct simple_printer
 {
-    const Tree &m_t;
-    simple_printer( const Tree &t ) : m_t( t ) { }
+    Tree const& m_t;
+    simple_printer( Tree const& t ) : m_t( t ) { }
     std::ostream& operator()( std::ostream& out ) const
     {
         print_simple( m_t , out );
@@ -65,10 +64,10 @@ struct simple_printer
 };
 
 template< class T >
-simple_printer< T > simple( const T &t ) { return simple_printer< T >( t ); }
+simple_printer< T > simple( T const& t ) { return simple_printer< T >( t ); }
 
 template< class T >
-std::ostream& operator<<( std::ostream& out , const simple_printer< T > &p )
+std::ostream& operator<<( std::ostream& out , simple_printer< T > const& p )
 {
     return p( out );
 }

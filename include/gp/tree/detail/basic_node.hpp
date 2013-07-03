@@ -1,5 +1,5 @@
 /*
-  gp/tree/detail/node.hpp
+  gp/tree/detail/basic_node.hpp
 
   Copyright 2013 Karsten Ahnert
 
@@ -9,8 +9,8 @@
 */
 
 
-#ifndef GP_TREE_DETAIL_NODE_HPP_DEFINED
-#define GP_TREE_DETAIL_NODE_HPP_DEFINED
+#ifndef GP_TREE_DETAIL_BASIC_NODE_HPP_DEFINED
+#define GP_TREE_DETAIL_BASIC_NODE_HPP_DEFINED
 
 #include <array>
 #include <algorithm>
@@ -22,16 +22,16 @@ namespace detail {
     
     
 template< size_t MaxArity >
-class node_base
+class basic_node_base
 {
 public:
 
     static const size_t max_arity = MaxArity;
-    typedef node_base< max_arity > node_base_type;
+    typedef basic_node_base< max_arity > node_base_type;
     typedef std::array< node_base_type* , max_arity > children_type;
     
     
-    node_base( node_base_type *parent = nullptr ) noexcept
+    basic_node_base( node_base_type *parent = nullptr ) noexcept
     : m_parent( parent ) , m_children()
     {
         for( size_t i=0 ; i<max_arity ; ++i ) m_children[i] = nullptr;
@@ -70,7 +70,8 @@ public:
     
     size_t size( void ) const noexcept
     {
-        return std::count_if( m_children.begin() , m_children.end() , []( node_base_type* ptr ) { return ptr != nullptr; } );
+        typename children_type::const_iterator end = std::find( m_children.begin() , m_children.end() , nullptr );
+        return std::distance( m_children.begin() , end );
     }
     
     
@@ -87,6 +88,15 @@ public:
     {
         m_parent = parent;
     }
+    
+    void remove_child( node_base_type *child )
+    {
+        typename children_type::iterator iter = std::find( m_children.begin() , m_children.end() , child );
+        typename children_type::iterator end = m_children.begin() + size();
+        assert( iter != m_children.end() );
+        std::copy( iter + 1 , end , iter );
+        *end = nullptr;
+    }
 
     
 protected:
@@ -99,13 +109,13 @@ protected:
 
 
 template< typename T , size_t MaxArity >
-class node : public node_base< MaxArity >
+class basic_node : public basic_node_base< MaxArity >
 {
 public:
     
     typedef T value_type;
-    typedef node< value_type , MaxArity > node_type;
-    typedef node_base< MaxArity > node_base_type;
+    typedef basic_node< value_type , MaxArity > node_type;
+    typedef basic_node_base< MaxArity > node_base_type;
     typedef node_type* node_pointer;
     typedef node_type& node_reference;
     
@@ -117,7 +127,7 @@ public:
 
     const_reference operator*() const { return m_data; } 
     
-    node( value_type data , node_base_type *parent = nullptr ) : node_base_type( parent ) ,  m_data( std::move( data ) ) {}
+    basic_node( value_type data , node_base_type *parent = nullptr ) : node_base_type( parent ) ,  m_data( std::move( data ) ) {}
     
     
  
@@ -134,4 +144,4 @@ private:
 } // namespace gp
 
 
-#endif // GP_TREE_DETAIL_NODE_HPP_DEFINED
+#endif // GP_TREE_DETAIL_BASIC_NODE_HPP_DEFINED

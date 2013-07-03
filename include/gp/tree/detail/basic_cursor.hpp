@@ -1,5 +1,5 @@
 /*
-  gp/tree/detail/cursor.hpp
+  gp/tree/detail/basic_cursor.hpp
 
   Copyright 2013 Karsten Ahnert
 
@@ -9,8 +9,8 @@
 */
 
 
-#ifndef GP_TREE_DETAIL_CURSOR_HPP_DEFINED
-#define GP_TREE_DETAIL_CURSOR_HPP_DEFINED
+#ifndef GP_TREE_DETAIL_BASIC_CURSOR_HPP_DEFINED
+#define GP_TREE_DETAIL_BASIC_CURSOR_HPP_DEFINED
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/mpl/eval_if.hpp>
@@ -40,9 +40,9 @@ struct node_base_getter : public boost::mpl::eval_if<
 };
 
 template< typename Node >
-class node_cursor : public boost::iterator_facade<
-    node_cursor< Node > ,                              // Derived-Iterator
-    typename node_value_getter< Node >::type ,         // Value
+class basic_node_cursor : public boost::iterator_facade<
+    basic_node_cursor< Node > ,                           // Derived-Iterator
+    typename node_value_getter< Node >::type ,            // Value
     boost::random_access_traversal_tag // ,               // Category
     // boost::use_default ,                               // Reference
     // boost::use_default 
@@ -50,7 +50,7 @@ class node_cursor : public boost::iterator_facade<
 {
     
     friend class boost::iterator_core_access;
-    template<typename U> friend class node_cursor;
+    template<typename U> friend class basic_node_cursor;
     
     typedef Node node_type;
     typedef node_type* node_pointer;
@@ -60,11 +60,12 @@ class node_cursor : public boost::iterator_facade<
     typedef node_base* node_base_pointer;
     typedef typename std::remove_const< node_base >::type real_node_base;
     typedef real_node_base* real_node_base_pointer;
+    typedef real_node_base const* const_real_node_base_pointer;
     
 
     
     typedef boost::iterator_facade<
-        node_cursor< Node > ,                              // Derived-Iterator
+        basic_node_cursor< Node > ,                        // Derived-Iterator
         typename node_value_getter< Node >::type ,         // Value
         boost::random_access_traversal_tag ,               // Category
         typename node_value_getter< Node >::type& ,        // Reference
@@ -83,16 +84,16 @@ public:
     typedef size_t size_type;    
     
     // requirements from cursor concept
-    typedef node_cursor< real_node_type > cursor;
-    typedef node_cursor< real_node_type const > const_cursor;
+    typedef basic_node_cursor< node_type > cursor;
+    typedef basic_node_cursor< real_node_type const > const_cursor;
 
     // typedef ascending_random_access_cursor_tag type;
     
-    node_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
+    basic_node_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
     : m_node( node ) , m_pos( pos ) { }
 
     template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
-    node_cursor( node_cursor< OtherNode > const& other )
+    basic_node_cursor( basic_node_cursor< OtherNode > const& other )
     : m_node( other.m_node ) , m_pos( other.m_pos ) {}
     
     // emtpy()
@@ -113,7 +114,7 @@ public:
     
     cursor begin( void )
     {
-        return cursor( m_node->children( 0 ) , 0 );
+        return cursor( m_node->children( m_pos ) , 0 );
     }
     
     const_cursor begin( void ) const
@@ -123,12 +124,12 @@ public:
     
     const_cursor cbegin( void ) const
     {
-        return const_cursor( m_node->children( 0 ) , 0 );
+        return const_cursor( m_node->children( m_pos ) , 0 );
     }
     
     cursor end( void )
     {
-        return cursor( m_node->children( 0 ) , 0 ) + m_node->size();
+        return cursor( m_node->children( m_pos ) , this->size() );
     }
     
     const_cursor end( void ) const
@@ -138,7 +139,7 @@ public:
     
     const_cursor cend( void ) const
     {
-        return const_cursor( m_node->children( 0 ) , 0 ) + m_node->size();
+        return const_cursor( m_node->children( m_pos ) , this->size() );
     }
     
 //     cursor parent( void )
@@ -161,25 +162,25 @@ public:
         return m_node->max_size();
     }
     
-    real_node_base_pointer parent_node( void ) noexcept
+    node_base_pointer parent_node( void ) noexcept
     {
         return m_node;
     }
     
-    const real_node_base_pointer parent_node( void ) const noexcept
-    {
-        return m_node;
-    }
+//     const real_node_base_pointer parent_node( void ) const noexcept
+//     {
+//         return m_node;
+//     }
     
-    real_node_base_pointer node( void ) noexcept
+    node_base_pointer node( void ) noexcept
     {
         return m_node->children( m_pos );
     }
     
-    const real_node_base_pointer node( void ) const noexcept
-    {
-        return m_node->children( m_pos );
-    }
+//     const_real_node_base_pointer node( void ) const noexcept
+//     {
+//         return m_node->children( m_pos );
+//     }
     
 private:
     
@@ -198,12 +199,12 @@ private:
         m_pos += n;
     }
     
-    typename base_type::difference_type distance_to( node_cursor const& other ) const
+    typename base_type::difference_type distance_to( basic_node_cursor const& other ) const
     {
         // TODO: implement
     }
 
-    bool equal( node_cursor const& other) const
+    bool equal( basic_node_cursor const& other) const
     {
         return ( other.m_node == m_node ) && ( other.m_pos == m_pos );
     }
@@ -223,4 +224,4 @@ private:
 } // namespace gp
 
 
-#endif // GP_TREE_DETAIL_CURSOR_HPP_DEFINED
+#endif // GP_TREE_DETAIL_BASIC_CURSOR_HPP_DEFINED
