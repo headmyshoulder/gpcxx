@@ -13,27 +13,32 @@ namespace gp {
 
 
 
-template< class Node >
-void print_simple_node( const Node &t , std::ostream &out )
+template< class Cursor >
+void print_simple_cursor( const Cursor &t , std::ostream &out )
 {
-    if( t.arity() == 0 ) out << t.value();
-    else if( t.arity() == 1 )
+    if( t.size() == 0 ) out << *t;
+    else if( t.size() == 1 )
     {
-        out << t.value() << "( ";
-        print_simple_node( t.children( 0 ) , out );
+
+        Cursor child = t.begin();
+        out << *t << "( ";
+        print_simple_cursor( child , out );
         out << " )";
     }
-    else if( t.arity() == 2 )
+    else if( t.size() == 2 )
     {
-        if( t.children( 0 ).arity() == 2 ) out << "( ";
-        print_simple_node( t.children( 0 ) , out );
-        if( t.children( 0 ).arity() == 2 ) out << " )";
+        Cursor left = t.begin();
+        Cursor right = left + 1 ;
+        
+        if( left.size() == 2 ) out << "( ";
+        print_simple_cursor( left , out );
+        if( left.size() == 2 ) out << " )";
 
-        out << " " << t.value() << " ";
-
-        if( t.children( 1 ).arity() == 2 ) out << "( ";
-        print_simple_node( t.children( 1 ) , out );
-        if( t.children( 1 ).arity() == 2 ) out << " )";
+        out << " " << *t << " ";
+        
+        if( right.size() == 2 ) out << "( ";
+        print_simple_cursor( right , out );
+        if( right.size() == 2 ) out << " )";
     }
 
 }
@@ -42,7 +47,7 @@ void print_simple_node( const Node &t , std::ostream &out )
 template< class Tree >
 void print_simple( const Tree& t , std::ostream &out )
 {
-    print_simple_node( t , out );
+    print_simple_cursor( t.root() , out );
 }
 
 

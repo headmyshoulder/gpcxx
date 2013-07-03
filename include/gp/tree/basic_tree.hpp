@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <cstddef>
+#include <cassert>
 
 // debugging stuff
 #include <vector>
@@ -199,34 +200,62 @@ public:
     // modifiers:
     cursor insert_below( cursor position , const value_type& val )
     {
-        // checl of position is valid
-        
-        if( position.size() == position.max_size() )
-            throw std::length_error( "Maximal number of children reached" );
-
         node_pointer new_node = m_node_allocator.allocate( 1 );
         m_node_allocator.construct( new_node , val );
 
-        new_node->attach_parent( position.node() );
-        size_type index = position.node()->attach_child( new_node );
-        
-        return cursor( position.node() , index );
+        // check if position is valid
+        if( position.node() == nullptr )
+        {
+            assert( position.parent_node()->size() == 0 );
+            
+            new_node->attach_parent( position.parent_node() );
+            size_type index = position.parent_node()->attach_child( new_node );
+            assert( index == 0 );
+            return cursor( position.parent_node() , index );
+        }
+        else
+        {
+            assert( position.size() < position.max_size() );
+
+            new_node->attach_parent( position.node() );
+            size_type index = position.node()->attach_child( new_node );
+            return cursor( position.node() , index );
+        }
     }
     
-    cursor insert( cursor position , const value_type &val )
-    {
-    }
     
+       
     // cursor insert_below( const_cursor position , value_type &&val )
     // {
     //     // TODO : implement
     // }
 
+    
     template< typename InputCursor >
     cursor insert_below( const_cursor position , InputCursor subtree )
     {
         // TODO : implement
     }
+   
+    
+//     cursor insert( cursor position , const value_type &val )
+//     {
+//     }
+//     
+// 
+//     cursor insert( cursor position , value_type &&val )
+//     {
+//     }
+// 
+//     
+//     template< typename InputCursor >
+//     cursor insert( cursor position , InputCursor subtree )
+//     {
+//     }
+
+
+
+
 
 
     void swap( basic_tree& other )

@@ -9,6 +9,7 @@
  */
 
 #include <gp/tree/basic_tree.hpp>
+#include <gp/io/simple.hpp>
 
 #include <gtest/gtest.h>
 
@@ -25,8 +26,30 @@ TEST( tree_tests , basic_tree_default_construct )
 
 TEST( tree_tests , basic_tree_insert )
 {
-    basic_tree< int > tree;
+    basic_tree< std::string > tree;
     auto root = tree.root();
-    tree.insert_below( root , 10 );
+    auto n1 = tree.insert_below( root , std::string( "+" ) );
+    
+    cerr << *n1 << endl;
+    cerr << n1.size() << endl;
+    cerr << simple( tree ) << endl;
+
+    tree.insert_below( n1 , std::string( "11" ) );
+    
+    cerr << simple( tree ) << endl;
+    tree.insert_below( n1 , std::string( "12" ) );
+    cerr << simple( tree ) << endl;
 }
+
+TEST( tree_tests , basic_tree_insert2 )
+{
+    basic_tree< std::string > tree;
+    tree.insert_below( tree.root() , std::string( "+" ) );
+    cerr << simple( tree ) << endl;
+    tree.insert_below( tree.root() , std::string( "11" ) );
+    cerr << simple( tree ) << endl;
+    tree.insert_below( tree.root() , std::string( "12" ) );
+    cerr << simple( tree ) << endl;
+}
+
 

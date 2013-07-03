@@ -14,7 +14,7 @@
 
 #include <array>
 #include <algorithm>
-
+#include <cassert>
 
 namespace gp {
 namespace detail {
@@ -76,9 +76,8 @@ public:
     
     size_t attach_child( node_base_type *child )
     {
-        typename children_type::iterator iter = std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr != nullptr; } );
-        if( iter == m_children.end() )
-            throw std::runtime_error( "No free children." );
+        typename children_type::iterator iter = std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr == nullptr; } );
+        assert( iter != m_children.end() );
         *iter = child;
         return std::distance( m_children.begin() , iter );
     }

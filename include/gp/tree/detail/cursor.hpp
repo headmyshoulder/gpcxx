@@ -43,9 +43,9 @@ template< typename Node >
 class node_cursor : public boost::iterator_facade<
     node_cursor< Node > ,                              // Derived-Iterator
     typename node_value_getter< Node >::type ,         // Value
-    boost::random_access_traversal_tag ,               // Category
-    boost::use_default ,                               // Reference
-    boost::use_default 
+    boost::random_access_traversal_tag // ,               // Category
+    // boost::use_default ,                               // Reference
+    // boost::use_default 
     >
 {
     
@@ -79,7 +79,7 @@ class node_cursor : public boost::iterator_facade<
 public:
     
     // requirements from container concept via cursor concept
-    typedef typename base_type::reference const_reference;
+    // typedef typename base_type::reference const_reference;
     typedef size_t size_type;    
     
     // requirements from cursor concept
@@ -111,9 +111,49 @@ public:
     // a.parity() size_type   (std::distance(b.begin(), a) if b is a's parent.)
     // a.parent() const_cursor / cursor
     
+    cursor begin( void )
+    {
+        return cursor( m_node->children( 0 ) , 0 );
+    }
+    
+    const_cursor begin( void ) const
+    {
+        return cbegin();
+    }
+    
+    const_cursor cbegin( void ) const
+    {
+        return const_cursor( m_node->children( 0 ) , 0 );
+    }
+    
+    cursor end( void )
+    {
+        return cursor( m_node->children( 0 ) , 0 ) + m_node->size();
+    }
+    
+    const_cursor end( void ) const
+    {
+        return cend();
+    }
+    
+    const_cursor cend( void ) const
+    {
+        return const_cursor( m_node->children( 0 ) , 0 ) + m_node->size();
+    }
+    
+//     cursor parent( void )
+//     {
+//     }
+//     
+//     const_cursor parent( void ) const
+//     {
+//     }
+    
+    
+    
     size_type size( void ) const noexcept
     {
-        return m_node->size();
+        return m_node->children( m_pos )->size();
     }
     
     size_type max_size( void ) const noexcept
@@ -170,7 +210,7 @@ private:
 
     typename base_type::reference dereference() const
     {
-        return **static_cast< node_pointer >( m_node->children()[m_pos] );
+        return **static_cast< node_pointer >( m_node->children( m_pos ) );
     }
     
     
