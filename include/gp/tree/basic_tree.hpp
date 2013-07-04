@@ -14,19 +14,15 @@
 
 #include <gp/tree/detail/basic_node.hpp>
 #include <gp/tree/detail/basic_cursor.hpp>
+#include <gp/tree/cursor_traits.hpp>
 
+#include <boost/mpl/and.hpp>
 
 #include <memory>
 #include <cstddef>
 #include <cassert>
 
-// debugging stuff
-#include <set>
 #include <vector>
-#include <iostream>
-using namespace std;
-const char tab = '\t';
-
 
 namespace gp {
 
@@ -42,6 +38,20 @@ class basic_tree
     typedef typename node_type::node_base_type                      node_base_type;
     typedef node_base_type*                                         node_base_pointer;
     typedef typename Allocator::template rebind< node_type >::other node_allocator_type;
+    
+public:
+    
+    template< typename OtherCursor >
+    struct same_value_type
+    {
+        typedef typename std::is_convertible< typename cursor_value< OtherCursor >::type , T >::type type;
+    };
+    
+    template< typename OtherCursor >
+    struct other_cursor_enabler :
+        std::enable_if< boost::mpl::and_< is_cursor< OtherCursor > , same_value_type< OtherCursor > >::value >
+    {
+    };
     
 public:
   
@@ -219,56 +229,33 @@ public:
     {
         node_pointer new_node = m_node_allocator.allocate( 1 );
         m_node_allocator.construct( new_node , val );
-        ++m_size;
-
-        if( position.node() == nullptr )
-        {
-            assert( position.parent_node()->size() == 0 );
-            
-            new_node->attach_parent( position.parent_node() );
-            size_type index = position.parent_node()->attach_child( new_node );
-            assert( index == 0 );
-            return cursor( position.parent_node() , index );
-        }
-        else
-        {
-            assert( position.size() < position.max_size() );
-
-            new_node->attach_parent( position.node() );
-            size_type index = position.node()->attach_child( new_node );
-            return cursor( position.node() , index );
-        }
+        return insert_below_impl( position , new_node );
     }
     
     
        
-    // cursor insert_below( const_cursor position , value_type &&val )
-    // {
-    //     // TODO : implement
-    // }
+    cursor insert_below( const_cursor position , value_type &&val )
+    {
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        *new_node = std::move( val );
+        return insert_below_impl( position , new_node );
+    }
 
     
-    template< typename InputCursor >
-    cursor insert_below( const_cursor position , InputCursor subtree )
+    template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
+    cursor insert_below( cursor position , InputCursor subtree )
     {
-        // TODO : implement
+        cursor p = insert_below( position , *subtree );
+        for( cursor c = subtree.begin() ; c != subtree.end() ; ++c )
+            insert_below( p , c );
+        return p;
     }
    
     
-//     cursor insert( cursor position , const value_type &val )
-//     {
-//     }
-//     
-// 
-//     cursor insert( cursor position , value_type &&val )
-//     {
-//     }
-// 
-//     
+//     cursor insert( cursor position , const value_type &val );
+//     cursor insert( cursor position , value_type &&val );
 //     template< typename InputCursor >
-//     cursor insert( cursor position , InputCursor subtree )
-//     {
-//     }
+//     cursor insert( cursor position , InputCursor subtree );
 
 
 
@@ -282,6 +269,7 @@ public:
     
     void erase( cursor position ) noexcept
     {
+        --m_size;
         if( position.node() == nullptr ) return;
         
         for( cursor c = position.begin() ; c != position.end() ; ++c )
@@ -303,6 +291,7 @@ private:
     
     void erase_impl( cursor position ) noexcept
     {
+        --m_size;
         for( cursor c = position.begin() ; c != position.end() ; ++c )
         {
             erase_impl( c );
@@ -310,6 +299,28 @@ private:
         node_pointer ptr = static_cast< node_pointer >( position.node() );
         m_node_allocator.destroy( ptr );
         m_node_allocator.deallocate( ptr , 1 );
+    }
+    
+    cursor insert_below_impl( cursor position , node_pointer new_node )
+    {
+        ++m_size;
+        if( position.node() == nullptr )
+        {
+            assert( position.parent_node()->size() == 0 );
+            
+            new_node->attach_parent( position.parent_node() );
+            size_type index = position.parent_node()->attach_child( new_node );
+            assert( index == 0 );
+            return cursor( position.parent_node() , index );
+        }
+        else
+        {
+            assert( position.size() < position.max_size() );
+
+            new_node->attach_parent( position.node() );
+            size_type index = position.node()->attach_child( new_node );
+            return cursor( position.node() , index );
+        }
     }
     
     node_allocator_type m_node_allocator;

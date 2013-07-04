@@ -7,44 +7,48 @@
 #ifndef TEST_TREE_HPP_INCLUDED
 #define TEST_TREE_HPP_INCLUDED
 
-#include <gp/tree/linked_node.hpp>
+#include <gp/tree/basic_tree.hpp>
 
 #include <string>
 
+struct basic_tree_tag { };
 
 
-#include <iostream>
-using namespace std;
+template< typename Tag >
+struct get_tree_type;
 
+template<>
+struct get_tree_type< basic_tree_tag > { typedef gp::basic_tree< std::string > type; };
+
+
+template< typename TreeTag >
 struct test_tree
 {
-    typedef gp::linked_node< std::string > node_type;
+    typedef typename get_tree_type< TreeTag >::type tree_type;
 
 
     test_tree( void )
         : data() , data2()
     {
         {
-            data.value() = "plus";
-            auto i1 = data.emplace( "sin" );
-            i1->emplace( "x" );
-            auto i3 = data.emplace( "minus" );
-            i3->emplace( "y" );
-            i3->emplace( "2" );
+            auto i1 = data.insert_below( data.root() , "plus" );
+            auto i2 = data.insert_below( i1 , "sin" );
+            auto i3 = data.insert_below( i2 , "x" );
+            auto i4 = data.insert_below( i1 , "minus" );
+            auto i5 = data.insert_below( i4 , "y" );
+            auto i6 = data.insert_below( i4 , "2" );
         }
 
         {
-            data2.value() = "minus";
-            auto i1 = data2.emplace( "cos" );
-            i1->emplace( "y" );
-            data2.emplace( "x" );
+            auto i1 = data2.insert_below( data2.root() , "minus" );
+            auto i2 = data2.insert_below( i1 , "cos" );
+            auto i3 = data2.insert_below( i2 , "y" );
+            auto i4 = data2.insert_below( i1 , "x" );
         }
     }
 
-    ~test_tree( void ) { }
-
-    node_type data;
-    node_type data2;
+    tree_type data;
+    tree_type data2;
 };
 
 

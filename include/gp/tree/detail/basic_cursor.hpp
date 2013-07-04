@@ -12,7 +12,10 @@
 #ifndef GP_TREE_DETAIL_BASIC_CURSOR_HPP_DEFINED
 #define GP_TREE_DETAIL_BASIC_CURSOR_HPP_DEFINED
 
+#include <gp/tree/cursor_traits.hpp>
+
 #include <boost/iterator/iterator_facade.hpp>
+#include <boost/iterator/iterator_concepts.hpp>
 #include <boost/mpl/eval_if.hpp>
 #include <boost/mpl/identity.hpp>
 
@@ -92,9 +95,9 @@ public:
     basic_node_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
     : m_node( node ) , m_pos( pos ) { }
 
-    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
-    basic_node_cursor( basic_node_cursor< OtherNode > const& other )
-    : m_node( other.m_node ) , m_pos( other.m_pos ) {}
+//     template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
+//     basic_node_cursor( basic_node_cursor< OtherNode > const& other )
+//     : m_node( other.m_node ) , m_pos( other.m_pos ) {}
     
     // emtpy()
     // size()
@@ -149,6 +152,17 @@ public:
 //     const_cursor parent( void ) const
 //     {
 //     }
+
+
+    cursor children( size_type i )
+    {
+        return cursor( m_node->children( m_pos ) , i );
+    }
+    
+    const_cursor children( size_type i ) const
+    {
+        return const_cursor( m_node->children( m_pos ) , i );
+    }
     
     
     
@@ -219,8 +233,12 @@ private:
     size_type m_pos;
 };
 
-
 } // namespace detail
+
+template< typename Node >
+struct is_cursor< detail::basic_node_cursor< Node > > : public std::true_type { };
+
+
 } // namespace gp
 
 

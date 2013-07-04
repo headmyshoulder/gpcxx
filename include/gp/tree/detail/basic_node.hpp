@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cassert>
 
+
 namespace gp {
 namespace detail {
 
@@ -77,7 +78,7 @@ public:
     
     size_t attach_child( node_base_type *child )
     {
-        typename children_type::iterator iter = std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr == nullptr; } );
+        typename children_type::iterator iter = find_free_child_entry();
         assert( iter != m_children.end() );
         *iter = child;
         return std::distance( m_children.begin() , iter );
@@ -91,15 +92,37 @@ public:
     
     void remove_child( node_base_type *child )
     {
-        typename children_type::iterator iter = std::find( m_children.begin() , m_children.end() , child );
+        typename children_type::iterator iter = find_child( child );
         typename children_type::iterator end = m_children.begin() + size();
+        
         assert( iter != m_children.end() );
-        std::copy( iter + 1 , end , iter );
+        
+        std::copy( iter + 1 , end-- , iter );
         *end = nullptr;
     }
 
     
 protected:
+    
+    typename children_type::iterator find_free_child_entry( void )
+    {
+        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr == nullptr; } );
+    }
+    
+    typename children_type::const_iterator find_free_child_entry( void ) const
+    {
+        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr == nullptr; } );
+    }
+    
+    typename children_type::iterator find_child( node_base_type const* child )
+    {
+        return std::find( m_children.begin() , m_children.end() , child );
+    }
+    
+    typename children_type::const_iterator find_child( node_base_type const* child ) const
+    {
+        return std::find( m_children.begin() , m_children.end() , child );
+    }
     
     node_base_type *m_parent;
     children_type m_children;
