@@ -233,10 +233,24 @@ private:
     size_type m_pos;
 };
 
+template< typename Node1 , typename Node2 >
+bool cursor_comp( basic_node_cursor< Node1 > const& c1 , basic_node_cursor< Node2 > const& c2 )
+{
+    if( c1.size() != c2.size() ) return false;
+    if( *c1 != *c2 ) return false;
+    for( size_t i=0 ; i<c1.size() ; ++i )
+    {
+        if( !cursor_comp( c1.children(i) , c2.children(i) ) ) return false;
+    }
+    return true;
+}
+
+
 } // namespace detail
 
 template< typename Node >
 struct is_cursor< detail::basic_node_cursor< Node > > : public std::true_type { };
+
 
 
 } // namespace gp

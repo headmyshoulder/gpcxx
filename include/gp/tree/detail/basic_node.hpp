@@ -50,6 +50,11 @@ public:
         return m_children[i];
     }
     
+    void set_children( size_t i , node_base_type* n )
+    {
+        m_children[i] = n;
+    }
+    
     
     node_base_type* parent( void ) noexcept
     {

@@ -22,7 +22,7 @@
 #include <cstddef>
 #include <cassert>
 
-#include <vector>
+
 
 namespace gp {
 
@@ -39,8 +39,6 @@ class basic_tree
     typedef node_base_type*                                         node_base_pointer;
     typedef typename Allocator::template rebind< node_type >::other node_allocator_type;
     
-public:
-    
     template< typename OtherCursor >
     struct same_value_type
     {
@@ -55,7 +53,9 @@ public:
     
 public:
   
+    //
     // types:
+    //
     typedef T                                                               value_type;
     typedef Allocator                                                       allocator_type;
     typedef value_type&                                                     reference;
@@ -74,47 +74,53 @@ public:
 
     
     
-    
+    //
     // construct:
+    //
     explicit basic_tree( allocator_type const& allocator = allocator_type() )
     : m_node_allocator( allocator ) , m_header() , m_size( 0 )
     {
     }
     
-//    template< typename InputCursor >
-//    basic_tree( InputCursor subtree , allocator_type const& allocator = allocator_type() )
-//    : basic_tree( allocator )
-//    {
-//        insert_below( root() , subtree );
-//    }
+    template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
+    basic_tree( InputCursor subtree , allocator_type const& allocator = allocator_type() )
+    : basic_tree( allocator )
+    {
+        insert_below( root() , subtree );
+    }
     
-//    basic_tree( basic_tree const& tree )
-//    : basic_tree( tree.get_allocator() )
-//    {
-//        if( !tree.empty() )
-//            insert_below( root() , tree.root() );
-//    }
+    basic_tree( basic_tree const& tree )
+    : basic_tree( tree.get_allocator() )
+    {
+        if( !tree.empty() )
+            insert_below( root() , tree.root() );
+    }
     
-//    basic_tree( basic_tree const& tree , allocator_type const& allocator = allocator_type() )
-//    : basic_tree( allocator )
-//    {
-//        if( !tree.empty() )
-//            insert_below( root() , tree.root() );
-//    }
+    basic_tree( basic_tree const& tree , allocator_type const& allocator )
+    : basic_tree( allocator )
+    {
+        if( !tree.empty() )
+            insert_below( root() , tree.root() );
+    }
     
-//    basic_tree( basic_tree&& tree )
-//    : m_node_allocator( tree.get_allocator() ,
+    basic_tree( basic_tree&& tree )
+    : basic_tree( tree.get_allocator() )
+    {
+        move_impl( std::move( tree ) );
+    }
     
-//    basic_tree( basic_tree&& tree , allocator_type const& allocator = allocator_type() )
-//    : basic_tree( allocator )
-//    {
-//        m_header.children().swap( tree.m_header.children() );
-//    }
+    basic_tree( basic_tree&& tree , allocator_type const& allocator )
+    : basic_tree( allocator )
+    {
+        move_impl( std::move( tree ) );
+    }
 
     
     
     
+    //
     // destroy:
+    //
     ~basic_tree( void )
     {
         clear();
@@ -123,40 +129,36 @@ public:
     
     
     
+    //
     // copy:
+    //
     basic_tree& operator=( basic_tree const& tree )
     {
-        // TODO : implement
+        if( &tree != this )
+        {
+            clear();
+            if( !tree.empty() )
+                insert_below( root() , tree.root() );
+        }
         return *this;
     }
-    
     
     basic_tree& operator=( basic_tree&& tree )
     {
-        // TODO : implement
+        if( &tree != this )
+        {
+            clear();
+            move_impl( std::move( tree ) );
+        }
         return *this;
     }
     
     
     
     
-    
-    
-    template< typename InputCursor >
-    void assign( InputCursor subtree )
-    {
-        // TODO : implement
-    }
-    
-    allocator_type get_allocator( void ) const noexcept
-    {
-        return allocator_type( m_node_allocator );
-    }
- 
-    
-    
-    
+    //
     // cursors:
+    //
     cursor root() noexcept
     {
         return cursor( &m_header , 0 );
@@ -172,24 +174,12 @@ public:
         return const_cursor( &m_header , 0 );
     }
     
-    cursor shoot() noexcept
-    {
-        return cursor( &m_header , 1 );
-    }
-    
-    const_cursor shoot() const noexcept
-    {
-        return const_cursor( &m_header , 1 );
-    }
-    
-    const_cursor cshoot() const noexcept
-    {
-        return const_cursor( &m_header , 1 );
-    }
     
     cursor rank_is( size_type n )
     {
-        // TODO : implement
+        if( n >= m_size ) throw std::out_of_range( "Not enough elements in basic_tree!" );
+        
+        return rank_is_impl( root() , n );
     }
     
     const_cursor rank_is( size_type n ) const
@@ -205,7 +195,9 @@ public:
     
     
 
-    // capacity:
+    //
+    // queries and capacity:
+    //
     bool empty( void ) const noexcept
     {
         return m_size == 0;
@@ -220,19 +212,31 @@ public:
     {
         return size_type( -1 );
     }
+
+    allocator_type get_allocator( void ) const noexcept
+    {
+        return allocator_type( m_node_allocator );
+    }
+
  
  
  
- 
+    //
     // modifiers:
+    //
+    template< typename InputCursor >
+    void assign( InputCursor subtree )
+    {
+        clear();
+        insert_below( root() , subtree );
+    }
+    
     cursor insert_below( cursor position , const value_type& val )
     {
         node_pointer new_node = m_node_allocator.allocate( 1 );
         m_node_allocator.construct( new_node , val );
         return insert_below_impl( position , new_node );
     }
-    
-    
        
     cursor insert_below( const_cursor position , value_type &&val )
     {
@@ -240,31 +244,21 @@ public:
         *new_node = std::move( val );
         return insert_below_impl( position , new_node );
     }
-
     
     template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
     cursor insert_below( cursor position , InputCursor subtree )
     {
         cursor p = insert_below( position , *subtree );
-        for( cursor c = subtree.begin() ; c != subtree.end() ; ++c )
+        for( InputCursor c = subtree.begin() ; c != subtree.end() ; ++c )
             insert_below( p , c );
         return p;
     }
-   
-    
-//     cursor insert( cursor position , const value_type &val );
-//     cursor insert( cursor position , value_type &&val );
-//     template< typename InputCursor >
-//     cursor insert( cursor position , InputCursor subtree );
-
-
-
-
-
 
     void swap( basic_tree& other )
     {
-        // TODO : implement
+        self_type tmp = std::move( other );
+        other = std::move( *this );
+        *this = std::move( tmp );
     }
     
     void erase( cursor position ) noexcept
@@ -286,6 +280,20 @@ public:
     {
         erase( root() );
     }
+    
+    
+    
+    
+    //
+    // additional stuff for concept correctness:
+    //
+    // cursor insert( cursor position , const value_type &val );
+    // cursor insert( cursor position , value_type &&val );
+    // template< typename InputCursor > cursor insert( cursor position , InputCursor subtree );
+    // cursor shoot() noexcept { return cursor( &m_header , 1 ); }
+    // const_cursor shoot() const noexcept { return const_cursor( &m_header , 1 ); }
+    // const_cursor cshoot() const noexcept { return const_cursor( &m_header , 1 ); }
+
 
 private:
     
@@ -323,22 +331,59 @@ private:
         }
     }
     
+    void move_impl( basic_tree &&tree )
+    {
+        if( !tree.empty() )
+        {
+            node_base_pointer n = tree.m_header.children( 0 );
+            n->attach_parent( &m_header );
+            m_header.attach_child( n );
+            m_size = tree.m_size;
+            
+            tree.m_size = 0;
+            tree.m_header.set_children( 0 , nullptr );
+        }
+    }
+    
+    cursor rank_is_impl( cursor c , size_type &remaining )
+    {
+        if( remaining == 0 ) return c;
+        
+        --remaining;
+    }
+
+    
     node_allocator_type m_node_allocator;
     node_base_type m_header;
     size_t m_size;
 };
 
 
-
+//
 // compare algorithms:
+//
 template< typename T , typename Allocator >
-bool operator==( basic_tree< T , Allocator > const& x , basic_tree< T , Allocator > const& y );
-template< typename T, typename Allocator >
-bool operator!=( basic_tree< T , Allocator > const& x , basic_tree< T , Allocator > const& y );
+bool operator==( basic_tree< T , Allocator > const& x , basic_tree< T , Allocator > const& y )
+{
+    if( x.size() != y.size() ) return false;
+    return detail::cursor_comp( x.root() , y.root() );
+}
 
+template< typename T, typename Allocator >
+bool operator!=( basic_tree< T , Allocator > const& x , basic_tree< T , Allocator > const& y )
+{
+    return !( x == y );
+}
+
+
+//
 // specialized algorithms:
+//
 template< typename T , typename Allocator >
-void swap( basic_tree< T , Allocator >& x , basic_tree< T , Allocator >& y );
+void swap( basic_tree< T , Allocator >& x , basic_tree< T , Allocator >& y )
+{
+    x.swap( y );
+}
 
 
 } // namespace gp

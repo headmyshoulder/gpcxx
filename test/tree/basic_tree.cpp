@@ -117,350 +117,159 @@ TEST( basic_tree_tests , insert_cursor )
 }
 
 
+TEST( basic_tree_tests , assign )
+{
+    test_tree< basic_tree_tag > trees;
+    trees.data.assign( trees.data2.root() );
+    
+    EXPECT_EQ( trees.data.size() , 4 );
+    EXPECT_FALSE( trees.data.empty() );
+    TEST_NODE( trees.data.root() , "minus" , 2 );
+    TEST_NODE( trees.data.root().children(0) , "cos" , 1 );
+    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( trees.data.root().children(1) , "x" , 0 );
+}
+
+TEST( basic_tree_tests , clear )
+{
+    test_tree< basic_tree_tag > trees;
+    trees.data.clear();
+    
+    EXPECT_EQ( trees.data.size() , 0 );
+    EXPECT_TRUE( trees.data.empty() );
+}
+
+TEST( basic_tree_tests , iterator_construct )
+{
+    test_tree< basic_tree_tag > trees;
+    basic_tree< std::string > t( trees.data2.root() );
+    
+    EXPECT_EQ( t.size() , 4 );
+    EXPECT_FALSE( t.empty() );
+    TEST_NODE( t.root() , "minus" , 2 );
+    TEST_NODE( t.root().children(0) , "cos" , 1 );
+    TEST_NODE( t.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( t.root().children(1) , "x" , 0 );
+}
+
+TEST( basic_tree_tests , copy_construct )
+{
+    test_tree< basic_tree_tag > trees;
+    basic_tree< std::string > t( trees.data2 );
+    
+    EXPECT_EQ( trees.data2.size() , 4 );
+    EXPECT_FALSE( trees.data2.empty() );
+    EXPECT_EQ( t.size() , 4 );
+    EXPECT_FALSE( t.empty() );
+    TEST_NODE( t.root() , "minus" , 2 );
+    TEST_NODE( t.root().children(0) , "cos" , 1 );
+    TEST_NODE( t.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( t.root().children(1) , "x" , 0 );
+}
+
+TEST( basic_tree_tests , move_construct )
+{
+    test_tree< basic_tree_tag > trees;
+    basic_tree< std::string > t( std::move( trees.data2 ) );
+    
+    EXPECT_EQ( trees.data2.size() , 0 );
+    EXPECT_TRUE( trees.data2.empty() );
+    
+    EXPECT_EQ( t.size() , 4 );
+    EXPECT_FALSE( t.empty() );
+    TEST_NODE( t.root() , "minus" , 2 );
+    TEST_NODE( t.root().children(0) , "cos" , 1 );
+    TEST_NODE( t.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( t.root().children(1) , "x" , 0 );
+}
+
+TEST( basic_tree_tests , copy_assign )
+{
+    test_tree< basic_tree_tag > trees;
+    trees.data = trees.data2;
+    
+    EXPECT_EQ( trees.data2.size() , 4 );
+    EXPECT_FALSE( trees.data2.empty() );
+    
+    EXPECT_EQ( trees.data.size() , 4 );
+    EXPECT_FALSE( trees.data.empty() );
+    TEST_NODE( trees.data.root() , "minus" , 2 );
+    TEST_NODE( trees.data.root().children(0) , "cos" , 1 );
+    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( trees.data.root().children(1) , "x" , 0 );
+}
+
+TEST( basic_tree_tests , move_assign )
+{
+    test_tree< basic_tree_tag > trees;
+    trees.data = std::move( trees.data2 );
+    
+    EXPECT_EQ( trees.data2.size() , 0 );
+    EXPECT_TRUE( trees.data2.empty() );
+    
+    EXPECT_EQ( trees.data.size() , 4 );
+    EXPECT_FALSE( trees.data.empty() );
+    TEST_NODE( trees.data.root() , "minus" , 2 );
+    TEST_NODE( trees.data.root().children(0) , "cos" , 1 );
+    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( trees.data.root().children(1) , "x" , 0 );
+}
 
 
+TEST( basic_tree_tests , swap_method )
+{
+    test_tree< basic_tree_tag > trees;
+    trees.data.swap( trees.data2 );
+    
+    EXPECT_EQ( trees.data.size() , 4 );
+    EXPECT_FALSE( trees.data.empty() );
+    TEST_NODE( trees.data.root() , "minus" , 2 );
+    TEST_NODE( trees.data.root().children(0) , "cos" , 1 );
+    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( trees.data.root().children(1) , "x" , 0 );
 
+    EXPECT_EQ( trees.data2.size() , 6 );
+    EXPECT_FALSE( trees.data2.empty() );
+    TEST_NODE( trees.data2.root() , "plus" , 2 );
+    TEST_NODE( trees.data2.root().children(0) , "sin" , 1 );
+    TEST_NODE( trees.data2.root().children(0).children(0) , "x" , 0 );
+    TEST_NODE( trees.data2.root().children(1) , "minus" , 2 );
+    TEST_NODE( trees.data2.root().children(1).children(0) , "y" , 0 );
+    TEST_NODE( trees.data2.root().children(1).children(1) , "2" , 0 );
+}
 
+TEST( basic_tree_tests , swap_function )
+{
+    test_tree< basic_tree_tag > trees;
+    swap( trees.data , trees.data2 );
+    
+    EXPECT_EQ( trees.data.size() , 4 );
+    EXPECT_FALSE( trees.data.empty() );
+    TEST_NODE( trees.data.root() , "minus" , 2 );
+    TEST_NODE( trees.data.root().children(0) , "cos" , 1 );
+    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 );
+    TEST_NODE( trees.data.root().children(1) , "x" , 0 );
 
-// TEST( tree_tests , linked_node_copy_empty )
-// {
-//     node_type l1( 'a' );
-//     node_type l2( l1 );
-// 
-//     TEST_NODE( l1 , 'a' , 0 , 1 , 1 , 0 , nullptr );
-//     TEST_NODE( l2 , 'a' , 0 , 1 , 1 , 0 , nullptr );
-//     
-// }
-// 
-// TEST( tree_tests , linked_node_copy )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace( 'b' );
-//     auto i2 = l1.emplace( 'c' );
-//     node_type l2( l1 );
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 3 , 2 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 0 , 1 , 1 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 0 , 1 , 1 , 1 , &l1 );
-// 
-//     TEST_NODE( l2 , 'a' , 2 , 3 , 2 , 0 , nullptr );
-//     TEST_NODE( l2.children( 0 ) , 'b' , 0 , 1 , 1 , 1 , &l2 );
-//     TEST_NODE( l2.children( 1 ) , 'c' , 0 , 1 , 1 , 1 , &l2 );
-// }
-// 
-// TEST( tree_tests , linked_node_copy_2 )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace( 'b' );
-//     auto i2 = l1.emplace( 'c' );
-//     auto i3 = i1->emplace( 'd' );
-//     auto i4 = i1->emplace( 'e' );
-//     auto i5 = i2->emplace( 'f' );
-// 
-//     node_type l2( l1 );
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 2 , 3 , 2 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 1 , 2 , 2 , 1 , &l1 );
-//     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
-// 
-//     TEST_NODE( l2 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( l2.children(0) , 'b' , 2 , 3 , 2 , 1 , &l2 );
-//     TEST_NODE( l2.children(1) , 'c' , 1 , 2 , 2 , 1 , &l2 );
-//     TEST_NODE( l2.children(0).children(0) , 'd' , 0 , 1 , 1 , 2 , &l2.children(0) );
-//     TEST_NODE( l2.children(0).children(1) , 'e' , 0 , 1 , 1 , 2 , &l2.children(0) );
-//     TEST_NODE( l2.children(1).children(0) , 'f' , 0 , 1 , 1 , 2 , &l2.children(1) );
-// }
-// 
-// TEST( tree_tests , linked_node_copy_3 )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace( 'b' );
-//     auto i2 = l1.emplace( 'c' );
-//     auto i3 = i1->emplace( 'd' );
-//     auto i4 = i1->emplace( 'e' );
-//     auto i5 = i2->emplace( 'f' );
-// 
-//     node_type l2( l1.children(0) );
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 2 , 3 , 2 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 1 , 2 , 2 , 1 , &l1 );
-//     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
-// 
-//     TEST_NODE( l2 , 'b' , 2 , 3 , 2 , 0 , nullptr );
-//     TEST_NODE( l2.children(0) , 'd' , 0 , 1 , 1 , 1 , &l2 );
-//     TEST_NODE( l2.children(1) , 'e' , 0 , 1 , 1 , 1 , &l2 );
-// }
-// 
-// TEST( tree_tests , linked_node_assign_empty )
-// {
-//     node_type l1( 'a' );
-//     node_type l2;
-//     l2 = l1;
-// 
-//     TEST_NODE( l1 , 'a' , 0 , 1 , 1 , 0 , nullptr );
-//     TEST_NODE( l2 , 'a' , 0 , 1 , 1 , 0 , nullptr );
-// }
-// 
-// TEST( tree_tests , linked_node_assign )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace( 'b' );
-//     auto i2 = l1.emplace( 'c' );
-//     node_type l2;
-//     l2 = l1;
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 3 , 2 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 0 , 1 , 1 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 0 , 1 , 1 , 1 , &l1 );
-// 
-//     TEST_NODE( l2 , 'a' , 2 , 3 , 2 , 0 , nullptr );
-//     TEST_NODE( l2.children( 0 ) , 'b' , 0 , 1 , 1 , 1 , &l2 );
-//     TEST_NODE( l2.children( 1 ) , 'c' , 0 , 1 , 1 , 1 , &l2 );
-// }
-// 
-// TEST( tree_tests , linked_node_assign_2 )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace( 'b' );
-//     auto i2 = l1.emplace( 'c' );
-//     auto i3 = i1->emplace( 'd' );
-//     auto i4 = i1->emplace( 'e' );
-//     auto i5 = i2->emplace( 'f' );
-// 
-//     node_type l2;
-// 
-//     l2 = ( l1 );
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 2 , 3 , 2 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 1 , 2 , 2 , 1 , &l1 );
-//     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
-// 
-//     TEST_NODE( l2 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( l2.children(0) , 'b' , 2 , 3 , 2 , 1 , &l2 );
-//     TEST_NODE( l2.children(1) , 'c' , 1 , 2 , 2 , 1 , &l2 );
-//     TEST_NODE( l2.children(0).children(0) , 'd' , 0 , 1 , 1 , 2 , &l2.children(0) );
-//     TEST_NODE( l2.children(0).children(1) , 'e' , 0 , 1 , 1 , 2 , &l2.children(0) );
-//     TEST_NODE( l2.children(1).children(0) , 'f' , 0 , 1 , 1 , 2 , &l2.children(1) );
-// }
-// 
-// TEST( tree_tests , linked_node_assign_3 )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace( 'b' );
-//     auto i2 = l1.emplace( 'c' );
-//     auto i3 = i1->emplace( 'd' );
-//     auto i4 = i1->emplace( 'e' );
-//     auto i5 = i2->emplace( 'f' );
-// 
-//     node_type l2;
-//     l2.emplace( 'b' );
-//     l2.emplace( 'c' );
-//     l2 = l1.children(0);
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 2 , 3 , 2 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 1 , 2 , 2 , 1 , &l1 );
-//     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
-// 
-//     TEST_NODE( l2 , 'b' , 2 , 3 , 2 , 0 , nullptr );
-//     TEST_NODE( l2.children(0) , 'd' , 0 , 1 , 1 , 1 , &l2 );
-//     TEST_NODE( l2.children(1) , 'e' , 0 , 1 , 1 , 1 , &l2 );
-// }
-// 
-// 
-// TEST( tree_tests , linked_node_insert )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace( 'b' );
-//     auto i2 = l1.emplace( 'c' );
-//     auto i3 = i1->emplace( 'd' );
-//     auto i4 = i1->emplace( 'e' );
-//     auto i5 = i2->emplace( 'f' );
-// 
-//     node_type l2;
-//     l2.emplace( 'b' );
-//     l2.emplace( 'c' );
-//     l2 = l1.children(0);
-//     l2.insert( l1.children( 1 ) );
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 2 , 3 , 2 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 1 , 2 , 2 , 1 , &l1 );
-//     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
-// 
-//     TEST_NODE( l2 , 'b' , 3 , 5 , 3 , 0 , nullptr );
-//     TEST_NODE( l2.children(0) , 'd' , 0 , 1 , 1 , 1 , &l2 );
-//     TEST_NODE( l2.children(1) , 'e' , 0 , 1 , 1 , 1 , &l2 );
-//     TEST_NODE( l2.children(2) , 'c' , 1 , 2 , 2 , 1 , &l2 );
-//     TEST_NODE( l2.children(2).children(0) , 'f' , 0 , 1 , 1 , 2 , &l2.children(2) );
-// }
-// 
-// 
-// TEST( tree_tests , linked_emplace_inconsistent )
-// {
-//     node_type l1( 'a' );
-//     auto i1 = l1.emplace_inconsistent( 'b' );
-//     auto i2 = l1.emplace_inconsistent( 'c' );
-//     auto i3 = i1->emplace_inconsistent( 'd' );
-//     auto i4 = i1->emplace_inconsistent( 'e' );
-//     auto i5 = i2->emplace_inconsistent( 'f' );
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 1 , 1 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 2 , 1 , 1 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 1 , 1 , 1 , 1 , &l1 );
-//     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
-// 
-//     l1.make_consistent();
-// 
-//     TEST_NODE( l1 , 'a' , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( *i1 , 'b' , 2 , 3 , 2 , 1 , &l1 );
-//     TEST_NODE( *i2 , 'c' , 1 , 2 , 2 , 1 , &l1 );
-//     TEST_NODE( *i3 , 'd' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i4 , 'e' , 0 , 1 , 1 , 2 , &l1.children(0) );
-//     TEST_NODE( *i5 , 'f' , 0 , 1 , 1 , 2 , &l1.children(1) );
-// }
-// 
-// 
-// 
-// TEST( tree_tests , swap_real_1 )
-// {
-//     test_tree tree;
-//     tree.data.swap( tree.data2 );
-// 
-//     TEST_NODE( tree.data                         , "minus" , 2 , 4 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
-//     TEST_NODE( tree.data.children(1)             , "x"     , 0 , 1 , 1 , 1 , &tree.data );
-// 
-//     TEST_NODE( tree.data2                         , "plus"  , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data2.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
-//     TEST_NODE( tree.data2.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
-//     TEST_NODE( tree.data2.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
-// }
-// 
-// TEST( tree_tests , swap_real_2 )
-// {
-//     test_tree tree;
-//     tree.data.swap( tree.data );
-// 
-//     TEST_NODE( tree.data2                         , "minus" , 2 , 4 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data2.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
-//     TEST_NODE( tree.data2.children(1)             , "x"     , 0 , 1 , 1 , 1 , &tree.data2 );
-// 
-//     TEST_NODE( tree.data                         , "plus"  , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
-//     TEST_NODE( tree.data.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
-//     TEST_NODE( tree.data.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
-// }
-// 
-// 
-// 
-// TEST( tree_tests , swap_one_1 )
-// {
-//     test_tree tree;
-//     tree.data.swap( tree.data2.at(1) );
-// 
-//     TEST_NODE( tree.data                           , "cos" , 1 , 2 , 2 , 0 , nullptr );
-//     TEST_NODE( tree.data.children(0)               , "y"   , 0 , 1 , 1 , 1 , &tree.data );
-// 
-//     TEST_NODE( tree.data2                          , "minus" , 2 , 8 , 4 , 0 , nullptr );
-//     TEST_NODE( tree.data2.children(0)              , "plus"  , 2 , 6 , 3 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(0).children(0)  , "sin"   , 1 , 2 , 2 , 2 , tree.data2.children_ptr(0) );
-//     TEST_NODE( tree.data2.children(0).children(1)  , "minus" , 2 , 3 , 2 , 2 , tree.data2.children_ptr(0) );
-//     TEST_NODE( tree.data2.children(1)              , "x"     , 0 , 1 , 1 , 1 , &tree.data2 );
-// 
-//     TEST_NODE( tree.data2.children(0).children(0).children(0)  , "x" , 0 , 1 , 1 , 3 , tree.data2.children(0).children_ptr(0) );
-//     TEST_NODE( tree.data2.children(0).children(1).children(0)  , "y" , 0 , 1 , 1 , 3 , tree.data2.children(0).children_ptr(1) );
-//     TEST_NODE( tree.data2.children(0).children(1).children(1)  , "2" , 0 , 1 , 1 , 3 , tree.data2.children(0).children_ptr(1) );
-// }
-// 
-// TEST( tree_tests , swap_one_2 )
-// {
-//     test_tree tree;
-//     tree.data2.swap( tree.data.at(3) );
-// 
-//     TEST_NODE( tree.data                         , "plus"  , 2 , 7 , 4 , 0 , nullptr );
-//     TEST_NODE( tree.data.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
-//     TEST_NODE( tree.data.children(1)             , "minus" , 2 , 4 , 3 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(1).children(0) , "cos"   , 1 , 2 , 2 , 2 , tree.data.children_ptr(1) );
-//     TEST_NODE( tree.data.children(1).children(1) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
-// 
-//     TEST_NODE( tree.data.children(1).children(0).children(0) , "y" , 0 , 1 , 1 , 3 , tree.data.children(1).children_ptr(0) );
-// 
-//     TEST_NODE( tree.data2                         , "minus"  , 2 , 3 , 2 , 0 , nullptr );
-//     TEST_NODE( tree.data2.children(0)             , "y"      , 0 , 1 , 1 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(1)             , "2"      , 0 , 1 , 1 , 1 , &tree.data2 );
-// }
-// 
-// 
-// TEST( tree_tests , swap_two_1 )
-// {
-//     test_tree tree;
-//     tree.data.at(1).swap( tree.data2.at(3) );
-// 
-//     TEST_NODE( tree.data                         , "plus"  , 2 , 5 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data.children(0)             , "x"     , 0 , 1 , 1 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
-//     TEST_NODE( tree.data.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
-// 
-//     TEST_NODE( tree.data2                         , "minus" , 2 , 5 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data2.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(1)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
-//     TEST_NODE( tree.data2.children(1).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
-// }
-// 
-// TEST( tree_tests , swap_two_2 )
-// {
-//     test_tree tree;
-//     tree.data.at(3).swap( tree.data2.at(3) );
-// 
-//     TEST_NODE( tree.data                         , "plus"  , 2 , 4 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data.children(0)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(1)             , "x"     , 0 , 1 , 1 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(0).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
-// 
-//     TEST_NODE( tree.data2                         , "minus" , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data2.children(0)             , "cos"   , 1 , 2 , 2 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(1)             , "minus" , 2 , 3 , 2 , 1 , &tree.data2 );
-//     TEST_NODE( tree.data2.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(0) );
-//     TEST_NODE( tree.data2.children(1).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
-//     TEST_NODE( tree.data2.children(1).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data2.children_ptr(1) );
-// }
-// 
-// 
-// 
-// TEST( tree_tests , swap_two_3 )
-// {
-//     test_tree tree;
-//     tree.data.at(1).swap( tree.data.at(3) );
-// 
-//     TEST_NODE( tree.data                         , "plus"  , 2 , 6 , 3 , 0 , nullptr );
-//     TEST_NODE( tree.data.children(0)             , "minus" , 2 , 3 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(1)             , "sin"   , 1 , 2 , 2 , 1 , &tree.data );
-//     TEST_NODE( tree.data.children(0).children(0) , "y"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
-//     TEST_NODE( tree.data.children(0).children(1) , "2"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(0) );
-//     TEST_NODE( tree.data.children(1).children(0) , "x"     , 0 , 1 , 1 , 2 , tree.data.children_ptr(1) );
-// }
+    EXPECT_EQ( trees.data2.size() , 6 );
+    EXPECT_FALSE( trees.data2.empty() );
+    TEST_NODE( trees.data2.root() , "plus" , 2 );
+    TEST_NODE( trees.data2.root().children(0) , "sin" , 1 );
+    TEST_NODE( trees.data2.root().children(0).children(0) , "x" , 0 );
+    TEST_NODE( trees.data2.root().children(1) , "minus" , 2 );
+    TEST_NODE( trees.data2.root().children(1).children(0) , "y" , 0 );
+    TEST_NODE( trees.data2.root().children(1).children(1) , "2" , 0 );
+}
+
+TEST( basic_tree_tests , equal_compare )
+{
+    test_tree< basic_tree_tag > trees;
+    basic_tree< std::string > t = trees.data;
+    
+    EXPECT_FALSE( trees.data == trees.data2 );
+    EXPECT_TRUE( trees.data != trees.data2 );
+    EXPECT_NE( ( trees.data ) , ( trees.data2 ) );
+    
+    EXPECT_TRUE( trees.data == t );
+    EXPECT_FALSE( trees.data != t );
+    EXPECT_EQ( ( trees.data ) , t );
+}
