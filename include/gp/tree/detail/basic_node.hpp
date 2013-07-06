@@ -18,6 +18,7 @@
 
 
 namespace gp {
+
 namespace detail {
 
     
@@ -25,6 +26,7 @@ namespace detail {
 template< size_t MaxArity >
 class basic_node_base
 {
+
 public:
 
     static const size_t max_arity = MaxArity;
@@ -65,6 +67,11 @@ public:
     node_base_type const* parent( void ) const noexcept
     {
         return m_parent;
+    }
+
+    size_t child_index( node_base_type const* child ) const
+    {
+        return std::distance( m_children.begin() , find_child( child ) );
     }
     
     

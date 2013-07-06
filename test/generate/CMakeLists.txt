@@ -6,8 +6,8 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 
 add_executable ( generate_tests
-  random_symbol_generator.cpp
-  basic_generate_strategy.cpp
+  # random_symbol_generator.cpp
+  # basic_generate_strategy.cpp
   )
 
 target_link_libraries ( generate_tests gtest gtest_main )

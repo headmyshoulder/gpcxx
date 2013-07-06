@@ -14,11 +14,6 @@
 
 namespace gp {
 
-    template< class Tree >
-    void print_simple( const Tree &tree , std::ostream& = std::cout )
-    {
-        auto n = root_node( tree );
-    }
 
 }
 

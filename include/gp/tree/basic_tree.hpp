@@ -21,7 +21,7 @@
 #include <memory>
 #include <cstddef>
 #include <cassert>
-
+#include <queue>
 
 
 namespace gp {
@@ -173,25 +173,37 @@ public:
     {
         return const_cursor( &m_header , 0 );
     }
-    
-    
-    cursor rank_is( size_type n )
+
+    cursor shoot() noexcept
     {
-        if( n >= m_size ) throw std::out_of_range( "Not enough elements in basic_tree!" );
-        
-        return rank_is_impl( root() , n );
+        return cursor( &m_header , 1 );
+    }
+
+    const_cursor shoot() const noexcept
+    {
+        return const_cursor( &m_header , 1 );
+    }
+
+    const_cursor cshoot() const noexcept
+    {
+        return const_cursor( &m_header , 1 );
     }
     
-    const_cursor rank_is( size_type n ) const
+    cursor rank_is( size_type n ) noexcept
     {
-        // TODO : implement        
+        if( n >= m_size )
+            return shoot();
+        return rank_is_impl< cursor >( root() , n );
     }
     
-    size_type rank_of( const_cursor c ) const
+    const_cursor rank_is( size_type n ) const noexcept
     {
-        // TODO : implement        
+        if( n >= m_size )
+            return shoot();
+        return rank_is_impl< const_cursor >( root() , n );
     }
-    
+
+
     
     
 
@@ -290,9 +302,8 @@ public:
     // cursor insert( cursor position , const value_type &val );
     // cursor insert( cursor position , value_type &&val );
     // template< typename InputCursor > cursor insert( cursor position , InputCursor subtree );
-    // cursor shoot() noexcept { return cursor( &m_header , 1 ); }
-    // const_cursor shoot() const noexcept { return const_cursor( &m_header , 1 ); }
-    // const_cursor cshoot() const noexcept { return const_cursor( &m_header , 1 ); }
+    // size_type rank_of( const_cursor c ) const;
+
 
 
 private:
@@ -345,11 +356,21 @@ private:
         }
     }
     
-    cursor rank_is_impl( cursor c , size_type &remaining )
+    template< typename Cursor >
+    Cursor rank_is_impl( Cursor c , size_type remaining ) const
     {
-        if( remaining == 0 ) return c;
-        
-        --remaining;
+        std::queue< Cursor > cursor_queue;
+        cursor_queue.push( c );
+
+        while( ( remaining != 0 ) && ( !cursor_queue.empty() ) )
+        {
+            Cursor current = cursor_queue.front();
+            for( Cursor i = current.begin() ; i != current.end() ; ++i ) cursor_queue.push( i );
+            cursor_queue.pop();
+            --remaining;
+        }
+        assert( !cursor_queue.empty() );
+        return cursor_queue.front();
     }
 
     

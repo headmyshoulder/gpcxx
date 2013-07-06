@@ -5,7 +5,7 @@
  */
 
 #include <gp/generate/random_symbol_generator.hpp>
-#include <gp/tree/linked_node.hpp>
+// #include <gp/tree/linked_node.hpp>
 #include "../common/test_generator.hpp"
 
 #include <gtest/gtest.h>

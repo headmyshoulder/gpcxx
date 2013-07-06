@@ -6,8 +6,6 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 
 add_executable ( tree_tests
-  # linked_node.cpp
-  # find_node_to_index.cpp 
   basic_tree.cpp
   )
 

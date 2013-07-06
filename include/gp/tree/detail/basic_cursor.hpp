@@ -22,6 +22,9 @@
 #include <type_traits>
 
 namespace gp {
+
+template< typename T , typename A > class basic_tree;
+
 namespace detail {
 
 template< typename Node >
@@ -54,6 +57,8 @@ class basic_node_cursor : public boost::iterator_facade<
     
     friend class boost::iterator_core_access;
     template<typename U> friend class basic_node_cursor;
+    template< typename T , typename A > friend class basic_tree;
+
     
     typedef Node node_type;
     typedef node_type* node_pointer;
@@ -95,7 +100,7 @@ public:
     basic_node_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
     : m_node( node ) , m_pos( pos ) { }
 
-//     template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
+//    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
 //     basic_node_cursor( basic_node_cursor< OtherNode > const& other )
 //     : m_node( other.m_node ) , m_pos( other.m_pos ) {}
     
@@ -145,13 +150,15 @@ public:
         return const_cursor( m_node->children( m_pos ) , this->size() );
     }
     
-//     cursor parent( void )
-//     {
-//     }
-//     
-//     const_cursor parent( void ) const
-//     {
-//     }
+    cursor parent( void )
+    {
+        return cursor( m_node->parent() , m_node->child_index( node() ) );
+    }
+
+    const_cursor parent( void ) const
+    {
+        return const_cursor( m_node->parent() , m_node->child_index( node() ) );
+    }
 
 
     cursor children( size_type i )
@@ -176,28 +183,49 @@ public:
         return m_node->max_size();
     }
     
+    size_type height( void ) const noexcept
+    {
+        size_type h = 0;
+        for( const_cursor s = begin() ; s != end() ; ++s )
+            h = std::max( h , s.height() );
+        return 1 + h;
+
+    }
+
+    size_type level( void ) const noexcept
+    {
+        if( m_node == nullptr ) return 0;
+        if( m_node->parent() == nullptr ) return 0;
+        return 1 + parent().level();
+    }
+
+    
+    
+public:
+
     node_base_pointer parent_node( void ) noexcept
     {
         return m_node;
     }
-    
-//     const real_node_base_pointer parent_node( void ) const noexcept
-//     {
-//         return m_node;
-//     }
-    
+
+    const node_base_pointer parent_node( void ) const noexcept
+    {
+        return m_node;
+    }
+
     node_base_pointer node( void ) noexcept
     {
         return m_node->children( m_pos );
     }
-    
-//     const_real_node_base_pointer node( void ) const noexcept
-//     {
-//         return m_node->children( m_pos );
-//     }
-    
+
+    const node_base_pointer node( void ) const noexcept
+    {
+        return m_node->children( m_pos );
+    }
+
+
 private:
-    
+
     void increment( void )
     {
         ++m_pos;

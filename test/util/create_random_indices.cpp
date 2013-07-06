@@ -8,18 +8,18 @@
 
 #include <gtest/gtest.h>
 
-
-
 using namespace std;
 
-TEST( util_tests , create_random_indices1 )
+#define TESTNAME create_random_indices_tests
+
+TEST( TESTNAME , create1 )
 {
     std::vector< size_t >  ind;
     gp::create_random_indices( ind , 10 , 5 );
     EXPECT_EQ( ind.size() , 5 );
 }
 
-TEST( util_tests , create_random_indices2 )
+TEST( TESTNAME , create2 )
 {
     std::vector< size_t >  ind;
     gp::create_random_indices( ind , 10 , 10 );
