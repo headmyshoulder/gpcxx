@@ -30,6 +30,9 @@ public:
     void operator()( Tree &t ) const
     {
         typedef Tree node_type;
+        typedef Tree tree_type;
+        typedef typename tree_type::cursor cursor;
+
 
         std::array< int , 2 > weights_dice = {{ m_gen_weights[1] , m_gen_weights[2] }};
         std::array< int , 3 > weights_thrice = m_gen_weights;

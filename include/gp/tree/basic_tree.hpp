@@ -406,6 +406,18 @@ void swap( basic_tree< T , Allocator >& x , basic_tree< T , Allocator >& y )
     x.swap( y );
 }
 
+template< typename T , typename Allocator >
+void swap_subtrees( basic_tree< T , Allocator >& t1 ,
+                    typename basic_tree< T , Allocator >::cursor c1 ,
+                    basic_tree< T , Allocator >& t2 ,
+                    typename basic_tree< T , Allocator >::cursor c2 )
+{
+    // swap children in parents
+
+    // swap parents
+
+}
+
 
 } // namespace gp
 

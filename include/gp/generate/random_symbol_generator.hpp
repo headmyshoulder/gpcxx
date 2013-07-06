@@ -14,12 +14,10 @@
 namespace gp {
 
 
-template< class Node , class Rng >
+template< typename T , typename Rng >
 struct random_symbol_generator
 {
-    typedef Node node_type;
-    typedef node_type* node_pointer;
-    typedef typename Node::value_type value_type;
+    typedef T value_type;
 
 
     random_symbol_generator( const std::vector< value_type > &symbols , Rng &rng , size_t arity )
@@ -28,9 +26,9 @@ struct random_symbol_generator
         assert( !m_symbols.empty() );
     }
 
-    node_pointer operator()( void )
+    vale_type operator()( void )
     {
-        return new node_type( random_symbol() );
+        return random_symbol();
     }
 
     value_type random_symbol( void )
