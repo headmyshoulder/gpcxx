@@ -16,13 +16,15 @@
 
 #include <gtest/gtest.h>
 
+#define TESTNAME crossover_tests
+
 using namespace std;
 
-TEST( operator_tests , crossover_instanciation )
+TEST( TESTNAME , instanciation )
 {
-    test_tree tree;
+    test_tree< basic_tree_tag > tree;
     test_generator gen;
-    std::vector< test_tree::node_type > pop( 10 , test_tree::node_type() );
+    std::vector< test_tree< basic_tree_tag >::tree_type > pop( 10 , test_tree< basic_tree_tag >::tree_type() );
     std::vector< double > fitness( 10 );
     auto c = gp::make_crossover( gp::make_one_point_crossover_strategy( gen.rng , 10 ) , gp::make_random_selector( gen.rng ) );
     c( pop , fitness );

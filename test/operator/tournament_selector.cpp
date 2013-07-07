@@ -14,13 +14,15 @@
 
 #include <gtest/gtest.h>
 
+#define TESTNAME tournament_selector_tests
+
 using namespace std;
 
-TEST( operator_tests , tournament_selector_instanciation )
+TEST( TESTNAME , instanciation )
 {
-    test_tree tree;
+    test_tree< basic_tree_tag > tree;
     test_generator gen;
-    std::vector< test_tree::node_type > pop( 10 , test_tree::node_type() );
+    std::vector< test_tree< basic_tree_tag >::tree_type > pop( 10 , test_tree< basic_tree_tag >::tree_type() );
     std::vector< double > fitness( 10 );
     auto selector = gp::make_tournament_selector( gen.rng , 7 );
     auto node = selector( pop , fitness );

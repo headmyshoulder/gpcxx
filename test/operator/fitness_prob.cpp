@@ -8,9 +8,12 @@
 
 #include <gtest/gtest.h>
 
+#define TESTNAME fitness_prob_tests
+
 using namespace std;
 
-TEST( operator_tests , fitness_prob1 )
+
+TEST( TESTNAME , prob1 )
 {
     std::mt19937 rng;
     std::vector< double > fitness = { 5.0 , 2.0 , 4.0 , 1.0 , 7.0 };
@@ -31,7 +34,7 @@ TEST( operator_tests , fitness_prob1 )
 
 }
 
-TEST( operator_tests , fitness_prob2 )
+TEST( TESTNAME , prob2 )
 {
     std::mt19937 rng;
     std::vector< double > fitness = { 5.0 , 2.0 , NAN , 1.0 , 7.0 };
