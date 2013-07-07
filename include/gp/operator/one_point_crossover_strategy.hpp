@@ -28,29 +28,30 @@ public:
     template< class Tree >
     void operator()( Tree &t1 , Tree &t2 )
     {
-        typedef typename Tree::node_type node_type;
+        typedef typename Tree::cursor cursor;
 
-        std::uniform_int_distribution< size_t > dist1( 0 , t1.num_elements() - 1 );
-        std::uniform_int_distribution< size_t > dist2( 0 , t2.num_elements() - 1 );
+        std::uniform_int_distribution< size_t > dist1( 0 , t1.size() - 1 );
+        std::uniform_int_distribution< size_t > dist2( 0 , t2.size() - 1 );
 
         bool good = true;
         size_t iter = 0;
-        node_type *n1 = 0 , *n2 = 0;
+        cursor n1  , n2 ;
         do
         {
             size_t i1 = dist1( m_rng );
             size_t i2 = dist2( m_rng );
 
-            n1 = &t1[ i1 ];
-            n2 = &t2[ i2 ];
+            n1 = t1.rank_is( i1 );
+            n2 = t2.rank_is( i2 );
 
-            size_t nh1 = n1->level() + n2->height() - 1;
-            size_t nh2 = n2->level() + n1->height() - 1;
+            size_t nh1 = n1.level() + n2.height() - 1;
+            size_t nh2 = n2.level() + n1.height() - 1;
             good = ( ( nh1 <= m_max_height ) && ( nh2 <= m_max_height ) );
         }
         while( ( iter < m_max_iterations ) && ( good == false ) );
 
-        if( good ) n1->swap( n2 );
+        if( good )
+            swap_subtrees( t1 , n1 , t2 , n2 );
     }
     
 private:

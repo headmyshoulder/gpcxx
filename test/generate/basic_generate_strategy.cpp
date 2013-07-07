@@ -4,8 +4,8 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gp/tree/linked_node.hpp>
 #include <gp/generate/basic_generate_strategy.hpp>
+#include <gp/tree/basic_tree.hpp>
 
 #include "../common/test_generator.hpp"
 
@@ -13,8 +13,10 @@
 
 #include <gtest/gtest.h>
 
+#define TESTNAME basic_generate_strategy_tests
 
-TEST( tree_tests , generate_radnom_linked_tree_test1 )
+
+TEST( TESTNAME , generate_radnom_linked_tree_test1 )
 {
     test_generator gen;
 
@@ -23,12 +25,12 @@ TEST( tree_tests , generate_radnom_linked_tree_test1 )
 
     for( size_t i=0 ; i<1000 ; ++i )
     {
-        gp::linked_node< std::string > tree;
+        gp::basic_tree< std::string > tree;
         
         auto generator = gp::make_basic_generate_strategy( rng , gen.gen0 , gen.gen1 , gen.gen2 , 2 , 4 , weights );
         generator( tree );
-        EXPECT_TRUE( tree.height() >= 2 );
-        EXPECT_TRUE( tree.height() <= 4 );
+        EXPECT_TRUE( tree.root().height() >= 2 );
+        EXPECT_TRUE( tree.root().height() <= 4 );
     }
 }
 

@@ -12,9 +12,11 @@
 
 using namespace std;
 
-TEST( operator_tests , one_point_crossover_strategy_instanciation )
+#define TESTNAME one_point_crossover_strategy_tests
+
+TEST( TESTNAME , instanciation )
 {
-    test_tree tree;
+    test_tree< basic_tree_tag > tree;
     test_generator gen;
     auto c = gp::make_one_point_crossover_strategy( gen.rng , 10 );
     c( tree.data , tree.data2 );

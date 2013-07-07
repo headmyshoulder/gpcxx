@@ -37,7 +37,7 @@ public:
     basic_node_base( node_base_type *parent = nullptr ) noexcept
     : m_parent( parent ) , m_children()
     {
-        for( size_t i=0 ; i<max_arity ; ++i ) m_children[i] = nullptr;
+        std::fill( m_children.begin() , m_children.end() , nullptr );
     }
     
     
@@ -111,6 +111,18 @@ public:
         
         std::copy( iter + 1 , end-- , iter );
         *end = nullptr;
+    }
+    
+    size_t count_nodes( void ) const
+    {
+        size_t count = 1;
+        typename children_type::const_iterator iter = m_children.begin();
+        typename children_type::const_iterator end = m_children.begin() + size();
+        for( ; iter != end ; ++iter )
+        {
+            count += ( (*iter)->count_nodes() );
+        }
+        return count;
     }
 
     

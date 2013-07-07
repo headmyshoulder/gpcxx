@@ -25,7 +25,7 @@ bool contains( const C &c , const S &s )
 struct test_generator
 {
     typedef std::vector< std::string > symbol_container;
-    typedef gp::random_symbol_generator< gp::linked_node< std::string > , std::mt19937 > generator_type;
+    typedef gp::random_symbol_generator< std::string , std::mt19937 > generator_type;
 
     test_generator( void )
         : term_symbols( { "x" , "y" , "z" } ) ,

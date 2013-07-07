@@ -26,7 +26,7 @@ struct random_symbol_generator
         assert( !m_symbols.empty() );
     }
 
-    vale_type operator()( void )
+    value_type operator()( void )
     {
         return random_symbol();
     }

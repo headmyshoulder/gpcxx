@@ -273,6 +273,36 @@ public:
         *this = std::move( tmp );
     }
     
+    void swap_subtrees( cursor c1 , basic_tree& other , cursor c2 )
+    {
+        node_base_pointer parent1 = c1.parent_node();
+        node_base_pointer parent2 = c2.parent_node();
+        node_base_pointer n1 = c1.node();
+        node_base_pointer n2 = c2.node();
+        
+        size_type i1 = parent1->child_index( n1 );
+        size_type i2 = parent2->child_index( n2 );
+        
+        parent1->set_children( i1 , n2 );
+        parent2->set_children( i2 , n1 );
+        
+        size_type num_nodes1 = 0 , num_nodes2 = 0;
+        if( n1 != nullptr )
+        {
+            n1->attach_parent( parent2 );
+            num_nodes1 = n1->count_nodes();
+        }
+        if( n2 != nullptr )
+        {
+            n2->attach_parent( parent1 );
+            num_nodes2 = n2->count_nodes();
+        }
+        m_size = m_size - num_nodes1 + num_nodes2;
+        other.m_size = other.m_size - num_nodes2 + num_nodes1;
+    }
+
+
+    
     void erase( cursor position ) noexcept
     {
         --m_size;
@@ -412,10 +442,7 @@ void swap_subtrees( basic_tree< T , Allocator >& t1 ,
                     basic_tree< T , Allocator >& t2 ,
                     typename basic_tree< T , Allocator >::cursor c2 )
 {
-    // swap children in parents
-
-    // swap parents
-
+    t1.swap_subtrees( c1 , t2 , c2 );
 }
 
 

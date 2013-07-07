@@ -20,16 +20,28 @@ class basic_generate_strategy
 {
 public:
     
-     basic_generate_strategy( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
-                              size_t min_height , size_t max_height , std::array< int , 3 > const& gen_weights )
-     : m_rng( rng ) , m_terminal_gen( gen0 ) , m_unary_gen( gen1 ) , m_binary_gen( gen2 ) ,
-       m_min_height( min_height ) , m_max_height( max_height ) ,
+    basic_generate_strategy( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
+                             size_t min_height , size_t max_height , std::array< int , 3 > const& gen_weights )
+    : m_rng( rng ) , m_terminal_gen( gen0 ) , m_unary_gen( gen1 ) , m_binary_gen( gen2 ) ,
+      m_min_height( min_height ) , m_max_height( max_height ) ,
       m_gen_weights( gen_weights ) { }
       
-    template< class Tree >
-    void operator()( Tree &t ) const
+    template< typename Tree >
+    typename Tree::cursor insert_node( Tree &tree , typename Tree::cursor current , size_t new_arity ) const
     {
-        typedef Tree node_type;
+        switch( new_arity )
+        {
+            case 0 : return tree.insert_below( current , m_terminal_gen.random_symbol() ); break;
+            case 1 : return tree.insert_below( current , m_unary_gen.random_symbol() ); break;
+            case 2 : return tree.insert_below( current , m_binary_gen.random_symbol() ); break;
+        }
+        return typename Tree::cursor();
+    }
+
+      
+    template< class Tree >
+    void operator()( Tree &tree ) const
+    {
         typedef Tree tree_type;
         typedef typename tree_type::cursor cursor;
 
@@ -41,21 +53,19 @@ public:
         std::discrete_distribution<> dice( weights_dice.begin() , weights_dice.end() );
         std::discrete_distribution<> thrice( weights_thrice.begin() , weights_thrice.end() );
 
-        // first - index of node
-        // first - how many childs still have to be created
-        std::stack< std::pair< node_type* , size_t > > gen_stack; 
+        // first - cursor to node, second - how many childs still have to be created
+        std::stack< std::pair< cursor , size_t > > gen_stack; 
 
         // initialize
-        t.value() = m_binary_gen.random_symbol();
+        cursor root = tree.insert_below( tree.root() , m_binary_gen.random_symbol() );
             
-        gen_stack.push( std::make_pair( &t , 2 ) );
+        gen_stack.push( std::make_pair( root , 2 ) );
 
         size_t height = 1;
-
         while( !gen_stack.empty() )
         {
-            node_type *current = gen_stack.top().first;
-            if( current->arity() == gen_stack.top().second )
+            cursor current = gen_stack.top().first;
+            if( current.size() == gen_stack.top().second )
             {
                 gen_stack.pop();
                 height--;
@@ -64,31 +74,14 @@ public:
 
             ++height;
 
-
-            node_type *n = nullptr;
-            size_t new_arity = 0;
-            if( height < m_min_height )
-            {
-                if( dice( m_rng ) == 0 ) { n = &( *current->emplace_inconsistent( m_unary_gen.random_symbol() ) ) ; new_arity = 1; }
-                else { n = &( *current->emplace_inconsistent( m_binary_gen.random_symbol() ) ) ; new_arity = 2; }
-            }
-            else if( height < m_max_height )
-            {
-                int r = thrice( m_rng );
-                if( r == 0 ) { n = &( *current->emplace_inconsistent( m_terminal_gen.random_symbol() ) ); new_arity = 0; }
-                else if( r == 1 ) { n = &( *current->emplace_inconsistent( m_unary_gen.random_symbol() ) ); new_arity = 1; }
-                else { n = &( *current->emplace_inconsistent( m_binary_gen.random_symbol() ) ); new_arity = 2; }
-            }
-            else 
-            {
-                n = &( *current->emplace_inconsistent( m_terminal_gen.random_symbol() ) ); new_arity = 0;
-            }
+            size_t new_arity = ( height < m_min_height ) ? dice( m_rng ) + 1 : ( height < m_max_height ) ? thrice( m_rng ) : 0 ;
+            cursor n = insert_node( tree , current , new_arity );
 
             if( new_arity > 0 ) gen_stack.push( std::make_pair( n , new_arity ) );
             else height--;
         }
 
-        t.make_consistent();
+        // t.make_consistent();
     }
     
 private:
