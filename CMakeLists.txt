@@ -13,6 +13,7 @@ set ( CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ctoolbox 
   )
 
 
@@ -26,6 +27,8 @@ include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 # add_subdirectory ( app )
+
+add_subdirectory ( doc )
 
 
 if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest )
