@@ -12,6 +12,7 @@
 #ifndef GP_TREE_CURSOR_TRAITS_HPP_DEFINED
 #define GP_TREE_CURSOR_TRAITS_HPP_DEFINED
 
+#include <type_traits>
 
 namespace gp {
 
