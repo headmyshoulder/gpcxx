@@ -1,6 +1,6 @@
 find_package ( Git )
 
-execute_process ( COMMAND git status -uno
+execute_process ( COMMAND git status -s -uno
                   OUTPUT_VARIABLE GP_GIT_CURRENT_STATUS 
                   OUTPUT_STRIP_TRAILING_WHITESPACE )
                   
