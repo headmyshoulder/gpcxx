@@ -13,8 +13,11 @@ string ( REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+.(.*)" "\\1" GP_VERSION_SHA1 "$
 
 set ( GP_VERSION_SHORT "${GP_VERSION_MAJOR}.${GP_VERSION_MINOR}.${GP_VERSION_PATCH}" )
 
-message ( STATUS "${GP_VERSION_MAJOR}" )
-message ( STATUS "${GP_VERSION_MINOR}" )
-message ( STATUS "${GP_VERSION_PATCH}" )
-message ( STATUS "${GP_VERSION_SHA1}" )
-message ( STATUS "${GP_VERSION_SHORT}" )
+# message ( STATUS "${GP_VERSION_MAJOR}" )
+# message ( STATUS "${GP_VERSION_MINOR}" )
+# message ( STATUS "${GP_VERSION_PATCH}" )
+# message ( STATUS "${GP_VERSION_SHA1}" )
+# message ( STATUS "${GP_VERSION_SHORT}" )
+
+configure_file ( ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp.cmake ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp )
+
