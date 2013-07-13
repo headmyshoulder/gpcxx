@@ -1,9 +1,5 @@
 find_package ( Git )
 
-execute_process ( COMMAND git status -s -uno
-                  OUTPUT_VARIABLE GP_GIT_CURRENT_STATUS 
-                  OUTPUT_STRIP_TRAILING_WHITESPACE )
-                  
 execute_process ( COMMAND git describe --abbrev=4 HEAD
                   COMMAND sed -e "s/-/./g"
                   OUTPUT_VARIABLE GP_GIT_VERSION
@@ -29,9 +25,4 @@ set ( GP_VERSION_SHORT "${GP_VERSION_MAJOR}.${GP_VERSION_MINOR}.${GP_VERSION_PAT
 # message ( STATUS "${GP_VERSION_SHORT}" )
 
 
-if ( NOT GP_GIT_CURRENT_STATUS STREQUAL "" )
-
-  message ( STATUS "create new config version file for version ${GP_GIT_VERSION}"  )
-  configure_file ( ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp.cmake ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp )
-
-endif ()
+configure_file ( ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp.cmake ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp )
