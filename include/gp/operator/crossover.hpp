@@ -32,7 +32,8 @@ public:
         typedef typename Pop::value_type individual_type;
         individual_type node1 = m_selector( pop , fitness );
         individual_type node2 = m_selector( pop , fitness );
-        m_strategy( node1 , node2 );
+        if( ( !node1.empty() ) && ( ! node2.empty() ) )
+            m_strategy( node1 , node2 );
         return std::make_pair( node1 , node2 );
     }
     

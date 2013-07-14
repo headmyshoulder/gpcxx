@@ -105,7 +105,6 @@ public:
 //     : m_node( other.m_node ) , m_pos( other.m_pos ) {}
     
     // emtpy()
-    // size()
     // swap()
     // operator==
     // operator!=
@@ -185,6 +184,8 @@ public:
     
     size_type height( void ) const noexcept
     {
+        // if( node() == nullptr ) return 0;
+        
         size_type h = 0;
         for( const_cursor s = begin() ; s != end() ; ++s )
             h = std::max( h , s.height() );

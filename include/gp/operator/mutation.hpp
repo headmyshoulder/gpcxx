@@ -28,7 +28,8 @@ public:
     {
         typedef typename Pop::value_type individual_type;
         individual_type node = m_selector( pop , fitness );
-        m_strategy( node );
+        if( !node.empty() )
+            m_strategy( node );
         return node;
     }
 

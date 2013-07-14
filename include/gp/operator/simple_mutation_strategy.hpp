@@ -82,9 +82,11 @@ struct simple_mutation_strategy
     template< class Tree >
     void operator()( Tree &t )
     {
+        if( t.empty() ) return;
+        if( t.root().height() < 2 ) return;
         std::uniform_int_distribution< size_t > dist( 0 , t.size() - 1 );
 
-        if( t.root().height() < 2 ) return;
+
 
         size_t count = 0 ;
         bool ok = true;
