@@ -29,8 +29,8 @@ find_package ( Boost REQUIRED COMPONENTS thread system )
 include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
-# add_subdirectory ( app )
-
+add_subdirectory ( examples )
+add_subdirectory ( performance )
 add_subdirectory ( doc )
 
 
