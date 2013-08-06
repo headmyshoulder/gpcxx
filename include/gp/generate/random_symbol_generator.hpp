@@ -20,8 +20,8 @@ struct random_symbol_generator
     typedef T value_type;
 
 
-    random_symbol_generator( const std::vector< value_type > &symbols , Rng &rng , size_t arity )
-        : m_symbols( symbols ) , m_rng( rng ) , m_arity( arity )
+    random_symbol_generator( const std::vector< value_type > &symbols , Rng &rng )
+        : m_symbols( symbols ) , m_rng( rng )
     {
         assert( !m_symbols.empty() );
     }
@@ -46,10 +46,14 @@ private:
 
     std::vector< value_type > m_symbols;
     Rng &m_rng;
-    size_t m_arity;
 };
 
 
+template< typename T , typename Rng >
+random_symbol_generator< T , Rng > make_random_symbol_generator( std::vector< T > const& symbols , Rng &rng )
+{
+    return random_symbol_generator< T , Rng >( symbols , rng );
+}
 
 
 

@@ -31,9 +31,9 @@ struct test_generator
         : term_symbols( { "x" , "y" , "z" } ) ,
           unary_symbols(  { "sin" , "cos" , "exp" } ) ,
           binary_symbols( { "plus" , "minus" , "multiplies" } ) ,
-          gen0( term_symbols , rng , 0 ) ,
-          gen1( unary_symbols , rng , 1 ) ,
-          gen2( binary_symbols , rng , 2 ) 
+          gen0( term_symbols , rng ) ,
+          gen1( unary_symbols , rng ) ,
+          gen2( binary_symbols , rng ) 
     { }
 
     std::mt19937 rng;
