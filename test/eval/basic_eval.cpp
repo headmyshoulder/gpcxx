@@ -56,6 +56,10 @@ TEST( TESTNAME , test1 )
                  fusion::make_vector( "plus" , std::plus< double >() )
                , fusion::make_vector( "minus" , std::minus< double >() ) 
                 ) );
+    
+    EXPECT_EQ( eval.get_terminal_symbols() , std::vector< std::string >( { "1" , "2" , "x" , "y" } ) );
+    EXPECT_EQ( eval.get_unary_symbols() , std::vector< std::string >( { "sin" , "cos" } ) );
+    EXPECT_EQ( eval.get_binary_symbols() , std::vector< std::string >( { "plus" , "minus" } ) );
 
     
     context_type context1 = {{ 0.5 * boost::math::double_constants::pi , 3.5 }};
