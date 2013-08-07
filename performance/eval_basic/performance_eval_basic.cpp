@@ -54,7 +54,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
                                        const std::string &tree_filename , const std::string &result_filename )
 {
     auto eval = gp::make_basic_eval< value_type , context_type , attribute_type >(
-    fusion::make_vector(
+        fusion::make_vector(
             fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
           , fusion::make_vector( '3' , []( context_type const& t ) { return 2.0; } )
@@ -68,11 +68,11 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
           , fusion::make_vector( 'y' , []( context_type const& t ) { return t[1]; } )
           , fusion::make_vector( 'z' , []( context_type const& t ) { return t[2]; } )          
           ) ,
-    fusion::make_vector(
+        fusion::make_vector(
             fusion::make_vector( 's' , []( double v ) -> double { return std::sin( v ); } )
           , fusion::make_vector( 'c' , []( double v ) -> double { return std::cos( v ); } ) 
           ) ,
-    fusion::make_vector(
+        fusion::make_vector(
             fusion::make_vector( '+' , std::plus< double >() )
           , fusion::make_vector( '-' , std::minus< double >() )
           , fusion::make_vector( '*' , std::multiplies< double >() ) 
