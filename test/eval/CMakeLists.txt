@@ -7,6 +7,7 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 add_executable ( eval_tests
   basic_eval.cpp
+  basic_eval_erc.cpp
   )
 
 target_link_libraries ( eval_tests gtest gtest_main )

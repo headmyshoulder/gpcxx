@@ -4,8 +4,6 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-// #include "eval.hpp"
-
 #define FUSION_MAX_VECTOR_SIZE 20
 
 #include <gp/tree/basic_tree.hpp>
@@ -18,10 +16,8 @@
 #include <gp/operator/crossover.hpp>
 #include <gp/operator/one_point_crossover_strategy.hpp>
 #include <gp/operator/reproduce.hpp>
-
 #include <gp/eval/basic_eval.hpp>
 #include <gp/evolve/static_pipeline.hpp>
-
 #include <gp/stat/best_individuals.hpp>
 #include <gp/stat/population_statistics.hpp>
 
@@ -81,8 +77,8 @@ namespace pl = std::placeholders;
 int main( int argc , char *argv[] )
 {
     typedef std::mt19937 rng_type ;
-    typedef char attribute_type;
-    typedef gp::basic_tree< attribute_type > tree_type;
+    typedef char symbol_type;
+    typedef gp::basic_tree< symbol_type > tree_type;
     typedef std::array< value_type , 3 > eval_context_type;
     typedef std::vector< tree_type > population_type;
     typedef std::vector< value_type > fitness_type;
@@ -94,7 +90,7 @@ int main( int argc , char *argv[] )
     generate_test_data3( c.y , c.x1 , c.x2 , c.x3 , 1024 , rng ,
                          []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
     
-    auto eval = gp::make_basic_eval< value_type , eval_context_type , attribute_type >(
+    auto eval = gp::make_basic_eval< value_type , symbol_type , eval_context_type >(
         fusion::make_vector(
             fusion::make_vector( '1' , []( eval_context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( eval_context_type const& t ) { return 2.0; } )

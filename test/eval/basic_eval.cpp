@@ -37,11 +37,11 @@ TEST( TESTNAME , test1 )
 {
     typedef double value_type;
     typedef std::array< double , 2 > context_type;
-    typedef std::string attribute_type;
+    typedef std::string symbol_type;
     
     test_tree< basic_tree_tag > trees;
     
-    auto eval = gp::make_basic_eval< value_type , context_type , attribute_type >(
+    auto eval = gp::make_basic_eval< value_type , symbol_type , context_type >(
         fusion::make_vector(
                  fusion::make_vector( "1" , []( context_type const& t ) { return 1.0; } )
                , fusion::make_vector( "2" , []( context_type const& t ) { return 2.0; } )
@@ -77,11 +77,11 @@ TEST( TESTNAME , test2 )
 {
     typedef double value_type;
     typedef std::array< double , 2 > context_type;
-    typedef std::string attribute_type;
+    typedef std::string symbol_type;
     
     test_tree< basic_tree_tag > trees;
     
-    auto eval = gp::make_basic_eval< value_type , context_type , attribute_type >(
+    auto eval = gp::make_basic_eval< value_type , symbol_type , context_type >(
         fusion::make_vector(
                  fusion::make_vector( "1" , []( context_type const& t ) { return 1.0; } )
                , fusion::make_vector( "2" , []( context_type const& t ) { return 2.0; } )

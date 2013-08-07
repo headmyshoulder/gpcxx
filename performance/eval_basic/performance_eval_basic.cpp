@@ -30,7 +30,7 @@ namespace fusion = boost::fusion;
 typedef double value_type;
 typedef std::vector< value_type > vector_type;
 typedef std::array< double , 3 > context_type;
-typedef char attribute_type;
+typedef char symbol_type;
 typedef std::mt19937 rng_type ;
 
 
@@ -53,7 +53,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
                                        const vector_type &x1 , const vector_type &x2 , const vector_type &x3 ,
                                        const std::string &tree_filename , const std::string &result_filename )
 {
-    auto eval = gp::make_basic_eval< value_type , context_type , attribute_type >(
+    auto eval = gp::make_basic_eval< value_type , symbol_type , context_type >(
         fusion::make_vector(
             fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )

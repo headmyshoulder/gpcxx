@@ -1,52 +1,54 @@
 /*
-  gp/eval/basic_eval.hpp
+  gp/eval/basic_eval_erc.hpp
 
   Copyright 2013 Karsten Ahnert
 
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or
   copy at http://www.boost.org/LICENSE_1_0.txt)
+  
+  ERC = Ephemeral Random Constant
 */
 
 
-#ifndef GP_EVAL_BASIC_EVAL_HPP_DEFINED
-#define GP_EVAL_BASIC_EVAL_HPP_DEFINED
+#ifndef GP_EVAL_BASIC_EVAL_ERC_HPP_DEFINED
+#define GP_EVAL_BASIC_EVAL_ERC_HPP_DEFINED
 
 #include <gp/util/iterate_until.hpp>
 
+#include <boost/variant.hpp>
 #include <boost/fusion/include/is_sequence.hpp>
-#include <boost/fusion/include/for_each.hpp>
-#include <boost/fusion/include/at_c.hpp>
 #include <boost/fusion/include/front.hpp>
+#include <boost/fusion/include/at_c.hpp>
+#include <boost/fusion/include/for_each.hpp>
 
-#include <stdexcept>
 #include <vector>
-
+#include <stdexcept>
 
 namespace gp {
 
-    
-    
 template< typename Value ,
           typename Symbol ,
           typename EvalContext ,
           typename TerminalAttributes,
           typename UnaryAttributes ,
           typename BinaryAttributes >
-class basic_eval
+class basic_eval_erc
 {    
-    typedef basic_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
+    typedef basic_eval_erc< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
     
 public:
     
     typedef Value value_type;
+    typedef Symbol symbol_type;    
     typedef EvalContext eval_context_type;
-    typedef Symbol symbol_type;
     typedef TerminalAttributes terminal_attribtes_type;
     typedef UnaryAttributes unary_attributes_type;
     typedef BinaryAttributes binary_attribtes_type;
     
-    basic_eval( terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
+    typedef boost::variant< value_type , symbol_type > node_attribute_type;
+    
+    basic_eval_erc( terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
     : m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
     
     template< typename Tree >
@@ -55,26 +57,38 @@ public:
         return eval_cursor( tree.root() , context );
     }
     
-    std::vector< symbol_type > get_terminal_symbols( void ) const
+    std::vector< node_attribute_type > get_terminal_symbols( void ) const
     {
         return get_symbols( m_terminals );
     }
     
-    std::vector< symbol_type > get_unary_symbols( void ) const
+    std::vector< node_attribute_type > get_unary_symbols( void ) const
     {
         return get_symbols( m_unaries );
     }
     
-    std::vector< symbol_type > get_binary_symbols( void ) const
+    std::vector< node_attribute_type > get_binary_symbols( void ) const
     {
         return get_symbols( m_binaries );
     }
+    
+//     get_terminal_generator( void ) const
+//     {
+//     }
+//     
+//     get_unary_generator( void ) const
+//     {
+//     }
+//     
+//     get_binary_generator( void ) const
+//     {
+//     }
    
 private:
     
     struct symbol_filler
     {
-        std::vector< symbol_type > &m_symbols;
+        std::vector< node_attribute_type > &m_symbols;
         symbol_filler( std::vector< symbol_type > &symbols ) : m_symbols( symbols ) { }
         
         template< typename Entry >
@@ -87,7 +101,7 @@ private:
     template< typename Symbols >
     std::vector< symbol_type > get_symbols( Symbols const& s ) const
     {
-        std::vector< symbol_type > ret;
+        std::vector< node_attribute_type > ret;
         boost::fusion::for_each( s , symbol_filler( ret ) );
         return ret;
     }
@@ -197,14 +211,15 @@ private:
 
 template< typename Value , typename Symbol , typename EvalContext ,
           typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
-basic_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >
-make_basic_eval( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
+basic_eval_erc< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >
+make_basic_eval_erc( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
 {
-    return basic_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
+    return basic_eval_erc< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
 }
+
 
 
 } // namespace gp
 
 
-#endif // GP_EVAL_BASIC_EVAL_HPP_DEFINED
+#endif // GP_EVAL_BASIC_EVAL_ERC_HPP_DEFINED
