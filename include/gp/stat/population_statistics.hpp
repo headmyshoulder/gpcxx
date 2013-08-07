@@ -33,10 +33,12 @@ population_statistics calc_population_statistics( Pop const& pop )
     size_t height_mean = 0 , height_sq_mean = 0 , nodes_mean = 0 , nodes_sq_mean = 0;
     for( size_t i=0 ; i<n ; ++i )
     {
-        height_mean += pop[i].root().height();
-        height_sq_mean += pop[i].root().height() * pop[i].root().height();
-        nodes_mean += pop[i].size();
-        nodes_sq_mean += pop[i].size() * pop[i].size();
+        size_t height = pop[i].root().height();
+        size_t nodes = pop[i].size();
+        height_mean += height;
+        height_sq_mean += height * height ;
+        nodes_mean += nodes;
+        nodes_sq_mean += nodes * nodes ;
     }
     population_statistics stat;
     stat.height_mean = double( height_mean ) / double( n );
