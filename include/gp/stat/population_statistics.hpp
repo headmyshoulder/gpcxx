@@ -14,12 +14,17 @@
 
 #include <ostream>
 #include <cassert>
+#include <cmath>
 
 namespace gp {
-
     
-template< typename Pop , typename Fitness >
-void write_population_statistics( std::ostream &out , const Pop& pop , const Fitness &fitness )
+struct population_statistics
+{
+    double height_mean , height_stddev , nodes_mean , nodes_stddev;
+};
+
+template< typename Pop >
+population_statistics calc_population_statistics( Pop const& pop )
 {
     assert( pop.size() > 0 );
     
@@ -33,41 +38,23 @@ void write_population_statistics( std::ostream &out , const Pop& pop , const Fit
         nodes_mean += pop[i].size();
         nodes_sq_mean += pop[i].size() * pop[i].size();
     }
-    double height_mean_ = double( height_mean ) / double( n );
-    double height_sq_mean_ = double( height_sq_mean ) / double( n );
-    double nodes_mean_ = double( nodes_mean ) / double( n );
-    double nodes_sq_mean_ = double( nodes_sq_mean ) / double( n );
-    out << "height mean = " << height_mean_
-        << ", height stddev = " << std::sqrt( height_sq_mean_ - height_mean_ * height_mean_ )
-        << ", nodes mean = " << nodes_mean_
-        << ", nodes stddev = " << std::sqrt( nodes_sq_mean_ - nodes_mean_ * nodes_mean_ );
-}
-
-template< typename Pop , typename Fitness >
-struct population_statistics_writer
-{
-    Pop const& m_pop;
-    Fitness const& m_fitness;
-    population_statistics_writer( Pop const& pop , Fitness const& fitness )
-    : m_pop( pop ) , m_fitness( fitness ) { }
-    
-    std::ostream& operator()( std::ostream &out ) const
-    {
-        write_population_statistics( out , m_pop , m_fitness );
-        return out;
-    }
+    population_statistics stat;
+    stat.height_mean = double( height_mean ) / double( n );
+    stat.height_stddev = std::sqrt( double( height_sq_mean ) / double( n ) - stat.height_mean * stat.height_mean );
+    stat.nodes_mean = double( nodes_mean ) / double( n );
+    stat.nodes_stddev = std::sqrt( double( nodes_sq_mean ) / double( n ) - stat.nodes_mean * stat.nodes_mean );
+    return stat;
 };
 
-template< class Pop , class Fitness >
-std::ostream& operator<<( std::ostream &out , population_statistics_writer< Pop , Fitness > const& b )
-{
-    return b( out );
-}
+    
 
-template< class Pop , class Fitness >
-population_statistics_writer< Pop , Fitness > population_statistics( Pop const& pop , Fitness const& fitness )
+std::ostream& operator<<( std::ostream &out , population_statistics const& stat )
 {
-    return population_statistics_writer< Pop , Fitness >( pop , fitness );
+    out << "height mean = " << stat.height_mean
+        << ", height stddev = " << stat.height_stddev
+        << ", nodes mean = " << stat.nodes_mean
+        << ", nodes stddev = " << stat.nodes_stddev;
+    return out;
 }
 
 

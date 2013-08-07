@@ -161,8 +161,9 @@ int main( int argc , char *argv[] )
         tree_generator( population[i] );
         fitness[i] = fitness_function< eval_type >( eval )( population[i] , c );
     }
+    
     std::cout << "Best individuals" << std::endl << gp::best_individuals( population , fitness ) << std::endl;
-    std::cout << "Statistics" << std::endl << gp::population_statistics( population , fitness ) << std::endl;
+    std::cout << "Statistics : " << gp::calc_population_statistics( population ) << std::endl;
     std::cout << std::endl << std::endl;
 
     for( size_t i=0 ; i<100 ; ++i )
@@ -173,7 +174,7 @@ int main( int argc , char *argv[] )
         
         std::cout << "Iteration " << i << std::endl;
         std::cout << "Best individuals" << std::endl << gp::best_individuals( population , fitness , 1 ) << std::endl;
-        std::cout << "Statistics" << tab << gp::population_statistics( population , fitness ) << std::endl << std::endl;
+        std::cout << "Statistics : " << gp::calc_population_statistics( population ) << std::endl << std::endl;
     }
 
     return 0;
