@@ -21,7 +21,7 @@
 namespace gp {
     
     
-template< typename Population , typename Fitness , typename Context , typename Rng >
+template< typename Population , typename Fitness , typename Rng >
 class static_pipeline
 {
 public:
@@ -29,10 +29,8 @@ public:
     typedef Population population_type;
     typedef typename population_type::value_type individual_type;
     typedef Fitness fitness_type;
-    typedef Context context_type;
     typedef Rng rng_type;
 
-    typedef std::function< double( individual_type& , const context_type& ) > fitness_function_type;
     typedef std::function< individual_type( population_type const& , fitness_type const& ) > mutation_type;
     typedef std::function< std::pair< individual_type , individual_type >( population_type const& , fitness_type const& ) > crossover_type;
     typedef std::function< individual_type( population_type const& , fitness_type const& ) > reproduction_type;
@@ -40,22 +38,19 @@ public:
     static_pipeline( double elite_rate , double mutation_rate , double crossover_rate , double reproduction_rate , rng_type &rng )
         : m_elite_rate( elite_rate ) , m_mutation_rate( mutation_rate ) , m_crossover_rate( crossover_rate ) , m_reproduction_rate( reproduction_rate )
         , m_rng( rng )
-        , m_fitness_function() , m_mutation_function() , m_crossover_function() , m_reproduction_function()
+        , m_mutation_function() , m_crossover_function() , m_reproduction_function()
     { }
 
-    void next_generation( population_type &pop , fitness_type &fitness , const context_type &c )
+    void next_generation( population_type &pop , fitness_type &fitness )
     {
         reproduce( pop , fitness );
-        calc_fitness( pop , fitness , c );
     }
 
 
-    fitness_function_type& fitness_function( void ) { return m_fitness_function; }
     mutation_type& mutation_function( void ) { return m_mutation_function; }
     crossover_type& crossover_function( void ) { return m_crossover_function; }
     reproduction_type& reproduction_function( void ) { return m_reproduction_function; }
 
-    const fitness_function_type& fitness_function( void ) const { return m_fitness_function; }
     const mutation_type& mutation_function( void ) const { return m_mutation_function; }
     const crossover_type& crossover_function( void ) const { return m_crossover_function; }
     const reproduction_type& reproduction_function( void ) const { return m_reproduction_function; }
@@ -120,19 +115,11 @@ private:
         pop = std::move( new_pop );
     }
 
-
-    void calc_fitness( population_type &pop , fitness_type &fitness , const context_type &c )
-    {
-        for( size_t i=0 ; i<pop.size() ; ++i )
-            fitness[i] = m_fitness_function( pop[i] , c );
-    }
-
     double m_elite_rate;
     double m_mutation_rate;
     double m_crossover_rate;
     double m_reproduction_rate;
     rng_type &m_rng;
-    fitness_function_type m_fitness_function;
     mutation_type m_mutation_function;
     crossover_type m_crossover_function;
     reproduction_type m_reproduction_function;

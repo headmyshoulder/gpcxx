@@ -25,14 +25,6 @@
 #include <gp/stat/best_individuals.hpp>
 #include <gp/stat/population_statistics.hpp>
 
-
-// #include <gp/ga/ga1.hpp>
-// #include <gp/tree/linked_node_tree.hpp>
-// #include <gp/tree/generate_random_linked_tree.hpp>
-// #include <gp/operator/mutation.hpp>
-// #include <gp/operator/crossover.hpp>
-// #include <gp/stat/population_statistics.hpp>
-
 #include "../common/generate_test_data.hpp"
 #include "../common/statistics.hpp"
 
@@ -94,7 +86,7 @@ int main( int argc , char *argv[] )
     typedef std::array< value_type , 3 > eval_context_type;
     typedef std::vector< tree_type > population_type;
     typedef std::vector< value_type > fitness_type;
-    typedef gp::static_pipeline< population_type , fitness_type , context_type , rng_type > evolver_type;
+    typedef gp::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
 
     rng_type rng;
 
@@ -153,7 +145,7 @@ int main( int argc , char *argv[] )
     std::vector< tree_type > population( population_size );
 
 
-    evolver.fitness_function() = fitness_function< eval_type >( eval );
+    auto fitness_f = fitness_function< eval_type >( eval );
     evolver.mutation_function() = gp::make_mutation(
         gp::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
         gp::make_random_selector( rng ) );
@@ -175,7 +167,10 @@ int main( int argc , char *argv[] )
 
     for( size_t i=0 ; i<100 ; ++i )
     {
-        evolver.next_generation( population , fitness , c );
+        evolver.next_generation( population , fitness );
+        for( size_t i=0 ; i<population.size() ; ++i )
+            fitness[i] = fitness_f( population[i] , c );
+        
         std::cout << "Iteration " << i << std::endl;
         std::cout << "Best individuals" << std::endl << gp::best_individuals( population , fitness , 1 ) << std::endl;
         std::cout << "Statistics" << tab << gp::population_statistics( population , fitness ) << std::endl << std::endl;
