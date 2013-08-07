@@ -18,8 +18,13 @@
 #include <gp/operator/crossover.hpp>
 #include <gp/operator/one_point_crossover_strategy.hpp>
 #include <gp/operator/reproduce.hpp>
+
 #include <gp/eval/basic_eval.hpp>
-#include <gp/ga/ga2.hpp>
+#include <gp/evolve/static_pipeline.hpp>
+
+#include <gp/stat/best_individuals.hpp>
+#include <gp/stat/population_statistics.hpp>
+
 
 // #include <gp/ga/ga1.hpp>
 // #include <gp/tree/linked_node_tree.hpp>
@@ -89,7 +94,7 @@ int main( int argc , char *argv[] )
     typedef std::array< value_type , 3 > eval_context_type;
     typedef std::vector< tree_type > population_type;
     typedef std::vector< value_type > fitness_type;
-    typedef gp::genetic_evolver2< population_type , fitness_type , context_type , rng_type > evolver_type;
+    typedef gp::static_pipeline< population_type , fitness_type , context_type , rng_type > evolver_type;
 
     rng_type rng;
 
@@ -164,13 +169,16 @@ int main( int argc , char *argv[] )
         tree_generator( population[i] );
         fitness[i] = fitness_function< eval_type >( eval )( population[i] , c );
     }
-    
+    std::cout << "Best individuals" << std::endl << gp::best_individuals( population , fitness ) << std::endl;
+    std::cout << "Statistics" << std::endl << gp::population_statistics( population , fitness ) << std::endl;
+    std::cout << std::endl << std::endl;
+
     for( size_t i=0 ; i<100 ; ++i )
     {
-        std::cout << i << std::endl;
         evolver.next_generation( population , fitness , c );
-        // gp::report_population( population , fitness , cout );
-        // report_statistics( population , cout );
+        std::cout << "Iteration " << i << std::endl;
+        std::cout << "Best individuals" << std::endl << gp::best_individuals( population , fitness , 1 ) << std::endl;
+        std::cout << "Statistics" << tab << gp::population_statistics( population , fitness ) << std::endl << std::endl;
     }
 
     return 0;

@@ -28,10 +28,10 @@ void write_population_statistics( std::ostream &out , const Pop& pop , const Fit
     size_t height_mean = 0 , height_sq_mean = 0 , nodes_mean = 0 , nodes_sq_mean = 0;
     for( size_t i=0 ; i<n ; ++i )
     {
-        height_mean += pop[i].height();
-        height_sq_mean += pop[i].height() * pop[i].height();
-        nodes_mean += pop[i].num_elements();
-        nodes_sq_mean += pop[i].num_elements() * pop[i].num_elements();
+        height_mean += pop[i].root().height();
+        height_sq_mean += pop[i].root().height() * pop[i].root().height();
+        nodes_mean += pop[i].size();
+        nodes_sq_mean += pop[i].size() * pop[i].size();
     }
     double height_mean_ = double( height_mean ) / double( n );
     double height_sq_mean_ = double( height_sq_mean ) / double( n );

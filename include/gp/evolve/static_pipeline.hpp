@@ -1,5 +1,5 @@
 /*
-  gp/ga/ga2.hpp
+  gp/evolve/static_pipeline.hpp
 
   Copyright 2013 Karsten Ahnert
 
@@ -9,8 +9,8 @@
 */
 
 
-#ifndef GP_GA_GA2_HPP_DEFINED
-#define GP_GA_GA2_HPP_DEFINED
+#ifndef GP_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
+#define GP_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
 
 #include <gp/operator/fitness_prob.hpp>
 
@@ -22,7 +22,7 @@ namespace gp {
     
     
 template< typename Population , typename Fitness , typename Context , typename Rng >
-class genetic_evolver2
+class static_pipeline
 {
 public:
     
@@ -37,7 +37,7 @@ public:
     typedef std::function< std::pair< individual_type , individual_type >( population_type const& , fitness_type const& ) > crossover_type;
     typedef std::function< individual_type( population_type const& , fitness_type const& ) > reproduction_type;
 
-    genetic_evolver2( double elite_rate , double mutation_rate , double crossover_rate , double reproduction_rate , rng_type &rng )
+    static_pipeline( double elite_rate , double mutation_rate , double crossover_rate , double reproduction_rate , rng_type &rng )
         : m_elite_rate( elite_rate ) , m_mutation_rate( mutation_rate ) , m_crossover_rate( crossover_rate ) , m_reproduction_rate( reproduction_rate )
         , m_rng( rng )
         , m_fitness_function() , m_mutation_function() , m_crossover_function() , m_reproduction_function()
@@ -144,4 +144,4 @@ private:
 } // namespace gp
 
 
-#endif // GP_GA_GA2_HPP_DEFINED
+#endif // GP_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
