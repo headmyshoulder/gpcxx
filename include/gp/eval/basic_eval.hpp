@@ -13,6 +13,7 @@
 #define GP_EVAL_BASIC_EVAL_HPP_DEFINED
 
 #include <gp/util/iterate_until.hpp>
+#include <gp/generate/uniform_symbol.hpp>
 
 #include <boost/fusion/include/is_sequence.hpp>
 #include <boost/fusion/include/for_each.hpp>
@@ -46,6 +47,8 @@ public:
     typedef UnaryAttributes unary_attributes_type;
     typedef BinaryAttributes binary_attribtes_type;
     
+    typedef uniform_symbol< symbol_type > symbol_distribution_type;
+    
     basic_eval( terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
     : m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
     
@@ -68,6 +71,21 @@ public:
     std::vector< symbol_type > get_binary_symbols( void ) const
     {
         return get_symbols( m_binaries );
+    }
+    
+    symbol_distribution_type get_terminal_symbol_distribution( void ) const
+    {
+        return symbol_distribution_type( get_terminal_symbols() );
+    }
+    
+    symbol_distribution_type get_unary_symbol_distribution( void ) const
+    {
+        return symbol_distribution_type( get_unary_symbols() );
+    }
+    
+    symbol_distribution_type get_binary_symbol_distribution( void ) const
+    {
+        return symbol_distribution_type( get_binary_symbols() );
     }
    
 private:

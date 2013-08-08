@@ -7,7 +7,7 @@
 #define FUSION_MAX_VECTOR_SIZE 20
 
 #include <gp/tree/basic_tree.hpp>
-#include <gp/generate/random_symbol_generator.hpp>
+#include <gp/generate/uniform_symbol.hpp>
 #include <gp/generate/ramp.hpp>
 #include <gp/operator/mutation.hpp>
 #include <gp/operator/simple_mutation_strategy.hpp>
@@ -127,9 +127,9 @@ int main( int argc , char *argv[] )
 
 
     // generators< rng_type > gen( rng );
-    auto terminal_gen = gp::make_random_symbol_generator( eval.get_terminal_symbols() , rng );
-    auto unary_gen = gp::make_random_symbol_generator( eval.get_unary_symbols() , rng );
-    auto binary_gen = gp::make_random_symbol_generator( eval.get_binary_symbols() , rng );
+    auto terminal_gen = eval.get_terminal_symbol_distribution();
+    auto unary_gen = eval.get_unary_symbol_distribution();
+    auto binary_gen = eval.get_binary_symbol_distribution();
     std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
                                        int( unary_gen.num_symbols() ) ,
                                        int( binary_gen.num_symbols() ) }};

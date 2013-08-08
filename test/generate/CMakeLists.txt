@@ -6,7 +6,8 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 
 add_executable ( generate_tests
-  random_symbol_generator.cpp
+  uniform_symbol.cpp
+  uniform_symbol_erc.cpp
   basic_generate_strategy.cpp
   )
 

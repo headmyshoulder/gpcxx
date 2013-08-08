@@ -8,7 +8,7 @@
 
 #include <gp/eval/basic_eval.hpp>
 #include <gp/generate/basic_generate_strategy.hpp>
-#include <gp/generate/random_symbol_generator.hpp>
+#include <gp/generate/uniform_symbol.hpp>
 #include <gp/util/timer.hpp>
 #include <gp/io/simple.hpp>
 #include <gp/tree/basic_tree.hpp>
@@ -82,9 +82,9 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
     gp::timer timer;
     std::pair< double , double > res;
 
-    auto terminal_gen = gp::make_random_symbol_generator( eval.get_terminal_symbols() , rng );
-    auto unary_gen = gp::make_random_symbol_generator( eval.get_unary_symbols() , rng );
-    auto binary_gen = gp::make_random_symbol_generator( eval.get_binary_symbols() , rng );
+    auto terminal_gen = eval.get_terminal_symbol_distribution();
+    auto unary_gen = eval.get_unary_symbol_distribution();
+    auto binary_gen = eval.get_binary_symbol_distribution();
     
     std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
                                            int( unary_gen.num_symbols() ) ,

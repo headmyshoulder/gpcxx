@@ -15,6 +15,8 @@
 #define GP_EVAL_BASIC_EVAL_ERC_HPP_DEFINED
 
 #include <gp/util/iterate_until.hpp>
+#include <gp/generate/uniform_symbol.hpp>
+#include <gp/generate/uniform_symbol_erc.hpp>
 
 #include <boost/variant.hpp>
 #include <boost/fusion/include/is_sequence.hpp>
@@ -30,25 +32,35 @@ namespace gp {
 template< typename Value ,
           typename Symbol ,
           typename EvalContext ,
-          typename TerminalAttributes,
+          typename Erc ,
+          typename TerminalAttributes ,
           typename UnaryAttributes ,
           typename BinaryAttributes >
 class basic_eval_erc
 {    
-    typedef basic_eval_erc< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
+    typedef basic_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
     
 public:
     
     typedef Value value_type;
     typedef Symbol symbol_type;    
     typedef EvalContext eval_context_type;
+    typedef Erc erc_type;
     typedef TerminalAttributes terminal_attribtes_type;
     typedef UnaryAttributes unary_attributes_type;
     typedef BinaryAttributes binary_attribtes_type;
     
+    typedef typename boost::fusion::result_of::at_c< erc_type , 1 >::type erc_dist_type;
+    
     typedef boost::variant< value_type , symbol_type > node_attribute_type;
     
-    basic_eval_erc( terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
+    
+    typedef uniform_symbol_erc< symbol_type , value_type , erc_dist_type , node_attribute_type > symbol_erc_generator_type;
+    typedef uniform_symbol< symbol_type > symbol_generator_type;
+
+    
+    
+    basic_eval_erc( erc_type , terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
     : m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
     
     template< typename Tree >
@@ -72,13 +84,20 @@ public:
         return get_symbols( m_binaries );
     }
     
-//     get_terminal_generator( void ) const
-//     {
-//     }
-//     
-//     get_unary_generator( void ) const
-//     {
-//     }
+    
+    
+    symbol_erc_generator_type get_terminal_generator( void ) const
+    {
+        return symbol_erc_generator_type(
+                   m_terminals ,
+                   boost::fusion::at_c< 0 >( m_erc ) ,
+                   boost::fusion::at_c< 0 >( m_erc ) );
+    }
+
+    symbol_generator_type get_unary_generator( void ) const
+    {
+        
+    }
 //     
 //     get_binary_generator( void ) const
 //     {
@@ -197,12 +216,14 @@ private:
         return result;
     }
 
-    
+
+    erc_type m_erc;
     terminal_attribtes_type m_terminals;
     unary_attributes_type m_unaries;
     binary_attribtes_type m_binaries;
     
-    
+
+    static_assert( boost::fusion::traits::is_sequence< Erc >::value , "Erc must be a Boost.Fusion sequence" );
     static_assert( boost::fusion::traits::is_sequence< TerminalAttributes >::value , "TerminalAttributes must be a Boost.Fusion sequence" );
     static_assert( boost::fusion::traits::is_sequence< UnaryAttributes >::value , "UnaryAttributes must be a Boost.Fusion sequence" );
     static_assert( boost::fusion::traits::is_sequence< BinaryAttributes >::value , "BinaryAttributes must be a Boost.Fusion sequence" );
@@ -210,11 +231,11 @@ private:
 
 
 template< typename Value , typename Symbol , typename EvalContext ,
-          typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
-basic_eval_erc< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >
-make_basic_eval_erc( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
+          typename Erc , typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
+basic_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes >
+make_basic_eval_erc( Erc const &erc , TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
 {
-    return basic_eval_erc< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
+    return basic_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes >( erc , terminals , unaries , binaries );
 }
 
 

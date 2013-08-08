@@ -16,6 +16,7 @@
 
 #include <random>
 #include <stdexcept>
+#include <functional>
 
 namespace gp {
 
@@ -25,10 +26,10 @@ namespace detail {
     T mutate_value( T t , Gen &gen , size_t max_trials = 1000 )
     {
         size_t count = 0;
-        T v = gen.random_symbol();
+        T v = gen();
         while( ( v == t ) && ( count < max_trials ) )
         {
-            v = gen.random_symbol();
+            v = gen();
             ++count;
         }
         return v;
@@ -72,7 +73,7 @@ struct simple_mutation_strategy
     { }
 
     template< class Tree , class TG , class UG , class BG >
-    static bool mutation_impl( Tree &t , size_t i , TG &terminal_gen , UG &unary_gen , BG &binary_gen )
+    static bool mutation_impl( Tree &t , size_t i , TG terminal_gen , UG unary_gen , BG binary_gen )
     {
         typedef typename Tree::cursor cursor;
         cursor n = t.rank_is( i );
@@ -93,7 +94,9 @@ struct simple_mutation_strategy
         do
         {
             size_t index = dist( m_rng );
-            ok = mutation_impl( t , index , m_terminal_gen , m_unary_gen , m_binary_gen );
+            ok = mutation_impl( t , index , std::bind( m_terminal_gen , std::ref( m_rng ) ) ,
+                                            std::bind( m_unary_gen , std::ref( m_rng ) ) ,
+                                            std::bind( m_binary_gen , std::ref( m_rng ) ) );
         }
         while( !ok && ( count < 128 ) );
 

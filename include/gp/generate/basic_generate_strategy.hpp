@@ -31,9 +31,9 @@ public:
     {
         switch( new_arity )
         {
-            case 0 : return tree.insert_below( current , m_terminal_gen.random_symbol() ); break;
-            case 1 : return tree.insert_below( current , m_unary_gen.random_symbol() ); break;
-            case 2 : return tree.insert_below( current , m_binary_gen.random_symbol() ); break;
+            case 0 : return tree.insert_below( current , m_terminal_gen( m_rng ) ); break;
+            case 1 : return tree.insert_below( current , m_unary_gen( m_rng ) ); break;
+            case 2 : return tree.insert_below( current , m_binary_gen( m_rng ) ); break;
         }
         return typename Tree::cursor();
     }
@@ -57,7 +57,7 @@ public:
         std::stack< std::pair< cursor , size_t > > gen_stack; 
 
         // initialize
-        cursor root = tree.insert_below( tree.root() , m_binary_gen.random_symbol() );
+        cursor root = tree.insert_below( tree.root() , m_binary_gen( m_rng ) );
             
         gen_stack.push( std::make_pair( root , 2 ) );
 
