@@ -6,6 +6,7 @@ cmake_minimum_required ( VERSION 2.8 )
 
 set ( CMAKE_C_COMPILER "g++-4.8" )
 set ( CMAKE_CXX_COMPILER "g++-4.8" )
+# set ( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
 set ( CMAKE_CXX_FLAGS "-std=c++11" )
 
 # Add path for custom modules

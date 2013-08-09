@@ -9,8 +9,10 @@
  */
 
 #include <gp/eval/basic_eval_erc.hpp>
+#include <gp/tree/basic_tree.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
+#include <boost/math/constants/constants.hpp>
 
 #include <gtest/gtest.h>
 
@@ -24,13 +26,25 @@
 using namespace std;
 namespace fusion = boost::fusion;
 
+// class basic_eval_erc_test : public ::testing::Test
+// {
+// protected:
+//   
+//     virtual void SetUp( void )
+//     {
+//     }
+//     
+//     virtual void TearDown( void )
+//     {
+//     }
+// };
+
 TEST( TESTNAME , TestCase )
 {
     typedef double value_type;
     typedef std::array< double , 2 > context_type;
     typedef std::string symbol_type;
     
-    // test_tree< basic_tree_tag > trees;
     
     auto eval = gp::make_basic_eval_erc< value_type , symbol_type , context_type >(
         fusion::make_vector( 1.0 , std::normal_distribution<>( 0.0 , 1.0 ) ) ,
@@ -49,17 +63,34 @@ TEST( TESTNAME , TestCase )
                , fusion::make_vector( "minus" , std::minus< double >() ) 
                 ) );
     
-//     EXPECT_EQ( eval.get_terminal_symbols() , std::vector< std::string >( { "1" , "2" , "x" , "y" } ) );
-//     EXPECT_EQ( eval.get_unary_symbols() , std::vector< std::string >( { "sin" , "cos" } ) );
-//     EXPECT_EQ( eval.get_binary_symbols() , std::vector< std::string >( { "plus" , "minus" } ) );
-// 
-//     
-//     context_type context1 = {{ 0.5 * boost::math::double_constants::pi , 3.5 }};
-//     double val1 = eval( trees.data , context1 );
-//     EXPECT_DOUBLE_EQ( val1 , 2.5 );
-//     
-//     context_type context2 = {{ 5.0 , boost::math::double_constants::pi }};
-//     double val2 = eval( trees.data2 , context2 );
-//     EXPECT_DOUBLE_EQ( val2 , -6.0 );
+    typedef decltype( eval ) eval_type;
+    typedef eval_type::node_attribute_type node_attribute_type;
+    typedef gp::basic_tree< node_attribute_type > tree_type;
+    
+    std::mt19937 rng;
+    
+    EXPECT_EQ( eval.get_terminal_symbols() , std::vector< std::string >( { "1" , "2" , "x" , "y" } ) );
+    EXPECT_EQ( eval.get_unary_symbols() , std::vector< std::string >( { "sin" , "cos" } ) );
+    EXPECT_EQ( eval.get_binary_symbols() , std::vector< std::string >( { "plus" , "minus" } ) );
+    
+    auto terminal_dist = eval.get_terminal_distribution();
+    auto unary_dist = eval.get_unary_distribution();
+    auto binary_dist = eval.get_binary_distribution();
+    
+    node_attribute_type v1 = terminal_dist( rng );
+    node_attribute_type v2 = unary_dist( rng );
+    node_attribute_type v3 = binary_dist( rng );
+    
+    tree_type tree;
+    auto c1 = tree.insert_below( tree.root() , "plus" );
+    auto c2 = tree.insert_below( c1 , "sin" );
+    auto c3 = tree.insert_below( c2 , "x" );
+    auto c4 = tree.insert_below( c1 , "minus" );
+    auto c5 = tree.insert_below( c4 , 12.2 );
+    auto c6 = tree.insert_below( c4 , "y" );
+    
+    context_type context = {{ 0.5 * boost::math::double_constants::pi , 2.0  }};
+    value_type val1 = eval( tree , context );
+    EXPECT_DOUBLE_EQ( val1 , 11.2 );
 }
 

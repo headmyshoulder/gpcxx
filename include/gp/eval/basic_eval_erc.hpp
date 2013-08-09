@@ -27,6 +27,13 @@
 #include <vector>
 #include <stdexcept>
 
+
+
+#include <iostream>
+using namespace std;
+
+
+
 namespace gp {
 
 template< typename Value ,
@@ -50,18 +57,18 @@ public:
     typedef UnaryAttributes unary_attributes_type;
     typedef BinaryAttributes binary_attribtes_type;
     
-    typedef typename boost::fusion::result_of::at_c< erc_type , 1 >::type erc_dist_type;
+    typedef typename std::remove_reference< typename boost::fusion::result_of::at_c< erc_type , 1 >::type >::type erc_dist_type;
     
     typedef boost::variant< value_type , symbol_type > node_attribute_type;
     
     
-    typedef uniform_symbol_erc< symbol_type , value_type , erc_dist_type , node_attribute_type > symbol_erc_generator_type;
-    typedef uniform_symbol< symbol_type > symbol_generator_type;
+    typedef uniform_symbol_erc< symbol_type , value_type , erc_dist_type , node_attribute_type > symbol_erc_distribution_type;
+    typedef uniform_symbol< symbol_type > symbol_distribution_type;
 
     
     
-    basic_eval_erc( erc_type , terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
-    : m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
+    basic_eval_erc( erc_type erc , terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
+    : m_erc( erc ) , m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
     
     template< typename Tree >
     value_type operator()( Tree const& tree , eval_context_type const& context ) const
@@ -69,45 +76,46 @@ public:
         return eval_cursor( tree.root() , context );
     }
     
-    std::vector< node_attribute_type > get_terminal_symbols( void ) const
+    std::vector< symbol_type > get_terminal_symbols( void ) const
     {
         return get_symbols( m_terminals );
     }
     
-    std::vector< node_attribute_type > get_unary_symbols( void ) const
+    std::vector< symbol_type > get_unary_symbols( void ) const
     {
         return get_symbols( m_unaries );
     }
     
-    std::vector< node_attribute_type > get_binary_symbols( void ) const
+    std::vector< symbol_type > get_binary_symbols( void ) const
     {
         return get_symbols( m_binaries );
     }
     
     
     
-    symbol_erc_generator_type get_terminal_generator( void ) const
+    symbol_erc_distribution_type get_terminal_distribution( void ) const
     {
-        return symbol_erc_generator_type(
-                   m_terminals ,
+        return symbol_erc_distribution_type(
+                   get_terminal_symbols() ,
                    boost::fusion::at_c< 0 >( m_erc ) ,
-                   boost::fusion::at_c< 0 >( m_erc ) );
+                   boost::fusion::at_c< 1 >( m_erc ) );
     }
 
-    symbol_generator_type get_unary_generator( void ) const
+    symbol_distribution_type get_unary_distribution( void ) const
     {
-        
+        return symbol_distribution_type( get_unary_symbols() );
     }
-//     
-//     get_binary_generator( void ) const
-//     {
-//     }
+     
+    symbol_distribution_type get_binary_distribution( void ) const
+    {
+        return symbol_distribution_type( get_binary_symbols() );
+    }
    
 private:
     
     struct symbol_filler
     {
-        std::vector< node_attribute_type > &m_symbols;
+        std::vector< symbol_type > &m_symbols;
         symbol_filler( std::vector< symbol_type > &symbols ) : m_symbols( symbols ) { }
         
         template< typename Entry >
@@ -120,7 +128,7 @@ private:
     template< typename Symbols >
     std::vector< symbol_type > get_symbols( Symbols const& s ) const
     {
-        std::vector< node_attribute_type > ret;
+        std::vector< symbol_type > ret;
         boost::fusion::for_each( s , symbol_filler( ret ) );
         return ret;
     }
@@ -147,7 +155,7 @@ private:
         template< typename Entry >
         bool operator()( Entry const &e ) const
         {
-            if( boost::fusion::front( e ) == *(this->m_cursor) )
+            if( boost::fusion::front( e ) == boost::get< symbol_type >( *(this->m_cursor) ) )
             {
                 this->m_result = boost::fusion::at_c< 1 >( e )( this->m_context );
                 return true;
@@ -165,7 +173,7 @@ private:
         template< typename Entry >
         bool operator()( Entry const &e ) const
         {
-            if(  boost::fusion::front( e ) == *(this->m_cursor) )
+            if(  boost::fusion::front( e ) == boost::get< symbol_type >( *(this->m_cursor) ) )
             {
                 value_type val = this->m_self.eval_cursor( this->m_cursor.children( 0 ) , this->m_context );
                 this->m_result = boost::fusion::at_c< 1 >( e )( val );
@@ -184,7 +192,7 @@ private:
         template< typename Entry >
         bool operator()( Entry const &e ) const
         {
-            if( boost::fusion::front( e ) == *(this->m_cursor) )
+            if( boost::fusion::front( e ) == boost::get< symbol_type >( *(this->m_cursor) ) )
             {
                 value_type val1 = this->m_self.eval_cursor( this->m_cursor.children( 0 ) , this->m_context );
                 value_type val2 = this->m_self.eval_cursor( this->m_cursor.children( 1 ) , this->m_context );
@@ -203,7 +211,18 @@ private:
         bool found = true;
         
         if( cursor.size() == 0 )
-            found &= gp::iterate_until( m_terminals , terminal_evaluator< Cursor >( *this , result , context , cursor ) );
+        {
+            node_attribute_type const& v = *cursor;
+            if( v.which() == 1 )
+            {
+                found &= gp::iterate_until( m_terminals , terminal_evaluator< Cursor >( *this , result , context , cursor ) );
+            }
+            else 
+            {
+                result = boost::get< value_type >( v );
+                found = true;
+            }
+        }
         else if( cursor.size() == 1 )
             found &= gp::iterate_until( m_unaries , unary_evaluator< Cursor >( *this , result , context , cursor ) );
         else if( cursor.size() == 2 ) 
