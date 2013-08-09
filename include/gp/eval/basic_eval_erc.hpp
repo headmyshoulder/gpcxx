@@ -93,7 +93,7 @@ public:
     
     
     
-    symbol_erc_distribution_type get_terminal_distribution( void ) const
+    symbol_erc_distribution_type get_terminal_symbol_distribution( void ) const
     {
         return symbol_erc_distribution_type(
                    get_terminal_symbols() ,
@@ -101,12 +101,12 @@ public:
                    boost::fusion::at_c< 1 >( m_erc ) );
     }
 
-    symbol_distribution_type get_unary_distribution( void ) const
+    symbol_distribution_type get_unary_symbol_distribution( void ) const
     {
         return symbol_distribution_type( get_unary_symbols() );
     }
      
-    symbol_distribution_type get_binary_distribution( void ) const
+    symbol_distribution_type get_binary_symbol_distribution( void ) const
     {
         return symbol_distribution_type( get_binary_symbols() );
     }

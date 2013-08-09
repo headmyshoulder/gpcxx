@@ -73,9 +73,9 @@ TEST( TESTNAME , TestCase )
     EXPECT_EQ( eval.get_unary_symbols() , std::vector< std::string >( { "sin" , "cos" } ) );
     EXPECT_EQ( eval.get_binary_symbols() , std::vector< std::string >( { "plus" , "minus" } ) );
     
-    auto terminal_dist = eval.get_terminal_distribution();
-    auto unary_dist = eval.get_unary_distribution();
-    auto binary_dist = eval.get_binary_distribution();
+    auto terminal_dist = eval.get_terminal_symbol_distribution();
+    auto unary_dist = eval.get_unary_symbol_distribution();
+    auto binary_dist = eval.get_binary_symbol_distribution();
     
     node_attribute_type v1 = terminal_dist( rng );
     node_attribute_type v2 = unary_dist( rng );
