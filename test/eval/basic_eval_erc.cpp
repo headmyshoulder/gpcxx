@@ -8,8 +8,8 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gp/eval/basic_eval_erc.hpp>
-#include <gp/tree/basic_tree.hpp>
+#include <gpcxx/eval/basic_eval_erc.hpp>
+#include <gpcxx/tree/basic_tree.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -46,7 +46,7 @@ TEST( TESTNAME , TestCase )
     typedef std::string symbol_type;
     
     
-    auto eval = gp::make_basic_eval_erc< value_type , symbol_type , context_type >(
+    auto eval = gpcxx::make_basic_eval_erc< value_type , symbol_type , context_type >(
         fusion::make_vector( 1.0 , std::normal_distribution<>( 0.0 , 1.0 ) ) ,
         fusion::make_vector(
                  fusion::make_vector( "1" , []( context_type const& t ) { return 1.0; } )
@@ -65,7 +65,7 @@ TEST( TESTNAME , TestCase )
     
     typedef decltype( eval ) eval_type;
     typedef eval_type::node_attribute_type node_attribute_type;
-    typedef gp::basic_tree< node_attribute_type > tree_type;
+    typedef gpcxx::basic_tree< node_attribute_type > tree_type;
     
     std::mt19937 rng;
     

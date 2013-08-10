@@ -4,7 +4,7 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gp/generate/uniform_symbol.hpp>
+#include <gpcxx/generate/uniform_symbol.hpp>
 
 #include "../common/test_generator.hpp"
 

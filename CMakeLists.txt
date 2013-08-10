@@ -26,7 +26,7 @@ set ( CMAKE_MODULE_PATH
 include ( CreateVersionFile )
 
 message ( STATUS "Building project ${CMAKE_PROJECT_NAME}" )
-message ( STATUS "Version ${GP_VERSION_SHORT}" )
+message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
 
 
 set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR} )

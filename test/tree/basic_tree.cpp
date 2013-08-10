@@ -8,8 +8,8 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gp/tree/basic_tree.hpp>
-#include <gp/tree/detail/basic_node_inspect.hpp>
+#include <gpcxx/tree/basic_tree.hpp>
+#include <gpcxx/tree/detail/basic_node_inspect.hpp>
 
 #include "../common/test_tree.hpp"
 
@@ -18,7 +18,7 @@
 #include <sstream>
 
 using namespace std;
-using namespace gp;
+using namespace gpcxx;
 
 
 // detail::inspect_basic_node( clog , root.parent_node() , 0 );

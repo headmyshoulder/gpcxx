@@ -7,7 +7,7 @@
 #ifndef TEST_GENERATOR_HPP_INCLUDED
 #define TEST_GENERATOR_HPP_INCLUDED
 
-#include <gp/generate/uniform_symbol.hpp>
+#include <gpcxx/generate/uniform_symbol.hpp>
 
 #include <random>
 #include <vector>
@@ -25,7 +25,7 @@ bool contains( const C &c , const S &s )
 struct test_generator
 {
     typedef std::vector< std::string > symbol_container;
-    typedef gp::uniform_symbol< std::string > generator_type;
+    typedef gpcxx::uniform_symbol< std::string > generator_type;
 
     test_generator( void )
         : term_symbols( { "x" , "y" , "z" } ) ,

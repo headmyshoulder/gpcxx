@@ -4,7 +4,7 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gp/io/simple.hpp>
+#include <gpcxx/io/simple.hpp>
 
 #include "../common/test_tree.hpp"
 

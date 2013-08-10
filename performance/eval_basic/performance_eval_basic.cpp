@@ -6,12 +6,12 @@
 
 #define FUSION_MAX_VECTOR_SIZE 20
 
-#include <gp/eval/basic_eval.hpp>
-#include <gp/generate/basic_generate_strategy.hpp>
-#include <gp/generate/uniform_symbol.hpp>
-#include <gp/util/timer.hpp>
-#include <gp/io/simple.hpp>
-#include <gp/tree/basic_tree.hpp>
+#include <gpcxx/eval/basic_eval.hpp>
+#include <gpcxx/generate/basic_generate_strategy.hpp>
+#include <gpcxx/generate/uniform_symbol.hpp>
+#include <gpcxx/util/timer.hpp>
+#include <gpcxx/io/simple.hpp>
+#include <gpcxx/tree/basic_tree.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
@@ -53,7 +53,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
                                        const vector_type &x1 , const vector_type &x2 , const vector_type &x3 ,
                                        const std::string &tree_filename , const std::string &result_filename )
 {
-    auto eval = gp::make_basic_eval< value_type , symbol_type , context_type >(
+    auto eval = gpcxx::make_basic_eval< value_type , symbol_type , context_type >(
         fusion::make_vector(
             fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
@@ -79,7 +79,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
           , fusion::make_vector( '/' , std::divides< double >() ) 
           ) );
 
-    gp::timer timer;
+    gpcxx::timer timer;
     std::pair< double , double > res;
 
     auto terminal_gen = eval.get_terminal_symbol_distribution();
@@ -89,7 +89,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
     std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
                                            int( unary_gen.num_symbols() ) ,
                                            int( binary_gen.num_symbols() ) }};
-    std::function< void( Tree& ) > tree_generator = gp::make_basic_generate_strategy(
+    std::function< void( Tree& ) > tree_generator = gpcxx::make_basic_generate_strategy(
         rng , terminal_gen , unary_gen , binary_gen , height , height , weights );
 
     Tree tree;
@@ -99,7 +99,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
 
     ofstream fout1( tree_filename );
     fout1.precision( 14 );
-    fout1 << gp::simple( tree );
+    fout1 << gpcxx::simple( tree );
 
     size_t n = x1.size();
     vector_type y( n );
@@ -139,7 +139,7 @@ int main( int argc , char *argv[] )
     {
         cout.precision( 14 );
         cout << "Starting test with height " << height << endl;
-        std::pair< double , double > times = run_test< gp::basic_tree< char > >(
+        std::pair< double , double > times = run_test< gpcxx::basic_tree< char > >(
             rng , height , x1 , x2 , x3 ,
             std::string( "tree_" ) + std::to_string( height ) + ".dat" ,
             std::string( "data_" ) + std::to_string( height ) + ".dat" );

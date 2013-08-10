@@ -4,7 +4,7 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gp/operator/fitness_prob.hpp>
+#include <gpcxx/operator/fitness_prob.hpp>
 
 #include <gtest/gtest.h>
 
@@ -18,7 +18,7 @@ TEST( TESTNAME , prob1 )
     std::mt19937 rng;
     std::vector< double > fitness = { 5.0 , 2.0 , 4.0 , 1.0 , 7.0 };
 
-    gp::fitness_prob< std::vector< double > , std::mt19937 > prob( fitness , rng );
+    gpcxx::fitness_prob< std::vector< double > , std::mt19937 > prob( fitness , rng );
     EXPECT_EQ( prob.indices().size() , 5 );
     EXPECT_EQ( prob.indices()[0] , 3 );
     EXPECT_EQ( prob.indices()[1] , 1 );
@@ -39,7 +39,7 @@ TEST( TESTNAME , prob2 )
     std::mt19937 rng;
     std::vector< double > fitness = { 5.0 , 2.0 , NAN , 1.0 , 7.0 };
 
-    gp::fitness_prob< std::vector< double > , std::mt19937 > prob( fitness , rng );
+    gpcxx::fitness_prob< std::vector< double > , std::mt19937 > prob( fitness , rng );
     EXPECT_EQ( prob.indices().size() , 5 );
     EXPECT_EQ( prob.indices()[0] , 3 );
     EXPECT_EQ( prob.indices()[1] , 1 );

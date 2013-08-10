@@ -4,8 +4,8 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gp/generate/basic_generate_strategy.hpp>
-#include <gp/tree/basic_tree.hpp>
+#include <gpcxx/generate/basic_generate_strategy.hpp>
+#include <gpcxx/tree/basic_tree.hpp>
 
 #include "../common/test_generator.hpp"
 
@@ -25,9 +25,9 @@ TEST( TESTNAME , generate_radnom_linked_tree_test1 )
 
     for( size_t i=0 ; i<1000 ; ++i )
     {
-        gp::basic_tree< std::string > tree;
+        gpcxx::basic_tree< std::string > tree;
         
-        auto generator = gp::make_basic_generate_strategy( rng , gen.gen0 , gen.gen1 , gen.gen2 , 2 , 4 , weights );
+        auto generator = gpcxx::make_basic_generate_strategy( rng , gen.gen0 , gen.gen1 , gen.gen2 , 2 , 4 , weights );
         generator( tree );
         EXPECT_TRUE( tree.root().height() >= 2 );
         EXPECT_TRUE( tree.root().height() <= 4 );

@@ -8,7 +8,7 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gp/operator/random_selector.hpp>
+#include <gpcxx/operator/random_selector.hpp>
 #include "../common/test_tree.hpp"
 #include "../common/test_generator.hpp"
 
@@ -24,7 +24,7 @@ TEST( TESTNAME  , instanciation )
     test_generator gen;
     std::vector< test_tree< basic_tree_tag >::tree_type > pop( 10 , test_tree< basic_tree_tag >::tree_type() );
     std::vector< double > fitness( 10 );
-    auto selector = gp::make_random_selector( gen.rng );
+    auto selector = gpcxx::make_random_selector( gen.rng );
     auto node = selector( pop , fitness );
 }
 

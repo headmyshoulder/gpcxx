@@ -8,7 +8,7 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gp/util/iterate_until.hpp>
+#include <gpcxx/util/iterate_until.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
@@ -53,13 +53,13 @@ struct test_struct { };
 TEST( TESTNAME , test1 )
 {
     auto vec = fusion::make_vector( std::string( "b" ) , std::string( "a" ) , std::string( "d" ) , 10 , 20 );
-    EXPECT_TRUE( gp::iterate_until( vec , make_test_visitor( 10 ) ) );
-    EXPECT_TRUE( gp::iterate_until( vec , make_test_visitor( 20 ) ) );
-    EXPECT_FALSE( gp::iterate_until( vec , make_test_visitor( 11 ) ) );
-    EXPECT_TRUE( gp::iterate_until( vec , make_test_visitor( std::string( "a" ) ) ) );
-    EXPECT_TRUE( gp::iterate_until( vec , make_test_visitor( std::string( "b" ) ) ) );
-    EXPECT_TRUE( gp::iterate_until( vec , make_test_visitor( std::string( "d" ) ) ) );
-    EXPECT_FALSE( gp::iterate_until( vec , make_test_visitor( std::string( "x" ) ) ) );
-    EXPECT_FALSE( gp::iterate_until( vec , make_test_visitor( test_struct() ) ) );
+    EXPECT_TRUE( gpcxx::iterate_until( vec , make_test_visitor( 10 ) ) );
+    EXPECT_TRUE( gpcxx::iterate_until( vec , make_test_visitor( 20 ) ) );
+    EXPECT_FALSE( gpcxx::iterate_until( vec , make_test_visitor( 11 ) ) );
+    EXPECT_TRUE( gpcxx::iterate_until( vec , make_test_visitor( std::string( "a" ) ) ) );
+    EXPECT_TRUE( gpcxx::iterate_until( vec , make_test_visitor( std::string( "b" ) ) ) );
+    EXPECT_TRUE( gpcxx::iterate_until( vec , make_test_visitor( std::string( "d" ) ) ) );
+    EXPECT_FALSE( gpcxx::iterate_until( vec , make_test_visitor( std::string( "x" ) ) ) );
+    EXPECT_FALSE( gpcxx::iterate_until( vec , make_test_visitor( test_struct() ) ) );
 }
 

@@ -8,7 +8,7 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gp/util/version.hpp>
+#include <gpcxx/util/version.hpp>
 
 #include <sstream>
 
@@ -20,15 +20,15 @@ using namespace std;
 
 TEST( TESTNAME , instanciation )
 {
-    std::string version = gp::get_version_string();
-    int major = gp::get_version_major();
-    int minor = gp::get_version_minor();
-    int patch = gp::get_version_patch();
-    std::string vsha1 = gp::get_version_sha1();
+    std::string version = gpcxx::get_version_string();
+    int major = gpcxx::get_version_major();
+    int minor = gpcxx::get_version_minor();
+    int patch = gpcxx::get_version_patch();
+    std::string vsha1 = gpcxx::get_version_sha1();
     
-    EXPECT_EQ( major , GP_VERSION_MAJOR );
-    EXPECT_EQ( minor , GP_VERSION_MINOR );
-    EXPECT_EQ( patch , GP_VERSION_PATCH );
-    EXPECT_EQ( vsha1 , "GP_VERSION_SHA1" );
+    EXPECT_EQ( major , GPCXX_VERSION_MAJOR );
+    EXPECT_EQ( minor , GPCXX_VERSION_MINOR );
+    EXPECT_EQ( patch , GPCXX_VERSION_PATCH );
+    EXPECT_EQ( vsha1 , "GPCXX_VERSION_SHA1" );
 }
 

@@ -7,7 +7,7 @@
 #ifndef TEST_TREE_HPP_INCLUDED
 #define TEST_TREE_HPP_INCLUDED
 
-#include <gp/tree/basic_tree.hpp>
+#include <gpcxx/tree/basic_tree.hpp>
 
 #include <string>
 
@@ -18,7 +18,7 @@ template< typename Tag >
 struct get_tree_type;
 
 template<>
-struct get_tree_type< basic_tree_tag > { typedef gp::basic_tree< std::string > type; };
+struct get_tree_type< basic_tree_tag > { typedef gpcxx::basic_tree< std::string > type; };
 
 
 template< typename TreeTag >
