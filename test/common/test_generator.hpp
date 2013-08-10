@@ -7,7 +7,7 @@
 #ifndef TEST_GENERATOR_HPP_INCLUDED
 #define TEST_GENERATOR_HPP_INCLUDED
 
-#include <gp/tree/random_symbol_generator.hpp>
+#include <gp/generate/uniform_symbol.hpp>
 
 #include <random>
 #include <vector>
@@ -25,15 +25,15 @@ bool contains( const C &c , const S &s )
 struct test_generator
 {
     typedef std::vector< std::string > symbol_container;
-    typedef gp::random_symbol_generator< gp::linked_node< std::string > , std::mt19937 > generator_type;
+    typedef gp::uniform_symbol< std::string > generator_type;
 
     test_generator( void )
         : term_symbols( { "x" , "y" , "z" } ) ,
           unary_symbols(  { "sin" , "cos" , "exp" } ) ,
           binary_symbols( { "plus" , "minus" , "multiplies" } ) ,
-          gen0( term_symbols , rng , 0 ) ,
-          gen1( unary_symbols , rng , 1 ) ,
-          gen2( binary_symbols , rng , 2 ) 
+          gen0( term_symbols ) ,
+          gen1( unary_symbols ) ,
+          gen2( binary_symbols ) 
     { }
 
     std::mt19937 rng;

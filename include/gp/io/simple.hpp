@@ -9,65 +9,44 @@
 
 #include <ostream>
 
+
 namespace gp {
 
-namespace detail {
 
-inline std::string indent( size_t level )
+template< typename Cursor >
+void print_simple_cursor( Cursor t , std::ostream &out )
 {
-    std::string ret = "";
-    for( size_t i=0 ; i<level ; ++i ) ret += "  ";
-    return ret;    
-}
-
-
-
-} // namespace detail
-
-
-
-// template< class T >
-// void pretty_print( const tree< T > &t , std::ostream &out = std::cout )
-// {
-//     const typename tree< T >::vector_type &data = t.data();
-//     if( !t.data().empty() )
-//         detail::pretty_print( data , out , size_t ( 0 ) , size_t( 0 ) );
-// }
-
-
-
-
-template< class Node >
-void print_simple_node( const Node *t , std::ostream &out )
-{
-    if( t->arity == 0 ) out << t->value;
-    else if( t->arity == 1 )
+    if( t.size() == 0 ) out << *t;
+    else if( t.size() == 1 )
     {
-        out << t->value << "( ";
-        print_simple_node( t->children[0] , out );
+        Cursor child = t.begin();
+        out << *t << "( ";
+        print_simple_cursor( child , out );
         out << " )";
     }
-    else if( t->arity == 2 )
+    else if( t.size() == 2 )
     {
-        if( t->children[0]->arity == 2 ) out << "( ";
-        print_simple_node( t->children[0] , out );
-        if( t->children[0]->arity == 2 ) out << " )";
+        Cursor left = t.begin();
+        Cursor right = left + 1;
 
-        out << " " << t->value << " ";
+        if( left.size() == 2 ) out << "( ";
+        print_simple_cursor( left , out );
+        if( left.size() == 2 ) out << " )";
 
-        if( t->children[1]->arity == 2 ) out << "( ";
-        print_simple_node( t->children[1] , out );
-        if( t->children[1]->arity == 2 ) out << " )";
+        out << " " << *t << " ";
+        
+        if( right.size() == 2 ) out << "( ";
+        print_simple_cursor( right , out );
+        if( right.size() == 2 ) out << " )";
     }
 
 }
 
 
-template< class Tree >
-void print_simple( const Tree& t , std::ostream &out )
+template< typename Tree >
+void print_simple( Tree const& t , std::ostream &out )
 {
-    const auto *ptr = t.data();
-    print_simple_node( ptr , out );
+    print_simple_cursor( t.root() , out );
 }
 
 
@@ -75,8 +54,8 @@ void print_simple( const Tree& t , std::ostream &out )
 template< class Tree >
 struct simple_printer
 {
-    const Tree &m_t;
-    simple_printer( const Tree &t ) : m_t( t ) { }
+    Tree const& m_t;
+    simple_printer( Tree const& t ) : m_t( t ) { }
     std::ostream& operator()( std::ostream& out ) const
     {
         print_simple( m_t , out );
@@ -85,10 +64,10 @@ struct simple_printer
 };
 
 template< class T >
-simple_printer< T > simple( const T &t ) { return simple_printer< T >( t ); }
+simple_printer< T > simple( T const& t ) { return simple_printer< T >( t ); }
 
 template< class T >
-std::ostream& operator<<( std::ostream& out , const simple_printer< T > &p )
+std::ostream& operator<<( std::ostream& out , simple_printer< T > const& p )
 {
     return p( out );
 }

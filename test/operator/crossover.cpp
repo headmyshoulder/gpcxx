@@ -1,84 +1,32 @@
 /*
- * crossover.cpp
- * Date: 2013-02-20
- * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
+ test/operator/crossover.cpp
+
+ Copyright 2013 Karsten Ahnert
+
+ Distributed under the Boost Software License, Version 1.0.
+ (See accompanying file LICENSE_1_0.txt or
+ copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
 #include <gp/operator/crossover.hpp>
+#include <gp/operator/one_point_crossover_strategy.hpp>
+#include <gp/operator/random_selector.hpp>
 #include "../common/test_tree.hpp"
 #include "../common/test_generator.hpp"
 
 #include <gtest/gtest.h>
 
+#define TESTNAME crossover_tests
+
 using namespace std;
 
-TEST( operator_tests , crossover1 )
+TEST( TESTNAME , instanciation )
 {
-    test_tree tree;
+    test_tree< basic_tree_tag > tree;
     test_generator gen;
-
-    gp::crossover::crossover_impl( tree.data , tree.data2 , 3 , 1 );
-    auto root1 = tree.data.data();
-    EXPECT_EQ( root1->value , "plus" );
-    EXPECT_EQ( root1->children[0]->value , "sin" );
-    EXPECT_EQ( root1->children[1]->value , "cos" );
-    auto root2 = tree.data2.data();
-    EXPECT_EQ( root2->value , "minus" );
-    EXPECT_EQ( root2->children[0]->value , "minus" );
-    EXPECT_EQ( root2->children[1]->value , "x" );
+    std::vector< test_tree< basic_tree_tag >::tree_type > pop( 10 , test_tree< basic_tree_tag >::tree_type() );
+    std::vector< double > fitness( 10 );
+    auto c = gp::make_crossover( gp::make_one_point_crossover_strategy( gen.rng , 10 ) , gp::make_random_selector( gen.rng ) );
+    c( pop , fitness );
 }
 
-TEST( operator_tests , crossover2 )
-{
-    test_tree tree;
-    test_generator gen;
-
-    gp::crossover::crossover_impl( tree.data , tree.data2 , 3 , 0 );
-    auto root1 = tree.data.data();
-    EXPECT_EQ( root1->value , "plus" );
-    EXPECT_EQ( root1->children[0]->value , "sin" );
-    EXPECT_EQ( root1->children[1]->value , "minus" );
-    auto root2 = tree.data2.data();
-    EXPECT_EQ( root2->value , "minus" );
-    EXPECT_EQ( root2->children[0]->value , "y" );
-    EXPECT_EQ( root2->children[1]->value , "2" );
-}
-
-TEST( operator_tests , crossover3 )
-{
-    test_tree tree;
-    test_generator gen;
-
-    gp::crossover::crossover_impl( tree.data , tree.data2 , 0 , 1 );
-    auto root1 = tree.data.data();
-    EXPECT_EQ( root1->value , "cos" );
-    EXPECT_EQ( root1->children[0]->value , "y" );
-    auto root2 = tree.data2.data();
-    EXPECT_EQ( root2->value , "minus" );
-    EXPECT_EQ( root2->children[0]->value , "plus" );
-    EXPECT_EQ( root2->children[1]->value , "x" );
-}
-
-TEST( operator_tests , crossover4 )
-{
-    test_tree tree;
-    test_generator gen;
-
-    gp::crossover::crossover_impl( tree.data , tree.data2 , 0 , 0 );
-    auto root1 = tree.data.data();
-    EXPECT_EQ( root1->value , "minus" );
-    EXPECT_EQ( root1->children[0]->value , "cos" );
-    EXPECT_EQ( root1->children[1]->value , "x" );
-    auto root2 = tree.data2.data();
-    EXPECT_EQ( root2->value , "plus" );
-    EXPECT_EQ( root2->children[0]->value , "sin" );
-    EXPECT_EQ( root2->children[1]->value , "minus" );
-}
-
-TEST( operator_tests , crossover5 )
-{
-    test_tree tree;
-    test_generator gen;
-    gp::crossover()( tree.data , tree.data2 , gen.rng , 10 );
-
-}

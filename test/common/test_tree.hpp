@@ -7,41 +7,45 @@
 #ifndef TEST_TREE_HPP_INCLUDED
 #define TEST_TREE_HPP_INCLUDED
 
-#include <gp/tree/linked_node_tree.hpp>
-#include <gp/tree/complete_linked_tree_structure.hpp>
+#include <gp/tree/basic_tree.hpp>
 
 #include <string>
 
+struct basic_tree_tag { };
+
+
+template< typename Tag >
+struct get_tree_type;
+
+template<>
+struct get_tree_type< basic_tree_tag > { typedef gp::basic_tree< std::string > type; };
+
+
+template< typename TreeTag >
 struct test_tree
 {
-    typedef gp::linked_node_tree< std::string > tree_type;
-    typedef tree_type::node_type node_type;
+    typedef typename get_tree_type< TreeTag >::type tree_type;
+
 
     test_tree( void )
+        : data() , data2()
     {
-        data.set_data(
-            new node_type (
-                "plus" , 
-                new node_type( "sin" ,
-                               new node_type( "x" ) ) ,
-                new node_type( "minus" ,
-                               new node_type( "y" ) ,
-                               new node_type( "2" ) 
-                    )
-                ) );
+        {
+            auto i1 = data.insert_below( data.root() , "plus" );
+            auto i2 = data.insert_below( i1 , "sin" );
+            auto i3 = data.insert_below( i2 , "x" );
+            auto i4 = data.insert_below( i1 , "minus" );
+            auto i5 = data.insert_below( i4 , "y" );
+            auto i6 = data.insert_below( i4 , "2" );
+        }
 
-        data2.set_data(
-            new node_type (
-                "minus" ,
-                new node_type( "cos" , new node_type( "y" ) ) ,
-                new node_type( "x" )
-                ) ) ;
-
-        gp::complete_linked_tree_structure( data );
-        gp::complete_linked_tree_structure( data2 );
+        {
+            auto i1 = data2.insert_below( data2.root() , "minus" );
+            auto i2 = data2.insert_below( i1 , "cos" );
+            auto i3 = data2.insert_below( i2 , "y" );
+            auto i4 = data2.insert_below( i1 , "x" );
+        }
     }
-
-    ~test_tree( void ) { }
 
     tree_type data;
     tree_type data2;

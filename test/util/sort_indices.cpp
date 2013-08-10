@@ -9,11 +9,11 @@
 
 #include <gtest/gtest.h>
 
-
-
 using namespace std;
 
-TEST( util_tests , sort_indices1 )
+#define TESTNAME sort_indices_tests
+
+TEST( TESTNAME , sort_indices1 )
 {
     std::vector< double > c = { 2.0 , 5.0 , 2.5 , 1.0 , -2.0 , 4.5 };
     std::vector< size_t >  ind;
@@ -27,7 +27,7 @@ TEST( util_tests , sort_indices1 )
     EXPECT_EQ( ind[5] , 1 );
 }
 
-TEST( util_tests , sort_indices2 )
+TEST( TESTNAME , sort_indices2 )
 {
     std::vector< double > c = { 2.0 , 5.0 , 2.5 , NAN , 1.0 , -2.0 , INFINITY , -INFINITY , 4.5 };
     std::vector< size_t >  ind;
