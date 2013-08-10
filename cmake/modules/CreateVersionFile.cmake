@@ -40,3 +40,4 @@ if ( NOT ( GP_GIT_STATUS STREQUAL "" ) )
   configure_file ( ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp.cmake ${CMAKE_SOURCE_DIR}/include/gp/config_version.hpp )
 
 endif ()
+
