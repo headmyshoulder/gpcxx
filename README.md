@@ -1,4 +1,4 @@
-genetic_programming
-===================
+gpcxx
+=====
 
-This is a modern C++ framework for genetic programming. It is designed for high performance and high flexibility and uses C++11.
+gpcxx is a modern C++ framework for genetic programming. It is designed for high performance and high flexibility and uses C++11.
