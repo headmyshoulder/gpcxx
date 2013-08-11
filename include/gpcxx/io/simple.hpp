@@ -1,11 +1,11 @@
 /*
- * simple.hpp
+ * gpcxx/util/simple.hpp
  * Date: 2013-02-03
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef SIMPLE_HPP_INCLUDED
-#define SIMPLE_HPP_INCLUDED
+#ifndef GPCXX_UTIL_SIMPLE_HPP_INCLUDED
+#define GPCXX_UTIL_SIMPLE_HPP_INCLUDED
 
 
 #include <gpcxx/util/identity.hpp>
@@ -16,8 +16,8 @@
 namespace gpcxx {
 
 
-template< typename Cursor , typename SymbolMapper = gpcxx::identity >
-void print_simple_cursor( Cursor t , std::ostream &out , SymbolMapper const& mapper = SymbolMapper() )
+template< typename Cursor , typename SymbolMapper >
+void print_simple_cursor( Cursor t , std::ostream &out , SymbolMapper const& mapper )
 {
     if( t.size() == 0 ) out << mapper( *t );
     else if( t.size() == 1 )
@@ -46,31 +46,31 @@ void print_simple_cursor( Cursor t , std::ostream &out , SymbolMapper const& map
 }
 
 
-template< typename Tree , typename SymbolMapper = gpcxx::identity >
-void print_simple( Tree const& t , std::ostream &out , SymbolMapper const& mapper = SymbolMapper() )
+template< typename Tree , typename SymbolMapper >
+void print_simple( Tree const& t , std::ostream &out , SymbolMapper const& mapper )
 {
     print_simple_cursor( t.root() , out , mapper );
 }
 
 
-// ToDo: schick machen
-template< class Tree >
+template< typename Tree , typename SymbolMapper >
 struct simple_printer
 {
     Tree const& m_t;
-    simple_printer( Tree const& t ) : m_t( t ) { }
+    SymbolMapper const& m_mapper;
+    simple_printer( Tree const& t , SymbolMapper const& mapper ) : m_t( t ) , m_mapper( mapper ) { }
     std::ostream& operator()( std::ostream& out ) const
     {
-        print_simple( m_t , out );
+        print_simple( m_t , out , m_mapper );
         return out;
     }
 };
 
 template< typename T , typename SymbolMapper = gpcxx::identity >
-simple_printer< T > simple( T const& t , SymbolMapper const &mapper = SymbolMapper() ) { return simple_printer< T , SymbolMapper >( t , mapper ); }
+simple_printer< T , SymbolMapper > simple( T const& t , SymbolMapper const &mapper = SymbolMapper() ) { return simple_printer< T , SymbolMapper >( t , mapper ); }
 
-template< class T >
-std::ostream& operator<<( std::ostream& out , simple_printer< T > const& p )
+template< typename T , typename SymbolMapper >
+std::ostream& operator<<( std::ostream& out , simple_printer< T , SymbolMapper > const& p )
 {
     return p( out );
 }
@@ -80,4 +80,4 @@ std::ostream& operator<<( std::ostream& out , simple_printer< T > const& p )
 
 } // namespace gpcxx
 
-#endif // SIMPLE_HPP_INCLUDED
+#endif // GPCXX_UTIL_SIMPLE_HPP_INCLUDED
