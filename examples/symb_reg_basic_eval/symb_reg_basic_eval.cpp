@@ -16,7 +16,7 @@
 #include <gpcxx/operator/crossover.hpp>
 #include <gpcxx/operator/one_point_crossover_strategy.hpp>
 #include <gpcxx/operator/reproduce.hpp>
-#include <gpcxx/eval/basic_eval.hpp>
+#include <gpcxx/eval/static_eval.hpp>
 #include <gpcxx/evolve/static_pipeline.hpp>
 #include <gpcxx/stat/best_individuals.hpp>
 #include <gpcxx/stat/population_statistics.hpp>
@@ -90,7 +90,7 @@ int main( int argc , char *argv[] )
     generate_test_data3( c.y , c.x1 , c.x2 , c.x3 , 1024 , rng ,
                          []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
     
-    auto eval = gpcxx::make_basic_eval< value_type , symbol_type , eval_context_type >(
+    auto eval = gpcxx::make_static_eval< value_type , symbol_type , eval_context_type >(
         fusion::make_vector(
             fusion::make_vector( '1' , []( eval_context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( eval_context_type const& t ) { return 2.0; } )

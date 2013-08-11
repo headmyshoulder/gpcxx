@@ -1,5 +1,5 @@
 /*
-  gpcxx/eval/basic_eval.hpp
+  gpcxx/eval/statuc_eval.hpp
 
   Copyright 2013 Karsten Ahnert
 
@@ -9,8 +9,8 @@
 */
 
 
-#ifndef GPCXX_EVAL_BASIC_EVAL_HPP_DEFINED
-#define GPCXX_EVAL_BASIC_EVAL_HPP_DEFINED
+#ifndef GPCXX_EVAL_STATIC_EVAL_HPP_DEFINED
+#define GPCXX_EVAL_STATIC_EVAL_HPP_DEFINED
 
 #include <gpcxx/util/iterate_until.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>
@@ -34,9 +34,9 @@ template< typename Value ,
           typename TerminalAttributes,
           typename UnaryAttributes ,
           typename BinaryAttributes >
-class basic_eval
+class static_eval
 {    
-    typedef basic_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
+    typedef static_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
     
 public:
     
@@ -49,7 +49,7 @@ public:
     
     typedef uniform_symbol< symbol_type > symbol_distribution_type;
     
-    basic_eval( terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
+    static_eval( terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
     : m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
     
     template< typename Tree >
@@ -215,14 +215,14 @@ private:
 
 template< typename Value , typename Symbol , typename EvalContext ,
           typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
-basic_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >
-make_basic_eval( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
+static_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >
+make_static_eval( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
 {
-    return basic_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
+    return static_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
 }
 
 
 } // namespace gpcxx
 
 
-#endif // GPCXX_EVAL_BASIC_EVAL_HPP_DEFINED
+#endif // GPCXX_EVAL_STATIC_EVAL_HPP_DEFINED

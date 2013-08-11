@@ -1,5 +1,5 @@
 /*
- test/eval/basic_eval_erc.cpp
+ test/eval/static_eval_erc.cpp
 
  Copyright 2013 Karsten Ahnert
 
@@ -8,7 +8,7 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gpcxx/eval/basic_eval_erc.hpp>
+#include <gpcxx/eval/static_eval_erc.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
@@ -46,7 +46,7 @@ TEST( TESTNAME , TestCase )
     typedef std::string symbol_type;
     
     
-    auto eval = gpcxx::make_basic_eval_erc< value_type , symbol_type , context_type >(
+    auto eval = gpcxx::make_static_eval_erc< value_type , symbol_type , context_type >(
         fusion::make_vector( 1.0 , std::normal_distribution<>( 0.0 , 1.0 ) ) ,
         fusion::make_vector(
                  fusion::make_vector( "1" , []( context_type const& t ) { return 1.0; } )

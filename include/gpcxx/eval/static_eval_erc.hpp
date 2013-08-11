@@ -43,9 +43,9 @@ template< typename Value ,
           typename TerminalAttributes ,
           typename UnaryAttributes ,
           typename BinaryAttributes >
-class basic_eval_erc
+class static_eval_erc
 {    
-    typedef basic_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
+    typedef static_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
     
 public:
     
@@ -67,7 +67,7 @@ public:
 
     
     
-    basic_eval_erc( erc_type erc , terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
+    static_eval_erc( erc_type erc , terminal_attribtes_type const& terminals , unary_attributes_type const& unaries , binary_attribtes_type const& binaries )
     : m_erc( erc ) , m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
     
     template< typename Tree >
@@ -251,10 +251,10 @@ private:
 
 template< typename Value , typename Symbol , typename EvalContext ,
           typename Erc , typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
-basic_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes >
-make_basic_eval_erc( Erc const &erc , TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
+static_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes >
+make_static_eval_erc( Erc const &erc , TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
 {
-    return basic_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes >( erc , terminals , unaries , binaries );
+    return static_eval_erc< Value , Symbol , EvalContext , Erc , TerminalAttributes , UnaryAttributes , BinaryAttributes >( erc , terminals , unaries , binaries );
 }
 
 

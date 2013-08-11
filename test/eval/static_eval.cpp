@@ -1,5 +1,5 @@
 /*
- test/eval/basic_eval.cpp
+ test/eval/static_eval.cpp
 
  Copyright 2013 Karsten Ahnert
 
@@ -8,7 +8,7 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gpcxx/eval/basic_eval.hpp>
+#include <gpcxx/eval/static_eval.hpp>
 
 #include "../common/test_tree.hpp"
 
@@ -41,7 +41,7 @@ TEST( TESTNAME , test1 )
     
     test_tree< basic_tree_tag > trees;
     
-    auto eval = gpcxx::make_basic_eval< value_type , symbol_type , context_type >(
+    auto eval = gpcxx::make_static_eval< value_type , symbol_type , context_type >(
         fusion::make_vector(
                  fusion::make_vector( "1" , []( context_type const& t ) { return 1.0; } )
                , fusion::make_vector( "2" , []( context_type const& t ) { return 2.0; } )
@@ -81,7 +81,7 @@ TEST( TESTNAME , test2 )
     
     test_tree< basic_tree_tag > trees;
     
-    auto eval = gpcxx::make_basic_eval< value_type , symbol_type , context_type >(
+    auto eval = gpcxx::make_static_eval< value_type , symbol_type , context_type >(
         fusion::make_vector(
                  fusion::make_vector( "1" , []( context_type const& t ) { return 1.0; } )
                , fusion::make_vector( "2" , []( context_type const& t ) { return 2.0; } )

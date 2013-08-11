@@ -7,21 +7,24 @@
 #ifndef SIMPLE_HPP_INCLUDED
 #define SIMPLE_HPP_INCLUDED
 
+
+#include <gpcxx/util/identity.hpp>
+
 #include <ostream>
 
 
 namespace gpcxx {
 
 
-template< typename Cursor >
-void print_simple_cursor( Cursor t , std::ostream &out )
+template< typename Cursor , typename SymbolMapper = gpcxx::identity >
+void print_simple_cursor( Cursor t , std::ostream &out , SymbolMapper const& mapper = SymbolMapper() )
 {
-    if( t.size() == 0 ) out << *t;
+    if( t.size() == 0 ) out << mapper( *t );
     else if( t.size() == 1 )
     {
         Cursor child = t.begin();
-        out << *t << "( ";
-        print_simple_cursor( child , out );
+        out << mapper( *t ) << "( ";
+        print_simple_cursor( child , out , mapper );
         out << " )";
     }
     else if( t.size() == 2 )
@@ -30,23 +33,23 @@ void print_simple_cursor( Cursor t , std::ostream &out )
         Cursor right = left + 1;
 
         if( left.size() == 2 ) out << "( ";
-        print_simple_cursor( left , out );
+        print_simple_cursor( left , out , mapper );
         if( left.size() == 2 ) out << " )";
 
-        out << " " << *t << " ";
+        out << " " << mapper( *t ) << " ";
         
         if( right.size() == 2 ) out << "( ";
-        print_simple_cursor( right , out );
+        print_simple_cursor( right , out , mapper );
         if( right.size() == 2 ) out << " )";
     }
 
 }
 
 
-template< typename Tree >
-void print_simple( Tree const& t , std::ostream &out )
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
+void print_simple( Tree const& t , std::ostream &out , SymbolMapper const& mapper = SymbolMapper() )
 {
-    print_simple_cursor( t.root() , out );
+    print_simple_cursor( t.root() , out , mapper );
 }
 
 
@@ -63,8 +66,8 @@ struct simple_printer
     }
 };
 
-template< class T >
-simple_printer< T > simple( T const& t ) { return simple_printer< T >( t ); }
+template< typename T , typename SymbolMapper = gpcxx::identity >
+simple_printer< T > simple( T const& t , SymbolMapper const &mapper = SymbolMapper() ) { return simple_printer< T , SymbolMapper >( t , mapper ); }
 
 template< class T >
 std::ostream& operator<<( std::ostream& out , simple_printer< T > const& p )

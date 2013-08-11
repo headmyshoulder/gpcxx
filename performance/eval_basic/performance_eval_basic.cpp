@@ -6,7 +6,7 @@
 
 #define FUSION_MAX_VECTOR_SIZE 20
 
-#include <gpcxx/eval/basic_eval.hpp>
+#include <gpcxx/eval/static_eval.hpp>
 #include <gpcxx/generate/basic_generate_strategy.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/util/timer.hpp>
@@ -53,7 +53,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
                                        const vector_type &x1 , const vector_type &x2 , const vector_type &x3 ,
                                        const std::string &tree_filename , const std::string &result_filename )
 {
-    auto eval = gpcxx::make_basic_eval< value_type , symbol_type , context_type >(
+    auto eval = gpcxx::make_static_eval< value_type , symbol_type , context_type >(
         fusion::make_vector(
             fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
