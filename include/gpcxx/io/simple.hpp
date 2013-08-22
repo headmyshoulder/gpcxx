@@ -54,23 +54,25 @@ void print_simple( Tree const& t , std::ostream &out , SymbolMapper const& mappe
 
 
 // ToDo: schick machen
-template< class Tree >
+template< typename Tree , typename Mapper >
 struct simple_printer
 {
     Tree const& m_t;
-    simple_printer( Tree const& t ) : m_t( t ) { }
+    Mapper const& m_mapper;
+    simple_printer( Tree const& t , Mapper const& mapper ) : m_t( t ) , m_mapper( mapper ) { }
     std::ostream& operator()( std::ostream& out ) const
     {
-        print_simple( m_t , out );
+        print_simple( m_t , out , m_mapper );
         return out;
     }
 };
 
 template< typename T , typename SymbolMapper = gpcxx::identity >
-simple_printer< T > simple( T const& t , SymbolMapper const &mapper = SymbolMapper() ) { return simple_printer< T , SymbolMapper >( t , mapper ); }
+simple_printer< T , SymbolMapper > simple( T const& t , SymbolMapper const &mapper = SymbolMapper() ) { return simple_printer< T , SymbolMapper >( t , mapper ); }
 
-template< class T >
-std::ostream& operator<<( std::ostream& out , simple_printer< T > const& p )
+
+template< typename T , typename SymbolMapper >
+std::ostream& operator<<( std::ostream& out , simple_printer< T , SymbolMapper > const& p )
 {
     return p( out );
 }
