@@ -21,12 +21,10 @@
 #include <gpcxx/io/best_individuals.hpp>
 #include <gpcxx/stat/population_statistics.hpp>
 
-#include "../common/generate_test_data.hpp"
-#include "../common/statistics.hpp"
-
 #include <boost/fusion/include/make_vector.hpp>
 
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <vector>
 #include <functional>
@@ -37,6 +35,24 @@ namespace fusion = boost::fusion;
 
 typedef double value_type;
 typedef std::vector< value_type > vector_type;
+
+
+
+template< typename Rng , typename F >
+void generate_test_data( vector_type &y , vector_type &x1 , vector_type &x2 , vector_type &x3 , size_t n , Rng &rng , F f )
+{
+    std::normal_distribution< double > dist1( 0.0 , 1.0 ) , dist2( 0.0 , 1.0 ) , dist3( 0.0 , 1.0 );
+    x1.resize( n ) ; x2.resize( n ) ; x3.resize( n ); y.resize( n );
+    for( size_t i = 0 ; i < n ; ++i )
+    {
+        x1[i] = dist1( rng );
+        x2[i] = dist2( rng );
+        x3[i] = dist3( rng );
+        y[i] = f( x1[i] , x2[i] , x3[i] );
+    }
+}
+
+
 
 struct context_type
 {
@@ -85,8 +101,12 @@ int main( int argc , char *argv[] )
     rng_type rng;
 
     context_type c;
-    generate_test_data3( c.y , c.x1 , c.x2 , c.x3 , 1024 , rng ,
-                         []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+    generate_test_data( c.y , c.x1 , c.x2 , c.x3 , 1024 , rng ,
+                        []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+    
+    ofstream fout1( "testdata.dat" );
+    for( size_t i=0 ; i<1024 ; ++i )
+        fout1 << c.y[i] << " " << c.x1[i] << " " << c.x2[i] << " " << c.x3[i] << "\n";
     
     auto eval = gpcxx::make_static_eval_erc< value_type , symbol_type , eval_context_type >(
         fusion::make_vector( 1.0 , std::normal_distribution<>( 0.0 , 1.0 ) ) ,

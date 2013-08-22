@@ -18,7 +18,7 @@
 #include <gpcxx/operator/reproduce.hpp>
 #include <gpcxx/eval/static_eval.hpp>
 #include <gpcxx/evolve/static_pipeline.hpp>
-#include <gpcxx/stat/best_individuals.hpp>
+#include <gpcxx/io/best_individuals.hpp>
 #include <gpcxx/stat/population_statistics.hpp>
 
 #include "../common/generate_test_data.hpp"
