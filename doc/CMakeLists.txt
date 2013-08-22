@@ -7,10 +7,47 @@ set ( catalog "${CMAKE_CURRENT_BINARY_DIR}/catalog.xml" )
 configure_file ( catalog.xml.in "${catalog}" )
 
 set ( xml_dir "${CMAKE_CURRENT_BINARY_DIR}/xml" )
+set ( doxyfile "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" )
+
+file(WRITE "${doxyfile}"
+  "QUIET = YES\n"
+  "WARN_IF_UNDOCUMENTED = NO\n"
+  "GENERATE_LATEX = NO\n"
+  "GENERATE_HTML = NO\n"
+  "GENERATE_XML = YES\n"
+  "XML_OUTPUT = \"${xml_dir}\"\n"
+  "INPUT = \"${CMAKE_SOURCE_DIR}/include/gpcxx\"\n"
+  "RECURSIVE = YES\n"
+  )
+  
+
+add_custom_command(
+  OUTPUT
+    "${xml_dir}/index.xml"
+    "${xml_dir}/combine.xslt"
+  COMMAND
+    ${DOXYGEN_EXECUTABLE} ${doxyfile}
+  DEPENDS
+    "${CMAKE_SOURCE_DIR}/include/gpcxx"
+  )
+  
+# Collect Doxygen XML into a single XML file
+xsltproc(
+  INPUT "${xml_dir}/index.xml"
+  OUTPUT "${xml_dir}/all.xml"
+  STYLESHEET "${xml_dir}/combine.xslt"
+  )
+
+  # Transform single Doxygen XML file into BoostBook XML
+xsltproc(
+  INPUT "${xml_dir}/all.xml"
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
+  STYLESHEET "${BOOSTBOOK_XSL_DIR}/doxygen/doxygen2boostbook.xsl"
+  PARAMETERS "boost.doxygen.header.prefix=gpcxx"
+  )
 
 
-
-
+  
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.qbk"
   COMMAND
     ${CMAKE_COMMAND} -E copy
@@ -29,6 +66,7 @@ add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.xml
     --output-file "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.xml"
   DEPENDS
     "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.qbk"
+    "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
   )
   
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/boostbook.css"

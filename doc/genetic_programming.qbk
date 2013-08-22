@@ -77,9 +77,7 @@ Installation
 
 [endsect]
 
-[section Reference]
-
-[endsect]
+[xinclude reference.xml]
 
 [section Index]
 
