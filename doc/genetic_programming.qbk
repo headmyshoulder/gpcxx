@@ -1,7 +1,7 @@
-[library GeneticProgramming
+[library gpcxx
      [quickbook 1.5]
-     [id genetic_programming]
-     [dirname genetic_programming]
+     [id gpcxx]
+     [dirname gpcxx]
      [authors [Ahnert, Karsten]]
      [copyright 2013 Karsten Ahnert]
      [category math]
@@ -73,7 +73,7 @@ Installation
 
 [endsect]
 
-[section GeneticProgramming in detail]
+[section gpcxx in detail]
 
 [endsect]
 
