@@ -147,12 +147,13 @@ int main( int argc , char *argv[] )
 
     
     size_t population_size = 512;
+    size_t generation_size = 20;
     double elite_rate = double( 1 ) / double( population_size );
     double mutation_rate = 0.0;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
-    size_t min_tree_height = 4 , max_tree_height = 12;
-
+    size_t min_tree_height = 8 , max_tree_height = 8;
+    size_t tournament_size = 15;
 
 
     // generators< rng_type > gen( rng );
@@ -173,11 +174,11 @@ int main( int argc , char *argv[] )
     auto fitness_f = fitness_function< eval_type >( eval );
     evolver.mutation_function() = gpcxx::make_mutation(
         gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
-        gpcxx::make_random_selector( rng ) );
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
-        gpcxx::make_random_selector( rng ) );
-    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_random_selector( rng ) );
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
+    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     gpcxx::timer timer;
 
@@ -195,7 +196,7 @@ int main( int argc , char *argv[] )
     std::cout << std::endl << std::endl;
 
     timer.restart();
-    for( size_t i=0 ; i<100 ; ++i )
+    for( size_t i=0 ; i<generation_size ; ++i )
     {
         gpcxx::timer iteration_timer;
         iteration_timer.restart();
