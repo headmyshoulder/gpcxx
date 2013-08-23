@@ -46,6 +46,7 @@ public:
     typedef TerminalAttributes terminal_attribtes_type;
     typedef UnaryAttributes unary_attributes_type;
     typedef BinaryAttributes binary_attribtes_type;
+    typedef symbol_type node_attribute_type;
     
     typedef uniform_symbol< symbol_type > symbol_distribution_type;
     

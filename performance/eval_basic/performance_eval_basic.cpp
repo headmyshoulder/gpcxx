@@ -49,7 +49,7 @@ void generate_test_data( vector_type &x1 , vector_type &x2 , vector_type &x3 , s
 
 /// \return time for create of tree, time for evaluation
 template< typename Tree >
-std::pair< double , double > run_test( rng_type &rng , size_t height  ,
+std::tuple< double , double , double > run_test( rng_type &rng , size_t number_of_trees , size_t height  ,
                                        const vector_type &x1 , const vector_type &x2 , const vector_type &x3 ,
                                        const std::string &tree_filename , const std::string &result_filename )
 {
@@ -57,13 +57,13 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
         fusion::make_vector(
             fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '3' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '4' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '5' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '6' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '7' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '8' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '9' , []( context_type const& t ) { return 2.0; } )
+          , fusion::make_vector( '3' , []( context_type const& t ) { return 3.0; } )
+          , fusion::make_vector( '4' , []( context_type const& t ) { return 4.0; } )
+          , fusion::make_vector( '5' , []( context_type const& t ) { return 5.0; } )
+          , fusion::make_vector( '6' , []( context_type const& t ) { return 6.0; } )
+          , fusion::make_vector( '7' , []( context_type const& t ) { return 7.0; } )
+          , fusion::make_vector( '8' , []( context_type const& t ) { return 8.0; } )
+          , fusion::make_vector( '9' , []( context_type const& t ) { return 9.0; } )
           , fusion::make_vector( 'x' , []( context_type const& t ) { return t[0]; } )
           , fusion::make_vector( 'y' , []( context_type const& t ) { return t[1]; } )
           , fusion::make_vector( 'z' , []( context_type const& t ) { return t[2]; } )          
@@ -80,7 +80,7 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
           ) );
 
     gpcxx::timer timer;
-    std::pair< double , double > res;
+    std::tuple< double , double , double > res;
 
     auto terminal_gen = eval.get_terminal_symbol_distribution();
     auto unary_gen = eval.get_unary_symbol_distribution();
@@ -92,30 +92,57 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
     std::function< void( Tree& ) > tree_generator = gpcxx::make_basic_generate_strategy(
         rng , terminal_gen , unary_gen , binary_gen , height , height , weights );
 
-    Tree tree;
+
+    // 
+    // GENERATION
+    //
+    std::vector< Tree > tree( number_of_trees );
     timer.restart();
-    tree_generator( tree );
-    res.first = timer.seconds();
+    for( size_t t=0 ; t<number_of_trees ; ++t )
+        tree_generator( tree[t] );
+    std::get< 0 >( res ) = timer.seconds();
 
     ofstream fout1( tree_filename );
     fout1.precision( 14 );
-    fout1 << gpcxx::simple( tree );
+    for( size_t t=0 ; t<number_of_trees ; ++t )
+        fout1 << t << " : " << gpcxx::simple( tree[t] ) << endl;
 
-    size_t n = x1.size();
-    vector_type y( n );
+    size_t number_of_datapoints = x1.size();
+    std::vector< vector_type > y( number_of_trees );
+    for( size_t t=0 ; t<number_of_trees ; ++t ) y[t] = vector_type( number_of_datapoints );
 
+
+    // 
+    // EVALUATION
+    //
     timer.restart();
-    for( size_t i=0 ; i<n ; ++i )
+    for( size_t t=0 ; t<number_of_trees ; ++t )
     {
-        context_type c { x1[i] , x2[i] , x3[i] };
-        y[i] = eval( tree , c );
+        for( size_t i=0 ; i<number_of_datapoints ; ++i )
+        {
+            context_type c { x1[i] , x2[i] , x3[i] };
+            y[t][i] = eval( tree[t] , c );
+        }
     }
-    res.second = timer.seconds();
+    std::get< 1 >( res ) = timer.seconds();
+    
+    double sum = 0.0;
+    for( size_t t=0 ; t<number_of_trees ; ++t )
+    {
+        for( size_t i=0 ; i<number_of_datapoints ; ++i )
+            sum += y[t][i];
+    }
+    std::get< 2 >( res ) = sum;
+    
 
-    ofstream fout2( result_filename );
-    fout2.precision( 14 );
-    for( size_t i=0 ; i<n ; ++i )
-        fout2 << x1[i] << tab << x2[i] << tab << x3[i] << tab << y[i] << endl;
+//     ofstream fout2( result_filename );
+//     fout2.precision( 14 );
+//     for( size_t t=0 ; t<number_of_trees ; ++t )
+//     {
+//         for( size_t i=0 ; i<number_of_datapoints ; ++i )
+//             fout2 << t << tab << i << tab << x1[i] << tab << x2[i] << tab << x3[i] << tab << y[t][i] << endl;
+//         fout2 << endl;
+//     }
 
     return res;
 }
@@ -125,29 +152,33 @@ std::pair< double , double > run_test( rng_type &rng , size_t height  ,
 int main( int argc , char *argv[] )
 {
     rng_type rng;
-    size_t n = 1024 * 1024 ;
+    size_t number_of_datapoints = 1024 ;
+    size_t number_of_trees = 1024;
 
     
     vector_type x1, x2 , x3;
 
     // generate test data
-    generate_test_data( x1 , x2 , x3 , n , rng );
+    generate_test_data( x1 , x2 , x3 , number_of_datapoints , rng );
 
     ofstream fout( "result.dat" );
     fout.precision( 14 );
+    cout.precision( 14 );
     for( size_t height=2 ; height<10 ; ++height )
     {
         cout.precision( 14 );
         cout << "Starting test with height " << height << endl;
-        std::pair< double , double > times = run_test< gpcxx::basic_tree< char > >(
-            rng , height , x1 , x2 , x3 ,
+        auto times = run_test< gpcxx::basic_tree< char > >(
+            rng , number_of_trees , height , x1 , x2 , x3 ,
             std::string( "tree_" ) + std::to_string( height ) + ".dat" ,
             std::string( "data_" ) + std::to_string( height ) + ".dat" );
         cout << tab << "Finished!" << endl;
-        cout << tab << "Tree creation time " << times.first << endl;
-        cout << tab << "Evaluation time " << times.second << endl << endl;
+        cout << tab << "Tree creation time " << std::get< 0 >( times ) << endl;
+        cout << tab << "Evaluation time " << std::get< 1 >( times ) << endl;
+        cout << tab << "Result sum " << std::get< 2 >( times ) << endl << endl;
+        
 
-        fout << height << tab << times.first << tab << times.second << endl;
+        fout << height << tab << std::get< 0 >( times ) << tab << std::get< 1 >( times ) << tab << std::get< 2 >( times ) << endl;
     }
 
     
