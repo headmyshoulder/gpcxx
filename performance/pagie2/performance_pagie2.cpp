@@ -201,11 +201,15 @@ int main( int argc , char *argv[] )
         gpcxx::timer iteration_timer;
         iteration_timer.restart();
         evolver.next_generation( population , fitness );
+        double evolve_time = timer.seconds();
+        timer.restart();
         for( size_t i=0 ; i<population.size() ; ++i )
             fitness[i] = fitness_f( population[i] , c );
+        double eval_time = timer.seconds();
         
         std::cout << "\t" << "Iteration " << i << std::endl;
-        std::cout << "\t" << "Iteration time " << iteration_timer.seconds() << std::endl;
+        std::cout << "\t" << "Evolve time " << evolve_time << std::endl;
+        std::cout << "\t" << "Eval time " << eval_time << std::endl;
         std::cout << "\t" << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
         std::cout << "\t" << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
     }
