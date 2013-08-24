@@ -118,7 +118,7 @@ int main( int argc , char *argv[] )
     typedef decltype( eval ) eval_type;
     
     size_t population_size = 100;
-    double elite_rate = double( 1 ) / double( population_size );
+    size_t number_elite = 1;
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
@@ -136,7 +136,7 @@ int main( int argc , char *argv[] )
     auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
     
 
-    evolver_type evolver( elite_rate , mutation_rate , crossover_rate , reproduction_rate , rng );
+    evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
 
