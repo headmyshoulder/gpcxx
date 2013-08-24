@@ -126,15 +126,15 @@ int main( int argc , char *argv[] )
     auto terminal_gen = eval.get_terminal_symbol_distribution();
     auto unary_gen = eval.get_unary_symbol_distribution();
     auto binary_gen = eval.get_binary_symbol_distribution();
-    std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
-                                       int( unary_gen.num_symbols() ) ,
-                                       int( binary_gen.num_symbols() ) }};
+    std::array< double , 3 > weights = {{ 2.0 * double( terminal_gen.num_symbols() ) ,
+                                       double( unary_gen.num_symbols() ) ,
+                                       double( binary_gen.num_symbols() ) }};
     auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
     
 
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
-    std::vector< double > fitness( population_size , 0.0 );
-    std::vector< tree_type > population( population_size );
+    fitness_type fitness( population_size , 0.0 );
+    population_type population( population_size );
 
 
     auto fitness_f = fitness_function< eval_type >( eval );
@@ -151,7 +151,7 @@ int main( int argc , char *argv[] )
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
-        fitness[i] = fitness_function< eval_type >( eval )( population[i] , c );
+        fitness[i] = fitness_f( population[i] , c );
     }
     
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;

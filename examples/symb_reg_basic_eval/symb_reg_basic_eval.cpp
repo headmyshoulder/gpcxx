@@ -6,20 +6,13 @@
 
 #define FUSION_MAX_VECTOR_SIZE 20
 
-#include <gpcxx/tree/basic_tree.hpp>
-#include <gpcxx/generate/uniform_symbol.hpp>
-#include <gpcxx/generate/ramp.hpp>
-#include <gpcxx/operator/mutation.hpp>
-#include <gpcxx/operator/simple_mutation_strategy.hpp>
-#include <gpcxx/operator/random_selector.hpp>
-#include <gpcxx/operator/tournament_selector.hpp>
-#include <gpcxx/operator/crossover.hpp>
-#include <gpcxx/operator/one_point_crossover_strategy.hpp>
-#include <gpcxx/operator/reproduce.hpp>
-#include <gpcxx/eval/static_eval.hpp>
-#include <gpcxx/evolve/static_pipeline.hpp>
-#include <gpcxx/io/best_individuals.hpp>
-#include <gpcxx/stat/population_statistics.hpp>
+#include <gpcxx/tree.hpp>
+#include <gpcxx/generate.hpp>
+#include <gpcxx/operator.hpp>
+#include <gpcxx/eval.hpp>
+#include <gpcxx/evolve.hpp>
+#include <gpcxx/io.hpp>
+#include <gpcxx/stat.hpp>
 
 #include "../common/generate_test_data.hpp"
 #include "../common/statistics.hpp"
@@ -31,79 +24,35 @@
 #include <vector>
 #include <functional>
 
-#define tab "\t"
-
-namespace fusion = boost::fusion;
-
-typedef double value_type;
-typedef std::vector< value_type > vector_type;
-
-struct context_type
-{
-    vector_type x1 , x2 , x3 , y;
-};
-
-
-template< typename Eval >
-struct fitness_function
-{
-    Eval m_eval;
-    fitness_function( Eval eval ) : m_eval( eval ) { }
-
-    template< typename Tree >
-    double operator()( Tree const & t , const context_type &c ) const
-    {
-        double chi2 = 0.0;
-        for( size_t i=0 ; i<c.x1.size() ; ++i )
-        {
-            typename Eval::eval_context_type cc;
-            cc[0] = c.x1[i];
-            cc[1] = c.x2[i];
-            cc[2] = c.x3[i];
-            double yy = m_eval( t , cc );
-            chi2 += ( yy - c.y[i] ) * ( yy - c.y[i] );
-        }
-        chi2 /= double( c.x1.size() );
-        return - 1.0 / ( 1.0 + chi2 );
-    }
-};
-
-
-
+const std::string tab = "\t";
 
 
 namespace pl = std::placeholders;
+namespace fusion = boost::fusion;
 
 int main( int argc , char *argv[] )
 {
     typedef std::mt19937 rng_type ;
-    typedef char symbol_type;
-    typedef gpcxx::basic_tree< symbol_type > tree_type;
-    typedef std::array< value_type , 3 > eval_context_type;
+    typedef gpcxx::basic_tree< char > tree_type;
     typedef std::vector< tree_type > population_type;
-    typedef std::vector< value_type > fitness_type;
+    typedef std::vector< double > fitness_type;
     typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
+    typedef gpcxx::get_context_type< 3 , double >::type context_type;
 
-    rng_type rng;
-
-    context_type c;
-    generate_test_data3( c.y , c.x1 , c.x2 , c.x3 , 1024 , rng ,
-                         []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
-    
-    auto eval = gpcxx::make_static_eval< value_type , symbol_type , eval_context_type >(
+    auto eval = gpcxx::make_static_eval< 3 , double , char >(
         fusion::make_vector(
-            fusion::make_vector( '1' , []( eval_context_type const& t ) { return 1.0; } )
-          , fusion::make_vector( '2' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '3' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '4' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '5' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '6' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '7' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '8' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '9' , []( eval_context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( 'x' , []( eval_context_type const& t ) { return t[0]; } )
-          , fusion::make_vector( 'y' , []( eval_context_type const& t ) { return t[1]; } )
-          , fusion::make_vector( 'z' , []( eval_context_type const& t ) { return t[2]; } )          
+            fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
+          , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
+          , fusion::make_vector( '3' , []( context_type const& t ) { return 3.0; } )
+          , fusion::make_vector( '4' , []( context_type const& t ) { return 4.0; } )
+          , fusion::make_vector( '5' , []( context_type const& t ) { return 5.0; } )
+          , fusion::make_vector( '6' , []( context_type const& t ) { return 6.0; } )
+          , fusion::make_vector( '7' , []( context_type const& t ) { return 7.0; } )
+          , fusion::make_vector( '8' , []( context_type const& t ) { return 8.0; } )
+          , fusion::make_vector( '9' , []( context_type const& t ) { return 9.0; } )
+          , fusion::make_vector( 'x' , []( context_type const& t ) { return t[0]; } )
+          , fusion::make_vector( 'y' , []( context_type const& t ) { return t[1]; } )
+          , fusion::make_vector( 'z' , []( context_type const& t ) { return t[2]; } )          
           ) ,
         fusion::make_vector(
             fusion::make_vector( 's' , []( double v ) -> double { return std::sin( v ); } )
@@ -117,31 +66,24 @@ int main( int argc , char *argv[] )
           ) );
     typedef decltype( eval ) eval_type;
     
+   
     size_t population_size = 100;
     size_t number_elite = 1;
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
     size_t min_tree_height = 8 , max_tree_height = 8;
-
-
-
-    // generators< rng_type > gen( rng );
+    
+    rng_type rng;
     auto terminal_gen = eval.get_terminal_symbol_distribution();
     auto unary_gen = eval.get_unary_symbol_distribution();
     auto binary_gen = eval.get_binary_symbol_distribution();
-    std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
-                                       int( unary_gen.num_symbols() ) ,
-                                       int( binary_gen.num_symbols() ) }};
-    auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
-    
+    auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 );
 
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
-    std::vector< double > fitness( population_size , 0.0 );
-    std::vector< tree_type > population( population_size );
 
 
-    auto fitness_f = fitness_function< eval_type >( eval );
+    auto fitness_f = gpcxx::regression_fitness< eval_type >( eval );
     evolver.mutation_function() = gpcxx::make_mutation(
         gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
         gpcxx::make_random_selector( rng ) );
@@ -149,13 +91,21 @@ int main( int argc , char *argv[] )
         gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
         gpcxx::make_random_selector( rng ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_random_selector( rng ) );
+    
+    gpcxx::regression_training_data< double , 3 > c;
+    generate_test_data3( c.y , c.x[0] , c.x[1] , c.x[2] , 1024 , rng ,
+                         []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+
+
+    std::vector< double > fitness( population_size , 0.0 );
+    std::vector< tree_type > population( population_size );
 
 
     // initialize population with random trees and evaluate fitness
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
-        fitness[i] = fitness_function< eval_type >( eval )( population[i] , c );
+        fitness[i] = fitness_f( population[i] , c );
     }
     
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;

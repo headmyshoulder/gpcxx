@@ -25,7 +25,7 @@ class ramp
 public:
     
     ramp( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 ,
-          size_t min_height , size_t max_height , double grow_prob , std::array< int , 3 > const& gen_weights )
+          size_t min_height , size_t max_height , double grow_prob , std::array< double , 3 > const& gen_weights )
     : m_rng( rng ) , m_terminal_gen( gen0 ) , m_unary_gen( gen1 ) , m_binary_gen( gen2 )
     , m_min_height( min_height ) , m_max_height( max_height ) , m_grow_prob( grow_prob ) , m_gen_weights( gen_weights )
     { }
@@ -61,14 +61,14 @@ private:
     size_t m_min_height;
     size_t m_max_height;
     double m_grow_prob; // full prob is 1 - m_grow__prob
-    std::array< int , 3 > m_gen_weights;
+    std::array< double , 3 > m_gen_weights;
 };
 
 
 template< typename Rng , typename TerminalGen , typename UnaryGen , typename BinaryGen >
 ramp< Rng , TerminalGen , UnaryGen , BinaryGen >
 make_ramp( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 ,
-           size_t min_height , size_t max_height , double grow_prob , std::array< int , 3 > const& gen_weights )
+           size_t min_height , size_t max_height , double grow_prob , std::array< double , 3 > const& gen_weights = {{ 1.0 , 1.0 , 1.0 }} )
 {
     return ramp< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen0 , gen1 , gen2 , min_height , max_height , grow_prob , gen_weights );
 }

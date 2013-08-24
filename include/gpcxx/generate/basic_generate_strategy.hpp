@@ -21,7 +21,7 @@ class basic_generate_strategy
 public:
     
     basic_generate_strategy( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
-                             size_t min_height , size_t max_height , std::array< int , 3 > const& gen_weights )
+                             size_t min_height , size_t max_height , std::array< double , 3 > const& gen_weights )
     : m_rng( rng ) , m_terminal_gen( gen0 ) , m_unary_gen( gen1 ) , m_binary_gen( gen2 ) ,
       m_min_height( min_height ) , m_max_height( max_height ) ,
       m_gen_weights( gen_weights ) { }
@@ -46,8 +46,8 @@ public:
         typedef typename tree_type::cursor cursor;
 
 
-        std::array< int , 2 > weights_dice = {{ m_gen_weights[1] , m_gen_weights[2] }};
-        std::array< int , 3 > weights_thrice = m_gen_weights;
+        std::array< double , 2 > weights_dice = {{ m_gen_weights[1] , m_gen_weights[2] }};
+        std::array< double , 3 > weights_thrice = m_gen_weights;
 
                                              
         std::discrete_distribution<> dice( weights_dice.begin() , weights_dice.end() );
@@ -91,14 +91,14 @@ private:
     UnaryGen &m_unary_gen;
     BinaryGen &m_binary_gen;
     size_t m_min_height , m_max_height;
-    std::array< int , 3 > m_gen_weights;
+    std::array< double , 3 > m_gen_weights;
 };
 
 
 template< typename Rng , typename TerminalGen , typename UnaryGen , typename BinaryGen >
 basic_generate_strategy< Rng , TerminalGen , UnaryGen , BinaryGen >
 make_basic_generate_strategy( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
-                              size_t min_height , size_t max_height , std::array< int , 3 > const& gen_weights )
+                              size_t min_height , size_t max_height , std::array< double , 3 > const& gen_weights )
 {
     return basic_generate_strategy< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen0 , gen1 , gen2 , min_height , max_height , gen_weights );
 }

@@ -15,6 +15,7 @@
 
 #include <gpcxx/eval/static_eval.hpp>
 #include <gpcxx/eval/static_eval_erc.hpp>
+#include <gpcxx/eval/regression_fitness.hpp>
 
 
 #endif // GPCXX_EVAL_HPP_DEFINED
