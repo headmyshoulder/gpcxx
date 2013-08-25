@@ -86,9 +86,9 @@ std::tuple< double , double , double > run_test( rng_type &rng , size_t number_o
     auto unary_gen = eval.get_unary_symbol_distribution();
     auto binary_gen = eval.get_binary_symbol_distribution();
     
-    std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
-                                           int( unary_gen.num_symbols() ) ,
-                                           int( binary_gen.num_symbols() ) }};
+    std::array< double , 3 > weights = {{ 2.0 * double( terminal_gen.num_symbols() ) ,
+                                           double( unary_gen.num_symbols() ) ,
+                                           double( binary_gen.num_symbols() ) }};
     std::function< void( Tree& ) > tree_generator = gpcxx::make_basic_generate_strategy(
         rng , terminal_gen , unary_gen , binary_gen , height , height , weights );
 

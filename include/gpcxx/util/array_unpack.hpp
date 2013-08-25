@@ -33,7 +33,7 @@ namespace array_unpacker_details {
     template< size_t I , size_t N , typename Value , typename Func , typename ... Args >
     struct unpacker
     {
-        inline Value operator()( std::array< Value , N > const& t , Func &&f , Args&& ... args ) const
+        inline Value operator()( std::array< Value , N > const& t , Func f , Args&& ... args ) const
         {
             return call_unpacker< I - 1 >( t , f , t[I-1] , args ... );
         }
@@ -42,7 +42,7 @@ namespace array_unpacker_details {
     template< size_t N , typename Value , typename Func , typename ... Args >
     struct unpacker< 0 , N , Value , Func , Args ... >
     {
-        inline Value operator()( std::array< Value , N > const &t , Func &&f , Args&& ... args ) const
+        inline Value operator()( std::array< Value , N > const &t , Func f , Args&& ... args ) const
         {
             return f( args ... );
         }
@@ -52,7 +52,7 @@ namespace array_unpacker_details {
 
 
 template< size_t N , typename Value , typename Func >
-inline Value array_unpack( std::array< Value , N > &&t , Func &&f )
+inline Value array_unpack( std::array< Value , N > const& t , Func f )
 {
     return array_unpacker_details::call_unpacker< N - 1 >( t , f , t[N-1] );
 }

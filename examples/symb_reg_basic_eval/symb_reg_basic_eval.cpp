@@ -35,7 +35,7 @@ int main( int argc , char *argv[] )
     typedef gpcxx::basic_tree< char > tree_type;
     typedef gpcxx::regression_context< double , 3 > context_type;
 
-    auto eval = gpcxx::make_static_eval< 3 , double , char , context_type >(
+    auto eval = gpcxx::make_static_eval< double , char , context_type >(
         fusion::make_vector(
             fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
@@ -93,8 +93,8 @@ int main( int argc , char *argv[] )
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_random_selector( rng ) );
     
     gpcxx::regression_training_data< double , 3 > c;
-    gpcxx::generate_test_data3( c.y , c.x[0] , c.x[1] , c.x[2] , 1024 , rng ,
-                                []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
+            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
 
 
     std::vector< double > fitness( population_size , 0.0 );

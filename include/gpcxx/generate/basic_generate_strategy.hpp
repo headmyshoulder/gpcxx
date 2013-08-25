@@ -98,7 +98,7 @@ private:
 template< typename Rng , typename TerminalGen , typename UnaryGen , typename BinaryGen >
 basic_generate_strategy< Rng , TerminalGen , UnaryGen , BinaryGen >
 make_basic_generate_strategy( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
-                              size_t min_height , size_t max_height , std::array< double , 3 > const& gen_weights )
+                              size_t min_height , size_t max_height , std::array< double , 3 > const& gen_weights = {{ 1.0 , 1.0 , 1.0 }} )
 {
     return basic_generate_strategy< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen0 , gen1 , gen2 , min_height , max_height , gen_weights );
 }

@@ -29,8 +29,7 @@ namespace gpcxx {
 
 
     
-template< size_t Dim ,
-          typename Value ,
+template< typename Value ,
           typename Symbol ,
           typename Context ,
           typename TerminalAttributes,
@@ -38,11 +37,10 @@ template< size_t Dim ,
           typename BinaryAttributes >
 class static_eval
 {    
-    typedef static_eval< Dim , Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
+    typedef static_eval< Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
     
 public:
     
-    static const size_t dim = Dim;
     typedef Value value_type;
     typedef Symbol symbol_type;
     typedef Context context_type;
@@ -217,12 +215,12 @@ private:
 };
 
 
-template< size_t N , typename Value , typename Symbol , typename Context ,
+template< typename Value , typename Symbol , typename Context ,
           typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
-static_eval< N , Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >
+static_eval< Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >
 make_static_eval( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
 {
-    return static_eval< N , Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
+    return static_eval< Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
 }
 
 

@@ -17,10 +17,11 @@
 #include <gpcxx/operator/one_point_crossover_strategy.hpp>
 #include <gpcxx/operator/reproduce.hpp>
 #include <gpcxx/eval/static_eval.hpp>
+#include <gpcxx/eval/regression_fitness.hpp>
 #include <gpcxx/evolve/static_pipeline.hpp>
 #include <gpcxx/io/best_individuals.hpp>
 #include <gpcxx/stat/population_statistics.hpp>
-#include <gpcxx/util/timer.hpp>
+#include <gpcxx/app/timer.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
@@ -35,17 +36,14 @@
 namespace fusion = boost::fusion;
 
 typedef double value_type;
-typedef std::vector< value_type > vector_type;
+typedef gpcxx::regression_training_data< value_type , 3 > trainings_data_type;
 
 
 
 template< typename F >
-void generate_test_data( vector_type &y , vector_type &x1 , vector_type &x2 , vector_type &x3 , double rmin , double rmax , double stepsize , F f )
+void generate_test_data( trainings_data_type &data, double rmin , double rmax , double stepsize , F f )
 {
-    x1.clear();
-    x2.clear();
-    x3.clear();
-    y.clear();
+    data.x[0].clear(); data.x[1].clear(); data.x[2].clear(); data.y.clear();
     
     for( double xx = rmin ; xx <= rmax ; xx += stepsize )
     {
@@ -53,10 +51,10 @@ void generate_test_data( vector_type &y , vector_type &x1 , vector_type &x2 , ve
         {
             for( double zz = rmin ; zz <= rmax ; zz += stepsize )
             {
-                x1.push_back( xx );
-                x2.push_back( yy );
-                x3.push_back( zz );
-                y.push_back( f( xx , yy , zz ) );
+                data.x[0].push_back( xx );
+                data.x[1].push_back( yy );
+                data.x[2].push_back( zz );
+                data.y.push_back( f( xx , yy , zz ) );
             }
         }
     }
@@ -64,35 +62,6 @@ void generate_test_data( vector_type &y , vector_type &x1 , vector_type &x2 , ve
 
 
 
-struct context_type
-{
-    vector_type x1 , x2 , x3 , y;
-};
-
-
-template< typename Eval >
-struct fitness_function
-{
-    Eval m_eval;
-    fitness_function( Eval eval ) : m_eval( eval ) { }
-
-    template< typename Tree >
-    value_type operator()( Tree const & t , const context_type &c ) const
-    {
-        double chi2 = 0.0;
-        for( size_t i=0 ; i<c.x1.size() ; ++i )
-        {
-            typename Eval::eval_context_type cc;
-            cc[0] = c.x1[i];
-            cc[1] = c.x2[i];
-            cc[2] = c.x3[i];
-            double yy = m_eval( t , cc );
-            chi2 += ( yy - c.y[i] ) * ( yy - c.y[i] );
-        }
-        chi2 /= double( c.x1.size() );
-        return - 1.0 / ( 1.0 + chi2 );
-    }
-};
 
 
 
@@ -110,14 +79,13 @@ int main( int argc , char *argv[] )
 
     rng_type rng;
 
-    context_type c;
-    generate_test_data( c.y , c.x1 , c.x2 , c.x3 , -5.0 , 5.0 + 0.1 , 0.4  ,
-                        []( double x1 , double x2 , double x3 ) {
-                            return  1.0 / ( 1.0 + pow( x1 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x2 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x3 , -4.0 ) ); } );
+    trainings_data_type c;
+    generate_test_data( c , -5.0 , 5.0 + 0.1 , 0.4 , []( double x1 , double x2 , double x3 ) {
+                        return  1.0 / ( 1.0 + pow( x1 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x2 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x3 , -4.0 ) ); } );
 
     std::ofstream fout1( "testdata.dat" );
-    for( size_t i=0 ; i<c.x1.size() ; ++i )
-        fout1 << c.y[i] << " " << c.x1[i] << " " << c.x2[i] << " " << c.x3[i] << "\n";
+    for( size_t i=0 ; i<c.x[0].size() ; ++i )
+        fout1 << c.y[i] << " " << c.x[0][i] << " " << c.x[1][i] << " " << c.x[2][i] << "\n";
     fout1.close();
     
     auto eval = gpcxx::make_static_eval< value_type , symbol_type , eval_context_type >(
@@ -160,9 +128,9 @@ int main( int argc , char *argv[] )
     auto terminal_gen = eval.get_terminal_symbol_distribution();
     auto unary_gen = eval.get_unary_symbol_distribution();
     auto binary_gen = eval.get_binary_symbol_distribution();
-    std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
-                                       int( unary_gen.num_symbols() ) ,
-                                       int( binary_gen.num_symbols() ) }};
+    std::array< double , 3 > weights = {{ 2.0 * double( terminal_gen.num_symbols() ) ,
+                                       double( unary_gen.num_symbols() ) ,
+                                       double( binary_gen.num_symbols() ) }};
     auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
     
 
@@ -171,7 +139,7 @@ int main( int argc , char *argv[] )
     std::vector< tree_type > population( population_size );
 
 
-    auto fitness_f = fitness_function< eval_type >( eval );
+    auto fitness_f = gpcxx::regression_fitness< eval_type >( eval );
     evolver.mutation_function() = gpcxx::make_mutation(
         gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
@@ -188,7 +156,7 @@ int main( int argc , char *argv[] )
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
-        fitness[i] = fitness_function< eval_type >( eval )( population[i] , c );
+        fitness[i] = fitness_f( population[i] , c );
     }
     std::cout << "Generation time " << timer.seconds() << std::endl;
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;
