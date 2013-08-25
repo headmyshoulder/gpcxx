@@ -1,5 +1,5 @@
 /*
- * main_optimize.cpp
+ * symb_reg_basic_eval.cpp
  * Date: 2013-01-28
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
@@ -13,9 +13,7 @@
 #include <gpcxx/evolve.hpp>
 #include <gpcxx/io.hpp>
 #include <gpcxx/stat.hpp>
-
-#include "../common/generate_test_data.hpp"
-#include "../common/statistics.hpp"
+#include <gpcxx/app.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
@@ -33,13 +31,11 @@ namespace fusion = boost::fusion;
 int main( int argc , char *argv[] )
 {
     typedef std::mt19937 rng_type ;
-    typedef gpcxx::basic_tree< char > tree_type;
-    typedef std::vector< tree_type > population_type;
-    typedef std::vector< double > fitness_type;
-    typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
-    typedef gpcxx::get_context_type< 3 , double >::type context_type;
 
-    auto eval = gpcxx::make_static_eval< 3 , double , char >(
+    typedef gpcxx::basic_tree< char > tree_type;
+    typedef gpcxx::regression_context< double , 3 > context_type;
+
+    auto eval = gpcxx::make_static_eval< 3 , double , char , context_type >(
         fusion::make_vector(
             fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
           , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
@@ -80,6 +76,10 @@ int main( int argc , char *argv[] )
     auto binary_gen = eval.get_binary_symbol_distribution();
     auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 );
 
+    typedef std::vector< tree_type > population_type;
+    typedef std::vector< double > fitness_type;
+    typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
+
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
 
 
@@ -93,8 +93,8 @@ int main( int argc , char *argv[] )
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_random_selector( rng ) );
     
     gpcxx::regression_training_data< double , 3 > c;
-    generate_test_data3( c.y , c.x[0] , c.x[1] , c.x[2] , 1024 , rng ,
-                         []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+    gpcxx::generate_test_data3( c.y , c.x[0] , c.x[1] , c.x[2] , 1024 , rng ,
+                                []( double x1 , double x2 , double x3 ) { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
 
 
     std::vector< double > fitness( population_size , 0.0 );

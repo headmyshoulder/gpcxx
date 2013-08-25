@@ -27,33 +27,28 @@
 
 namespace gpcxx {
 
-template< size_t N , typename Value >
-struct get_context_type
-{
-    typedef std::array< Value , N > type;
-};
-
 
     
 template< size_t Dim ,
           typename Value ,
           typename Symbol ,
+          typename Context ,
           typename TerminalAttributes,
           typename UnaryAttributes ,
           typename BinaryAttributes >
 class static_eval
 {    
-    typedef static_eval< Dim , Value , Symbol , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
+    typedef static_eval< Dim , Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
     
 public:
     
     static const size_t dim = Dim;
     typedef Value value_type;
     typedef Symbol symbol_type;
+    typedef Context context_type;
     typedef TerminalAttributes terminal_attribtes_type;
     typedef UnaryAttributes unary_attributes_type;
     typedef BinaryAttributes binary_attribtes_type;
-    typedef typename get_context_type< dim , value_type >::type context_type;
     typedef symbol_type node_attribute_type;
     
     typedef uniform_symbol< symbol_type > symbol_distribution_type;
@@ -222,12 +217,12 @@ private:
 };
 
 
-template< size_t N , typename Value , typename Symbol , 
+template< size_t N , typename Value , typename Symbol , typename Context ,
           typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
-static_eval< N , Value , Symbol , TerminalAttributes , UnaryAttributes , BinaryAttributes >
+static_eval< N , Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >
 make_static_eval( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
 {
-    return static_eval< N , Value , Symbol , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
+    return static_eval< N , Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
 }
 
 

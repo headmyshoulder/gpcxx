@@ -26,6 +26,10 @@ struct regression_training_data
     SequenceType x[dim];
 };
 
+template< typename Value , size_t Dim >
+using regression_context = std::array< Value , Dim >;
+
+
 
 template< typename Eval >
 struct regression_fitness

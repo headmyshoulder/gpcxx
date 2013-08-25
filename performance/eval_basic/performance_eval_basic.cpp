@@ -9,9 +9,9 @@
 #include <gpcxx/eval/static_eval.hpp>
 #include <gpcxx/generate/basic_generate_strategy.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>
-#include <gpcxx/util/timer.hpp>
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
+#include <gpcxx/app/timer.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
