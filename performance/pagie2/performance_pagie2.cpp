@@ -22,6 +22,7 @@
 #include <gpcxx/io/best_individuals.hpp>
 #include <gpcxx/stat/population_statistics.hpp>
 #include <gpcxx/app/timer.hpp>
+#include <gpcxx/app/normalize.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
@@ -82,6 +83,8 @@ int main( int argc , char *argv[] )
     trainings_data_type c;
     generate_test_data( c , -5.0 , 5.0 + 0.1 , 0.4 , []( double x1 , double x2 , double x3 ) {
                         return  1.0 / ( 1.0 + pow( x1 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x2 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x3 , -4.0 ) ); } );
+    gpcxx::normalize( c.y );
+    
 
     std::ofstream fout1( "testdata.dat" );
     for( size_t i=0 ; i<c.x[0].size() ; ++i )
@@ -98,7 +101,7 @@ int main( int argc , char *argv[] )
             fusion::make_vector( 's' , []( double v ) -> double { return std::sin( v ); } )
           , fusion::make_vector( 'c' , []( double v ) -> double { return std::cos( v ); } ) 
           , fusion::make_vector( 'e' , []( double v ) -> double { return std::exp( v ); } ) 
-          , fusion::make_vector( 'l' , []( double v ) -> double { return std::log( v ); } ) 
+          , fusion::make_vector( 'l' , []( double v ) -> double { return ( std::abs( v ) < 1.0e-20 ) ? 0.0 : std::log( std::abs( v ) ); } ) 
           ) ,
         fusion::make_vector(
             fusion::make_vector( '+' , std::plus< double >() )
@@ -144,7 +147,7 @@ int main( int argc , char *argv[] )
         gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.crossover_function() = gpcxx::make_crossover( 
-        gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
+        gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
     
@@ -159,7 +162,7 @@ int main( int argc , char *argv[] )
         fitness[i] = fitness_f( population[i] , c );
     }
     std::cout << "Generation time " << timer.seconds() << std::endl;
-    std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;
+    std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 , 10 ) << std::endl;
     std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
     std::cout << std::endl << std::endl;
 
@@ -175,11 +178,11 @@ int main( int argc , char *argv[] )
             fitness[i] = fitness_f( population[i] , c );
         double eval_time = iteration_timer.seconds();
         
-        std::cout << "\t" << "Iteration " << i << std::endl;
-        std::cout << "\t" << "Evolve time " << evolve_time << std::endl;
-        std::cout << "\t" << "Eval time " << eval_time << std::endl;
-        std::cout << "\t" << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
-        std::cout << "\t" << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Iteration " << i << std::endl;
+        std::cout << gpcxx::indent( 1 )  << "Evolve time " << evolve_time << std::endl;
+        std::cout << gpcxx::indent( 1 )  << "Eval time " << eval_time << std::endl;
+        std::cout << gpcxx::indent( 1 )  << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 2 , 10 ) << std::endl;
+        std::cout << gpcxx::indent( 1 )  << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
     }
     std::cout << "Overall time : " << timer.seconds() << std::endl;
 

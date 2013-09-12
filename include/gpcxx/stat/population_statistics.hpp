@@ -20,7 +20,7 @@ namespace gpcxx {
     
 struct population_statistics
 {
-    double height_mean , height_stddev , nodes_mean , nodes_stddev;
+    double height_mean , height_stddev , num_nodes , nodes_mean , nodes_stddev;
 };
 
 template< typename Pop >
@@ -44,6 +44,7 @@ population_statistics calc_population_statistics( Pop const& pop )
     stat.height_mean = double( height_mean ) / double( n );
     stat.height_stddev = std::sqrt( double( height_sq_mean ) / double( n ) - stat.height_mean * stat.height_mean );
     stat.nodes_mean = double( nodes_mean ) / double( n );
+    stat.num_nodes = nodes_mean;
     stat.nodes_stddev = std::sqrt( double( nodes_sq_mean ) / double( n ) - stat.nodes_mean * stat.nodes_mean );
     return stat;
 };
@@ -55,7 +56,8 @@ std::ostream& operator<<( std::ostream &out , population_statistics const& stat 
     out << "height mean = " << stat.height_mean
         << ", height stddev = " << stat.height_stddev
         << ", nodes mean = " << stat.nodes_mean
-        << ", nodes stddev = " << stat.nodes_stddev;
+        << ", nodes stddev = " << stat.nodes_stddev
+        << ", num nodes = " << stat.num_nodes;
     return out;
 }
 
