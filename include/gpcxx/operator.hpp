@@ -13,7 +13,6 @@
 #define GPCXX_OPERATOR_HPP_DEFINED
 
 #include <gpcxx/operator/crossover.hpp>
-#include <gpcxx/operator/fitness_prob.hpp>
 #include <gpcxx/operator/mutation.hpp>
 #include <gpcxx/operator/one_point_crossover_strategy.hpp>
 #include <gpcxx/operator/random_selector.hpp>

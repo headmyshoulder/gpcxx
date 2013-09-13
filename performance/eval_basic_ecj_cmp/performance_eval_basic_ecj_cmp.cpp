@@ -58,6 +58,70 @@ void generate_test_data( vector_type &x1 , vector_type &x2 , vector_type &x3 , d
     }
 }
 
+inline value_type my_log( value_type v )
+{
+    return ( std::abs( v ) < 1.0e-20 ) ? 0.0 : std::log( std::abs( v ) );
+}
+
+template< typename Cursor >
+inline value_type eval_cursor( Cursor const &c , context_type const &context )
+{
+    switch( *c )
+    {
+        case 'x' : return context[0]; break;
+        case 'y' : return context[1]; break;
+        case 'z' : return context[2]; break;
+        case 'e' : return exp( eval_cursor( c.children(0) , context ) ); break;
+        case 'l' : return my_log( eval_cursor( c.children(0) , context ) ); break;
+        case 's' : return sin( eval_cursor( c.children(0) , context ) ); break;
+        case 'c' : return cos( eval_cursor( c.children(0) , context ) ); break;
+        case '+' : return eval_cursor( c.children(0) , context ) + eval_cursor( c.children(1) , context ); break;
+        case '-' : return eval_cursor( c.children(0) , context ) - eval_cursor( c.children(1) , context ); break;
+        case '*' : return eval_cursor( c.children(0) , context ) * eval_cursor( c.children(1) , context ); break;
+        case '/' : return eval_cursor( c.children(0) , context ) / eval_cursor( c.children(1) , context ); break;
+    }
+}
+
+template< typename Cursor >
+inline value_type eval_cursor2( Cursor const &c , context_type const &context )
+{
+    if( c.size() == 0 )
+    {
+        switch( *c )
+        {
+            case 'x' : return context[0]; break;
+            case 'y' : return context[1]; break;
+            case 'z' : return context[2]; break;
+        }
+    }
+    else if( c.size() == 1 )
+    {
+        switch( *c )
+        {
+            case 'e' : return exp( eval_cursor( c.children(0) , context ) ); break;
+            case 'l' : return my_log( eval_cursor( c.children(0) , context ) ); break;
+            case 's' : return sin( eval_cursor( c.children(0) , context ) ); break;
+            case 'c' : return cos( eval_cursor( c.children(0) , context ) ); break;
+        }
+    }
+    else if( c.size() == 2 )
+    {
+        switch( *c )
+        {
+            case '+' : return eval_cursor( c.children(0) , context ) + eval_cursor( c.children(1) , context ); break;
+            case '-' : return eval_cursor( c.children(0) , context ) - eval_cursor( c.children(1) , context ); break;
+            case '*' : return eval_cursor( c.children(0) , context ) * eval_cursor( c.children(1) , context ); break;
+            case '/' : return eval_cursor( c.children(0) , context ) / eval_cursor( c.children(1) , context ); break;
+        }
+    }
+}
+
+template< typename Tree >
+inline value_type eval_tree( Tree const &tree , context_type const &c )
+{
+    return eval_cursor( tree.root() , c );
+}
+
 
 
 
@@ -66,26 +130,25 @@ void generate_test_data( vector_type &x1 , vector_type &x2 , vector_type &x3 , d
 template< typename Trees >
 std::tuple< double , double > run_test( Trees const &trees , const vector_type &x1 , const vector_type &x2 , const vector_type &x3 )
 {
-    auto eval = gpcxx::make_static_eval< value_type , symbol_type , context_type >(
-        fusion::make_vector(
-            fusion::make_vector( 'x' , []( context_type const& t ) { return t[0]; } )
-          , fusion::make_vector( 'y' , []( context_type const& t ) { return t[1]; } )
-          , fusion::make_vector( 'z' , []( context_type const& t ) { return t[2]; } )          
-          ) ,
-        fusion::make_vector(
-            fusion::make_vector( 's' , []( double v ) -> double { return std::sin( v ); } )
-          , fusion::make_vector( 'c' , []( double v ) -> double { return std::cos( v ); } ) 
-          , fusion::make_vector( 'e' , []( double v ) -> double { return std::exp( v ); } ) 
-          , fusion::make_vector( 'l' , []( double v ) -> double { return ( std::abs( v ) < 1.0e-20 ) ? 0.0 : std::log( std::abs( v ) ); } ) 
-          ) ,
-        fusion::make_vector(
-            fusion::make_vector( '+' , std::plus< double >() )
-          , fusion::make_vector( '-' , std::minus< double >() )
-          , fusion::make_vector( '*' , std::multiplies< double >() ) 
-          , fusion::make_vector( '/' , std::divides< double >() ) 
-          ) );
+//     auto eval = gpcxx::make_static_eval< value_type , symbol_type , context_type >(
+//         fusion::make_vector(
+//             fusion::make_vector( 'x' , []( context_type const& t ) { return t[0]; } )
+//           , fusion::make_vector( 'y' , []( context_type const& t ) { return t[1]; } )
+//           , fusion::make_vector( 'z' , []( context_type const& t ) { return t[2]; } )          
+//           ) ,
+//         fusion::make_vector(
+//             fusion::make_vector( 's' , []( double v ) -> double { return std::sin( v ); } )
+//           , fusion::make_vector( 'c' , []( double v ) -> double { return std::cos( v ); } ) 
+//           , fusion::make_vector( 'e' , []( double v ) -> double { return std::exp( v ); } ) 
+//           , fusion::make_vector( 'l' , []( double v ) -> double { return ( std::abs( v ) < 1.0e-20 ) ? 0.0 : std::log( std::abs( v ) ); } ) 
+//           ) ,
+//         fusion::make_vector(
+//             fusion::make_vector( '+' , std::plus< double >() )
+//           , fusion::make_vector( '-' , std::minus< double >() )
+//           , fusion::make_vector( '*' , std::multiplies< double >() ) 
+//           , fusion::make_vector( '/' , std::divides< double >() ) 
+//           ) );
 
-    gpcxx::timer timer;
     std::tuple< double , double > res;
 
     size_t number_of_datapoints = x1.size();
@@ -96,13 +159,13 @@ std::tuple< double , double > run_test( Trees const &trees , const vector_type &
     // 
     // EVALUATION
     //
-    timer.restart();
+    gpcxx::timer timer;
     for( size_t t=0 ; t<number_of_trees ; ++t )
     {
         for( size_t i=0 ; i<number_of_datapoints ; ++i )
         {
             context_type c { x1[i] , x2[i] , x3[i] };
-            y[t][i] = eval( trees[t] , c );
+            y[t][i] = eval_tree( trees[t] , c );
         }
     }
     std::get< 0 >( res ) = timer.seconds();

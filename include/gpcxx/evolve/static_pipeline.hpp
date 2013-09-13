@@ -12,7 +12,7 @@
 #ifndef GPCXX_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
 #define GPCXX_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
 
-#include <gpcxx/operator/fitness_prob.hpp>
+#include <gpcxx/util/sort_indices.hpp>
 
 #include <functional>
 #include <cassert>
@@ -62,20 +62,20 @@ private:
     void reproduce( population_type &pop , fitness_type &fitness )
     {
         assert( pop.size() == fitness.size() );
-        
-        fitness_prob< fitness_type , rng_type > prob( fitness , m_rng );
-        size_t n = pop.size();
+
+        std::vector< size_t > indices;
+        sort_indices( fitness , indices );
  
         population_type new_pop;
  
         // elite
         for( size_t i=0 ; i<m_number_elite ; ++i )
         {
-            size_t index = prob.indices()[i] ;
+            size_t index = indices[i] ;
             new_pop.push_back( pop[ index ] );
         }
-        
-        
+
+        size_t n = pop.size();
         std::discrete_distribution< int > dist( { m_mutation_rate , m_crossover_rate , m_reproduction_rate } );
         while( new_pop.size() < n )
         {
