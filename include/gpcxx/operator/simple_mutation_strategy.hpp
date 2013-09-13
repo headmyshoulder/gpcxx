@@ -22,37 +22,21 @@ namespace gpcxx {
 
 namespace detail {
 
-    template< class T , class Gen >
-    T mutate_value( T t , Gen &gen , size_t max_trials = 1000 )
-    {
-        size_t count = 0;
-        T v = gen();
-        while( ( v == t ) && ( count < max_trials ) )
-        {
-            v = gen();
-            ++count;
-        }
-        return v;
-    }
-
     template< class Cursor , class TerminalGen , class UnaryGen , class BinaryGen >
-    bool simple_mutation_impl( Cursor node , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
+    void simple_mutation_impl( Cursor node , TerminalGen &terminal_gen , UnaryGen &unary_gen , BinaryGen &binary_gen )
     {
         typedef typename cursor_value< Cursor >::type value_type;
         if( node.size() == 0 )
         {
-            *node = mutate_value( *node , terminal_gen );
-            return true;
+            *node = terminal_gen();
         }
         else if( node.size() == 1 )
         {
-            *node = mutate_value( *node , unary_gen );
-            return true;
+            *node = unary_gen();
         }
         else
         {
-            *node = mutate_value( *node , binary_gen );
-            return true;
+            *node = binary_gen();
         }
     }
 
@@ -73,11 +57,11 @@ struct simple_mutation_strategy
     { }
 
     template< class Tree , class TG , class UG , class BG >
-    static bool mutation_impl( Tree &t , size_t i , TG terminal_gen , UG unary_gen , BG binary_gen )
+    static void mutation_impl( Tree &t , size_t i , TG terminal_gen , UG unary_gen , BG binary_gen )
     {
         typedef typename Tree::cursor cursor;
         cursor n = t.rank_is( i );
-        return detail::simple_mutation_impl( n , terminal_gen , unary_gen , binary_gen );
+        detail::simple_mutation_impl( n , terminal_gen , unary_gen , binary_gen );
     }
 
     template< class Tree >
@@ -87,20 +71,10 @@ struct simple_mutation_strategy
         if( t.root().height() < 2 ) return;
         std::uniform_int_distribution< size_t > dist( 0 , t.size() - 1 );
 
-
-
-        size_t count = 0 ;
-        bool ok = true;
-        do
-        {
-            size_t index = dist( m_rng );
-            ok = mutation_impl( t , index , std::bind( m_terminal_gen , std::ref( m_rng ) ) ,
-                                            std::bind( m_unary_gen , std::ref( m_rng ) ) ,
-                                            std::bind( m_binary_gen , std::ref( m_rng ) ) );
-        }
-        while( !ok && ( count < 128 ) );
-
-        if( count == 128 ) throw std::runtime_error( "Maximal number of mutation trials reached" );
+        size_t index = dist( m_rng );
+        mutation_impl( t , index , std::bind( m_terminal_gen , std::ref( m_rng ) ) ,
+                                   std::bind( m_unary_gen , std::ref( m_rng ) ) ,
+                                   std::bind( m_binary_gen , std::ref( m_rng ) ) );
     }
 };
 
