@@ -13,6 +13,7 @@ add_executable ( operator_tests
    tournament_selector.cpp
    crossover.cpp
    reproduce.cpp
+   point_mutation.cpp
   )
 
 target_link_libraries ( operator_tests gtest gtest_main )
