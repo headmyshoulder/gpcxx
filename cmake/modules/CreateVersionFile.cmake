@@ -5,7 +5,7 @@ if ( NOT EXISTS "${CMAKE_SOURCE_DIR}/.git/" )
 endif ()
 
 set ( GPCXX_VERSION_FILE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp )
-set ( GPCXX_VERSION_FILE_TEMPLATE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp )
+set ( GPCXX_VERSION_FILE_TEMPLATE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp.cmake )
 
 execute_process ( COMMAND git describe --abbrev=4 HEAD
                   COMMAND sed -e "s/-/./g"
