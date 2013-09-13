@@ -7,6 +7,8 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 add_executable ( tree_tests
   basic_tree.cpp
+  general_tree.cpp
+  recursive_tree.cpp
   )
 
 target_link_libraries ( tree_tests gtest gtest_main )

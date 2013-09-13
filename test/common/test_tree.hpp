@@ -8,17 +8,16 @@
 #define TEST_TREE_HPP_INCLUDED
 
 #include <gpcxx/tree/basic_tree.hpp>
+#include <gpcxx/tree/recursive_tree.hpp>
 
 #include <string>
 
 struct basic_tree_tag { };
+struct recursive_tree_tag { };
 
-
-template< typename Tag >
-struct get_tree_type;
-
-template<>
-struct get_tree_type< basic_tree_tag > { typedef gpcxx::basic_tree< std::string > type; };
+template< typename Tag > struct get_tree_type;
+template<> struct get_tree_type< basic_tree_tag > { typedef gpcxx::basic_tree< std::string > type; };
+template<> struct get_tree_type< recursive_tree_tag > { typedef gpcxx::recursive_tree< std::string > type; };
 
 
 template< typename TreeTag >
