@@ -51,7 +51,7 @@ protected:
 
 using testing::Types;
 
-typedef Types< basic_tree_tag , recursive_tree_tag > Implementations;
+typedef Types< basic_tree_tag , recursive_tree_tag , basic_tree_fast_tag > Implementations;
 
 TYPED_TEST_CASE( general_tree_tests , Implementations );
 
