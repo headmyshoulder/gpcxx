@@ -36,13 +36,10 @@ class recursive_tree
     static const size_t max_arity = 2;
     typedef detail::recursive_node< T >                             node_type;
     typedef detail::recursive_node_base< T >                        node_base_type;
+    typedef node_type*                                              node_pointer;
     typedef node_base_type*                                         node_base_pointer;
-    
-//     typedef detail::basic_node< T , max_arity >                     node_type;
-//     typedef node_type*                                              node_pointer;
-//     typedef typename node_type::node_base_type                      node_base_type;
-//     typedef node_base_type*                                         node_base_pointer;
-    
+
+
     template< typename OtherCursor >
     struct same_value_type
     {
@@ -75,8 +72,8 @@ public:
         typedef recursive_tree< U > other;
     };
 
-    
-    
+
+
     //
     // construct:
     //
@@ -84,7 +81,7 @@ public:
     : m_header() , m_size( 0 )
     {
     }
-    
+
 //     template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
 //     recursive_tree( InputCursor subtree )
 //     : recursive_tree()
@@ -151,34 +148,34 @@ public:
     //
     cursor root() noexcept
     {
-//         return cursor( &m_header , 0 );
+        return cursor( &m_header );
     }
-    
+
     const_cursor root() const noexcept
     {
-//         return const_cursor( &m_header , 0 );
+        return const_cursor( &m_header );
     }
-    
+
     const_cursor croot() const noexcept
     {
-//         return const_cursor( &m_header , 0 );
+        return const_cursor( &m_header );
     }
 
     cursor shoot() noexcept
     {
-//         return cursor( &m_header , 1 );
+        return cursor( &m_header );
     }
 
     const_cursor shoot() const noexcept
     {
-//         return const_cursor( &m_header , 1 );
+        return const_cursor( &m_header );
     }
 
     const_cursor cshoot() const noexcept
     {
-//         return const_cursor( &m_header , 1 );
+        return const_cursor( &m_header );
     }
-    
+
 //     cursor rank_is( size_type n ) noexcept
 //     {
 //         if( n >= m_size )
@@ -194,8 +191,8 @@ public:
 //     }
 
 
-    
-    
+
+
 
     //
     // queries and capacity:
@@ -204,12 +201,12 @@ public:
     {
         return m_size == 0;
     }
-        
+
     size_type size( void ) const noexcept
     {
         return m_size;
     }
-    
+
     size_type max_size( void ) const noexcept
     {
         return size_type( -1 );
@@ -219,38 +216,46 @@ public:
  
  
  
-//     //
-//     // modifiers:
-//     //
+    //
+    // modifiers:
+    //
 //     template< typename InputCursor >
 //     void assign( InputCursor subtree )
 //     {
 //         clear();
 //         insert_below( root() , subtree );
 //     }
-//     
+
     cursor insert_below( cursor position , const value_type& val )
     {
-//         node_pointer new_node = new node_type( val );
-//         return insert_below_impl( position , new_node );
+        ++m_size;
+        if( position.node()->m_node.which() == 0 )
+        {
+            // adding node to root
+            position.node()->m_node = node_type( val );
+            position.node()->m_parent = position.parent_node();
+            return cursor( position.node() );
+        }
+        else
+        {
+            node_base_pointer n = boost::get< node_type >( position.node()->m_node ).insert_below( val );
+            n->m_parent = position.node();
+            return cursor( n );
+        }
     }
-       
-    cursor insert_below( const_cursor position , value_type &&val )
+
+//     cursor insert_below( const_cursor position , value_type &&val );
+
+
+    template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
+    cursor insert_below( cursor position , InputCursor subtree )
     {
-//         node_pointer new_node = new node_type();
-//         *new_node = std::move( val );
-//         return insert_below_impl( position , new_node );
+        cursor p = insert_below( position , *subtree );
+        for( size_t i=0 ; i<subtree.size() ; ++i )
+            insert_below( p , subtree.children( i ) );
+        return p;
     }
-//     
-//     template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
-//     cursor insert_below( cursor position , InputCursor subtree )
-//     {
-//         cursor p = insert_below( position , *subtree );
-//         for( InputCursor c = subtree.begin() ; c != subtree.end() ; ++c )
-//             insert_below( p , c );
-//         return p;
-//     }
-// 
+
 //     void swap( recursive_tree& other )
 //     {
 //         self_type tmp = std::move( other );
@@ -285,32 +290,26 @@ public:
 //         m_size = m_size - num_nodes1 + num_nodes2;
 //         other.m_size = other.m_size - num_nodes2 + num_nodes1;
 //     }
-// 
-// 
-//     
-//     void erase( cursor position ) noexcept
-//     {
-//         --m_size;
-//         if( position.node() == nullptr ) return;
-//         
-//         for( cursor c = position.begin() ; c != position.end() ; ++c )
-//         {
-//             erase_impl( c );
-//         }
-//         node_pointer ptr = static_cast< node_pointer >( position.node() );
-//         delete ptr;
-//         position.parent_node()->remove_child( ptr );
-//     }
-// 
+
+
+
+    void erase( cursor position ) noexcept
+    {
+        assert( position.m_node != nullptr );
+        if( position.m_node->m_node.which() == 0 ) return ;
+        node_base_pointer parent = position.m_node->m_parent;
+        assert( parent != nullptr );
+        m_size -= parent->remove_child( position.m_node );
+    }
+
+
 //     void clear( void ) noexcept
 //     {
 //         erase( root() );
 //     }
-    
-    
-    
-    
-    //
+
+
+
     // additional stuff for concept correctness:
     //
     // cursor insert( cursor position , const value_type &val );

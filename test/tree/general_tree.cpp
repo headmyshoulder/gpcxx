@@ -17,12 +17,12 @@
 using namespace std;
 using namespace gpcxx;
 
-
 #define TEST_NODE( n , VALUE , ARITY , HEIGHT , LEVEL )          \
     EXPECT_EQ( *(n) , VALUE );                                   \
     EXPECT_EQ( (n).size() , ARITY );                             \
     EXPECT_EQ( (n).height() , HEIGHT );                          \
     EXPECT_EQ( (n).level() , LEVEL )
+
 
 template <class T>
 class general_tree_tests : public testing::Test
@@ -64,89 +64,88 @@ TYPED_TEST( general_tree_tests , default_construct )
 }
 
 
-// TYPED_TEST( general_tree_tests , insert_value )
-// {
-//     auto root = this->m_tree->root();
-//     auto n1 = this->m_tree->insert_below( root , "+" );
-//     
-//     EXPECT_EQ( this->m_tree->size() , 1 );
-//     EXPECT_FALSE( this->m_tree->empty() );
-//     TEST_NODE( n1 , "+" , 0 , 1 , 0 );
-//     TEST_NODE( this->m_tree->root() , "+" , 0 , 1 , 0 );
-// 
-//     this->m_tree->insert_below( n1 , "11" );
-//     this->m_tree->insert_below( n1 , "12" );
-// 
-//     EXPECT_FALSE( this->m_tree->empty() );
-//     EXPECT_EQ( this->m_tree->size() , 3 );
-//     TEST_NODE( this->m_tree->root() , "+" , 2 , 2 , 0 );
-//     TEST_NODE( this->m_tree->root().children(0) , "11" , 0 , 1 , 1 );
-//     TEST_NODE( this->m_tree->root().children(1) , "12" , 0 , 1 , 1 );
-// }
-// 
-// TYPED_TEST( general_tree_tests , insert_and_erase )
-// {
-//     this->m_tree->insert_below( this->m_tree->root() , "+" );
-//     auto n1 = this->m_tree->insert_below( this->m_tree->root() , "-" );
-//     auto n2 = this->m_tree->insert_below( this->m_tree->root() , "*" );
-//     auto n3 = this->m_tree->insert_below( n1 , "13" );
-//     auto n4 = this->m_tree->insert_below( n1 , "14" );
-//     auto n5 = this->m_tree->insert_below( n2 , "15" );
-//     auto n6 = this->m_tree->insert_below( n2 , "16" );
-//     
-//     EXPECT_EQ( this->m_tree->size() , 7 );
-//     EXPECT_FALSE( this->m_tree->empty() );
-//     TEST_NODE( this->m_tree->root() , "+" , 2 , 3 , 0 );
-//     TEST_NODE( this->m_tree->root().children(0) , "-" , 2 , 2 , 1 );
-//     TEST_NODE( this->m_tree->root().children(0).children(0) , "13" , 0 , 1 , 2 );
-//     TEST_NODE( this->m_tree->root().children(0).children(1) , "14" , 0 , 1 , 2 );
-//     TEST_NODE( this->m_tree->root().children(1) , "*" , 2 , 2 , 1 );
-//     TEST_NODE( this->m_tree->root().children(1).children(0) , "15" , 0 , 1 , 2 );
-//     TEST_NODE( this->m_tree->root().children(1).children(1) , "16" , 0 , 1 , 2 );
-//     
-//     this->m_tree->erase( n2 );
-//     
-//     EXPECT_EQ( this->m_tree->size() , 4 );
-//     EXPECT_FALSE( this->m_tree->empty() );
-//     TEST_NODE( this->m_tree->root() , "+" , 1 , 3 , 0 );
-//     TEST_NODE( this->m_tree->root().children(0) , "-" , 2 , 2 , 1 );
-//     TEST_NODE( this->m_tree->root().children(0).children(0) , "13" , 0 , 1 , 2 );
-//     TEST_NODE( this->m_tree->root().children(0).children(1) , "14" , 0 , 1 , 2 );
-// }
-// 
-// 
-// 
-// TYPED_TEST( general_tree_tests , cursor_parents )
-// {
-//     EXPECT_EQ( this->m_test_trees->data.root().children(0).children(0).parent() , this->m_test_trees->data.root().children(0) );
-// }
-// 
-// 
-// 
-// TYPED_TEST( general_tree_tests , insert_cursor )
-// {
-//     typename general_tree_tests< TypeParam >::cursor c = this->m_test_trees->data.root().children(1);
-//     this->m_test_trees->data.erase( c.children(1) );
-//     typename general_tree_tests< TypeParam >::cursor c2 = this->m_test_trees->data2.root();
-//     this->m_test_trees->data.insert_below( c , c2 );
-//     
-//     EXPECT_EQ( this->m_test_trees->data.size() , 9 );
-//     EXPECT_FALSE( this->m_test_trees->data.empty() );
-//     EXPECT_EQ( this->m_test_trees->data2.size() , 4 );
-//     EXPECT_FALSE( this->m_test_trees->data2.empty() );
-//     
-//     TEST_NODE( this->m_test_trees->data.root() , "plus" , 2 , 5 , 0 );
-//     TEST_NODE( this->m_test_trees->data.root().children(0) , "sin" , 1 , 2 , 1 );
-//     TEST_NODE( this->m_test_trees->data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
-//     TEST_NODE( this->m_test_trees->data.root().children(1) , "minus" , 2 , 4 , 1 );
-//     TEST_NODE( this->m_test_trees->data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
-//     TEST_NODE( this->m_test_trees->data.root().children(1).children(1) , "minus" , 2 , 3 , 2 );
-//     TEST_NODE( this->m_test_trees->data.root().children(1).children(1).children(0) , "cos" , 1 , 2 , 3 );
-//     TEST_NODE( this->m_test_trees->data.root().children(1).children(1).children(0).children(0) , "y" , 0 , 1 , 4 );
-//     TEST_NODE( this->m_test_trees->data.root().children(1).children(1).children(1) , "x" , 0 , 1 , 3 );
-// }
-// 
-// 
+TYPED_TEST( general_tree_tests , insert_value )
+{
+    auto root = this->m_tree->root();
+    auto n1 = this->m_tree->insert_below( root , "+" );
+    
+    EXPECT_EQ( this->m_tree->size() , 1 );
+    EXPECT_FALSE( this->m_tree->empty() );
+    TEST_NODE( n1 , "+" , 0 , 1 , 0 );
+    TEST_NODE( this->m_tree->root() , "+" , 0 , 1 , 0 );
+
+    auto n2 = this->m_tree->insert_below( n1 , "11" );
+    auto n3 = this->m_tree->insert_below( n1 , "12" );
+    EXPECT_FALSE( this->m_tree->empty() );
+    EXPECT_EQ( this->m_tree->size() , 3 );
+    TEST_NODE( this->m_tree->root() , "+" , 2 , 2 , 0 );
+    TEST_NODE( this->m_tree->root().children(0) , "11" , 0 , 1 , 1 );
+    TEST_NODE( this->m_tree->root().children(1) , "12" , 0 , 1 , 1 );
+    TEST_NODE( n2 , "11" , 0 , 1 , 1 );
+    TEST_NODE( n3 , "12" , 0 , 1 , 1 );
+}
+
+TYPED_TEST( general_tree_tests , insert_and_erase )
+{
+    this->m_tree->insert_below( this->m_tree->root() , "+" );
+    auto n1 = this->m_tree->insert_below( this->m_tree->root() , "-" );
+    auto n2 = this->m_tree->insert_below( this->m_tree->root() , "*" );
+    auto n3 = this->m_tree->insert_below( n1 , "13" );
+    auto n4 = this->m_tree->insert_below( n1 , "14" );
+    auto n5 = this->m_tree->insert_below( n2 , "15" );
+    auto n6 = this->m_tree->insert_below( n2 , "16" );
+    
+    EXPECT_EQ( this->m_tree->size() , 7 );
+    EXPECT_FALSE( this->m_tree->empty() );
+    TEST_NODE( this->m_tree->root() , "+" , 2 , 3 , 0 );
+    TEST_NODE( this->m_tree->root().children(0) , "-" , 2 , 2 , 1 );
+    TEST_NODE( this->m_tree->root().children(0).children(0) , "13" , 0 , 1 , 2 );
+    TEST_NODE( this->m_tree->root().children(0).children(1) , "14" , 0 , 1 , 2 );
+    TEST_NODE( this->m_tree->root().children(1) , "*" , 2 , 2 , 1 );
+    TEST_NODE( this->m_tree->root().children(1).children(0) , "15" , 0 , 1 , 2 );
+    TEST_NODE( this->m_tree->root().children(1).children(1) , "16" , 0 , 1 , 2 );
+    
+    this->m_tree->erase( n2 );
+    
+    EXPECT_EQ( this->m_tree->size() , 4 );
+    EXPECT_FALSE( this->m_tree->empty() );
+    TEST_NODE( this->m_tree->root() , "+" , 1 , 3 , 0 );
+    TEST_NODE( this->m_tree->root().children(0) , "-" , 2 , 2 , 1 );
+    TEST_NODE( this->m_tree->root().children(0).children(0) , "13" , 0 , 1 , 2 );
+    TEST_NODE( this->m_tree->root().children(0).children(1) , "14" , 0 , 1 , 2 );
+}
+
+
+
+TYPED_TEST( general_tree_tests , cursor_parents )
+{
+    EXPECT_EQ( this->m_test_trees->data.root().children(0).children(0).parent() , this->m_test_trees->data.root().children(0) );
+}
+
+TYPED_TEST( general_tree_tests , insert_cursor )
+{
+    typename general_tree_tests< TypeParam >::cursor c = this->m_test_trees->data.root().children(1);
+    this->m_test_trees->data.erase( c.children(1) );
+    typename general_tree_tests< TypeParam >::cursor c2 = this->m_test_trees->data2.root();
+    this->m_test_trees->data.insert_below( c , c2 );
+    
+    EXPECT_EQ( this->m_test_trees->data.size() , 9 );
+    EXPECT_FALSE( this->m_test_trees->data.empty() );
+    EXPECT_EQ( this->m_test_trees->data2.size() , 4 );
+    EXPECT_FALSE( this->m_test_trees->data2.empty() );
+    
+    TEST_NODE( this->m_test_trees->data.root() , "plus" , 2 , 5 , 0 );
+    TEST_NODE( this->m_test_trees->data.root().children(0) , "sin" , 1 , 2 , 1 );
+    TEST_NODE( this->m_test_trees->data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    TEST_NODE( this->m_test_trees->data.root().children(1) , "minus" , 2 , 4 , 1 );
+    TEST_NODE( this->m_test_trees->data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    TEST_NODE( this->m_test_trees->data.root().children(1).children(1) , "minus" , 2 , 3 , 2 );
+    TEST_NODE( this->m_test_trees->data.root().children(1).children(1).children(0) , "cos" , 1 , 2 , 3 );
+    TEST_NODE( this->m_test_trees->data.root().children(1).children(1).children(0).children(0) , "y" , 0 , 1 , 4 );
+    TEST_NODE( this->m_test_trees->data.root().children(1).children(1).children(1) , "x" , 0 , 1 , 3 );
+}
+
+
 // TYPED_TEST( general_tree_tests , assign )
 // {
 //     this->m_test_trees->data.assign( this->m_test_trees->data2.root() );

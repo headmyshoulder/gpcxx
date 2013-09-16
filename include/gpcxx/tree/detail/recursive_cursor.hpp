@@ -79,12 +79,12 @@ public:
 
     // typedef ascending_random_access_cursor_tag type;
     
-    recursive_node_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
-    : m_node( node ) , m_pos( pos ) { }
+    recursive_node_cursor( node_base_pointer node = nullptr )
+    : m_node( node ) { }
 
-//    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
-//     recursive_node_cursor( recursive_node_cursor< OtherNode > const& other )
-//     : m_node( other.m_node ) , m_pos( other.m_pos ) {}
+   template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
+    recursive_node_cursor( recursive_node_cursor< OtherNode > const& other )
+    : m_node( other.m_node ) {}
     
     // emtpy()
     // swap()
@@ -100,148 +100,94 @@ public:
     // a.cend() const_cursor
     // a.parity() size_type   (std::distance(b.begin(), a) if b is a's parent.)
     // a.parent() const_cursor / cursor
-    
-//     cursor begin( void )
-//     {
-//         return cursor( m_node->children( m_pos ) , 0 );
-//     }
-//     
-//     const_cursor begin( void ) const
-//     {
-//         return cbegin();
-//     }
-//     
-//     const_cursor cbegin( void ) const
-//     {
-//         return const_cursor( m_node->children( m_pos ) , 0 );
-//     }
-//     
-//     cursor end( void )
-//     {
-//         return cursor( m_node->children( m_pos ) , this->size() );
-//     }
-//     
-//     const_cursor end( void ) const
-//     {
-//         return cend();
-//     }
-//     
-//     const_cursor cend( void ) const
-//     {
-//         return const_cursor( m_node->children( m_pos ) , this->size() );
-//     }
-//     
-//     cursor parent( void )
-//     {
-//         return cursor( m_node->parent() , m_node->child_index( node() ) );
-//     }
-// 
-//     const_cursor parent( void ) const
-//     {
-//         return const_cursor( m_node->parent() , m_node->child_index( node() ) );
-//     }
-// 
-// 
-//     cursor children( size_type i )
-//     {
-//         return cursor( m_node->children( m_pos ) , i );
-//     }
-//     
-//     const_cursor children( size_type i ) const
-//     {
-//         return const_cursor( m_node->children( m_pos ) , i );
-//     }
-//     
-//     
-//     
-//     size_type size( void ) const noexcept
-//     {
-//         return m_node->children( m_pos )->size();
-//     }
-//     
-//     size_type max_size( void ) const noexcept
-//     {
-//         return m_node->max_size();
-//     }
-//     
-//     size_type height( void ) const noexcept
-//     {
-//         // if( node() == nullptr ) return 0;
-//         
-//         size_type h = 0;
-//         for( const_cursor s = begin() ; s != end() ; ++s )
-//             h = std::max( h , s.height() );
-//         return 1 + h;
-// 
-//     }
-// 
-//     size_type level( void ) const noexcept
-//     {
-//         if( m_node == nullptr ) return 0;
-//         if( m_node->parent() == nullptr ) return 0;
-//         return 1 + parent().level();
-//     }
-// 
-//     
-//     
-// public:
-// 
-//     node_base_pointer parent_node( void ) noexcept
-//     {
-//         return m_node;
-//     }
-// 
-//     const node_base_pointer parent_node( void ) const noexcept
-//     {
-//         return m_node;
-//     }
-// 
-//     node_base_pointer node( void ) noexcept
-//     {
-//         return m_node->children( m_pos );
-//     }
-// 
-//     const node_base_pointer node( void ) const noexcept
-//     {
-//         return m_node->children( m_pos );
-//     }
-// 
-// 
-// private:
-// 
-//     void increment( void )
-//     {
-//         ++m_pos;
-//     }
-//     
-//     void decrement( void )
-//     {
-//         --m_pos;
-//     }
-//     
-//     void advance( typename base_type::difference_type n )
-//     {
-//         m_pos += n;
-//     }
-//     
-//     typename base_type::difference_type distance_to( recursive_node_cursor const& other ) const
-//     {
-//         // TODO: implement
-//     }
-// 
-//     bool equal( recursive_node_cursor const& other) const
-//     {
-//         return ( other.m_node == m_node ) && ( other.m_pos == m_pos );
-//     }
-// 
-//     typename base_type::reference dereference() const
-//     {
-//         return **static_cast< node_pointer >( m_node->children( m_pos ) );
-//     }
+
+
+    cursor parent( void )
+    {
+        assert( m_node->m_parent != nullptr );
+        return cursor( m_node->m_parent );
+    }
+
+    const_cursor parent( void ) const
+    {
+        assert( m_node->m_parent != nullptr );
+        return cursor( m_node->m_parent );
+    }
+
+    cursor children( size_type i )
+    {
+        return cursor( & ( boost::get< node_type >( m_node->m_node ).m_children[ i ] ) );
+    }
+
+    const_cursor children( size_type i ) const
+    {
+        return const_cursor( & ( boost::get< node_type >( m_node->m_node ).m_children[ i ] ) );
+    }
+
+    size_type size( void ) const noexcept
+    {
+        return ( m_node->m_node.which() == 0 ) ? 0 : boost::get< node_type >( m_node->m_node ).size();
+    }
+
+    size_type max_size( void ) const noexcept
+    {
+        return m_node->max_size();
+    }
+
+    size_type height( void ) const noexcept
+    {
+        if( m_node->m_node.which() == 0 ) return 0;
+        node_type const& n = boost::get< node_type >( m_node->m_node );
+        return n.height();
+    }
+
+    size_type level( void ) const noexcept
+    {
+        if( m_node->m_node.which() == 0 ) return 0;
+        if( m_node->m_parent == nullptr ) return 0;
+        return 1 + parent().level();
+    }
+
+
+
+public:
+
+    node_base_pointer parent_node( void ) noexcept
+    {
+        return m_node->m_parent;
+    }
+
+    const node_base_pointer parent_node( void ) const noexcept
+    {
+        return m_node->m_parent;
+    }
+
+    node_base_pointer node( void ) noexcept
+    {
+        return m_node;
+    }
+
+    const node_base_pointer node( void ) const noexcept
+    {
+        return m_node;
+    }
+
+
+private:
+
+    bool equal( recursive_node_cursor const& other) const
+    {
+        return ( other.m_node == m_node );
+    }
+
+    typename base_type::reference dereference() const
+    {
+        assert( m_node->m_node.which() != 0 );
+        return boost::get< node_type >( m_node->m_node ).m_value;
+    }
     
     
     node_base_pointer m_node;
-    size_type m_pos;
 };
 
 // template< typename Node1 , typename Node2 >
