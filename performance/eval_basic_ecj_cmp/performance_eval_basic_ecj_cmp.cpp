@@ -13,6 +13,7 @@
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
+#include <gpcxx/tree/recursive_tree.hpp>
 #include <gpcxx/app/timer.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
@@ -181,43 +182,47 @@ std::tuple< double , double > run_test( Trees const &trees , const vector_type &
     return res;
 }
 
+template< typename Tree >
+void run_tree_type( std::string const &name , vector_type const &x1 , vector_type const &x2 , vector_type const &x3 , std::string const & filename )
+{
+    std::vector< Tree > trees;
+
+    // read trees
+    ifstream fin( filename );
+    std::string line;
+    while( std::getline( fin , line ) )
+    {
+        trees.push_back( Tree() );
+        parser::parse_tree( line , trees.back() );
+    }
+
+    cout.precision( 14 );
+    cout << "Starting test " << name << endl;
+    auto times = run_test( trees , x1 , x2 , x3 );
+    cout << tab << "Finished!" << endl;
+    cout << tab << "Evaluation time " << std::get< 0 >( times ) << endl;
+    cout << tab << "Result sum " << std::get< 1 >( times ) << endl << endl;
+
+}
+
 
 
 int main( int argc , char *argv[] )
 {
-    typedef gpcxx::basic_tree< char > tree_type;
-
     if( argc != 2 )
     {
         cerr << "usage : " << argv[0] << " infile" << endl;
         return -1;
     }
 
-    size_t number_of_datapoints = 1024 ;
-
-    vector_type x1, x2 , x3;
-
     // generate test data
+    vector_type x1, x2 , x3;
     generate_test_data( x1 , x2 , x3 , -5.0 , 5.0 + 0.1 , 0.4 );
 
-    std::vector< tree_type > trees;
+    // run test for several tree tests
+    run_tree_type< gpcxx::basic_tree< char > >( "basic tree" , x1 , x2 , x3 , argv[1] );
+    run_tree_type< gpcxx::recursive_tree< char > >( "recursive tree" , x1 , x2 , x3 , argv[1] );
 
-    // read trees
-    ifstream fin( argv[1] );
-    std::string line;
-    while( std::getline( fin , line ) )
-    {
-        trees.push_back( tree_type() );
-        parser::parse_tree( line , trees.back() );
-    }
-
-
-    cout.precision( 14 );
-    cout << "Starting test " << endl;
-    auto times = run_test( trees , x1 , x2 , x3 );
-    cout << tab << "Finished!" << endl;
-    cout << tab << "Evaluation time " << std::get< 0 >( times ) << endl;
-    cout << tab << "Result sum " << std::get< 1 >( times ) << endl << endl;
 
     return 0;
 }

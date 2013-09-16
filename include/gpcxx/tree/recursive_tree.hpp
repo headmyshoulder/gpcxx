@@ -229,17 +229,17 @@ public:
     cursor insert_below( cursor position , const value_type& val )
     {
         ++m_size;
-        if( position.node()->m_node.which() == 0 )
+        if( position.node()->data().which() == 0 )
         {
             // adding node to root
-            position.node()->m_node = node_type( val );
-            position.node()->m_parent = position.parent_node();
+            position.node()->data() = node_type( val );
+            position.node()->set_parent( position.parent_node() );
             return cursor( position.node() );
         }
         else
         {
-            node_base_pointer n = boost::get< node_type >( position.node()->m_node ).insert_below( val );
-            n->m_parent = position.node();
+            node_base_pointer n = boost::get< node_type >( position.node()->data() ).insert_below( val );
+            n->set_parent( position.node() );
             return cursor( n );
         }
     }
@@ -296,8 +296,8 @@ public:
     void erase( cursor position ) noexcept
     {
         assert( position.m_node != nullptr );
-        if( position.m_node->m_node.which() == 0 ) return ;
-        node_base_pointer parent = position.m_node->m_parent;
+        if( position.m_node->data().which() == 0 ) return ;
+        node_base_pointer parent = position.m_node->parent();
         assert( parent != nullptr );
         m_size -= parent->remove_child( position.m_node );
     }

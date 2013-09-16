@@ -13,6 +13,7 @@
 #define GPCXX_TREE_DETAIL_RECURSIVE_NODE_HPP_INCLUDED
 
 #include <boost/variant.hpp>
+#include <boost/concept_check.hpp>
 
 #include <array>
 #include <algorithm>
@@ -28,27 +29,46 @@ struct nil {};
 
 
 template< typename T >
-struct recursive_node_base
+class recursive_node_base
 {
-    typedef T value_type;
+public:
+    
+    typedef T                                          value_type;
+    typedef recursive_node_base< value_type >          node_base_type;
+    typedef node_base_type*                            node_base_pointer;
+    typedef node_base_type const*                      const_node_base_pointer;
+    typedef recursive_node< value_type >               node_type;
+    typedef node_type*                                 node_pointer;
+
     typedef boost::variant<
         nil 
-      , boost::recursive_wrapper< recursive_node< value_type > >
-        > type;
+      , boost::recursive_wrapper< node_type >
+        > data_type;
         
-    typedef recursive_node_base< value_type > node_base_type;
-    typedef recursive_node< value_type > node_type;
-
-    type m_node = { nil() };
-    node_base_type* m_parent = { nullptr };
     
-    size_t remove_child( node_base_type *ptr ) noexcept
+    size_t remove_child( node_base_pointer ptr ) noexcept
     {
-        assert( m_node.which() != 0 );
-        return boost::get< node_type >( m_node ).remove_child( ptr );
+        assert( m_data.which() != 0 );
+        return boost::get< node_type >( m_data ).remove_child( ptr );
     }
     
     size_t num_children( void ) const noexcept;
+    
+    data_type& data( void ) noexcept { return m_data; }
+    data_type const& data( void ) const noexcept { return m_data; }
+    
+    node_base_pointer parent( void ) noexcept { return m_parent; }
+    const_node_base_pointer parent( void ) const noexcept { return m_parent; }
+    
+    void set_parent( node_base_pointer p ) noexcept
+    {
+        m_parent = p;
+    }
+    
+private:
+
+    data_type m_data = { nil() };
+    node_base_pointer m_parent = { nullptr };
 };
 
 
@@ -81,7 +101,7 @@ struct recursive_node
     {
         children_iterator iter = find_free_child_entry();
         assert( iter != m_children.end() );
-        iter->m_node = node_type( value );
+        iter->data() = node_type( value );
         return iter;
     }
 
@@ -92,7 +112,7 @@ struct recursive_node
 
     size_t size( void ) const noexcept
     {
-        const_children_iterator end = std::find_if( m_children.begin() , m_children.end() , []( node_base_type const& n ) -> bool { return n.m_node.which() == 0 ; } );
+        const_children_iterator end = std::find_if( m_children.begin() , m_children.end() , []( node_base_type const& n ) -> bool { return n.data().which() == 0 ; } );
         return std::distance( m_children.begin() , end );
     }
     
@@ -106,12 +126,12 @@ struct recursive_node
    
     children_iterator find_free_child_entry( void ) noexcept
     {
-        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type &n ) -> bool { return n.m_node.which() == 0 ; } );
+        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type &n ) -> bool { return n.data().which() == 0 ; } );
     }
     
     const_children_iterator find_free_child_entry( void ) const  noexcept
     {
-        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type const& n ) -> bool { return n.m_node.which() == 0 ; } );
+        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type const& n ) -> bool { return n.data().which() == 0 ; } );
     }
     
     size_t remove_child( node_base_pointer ptr )
@@ -126,7 +146,7 @@ struct recursive_node
         assert( iter != m_children.end() );
 
         std::copy( iter + 1 , end-- , iter );
-        iter->m_node = nil();
+        iter->data() = nil();
 
         return size;
     }
@@ -137,8 +157,8 @@ struct recursive_node
         const_children_iterator end = find_free_child_entry();
         for( const_children_iterator s = m_children.begin() ; s != end ; ++s )
         {
-            assert( s->m_node.which() != 0 ); 
-            node_type const& n = boost::get< node_type >( s->m_node );
+            assert( s->data().which() != 0 ); 
+            node_type const& n = boost::get< node_type >( s->data() );
             h = std::max( h , n.height() );
         }
         return 1 + h;
@@ -158,7 +178,7 @@ struct recursive_node
 template< typename T >
 size_t recursive_node_base< T >::num_children( void ) const noexcept
 {
-    return m_node.which() == 0 ? 0 : boost::get< node_type >( m_node ).num_nodes();
+    return m_data.which() == 0 ? 0 : boost::get< node_type >( m_data ).num_nodes();
 }
 
 

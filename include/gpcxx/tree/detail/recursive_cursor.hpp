@@ -28,16 +28,9 @@ namespace detail {
 
 
 template< typename Node >
-class recursive_node_cursor : public boost::iterator_facade<
-    recursive_node_cursor< Node > ,                       // Derived-Iterator
-    typename node_value_getter< Node >::type ,            // Value
-    boost::random_access_traversal_tag // ,               // Category
-    // boost::use_default ,                               // Reference
-    // boost::use_default 
-    >
+class recursive_node_cursor 
 {
     
-    friend class boost::iterator_core_access;
     template< typename U > friend class recursive_node_cursor;
     template< typename T > friend class recursive_tree;
 
@@ -53,31 +46,32 @@ class recursive_node_cursor : public boost::iterator_facade<
     typedef real_node_base const* const_real_node_base_pointer;
     
 
-    
-    typedef boost::iterator_facade<
-        recursive_node_cursor< Node > ,                    // Derived-Iterator
-        typename node_value_getter< Node >::type ,         // Value
-        boost::random_access_traversal_tag ,               // Category
-        typename node_value_getter< Node >::type& ,        // Reference
-        ptrdiff_t
-    > base_type;
-    
-    template< typename OtherNode >
-    struct other_node_enabler : public std::enable_if< std::is_convertible< typename OtherNode::value_type* , typename base_type::value_type* >::value >
-    {
-    };
-    
+   
 public:
     
     // requirements from container concept via cursor concept
     // typedef typename base_type::reference const_reference;
-    typedef size_t size_type;    
+    typedef size_t size_type;
+    typedef typename node_value_getter< Node >::type value_type;
+    typedef value_type & reference;
+    typedef value_type * pointer;
     
     // requirements from cursor concept
     typedef recursive_node_cursor< node_type > cursor;
     typedef recursive_node_cursor< real_node_type const > const_cursor;
 
     // typedef ascending_random_access_cursor_tag type;
+    
+private:
+    
+    template< typename OtherNode >
+    struct other_node_enabler : public std::enable_if< std::is_convertible< typename OtherNode::value_type* , value_type* >::value >
+    {
+    };
+    
+    
+public:
+
     
     recursive_node_cursor( node_base_pointer node = nullptr )
     : m_node( node ) { }
@@ -104,29 +98,29 @@ public:
 
     cursor parent( void )
     {
-        assert( m_node->m_parent != nullptr );
-        return cursor( m_node->m_parent );
+        assert( m_node->parent() != nullptr );
+        return cursor( m_node->parent() );
     }
 
     const_cursor parent( void ) const
     {
-        assert( m_node->m_parent != nullptr );
-        return cursor( m_node->m_parent );
+        assert( m_node->parent() != nullptr );
+        return cursor( m_node->parent() );
     }
 
     cursor children( size_type i )
     {
-        return cursor( & ( boost::get< node_type >( m_node->m_node ).m_children[ i ] ) );
+        return cursor( & ( boost::get< node_type >( m_node->data() ).m_children[ i ] ) );
     }
 
     const_cursor children( size_type i ) const
     {
-        return const_cursor( & ( boost::get< node_type >( m_node->m_node ).m_children[ i ] ) );
+        return const_cursor( & ( boost::get< node_type >( m_node->data() ).m_children[ i ] ) );
     }
 
     size_type size( void ) const noexcept
     {
-        return ( m_node->m_node.which() == 0 ) ? 0 : boost::get< node_type >( m_node->m_node ).size();
+        return ( m_node->data().which() == 0 ) ? 0 : boost::get< node_type >( m_node->data() ).size();
     }
 
     size_type max_size( void ) const noexcept
@@ -136,16 +130,28 @@ public:
 
     size_type height( void ) const noexcept
     {
-        if( m_node->m_node.which() == 0 ) return 0;
-        node_type const& n = boost::get< node_type >( m_node->m_node );
+        if( m_node->data().which() == 0 ) return 0;
+        node_type const& n = boost::get< node_type >( m_node->data() );
         return n.height();
     }
 
     size_type level( void ) const noexcept
     {
-        if( m_node->m_node.which() == 0 ) return 0;
-        if( m_node->m_parent == nullptr ) return 0;
+        if( m_node->data().which() == 0 ) return 0;
+        if( m_node->parent() == nullptr ) return 0;
         return 1 + parent().level();
+    }
+    
+    reference operator*( void ) const
+    {
+        assert( m_node->data().which() != 0 );
+        return boost::get< node_type >( m_node->data() ).m_value;
+    }
+    
+    pointer operator->( void ) const
+    {
+        assert( m_node->data().which() != 0 );
+        return &( boost::get< node_type >( m_node->data() ).m_value );
     }
 
 
@@ -154,12 +160,12 @@ public:
 
     node_base_pointer parent_node( void ) noexcept
     {
-        return m_node->m_parent;
+        return m_node->parent();
     }
 
     const node_base_pointer parent_node( void ) const noexcept
     {
-        return m_node->m_parent;
+        return m_node->parent();
     }
 
     node_base_pointer node( void ) noexcept
@@ -171,24 +177,32 @@ public:
     {
         return m_node;
     }
-
-
-private:
-
+    
     bool equal( recursive_node_cursor const& other) const
     {
         return ( other.m_node == m_node );
     }
 
-    typename base_type::reference dereference() const
+
+
+private:
+
+
+    reference dereference() const
     {
-        assert( m_node->m_node.which() != 0 );
-        return boost::get< node_type >( m_node->m_node ).m_value;
+        assert( m_node->data().which() != 0 );
+        return boost::get< node_type >( m_node->data() ).m_value;
     }
     
     
     node_base_pointer m_node;
 };
+
+template< typename Node >
+bool operator==( recursive_node_cursor< Node > const &c1 , recursive_node_cursor< Node > const &c2 )
+{
+    return c1.equal( c2 );
+}
 
 // template< typename Node1 , typename Node2 >
 // bool cursor_comp( recursive_node_cursor< Node1 > const& c1 , recursive_node_cursor< Node2 > const& c2 )
