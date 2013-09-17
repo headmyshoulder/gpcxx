@@ -12,7 +12,7 @@
 #ifndef GPCXX_TREE_BASIC_TREE_FAST_HPP_DEFINED
 #define GPCXX_TREE_BASIC_TREE_FAST_HPP_DEFINED
 
-#include <gpcxx/tree/detail/basic_node.hpp>
+#include <gpcxx/tree/detail/basic_node_fast.hpp>
 #include <gpcxx/tree/detail/basic_cursor_fast.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 
@@ -33,10 +33,8 @@ class basic_tree_fast
     typedef basic_tree_fast< T , Allocator > self_type;
 
     static const size_t max_arity = 2;
-    typedef detail::basic_node< T , max_arity >                     node_type;
+    typedef detail::basic_node_fast< T , max_arity >                node_type;
     typedef node_type*                                              node_pointer;
-    typedef typename node_type::node_base_type                      node_base_type;
-    typedef node_base_type*                                         node_base_pointer;
     typedef typename Allocator::template rebind< node_type >::other node_allocator_type;
     
     template< typename OtherCursor >
@@ -78,7 +76,7 @@ public:
     // construct:
     //
     explicit basic_tree_fast( allocator_type const& allocator = allocator_type() )
-    : m_node_allocator( allocator ) , m_header() , m_size( 0 )
+    : m_node_allocator( allocator ) , m_header( nullptr ) , m_size( 0 )
     {
     }
     
@@ -161,32 +159,32 @@ public:
     //
     cursor root() noexcept
     {
-        return cursor( &m_header );
+        return cursor( m_header );
     }
     
     const_cursor root() const noexcept
     {
-        return const_cursor( &m_header );
+        return const_cursor( m_header );
     }
     
     const_cursor croot() const noexcept
     {
-        return const_cursor( &m_header );
+        return const_cursor( m_header );
     }
 
     cursor shoot() noexcept
     {
-        return cursor( &m_header );
+        return cursor( m_header );
     }
 
     const_cursor shoot() const noexcept
     {
-        return const_cursor( &m_header );
+        return const_cursor( m_header );
     }
 
     const_cursor cshoot() const noexcept
     {
-        return const_cursor( &m_header );
+        return const_cursor( m_header );
     }
     
 //     cursor rank_is( size_type n ) noexcept
@@ -305,15 +303,13 @@ public:
     
     void erase( cursor position ) noexcept
     {
-        --m_size;
-        if( position.node() == nullptr ) return;
-        
-        for( size_t i=0 ; i<position.size() ; ++i )
-            erase_impl( position.children(i) );
-        node_pointer ptr = static_cast< node_pointer >( position.node() );
-        m_node_allocator.destroy( ptr );
-        m_node_allocator.deallocate( ptr , 1 );
-        position.parent_node()->remove_child( ptr );
+        node_pointer ptr = position.node();
+        if( ptr == nullptr ) return;
+        if( position.parent_node() != nullptr )
+        {
+            position.parent_node()->remove_child( ptr );
+        }
+        erase_impl( position );
     }
 
     void clear( void ) noexcept
@@ -341,7 +337,7 @@ private:
         --m_size;
         for( size_t i=0 ; i<position.size() ; ++i )
             erase_impl( position.children(i) );
-        node_pointer ptr = static_cast< node_pointer >( position.node() );
+        node_pointer ptr = position.node();
         m_node_allocator.destroy( ptr );
         m_node_allocator.deallocate( ptr , 1 );
     }
@@ -349,21 +345,18 @@ private:
     cursor insert_below_impl( cursor position , node_pointer new_node )
     {
         ++m_size;
+        
         if( position.node() == nullptr )
         {
-            assert( position.parent_node()->size() == 0 );
-            
-            new_node->attach_parent( position.parent_node() );
-            size_type index = position.parent_node()->attach_child( new_node );
-            assert( index == 0 );
+            assert( m_header == nullptr );
+            m_header = new_node;
+            new_node->attach_parent( nullptr );
             return cursor( new_node );
         }
         else
         {
-            assert( position.size() < position.max_size() );
-
             new_node->attach_parent( position.node() );
-            size_type index = position.node()->attach_child( new_node );
+            position.node()->attach_child( new_node );
             return cursor( new_node );
         }
     }
@@ -372,13 +365,10 @@ private:
     {
         if( !tree.empty() )
         {
-            node_base_pointer n = tree.m_header.children( 0 );
-            n->attach_parent( &m_header );
-            m_header.attach_child( n );
+            m_header = tree.m_header;
             m_size = tree.m_size;
-            
             tree.m_size = 0;
-            tree.m_header.set_children( 0 , nullptr );
+            tree.m_header = nullptr;
         }
     }
     
@@ -401,7 +391,7 @@ private:
 
     
     node_allocator_type m_node_allocator;
-    node_base_type m_header;
+    node_pointer m_header;
     size_t m_size;
 };
 

@@ -46,11 +46,11 @@ class basic_node_cursor_fast : public boost::iterator_facade<
     typedef node_type* node_pointer;
     typedef typename std::remove_const< Node >::type real_node_type;    
     
-    typedef typename node_base_getter< Node >::type node_base;
-    typedef node_base* node_base_pointer;
-    typedef typename std::remove_const< node_base >::type real_node_base;
-    typedef real_node_base* real_node_base_pointer;
-    typedef real_node_base const* const_real_node_base_pointer;
+//     typedef typename node_base_getter< Node >::type node_base;
+//     typedef node_base* node_base_pointer;
+//     typedef typename std::remove_const< node_base >::type real_node_base;
+//     typedef real_node_base* real_node_base_pointer;
+//     typedef real_node_base const* const_real_node_base_pointer;
     
 
     
@@ -79,7 +79,7 @@ public:
 
     // typedef ascending_random_access_cursor_tag type;
     
-    basic_node_cursor_fast( node_base_pointer node = nullptr )
+    basic_node_cursor_fast( node_pointer node = nullptr )
     : m_node( node )  { }
 
 //    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
@@ -139,8 +139,8 @@ public:
         // if( node() == nullptr ) return 0;
         
         size_type h = 0;
-//         for( const_cursor s = begin() ; s != end() ; ++s )
-//             h = std::max( h , s.height() );
+        for( size_t i=0 ; i<size() ; ++i )
+            h = std::max( h , children(i).height() );
         return 1 + h;
 
     }
@@ -156,22 +156,22 @@ public:
     
 public:
 
-    node_base_pointer parent_node( void ) noexcept
+    node_pointer parent_node( void ) noexcept
     {
         return m_node->parent();
     }
 
-    const node_base_pointer parent_node( void ) const noexcept
+    const node_pointer parent_node( void ) const noexcept
     {
         return m_node->parent();
     }
 
-    node_base_pointer node( void ) noexcept
+    node_pointer node( void ) noexcept
     {
         return m_node;
     }
 
-    const node_base_pointer node( void ) const noexcept
+    const node_pointer node( void ) const noexcept
     {
         return m_node;
     }
@@ -186,11 +186,11 @@ private:
 
     typename base_type::reference dereference() const
     {
-        return **static_cast< node_pointer >( m_node );
+        return **m_node;
     }
     
     
-    node_base_pointer m_node;
+    node_pointer m_node;
 };
 
 template< typename Node1 , typename Node2 >

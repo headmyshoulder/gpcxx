@@ -14,6 +14,7 @@
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/recursive_tree.hpp>
+#include <gpcxx/tree/basic_tree_fast.hpp>
 #include <gpcxx/app/timer.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
@@ -192,7 +193,8 @@ void run_tree_type( std::string const &name , vector_type const &x1 , vector_typ
     std::string line;
     while( std::getline( fin , line ) )
     {
-        trees.push_back( Tree() );
+        Tree tree;
+        trees.push_back( tree );
         parser::parse_tree( line , trees.back() );
     }
 
@@ -222,6 +224,7 @@ int main( int argc , char *argv[] )
     // run test for several tree tests
     run_tree_type< gpcxx::basic_tree< char > >( "basic tree" , x1 , x2 , x3 , argv[1] );
     run_tree_type< gpcxx::recursive_tree< char > >( "recursive tree" , x1 , x2 , x3 , argv[1] );
+    run_tree_type< gpcxx::basic_tree_fast< char > >( "basic tree fast" , x1 , x2 , x3 , argv[1] );
 
 
     return 0;
