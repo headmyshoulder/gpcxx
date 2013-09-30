@@ -51,7 +51,7 @@ population_statistics calc_population_statistics( Pop const& pop )
 
     
 
-std::ostream& operator<<( std::ostream &out , population_statistics const& stat )
+inline std::ostream& operator<<( std::ostream &out , population_statistics const& stat )
 {
     out << "height mean = " << stat.height_mean
         << ", height stddev = " << stat.height_stddev
