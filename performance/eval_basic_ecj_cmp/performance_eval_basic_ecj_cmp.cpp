@@ -25,6 +25,7 @@
 #include <vector>
 #include <random>
 #include <cmath>
+#include <array>
 
 #define tab "\t"
 
@@ -118,11 +119,64 @@ inline value_type eval_cursor2( Cursor const &c , context_type const &context )
     }
 }
 
+template< typename Cursor >
+struct eval_cursor3
+{
+    typedef Cursor cursor_type;
+    typedef eval_cursor3< cursor_type > evaluator;
+    
+    
+    static inline double eval_x( cursor_type const &c , context_type const& context ) { return context[0]; }
+    static inline double eval_y( cursor_type const &c , context_type const& context ) { return context[0]; }
+    static inline double eval_z( cursor_type const &c , context_type const& context ) { return context[0]; }
+    static inline double eval_sin( cursor_type const &c , context_type const& context ) { return sin( evaluator()( c.children(0) , context ) ); }
+    static inline double eval_cos( cursor_type const &c , context_type const& context ) { return cos( evaluator()( c.children(0) , context ) ); }
+    static inline double eval_exp( cursor_type const &c , context_type const& context ) { return exp( evaluator()( c.children(0) , context ) ); }
+    static inline double eval_log( cursor_type const &c , context_type const& context ) { return my_log( evaluator()( c.children(0) , context ) ); }
+    static inline double eval_plus( cursor_type const &c , context_type const& context )
+    { return evaluator()( c.children(0) , context ) + evaluator()( c.children(1) , context ); }
+    static inline double eval_minus( cursor_type const &c , context_type const& context )
+    { return evaluator()( c.children(0) , context ) - evaluator()( c.children(1) , context ); }
+    static inline double eval_multiplies( cursor_type const &c , context_type const& context )
+    { return evaluator()( c.children(0) , context ) * evaluator()( c.children(1) , context ); }
+    static inline double eval_divides( cursor_type const &c , context_type const& context )
+    { return evaluator()( c.children(0) , context ) / evaluator()( c.children(1) , context ); }
+    
+    typedef double( *func_type )( cursor_type const& , context_type const& );
+    typedef std::array< func_type , 128 > lookup_table_type;
+    static lookup_table_type const& get_table( void )
+    {
+        static lookup_table_type tbl;
+        std::fill( tbl.begin() , tbl.end() , nullptr );
+        tbl[ size_t( 'x' ) ] = &evaluator::eval_x;
+        tbl[ size_t( 'y' ) ] = &evaluator::eval_y;
+        tbl[ size_t( 'z' ) ] = &evaluator::eval_z;
+        tbl[ size_t( 's' ) ] = &evaluator::eval_sin;
+        tbl[ size_t( 'c' ) ] = &evaluator::eval_cos;
+        tbl[ size_t( 'e' ) ] = &evaluator::eval_exp;
+        tbl[ size_t( 'l' ) ] = &evaluator::eval_log;
+        tbl[ size_t( '+' ) ] = &evaluator::eval_plus;
+        tbl[ size_t( '-' ) ] = &evaluator::eval_minus;
+        tbl[ size_t( '*' ) ] = &evaluator::eval_multiplies;
+        tbl[ size_t( '/' ) ] = &evaluator::eval_divides;
+        return tbl;
+    }
+    
+    double operator()( cursor_type const &cursor , context_type const& c )
+    {
+        lookup_table_type const& tbl = get_table();
+        func_type f = tbl[ size_t( *cursor ) ];
+        return (*f)( cursor , c );
+    }
+};
+
 template< typename Tree >
 inline value_type eval_tree( Tree const &tree , context_type const &c )
 {
-    return eval_cursor( tree.root() , c );
+    return eval_cursor2( tree.root() , c );
+    // return eval_cursor3< typename Tree::const_cursor >()( tree.root() , c );
 }
+
 
 
 
@@ -195,7 +249,8 @@ void run_tree_type( std::string const &name , vector_type const &x1 , vector_typ
     {
         Tree tree;
         trees.push_back( tree );
-        parser::parse_tree( line , trees.back() );
+        parser::tree_transformator< Tree > trafo( trees.back() , trees.back().root() );
+        parser::parse_tree( line , trafo );
     }
 
     cout.precision( 14 );

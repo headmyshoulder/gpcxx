@@ -243,8 +243,8 @@ namespace parser
         cursor c_;
     };
     
-    template< typename Tree >
-    void parse_tree( std::string str , Tree &tree )
+    template< typename Trafo >
+    void parse_tree( std::string str , Trafo & trafo )
     {
         using boost::spirit::ascii::space;
         
@@ -262,7 +262,6 @@ namespace parser
         
         if (r && iter == end)
         {
-            tree_transformator< Tree > trafo( tree , tree.root() );
             trafo( ast );
         }
         else
