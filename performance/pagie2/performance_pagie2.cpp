@@ -163,7 +163,7 @@ int main( int argc , char *argv[] )
     std::array< int , 3 > weights = {{ 2 * int( terminal_gen.num_symbols() ) ,
                                        int( unary_gen.num_symbols() ) ,
                                        int( binary_gen.num_symbols() ) }};
-    auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
+    auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.0 , weights );
     
 
     evolver_type evolver( elite_rate , mutation_rate , crossover_rate , reproduction_rate , rng );
