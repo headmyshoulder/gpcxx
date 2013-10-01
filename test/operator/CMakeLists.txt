@@ -9,11 +9,11 @@ add_executable ( operator_tests
    mutation.cpp
    simple_mutation_strategy.cpp
    one_point_crossover_strategy.cpp
-   fitness_prob.cpp
    random_selector.cpp
    tournament_selector.cpp
    crossover.cpp
    reproduce.cpp
+   point_mutation.cpp
   )
 
 target_link_libraries ( operator_tests gtest gtest_main )

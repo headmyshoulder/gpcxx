@@ -45,13 +45,14 @@ population_statistics calc_population_statistics( Pop const& pop )
     stat.height_mean = double( height_mean ) / double( n );
     stat.height_stddev = std::sqrt( double( height_sq_mean ) / double( n ) - stat.height_mean * stat.height_mean );
     stat.nodes_mean = double( nodes_mean ) / double( n );
+    stat.number_nodes = nodes_mean;
     stat.nodes_stddev = std::sqrt( double( nodes_sq_mean ) / double( n ) - stat.nodes_mean * stat.nodes_mean );
     return stat;
 };
 
     
 
-std::ostream& operator<<( std::ostream &out , population_statistics const& stat )
+inline std::ostream& operator<<( std::ostream &out , population_statistics const& stat )
 {
     out << "height mean = " << stat.height_mean
         << ", height stddev = " << stat.height_stddev

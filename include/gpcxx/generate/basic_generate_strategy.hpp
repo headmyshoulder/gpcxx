@@ -12,6 +12,7 @@
 #include <cassert>
 #include <array>
 
+
 namespace gpcxx {
 
     
@@ -21,7 +22,7 @@ class basic_generate_strategy
 public:
     
     basic_generate_strategy( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
-                             size_t min_height , size_t max_height , std::array< int , 3 > const& gen_weights )
+                             size_t min_height , size_t max_height , std::array< double , 3 > const& gen_weights )
     : m_rng( rng ) , m_terminal_gen( gen0 ) , m_unary_gen( gen1 ) , m_binary_gen( gen2 ) ,
       m_min_height( min_height ) , m_max_height( max_height ) ,
       m_gen_weights( gen_weights ) { }
@@ -38,18 +39,15 @@ public:
         return typename Tree::cursor();
     }
 
-      
     template< class Tree >
     void operator()( Tree &tree ) const
     {
         typedef Tree tree_type;
         typedef typename tree_type::cursor cursor;
 
+        std::array< double , 2 > weights_dice = {{ m_gen_weights[1] , m_gen_weights[2] }};
+        std::array< double , 3 > weights_thrice = m_gen_weights;
 
-        std::array< int , 2 > weights_dice = {{ m_gen_weights[1] , m_gen_weights[2] }};
-        std::array< int , 3 > weights_thrice = m_gen_weights;
-
-                                             
         std::discrete_distribution<> dice( weights_dice.begin() , weights_dice.end() );
         std::discrete_distribution<> thrice( weights_thrice.begin() , weights_thrice.end() );
 
@@ -58,7 +56,7 @@ public:
 
         // initialize
         cursor root = tree.insert_below( tree.root() , m_binary_gen( m_rng ) );
-            
+
         gen_stack.push( std::make_pair( root , 2 ) );
 
         size_t height = 1;
@@ -80,8 +78,6 @@ public:
             if( new_arity > 0 ) gen_stack.push( std::make_pair( n , new_arity ) );
             else height--;
         }
-
-        // t.make_consistent();
     }
     
 private:
@@ -91,14 +87,14 @@ private:
     UnaryGen &m_unary_gen;
     BinaryGen &m_binary_gen;
     size_t m_min_height , m_max_height;
-    std::array< int , 3 > m_gen_weights;
+    std::array< double , 3 > m_gen_weights;
 };
 
 
 template< typename Rng , typename TerminalGen , typename UnaryGen , typename BinaryGen >
 basic_generate_strategy< Rng , TerminalGen , UnaryGen , BinaryGen >
 make_basic_generate_strategy( Rng &rng , TerminalGen &gen0 , UnaryGen &gen1 , BinaryGen &gen2 , 
-                              size_t min_height , size_t max_height , std::array< int , 3 > const& gen_weights )
+                              size_t min_height , size_t max_height , std::array< double , 3 > const& gen_weights = {{ 1.0 , 1.0 , 1.0 }} )
 {
     return basic_generate_strategy< Rng , TerminalGen , UnaryGen , BinaryGen >( rng , gen0 , gen1 , gen2 , min_height , max_height , gen_weights );
 }

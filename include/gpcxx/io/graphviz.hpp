@@ -18,6 +18,7 @@
 
 namespace gpcxx {
 
+/*
 namespace detail {
 
 template< class Node >
@@ -58,7 +59,7 @@ void print_graph( const tree< T > &t , const std::string &filename )
     system ( "rm __tmp__.dot" );
     system ( "rm __tmp__.ps" );
 }
-
+*/
 
 
 } // namespace gpcxx

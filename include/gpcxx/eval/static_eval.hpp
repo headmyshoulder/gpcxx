@@ -19,30 +19,31 @@
 #include <boost/fusion/include/for_each.hpp>
 #include <boost/fusion/include/at_c.hpp>
 #include <boost/fusion/include/front.hpp>
+#include <boost/concept_check.hpp>
 
 #include <stdexcept>
 #include <vector>
-
+#include <array>
 
 namespace gpcxx {
 
-    
+
     
 template< typename Value ,
           typename Symbol ,
-          typename EvalContext ,
+          typename Context ,
           typename TerminalAttributes,
           typename UnaryAttributes ,
           typename BinaryAttributes >
 class static_eval
 {    
-    typedef static_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
+    typedef static_eval< Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes > self_type;
     
 public:
     
     typedef Value value_type;
-    typedef EvalContext eval_context_type;
     typedef Symbol symbol_type;
+    typedef Context context_type;
     typedef TerminalAttributes terminal_attribtes_type;
     typedef UnaryAttributes unary_attributes_type;
     typedef BinaryAttributes binary_attribtes_type;
@@ -54,7 +55,7 @@ public:
     : m_terminals( terminals ) , m_unaries( unaries ) , m_binaries( binaries ) { }
     
     template< typename Tree >
-    value_type operator()( Tree const& tree , eval_context_type const& context ) const
+    value_type operator()( Tree const& tree , context_type const& context ) const
     {
         return eval_cursor( tree.root() , context );
     }
@@ -116,10 +117,10 @@ private:
     {
         self_type const& m_self;
         value_type &m_result;
-        eval_context_type const& m_context;
+        context_type const& m_context;
         Cursor const& m_cursor;
         
-        evaluator_base( self_type const& self , value_type &result , eval_context_type const& context , Cursor const& cursor )
+        evaluator_base( self_type const& self , value_type &result , context_type const& context , Cursor const& cursor )
         : m_self( self ) , m_result( result ) , m_context( context ) , m_cursor( cursor ) { }
     };
         
@@ -127,7 +128,7 @@ private:
     template< typename Cursor >
     struct terminal_evaluator : evaluator_base< Cursor >
     {
-        terminal_evaluator( self_type const& self , value_type &result , eval_context_type const& context , Cursor const& cursor )
+        terminal_evaluator( self_type const& self , value_type &result , context_type const& context , Cursor const& cursor )
         : evaluator_base< Cursor >( self , result , context , cursor ) { }
         
         template< typename Entry >
@@ -145,7 +146,7 @@ private:
     template< typename Cursor >
     struct unary_evaluator : evaluator_base< Cursor >
     {
-        unary_evaluator( self_type const& self , value_type &result , eval_context_type const& context , Cursor const& cursor )
+        unary_evaluator( self_type const& self , value_type &result , context_type const& context , Cursor const& cursor )
         : evaluator_base< Cursor >( self , result , context , cursor ) { }
         
         template< typename Entry >
@@ -164,7 +165,7 @@ private:
     template< typename Cursor >
     struct binary_evaluator : evaluator_base< Cursor >
     {
-        binary_evaluator( self_type const& self , value_type &result , eval_context_type const& context , Cursor const& cursor )
+        binary_evaluator( self_type const& self , value_type &result , context_type const& context , Cursor const& cursor )
         : evaluator_base< Cursor >( self , result , context , cursor ) { }
         
         template< typename Entry >
@@ -183,7 +184,7 @@ private:
 
     
     template< typename Cursor >
-    value_type eval_cursor( Cursor cursor , eval_context_type const& context ) const
+    value_type eval_cursor( Cursor cursor , context_type const& context ) const
     {
         value_type result = 0.0;
         bool found = true;
@@ -214,12 +215,12 @@ private:
 };
 
 
-template< typename Value , typename Symbol , typename EvalContext ,
+template< typename Value , typename Symbol , typename Context ,
           typename TerminalAttributes, typename UnaryAttributes , typename BinaryAttributes >
-static_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >
+static_eval< Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >
 make_static_eval( TerminalAttributes const& terminals , UnaryAttributes const& unaries , BinaryAttributes const& binaries )
 {
-    return static_eval< Value , Symbol , EvalContext , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
+    return static_eval< Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
 }
 
 

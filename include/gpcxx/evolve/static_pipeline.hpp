@@ -12,7 +12,7 @@
 #ifndef GPCXX_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
 #define GPCXX_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
 
-#include <gpcxx/operator/fitness_prob.hpp>
+#include <gpcxx/util/sort_indices.hpp>
 
 #include <functional>
 #include <cassert>
@@ -35,8 +35,8 @@ public:
     typedef std::function< std::pair< individual_type , individual_type >( population_type const& , fitness_type const& ) > crossover_type;
     typedef std::function< individual_type( population_type const& , fitness_type const& ) > reproduction_type;
 
-    static_pipeline( double elite_rate , double mutation_rate , double crossover_rate , double reproduction_rate , rng_type &rng )
-        : m_elite_rate( elite_rate ) , m_mutation_rate( mutation_rate ) , m_crossover_rate( crossover_rate ) , m_reproduction_rate( reproduction_rate )
+    static_pipeline( size_t number_elite , double mutation_rate , double crossover_rate , double reproduction_rate , rng_type &rng )
+        : m_number_elite( number_elite ) , m_mutation_rate( mutation_rate ) , m_crossover_rate( crossover_rate ) , m_reproduction_rate( reproduction_rate )
         , m_rng( rng )
         , m_mutation_function() , m_crossover_function() , m_reproduction_function()
     { }
@@ -62,21 +62,20 @@ private:
     void reproduce( population_type &pop , fitness_type &fitness )
     {
         assert( pop.size() == fitness.size() );
-        
-        fitness_prob< fitness_type , rng_type > prob( fitness , m_rng );
-        size_t n = pop.size();
+
+        std::vector< size_t > indices;
+        sort_indices( fitness , indices );
  
         population_type new_pop;
  
         // elite
-        size_t n_elite = size_t( double( n ) * m_elite_rate );
-        for( size_t i=0 ; i<n_elite ; ++i )
+        for( size_t i=0 ; i<m_number_elite ; ++i )
         {
-            size_t index = prob.indices()[i] ;
+            size_t index = indices[i] ;
             new_pop.push_back( pop[ index ] );
         }
-        
-        
+
+        size_t n = pop.size();
         std::discrete_distribution< int > dist( { m_mutation_rate , m_crossover_rate , m_reproduction_rate } );
         while( new_pop.size() < n )
         {
@@ -115,7 +114,7 @@ private:
         pop = std::move( new_pop );
     }
 
-    double m_elite_rate;
+    double m_number_elite;
     double m_mutation_rate;
     double m_crossover_rate;
     double m_reproduction_rate;

@@ -1,5 +1,5 @@
 /*
-  gpcxx/util/timer.hpp
+  gpcxx/app/timer.hpp
 
   Copyright 2013 Karsten Ahnert
 
@@ -9,8 +9,9 @@
 */
 
 
-#ifndef GPCXX_UTIL_TIMER_HPP_DEFINED
-#define GPCXX_UTIL_TIMER_HPP_DEFINED
+#ifndef GPCXX_APP_TIMER_HPP_DEFINED
+#define GPCXX_APP_TIMER_HPP_DEFINED
+
 
 #include <chrono>
 
@@ -48,4 +49,5 @@ public:
 } // namespace gpcxx
 
 
-#endif // GPCXX_UTIL_TIMER_HPP_DEFINED
+
+#endif // GPCXX_APP_TIMER_HPP_DEFINED

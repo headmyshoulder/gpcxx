@@ -1,0 +1,41 @@
+[section Tree]
+
+This concepts specifies the interface for trees.
+
+[heading Description]
+
+The tree concept.
+
+[heading Refinement of]
+
+* DefaultConstructable
+* CopyConstructable
+* MoveConstructable
+
+
+[heading Associated types]
+
+*  '''<para>'''[*value_type]'''</para>'''
+'''<para>'''`Tree::state_type`'''</para>'''
+'''<para>'''The value_type of the nodes of the tree'''</para>'''
+
+
+[heading Notation]
+
+[variablelist 
+  [[`Tree`] [A type that is a model of Tree]]
+  [[`tree`] [An object of type `Tree`]]
+]
+
+[heading Valid Expressions]
+
+[table
+  [[Name] [Expression] [Type] [Semantics]]
+  [[Get cursor to root node.] [`stepper.root()`] [`Cursor`] [Returns a cursor to the root node of the tree.]]
+]
+
+[heading Models]
+
+* `basic_tree`
+
+[endsect]

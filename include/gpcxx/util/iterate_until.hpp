@@ -29,7 +29,7 @@ struct iterate_until_impl;
 template< typename Iter , typename F >
 struct iterate_until_impl< Iter , Iter , F >
 {
-    bool operator()( Iter first , Iter Last , F f ) const
+    inline bool operator()( Iter first , Iter Last , F f ) const
     {
         return false;
     }
@@ -38,7 +38,7 @@ struct iterate_until_impl< Iter , Iter , F >
 template< typename First , typename Last , typename F >
 struct iterate_until_impl< First , Last , F >
 {
-    bool operator()( First first , Last last , F f ) const
+    inline bool operator()( First first , Last last , F f ) const
     {
         if( f( boost::fusion::deref( first ) ) ) return true;
         else
@@ -49,7 +49,7 @@ struct iterate_until_impl< First , Last , F >
 };
 
 template< typename First , typename Last , typename F >
-bool iterate_until( First first , Last last , F f )
+inline bool iterate_until( First first , Last last , F f )
 {
     return iterate_until_impl< First , Last , F >()( first , last , f );
 }
@@ -57,7 +57,7 @@ bool iterate_until( First first , Last last , F f )
 } // namespace detail
 
 template< typename Seq , typename F >
-bool iterate_until( Seq const& s , F f )
+inline bool iterate_until( Seq const& s , F f )
 {
     static_assert( boost::fusion::traits::is_sequence< Seq >::value , "Sequence must be a Boost.Fusion sequence" );
     return gpcxx::detail::iterate_until( boost::fusion::begin( s ) , boost::fusion::end( s ) , f );

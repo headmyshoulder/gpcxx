@@ -48,24 +48,24 @@ xsltproc(
 
 
   
-add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.qbk"
+add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   COMMAND
     ${CMAKE_COMMAND} -E copy
-    "${CMAKE_CURRENT_SOURCE_DIR}/genetic_programming.qbk"
-    "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.qbk"
+    "${CMAKE_CURRENT_SOURCE_DIR}/gpcxx.qbk"
+    "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/genetic_programming.qbk"
+    "${CMAKE_CURRENT_SOURCE_DIR}/gpcxx.qbk"
   )
 
-add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.xml"
+add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
   COMMAND
     ${QUICKBOOK_EXECUTABLE}
-    --input-file "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.qbk"
+    --input-file "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
     --include-path "${CMAKE_CURRENT_BINARY_DIR}"
     --include-path "${CMAKE_CURRENT_SOURCE_DIR}"
-    --output-file "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.xml"
+    --output-file "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
   DEPENDS
-    "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.qbk"
+    "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
     "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
   )
   
@@ -88,15 +88,15 @@ add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/images"
   )
 
 xsltproc(
-  INPUT "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.xml"
-  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.dbk"
+  INPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.dbk"
   CATALOG "${catalog}"
   STYLESHEET "${BOOSTBOOK_XSL_DIR}/docbook.xsl"
-  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.xml"
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
   )
 
 xsltproc(
-  INPUT "${CMAKE_CURRENT_BINARY_DIR}/genetic_programming.dbk"
+  INPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.dbk"
   OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
   CATALOG "${catalog}"
   STYLESHEET "${BOOSTBOOK_XSL_DIR}/xhtml.xsl"

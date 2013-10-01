@@ -77,6 +77,8 @@ Installation
 
 [endsect]
 
+[include concepts.qbk]
+
 [xinclude reference.xml]
 
 [section Index]

@@ -14,5 +14,6 @@
 
 
 #include <gpcxx/stat/population_statistics.hpp>
+#include <gpcxx/stat/node_statistics.hpp>
 
 #endif // GPCXX_STAT_HPP_DEFINED
