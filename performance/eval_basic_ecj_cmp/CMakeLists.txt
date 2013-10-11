@@ -4,3 +4,4 @@
 add_executable ( performance_eval_basic_ecj_cmp performance_eval_basic_ecj_cmp.cpp )
 add_executable ( performance_eval_basic_ecj_cmp_virtual performance_eval_basic_ecj_cmp_virtual.cpp )
 add_executable ( performance_eval_basic_ecj_cmp_virtual2 performance_eval_basic_ecj_cmp_virtual2.cpp )
+add_executable ( performance_eval_basic_ecj_cmp_intrusive performance_eval_basic_ecj_cmp_intrusive )
