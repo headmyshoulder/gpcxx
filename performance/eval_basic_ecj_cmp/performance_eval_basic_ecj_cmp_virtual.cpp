@@ -91,6 +91,7 @@ std::tuple< double , double > run_test( Trees const &trees , const vector_type &
         {
             context_type c { x1[i] , x2[i] , x3[i] };
             y[t][i] = trees[t]( c );
+            if( fabs( y[t][i] ) > 1.0e5 ) y[t][i] = 1.0e5;
         }
     }
     std::get< 0 >( res ) = timer.seconds();

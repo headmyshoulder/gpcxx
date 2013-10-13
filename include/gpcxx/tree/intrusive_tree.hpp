@@ -19,6 +19,7 @@
 #include <cassert>
 #include <algorithm>
 
+
 // debug stuff
 #include <iostream>
 using namespace std;
@@ -46,6 +47,10 @@ public:
     typedef std::array< node_pointer , max_arity > children_type;
     
     
+    
+    //
+    // debug:
+    //
     std::string get_indent( size_t indent , std::string const& str = "  " )
     {
         std::string ret = "";
@@ -64,11 +69,20 @@ public:
     }
     
     
+    
+    
     intrusive_node( node_type *parent = nullptr ) noexcept
     : m_parent( parent ) , m_children()
     {
+        clear_children();
+    }
+    
+    void clear_children( void )
+    {
         std::fill( m_children.begin() , m_children.end() , nullptr );
     }
+
+    
     
     
     node_pointer child_node( size_t i ) noexcept
@@ -425,13 +439,58 @@ public:
     typedef intrusive_cursor< node_type const > const_cursor;
     typedef size_t size_type;
     
+    //
+    // construct:
+    //
     intrusive_tree( void )
     : m_root( nullptr ) , m_size( 0 ) { }
     
+    template< typename InputCursor >
+    intrusive_tree( InputCursor subtree )
+    : intrusive_tree()
+    {
+        insert_below( root() , subtree );
+    }
+    
+    intrusive_tree( intrusive_tree const& tree )
+    : intrusive_tree()
+    {
+        if( !tree.empty() )
+            insert_below( root() , tree.root() );
+    }
+    
+
+
+    
+    //
+    // destroy
+    //
     ~intrusive_tree( void )
     {
-        erase( m_root );
+        clear();
     }
+
+    
+    
+    
+    
+    //
+    // copy
+    //
+    intrusive_tree& operator=( intrusive_tree const& tree )
+    {
+        if( &tree != this )
+        {
+            clear();
+            if( !tree.empty() )
+                insert_below( root() , tree.root() );
+        }
+        return *this;
+    }
+
+    
+    
+    
     
     size_type size( void ) const
     {
@@ -456,18 +515,30 @@ public:
     cursor insert_below( cursor c , node_type const& n )
     {
         ++m_size;
+        cursor ret;
         if( c.node() == nullptr )
         {
             m_root = new node_type( n );
-            return cursor( m_root );
+            m_root->clear_children();
+            ret = cursor( m_root );
         }
         else
         {
             node_type *new_node = new node_type( n );
+            new_node->clear_children();
             c.node()->attach_child( new_node );
             new_node->attach_parent( c.node() );
-            return cursor( new_node );
+            ret = cursor( new_node );
         }
+        for( size_t i=0 ; i<n.size() ; ++i )
+            insert_below( ret , *( n.child_node( i ) ) );
+        return ret;
+    }
+    
+    template< typename InputCursor >
+    cursor insert_below( cursor c , InputCursor other )
+    {
+        insert_below( c , *( other.node() ) );
     }
     
     void erase( cursor position ) noexcept
@@ -476,6 +547,12 @@ public:
         node_pointer parent = position.parent_node();
         if( parent != nullptr ) parent->remove_child( position.node() );
         erase_impl( position );
+    }
+    
+    
+    void clear( void )
+    {
+        erase( m_root );
     }
 
 

@@ -50,11 +50,19 @@ struct NAME                                                                     
     }                                                                                                 \
 }
 
+template< typename T >
+inline T my_log( T v )
+{
+    double v2 = std::abs( v );
+    return ( v2 < 1.0e-20 ) ? std::log( 1.0e-20 ) : std::log( v2 );
+//     return std::log( std::log( max( 1.0e-20 , abs( v ) ) ) );
+}
+
 
 UNARY_FUNC( sin_func , sin );
 UNARY_FUNC( cos_func , cos );
 UNARY_FUNC( exp_func , exp );
-UNARY_FUNC( log_func , log );
+UNARY_FUNC( log_func , my_log );
 
 BINARY_FUNC( plus_func , + );
 BINARY_FUNC( minus_func , - );

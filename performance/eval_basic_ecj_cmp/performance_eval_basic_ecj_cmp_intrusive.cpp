@@ -23,7 +23,9 @@
 #define tab "\t"
 
 using namespace std;
+using namespace parser;
 namespace fusion = boost::fusion;
+
 
 typedef double value_type;
 typedef std::vector< value_type > vector_type;
@@ -82,6 +84,7 @@ std::tuple< double , double > run_test( Trees const &trees , const vector_type &
         {
             context_type c { x1[i] , x2[i] , x3[i] };
             y[t][i] = trees[t].root()->eval( c );
+            if( fabs( y[t][i] ) > 1.0e5 ) y[t][i] = 1.0e5;
         }
     }
     std::get< 0 >( res ) = timer.seconds();
@@ -185,10 +188,10 @@ struct tree_transformator2 : public boost::static_visitor< void >
         cursor c1;
         switch( expr.op )
         {
-            case '+' : c1 = tree_.insert_below( c_ , my_node( plus_func() ); break;
-            case '-' : c1 = tree_.insert_below( c_ , my_node( minus_func() ); break;
-            case '*' : c1 = tree_.insert_below( c_ , my_node( multiplies_func() ); break;
-            case '/' : c1 = tree_.insert_below( c_ , my_node( divides_func() ); break;
+            case '+' : c1 = tree_.insert_below( c_ , my_node( plus_func() ) ); break;
+            case '-' : c1 = tree_.insert_below( c_ , my_node( minus_func() ) ); break;
+            case '*' : c1 = tree_.insert_below( c_ , my_node( multiplies_func() ) ); break;
+            case '/' : c1 = tree_.insert_below( c_ , my_node( divides_func() ) ); break;
         }
         boost::apply_visitor( tree_transformator2( tree_ , c1 ) , expr.left.expr );
         boost::apply_visitor( tree_transformator2( tree_ , c1 ) , expr.right.expr );
@@ -199,10 +202,10 @@ struct tree_transformator2 : public boost::static_visitor< void >
         cursor c1;
         switch( expr.op )
         {
-            case 's' : c1 = tree_.insert_below( c_ , my_node( sin_func() ); break;
-            case 'c' : c1 = tree_.insert_below( c_ , my_node( cos_func() ); break;
-            case 'e' : c1 = tree_.insert_below( c_ , my_node( exp_func() ); break;
-            case 'l' : c1 = tree_.insert_below( c_ , my_node( log_func() ); break;
+            case 's' : c1 = tree_.insert_below( c_ , my_node( sin_func() ) ); break;
+            case 'c' : c1 = tree_.insert_below( c_ , my_node( cos_func() ) ); break;
+            case 'e' : c1 = tree_.insert_below( c_ , my_node( exp_func() ) ); break;
+            case 'l' : c1 = tree_.insert_below( c_ , my_node( log_func() ) ); break;
         }
         boost::apply_visitor( tree_transformator2( tree_ , c1 ) , expr.subject.expr );
     }
@@ -214,7 +217,7 @@ struct tree_transformator2 : public boost::static_visitor< void >
 
 void run_tree_type( std::string const &name , vector_type const &x1 , vector_type const &x2 , vector_type const &x3 , std::string const & filename )
 {
-    typedef intrusive_tree< my_node > tree_type;
+    typedef gpcxx::intrusive_tree< my_node > tree_type;
     std::vector< tree_type > trees;
 
     // read trees
@@ -224,7 +227,7 @@ void run_tree_type( std::string const &name , vector_type const &x1 , vector_typ
     {
         tree_type tree;
         trees.push_back( tree );
-        parser::tree_transformator2< tree_type > trafo( trees.back() , trees.back().root() );
+        tree_transformator2< tree_type > trafo( trees.back() , trees.back().root() );
         parser::parse_tree( line , trafo );
     }
 
