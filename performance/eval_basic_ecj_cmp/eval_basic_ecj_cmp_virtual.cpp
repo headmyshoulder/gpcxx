@@ -6,7 +6,7 @@
 
 #define FUSION_MAX_VECTOR_SIZE 20
 
-#include "ecj_exp_parser.hpp"
+#include "parser.hpp"
 #include "nodes.hpp"
 
 #include <gpcxx/eval/static_eval.hpp>
@@ -14,8 +14,6 @@
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
-#include <gpcxx/tree/recursive_tree.hpp>
-#include <gpcxx/tree/basic_tree_fast.hpp>
 #include <gpcxx/app/timer.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
@@ -91,6 +89,7 @@ std::tuple< double , double > run_test( Trees const &trees , const vector_type &
         {
             context_type c { x1[i] , x2[i] , x3[i] };
             y[t][i] = trees[t]( c );
+            if( fabs( y[t][i] ) > 1.0e5 ) y[t][i] = 1.0e5;
         }
     }
     std::get< 0 >( res ) = timer.seconds();

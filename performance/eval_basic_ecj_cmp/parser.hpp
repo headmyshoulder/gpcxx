@@ -1,5 +1,5 @@
 /*
- * gpcxx/performance/eval_basic_ecj_cmp/ecj_exp_parser.hpp
+ * gpcxx/performance/eval_basic_ecj_cmp/parser.hpp
  * Date: 2013-09-12
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_PERFORMANCE_EVAL_BASIC_ECJ_CMP_ECJ_EXP_PARSER_HPP_INCLUDED
-#define GPCXX_PERFORMANCE_EVAL_BASIC_ECJ_CMP_ECJ_EXP_PARSER_HPP_INCLUDED
+#ifndef GPCXX_PERFORMANCE_EVAL_BASIC_ECJ_CMP_PARSER_HPP_INCLUDED
+#define GPCXX_PERFORMANCE_EVAL_BASIC_ECJ_CMP_PARSER_HPP_INCLUDED
 
 
 #include <gpcxx/tree/basic_tree.hpp>
@@ -276,4 +276,4 @@ namespace parser
 
 
 
-#endif // GPCXX_PERFORMANCE_EVAL_BASIC_ECJ_CMP_ECJ_EXP_PARSER_HPP_INCLUDED
+#endif // GPCXX_PERFORMANCE_EVAL_BASIC_ECJ_CMP_PARSER_HPP_INCLUDED

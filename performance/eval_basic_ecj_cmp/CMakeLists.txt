@@ -1,7 +1,9 @@
 # Date: 2013-09-12
 # Author: Karsten Ahnert (karsten.ahnert@gmx.de)
 
-add_executable ( performance_eval_basic_ecj_cmp performance_eval_basic_ecj_cmp.cpp )
-add_executable ( performance_eval_basic_ecj_cmp_virtual performance_eval_basic_ecj_cmp_virtual.cpp )
-add_executable ( performance_eval_basic_ecj_cmp_virtual2 performance_eval_basic_ecj_cmp_virtual2.cpp )
-add_executable ( performance_eval_basic_ecj_cmp_intrusive performance_eval_basic_ecj_cmp_intrusive )
+add_executable ( eval_basic_ecj_cmp
+                 eval_basic_ecj_cmp.cpp )
+add_executable ( eval_basic_ecj_cmp_virtual
+                 eval_basic_ecj_cmp_virtual.cpp )
+add_executable ( eval_basic_ecj_cmp_intrusive
+                 eval_basic_ecj_cmp_intrusive.cpp )

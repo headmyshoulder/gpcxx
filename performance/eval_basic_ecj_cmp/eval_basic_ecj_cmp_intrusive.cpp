@@ -6,7 +6,7 @@
 
 #define FUSION_MAX_VECTOR_SIZE 20
 
-#include "ecj_exp_parser.hpp"
+#include "parser.hpp"
 #include "intrusive_nodes.hpp"
 
 #include <gpcxx/io/simple.hpp>

@@ -6,15 +6,13 @@
 
 #define FUSION_MAX_VECTOR_SIZE 20
 
-#include "ecj_exp_parser.hpp"
+#include "parser.hpp"
 
 #include <gpcxx/eval/static_eval.hpp>
 #include <gpcxx/generate/basic_generate_strategy.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
-#include <gpcxx/tree/recursive_tree.hpp>
-#include <gpcxx/tree/basic_tree_fast.hpp>
 #include <gpcxx/app/timer.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
@@ -278,8 +276,6 @@ int main( int argc , char *argv[] )
 
     // run test for several tree tests
     run_tree_type< gpcxx::basic_tree< char > >( "basic tree" , x1 , x2 , x3 , argv[1] );
-    run_tree_type< gpcxx::recursive_tree< char > >( "recursive tree" , x1 , x2 , x3 , argv[1] );
-    run_tree_type< gpcxx::basic_tree_fast< char > >( "basic tree fast" , x1 , x2 , x3 , argv[1] );
 
 
     return 0;
