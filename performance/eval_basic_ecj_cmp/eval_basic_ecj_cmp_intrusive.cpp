@@ -7,10 +7,11 @@
 #define FUSION_MAX_VECTOR_SIZE 20
 
 #include "parser.hpp"
-#include "intrusive_nodes.hpp"
 
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
+#include <gpcxx/tree/basic_intrusive_node.hpp>
+#include <gpcxx/tree/intrusive_func.hpp>
 #include <gpcxx/app/timer.hpp>
 
 #include <iostream>
@@ -19,6 +20,7 @@
 #include <vector>
 #include <random>
 #include <cmath>
+#include <array>
 
 #define tab "\t"
 
@@ -27,12 +29,16 @@ using namespace parser;
 namespace fusion = boost::fusion;
 
 
-typedef double value_type;
-typedef std::vector< value_type > vector_type;
-typedef std::mt19937 rng_type ;
+using value_type = double;
+using vector_type = std::vector< value_type >;
+using rng_type = std::mt19937;
 
-typedef my_node node_type;
+using context_type = std::array< double , 3 >;
+using node_type = gpcxx::basic_intrusive_node< double , context_type >;
 
+using terminal_x = gpcxx::array_terminal< 0 >;
+using terminal_y = gpcxx::array_terminal< 1 >;
+using terminal_z = gpcxx::array_terminal< 2 >;
 
 
 
@@ -100,61 +106,6 @@ std::tuple< double , double > run_test( Trees const &trees , const vector_type &
     return res;
 }
 
-// template< typename T , typename Context >
-// struct tree_creator : public boost::static_visitor< void >
-// {
-//     typedef my_node node_type;
-//     
-//     tree_creator( node_type &node ) : m_node( node ) { }
-//         
-//     void operator()( boost::spirit::qi::info::nil ) const {}
-//         
-//     void operator()( char n ) const
-//     {
-//         switch( n )
-//         {
-//             case 'x' : m_node = my_node( terminal_x() ); break;
-//             case 'y' : m_node = my_node( terminal_y() ); break;
-//             case 'z' : m_node = my_node( terminal_z() ); break;
-//         }
-//     }
-// 
-//     void operator()( parser::expression_ast const& ast ) const
-//     {
-//         boost::apply_visitor( *this , ast.expr );
-//     }
-// 
-//     void operator()( parser::binary_op const& expr ) const
-//     {
-//         node_type left , right;
-//         boost::apply_visitor( tree_creator( left ) , expr.left.expr );
-//         boost::apply_visitor( tree_creator( right ) , expr.right.expr );
-// 
-//         switch( expr.op )
-//         {
-//             case '+' : m_node = my_node( plus_func() ntext >( left , right ); break;
-//             case '-' : m_node = minus_node< T , Context >( left , right ); break;
-//             case '*' : m_node = multiplies_node< T , Context >( left , right ); break;
-//             case '/' : m_node = divides_node< T , Context >( left , right ); break;
-//         }
-//     }
-// 
-//     void operator()( parser::unary_op const& expr ) const
-//     {
-//         node_type child;
-//         boost::apply_visitor( tree_creator( child ) , expr.subject.expr );
-// 
-//         switch( expr.op )
-//         {
-//             case 's' : m_node = sin_node< T , Context >( child ); break;
-//             case 'c' : m_node = cos_node< T , Context >( child ); break;
-//             case 'e' : m_node = exp_node< T , Context >( child ); break;
-//             case 'l' : m_node = log_node< T , Context >( child ); break;
-//         }
-//     }
-// 
-//     node_type &m_node;
-// };
 
 template< typename Tree >
 struct tree_transformator2 : public boost::static_visitor< void >
@@ -172,9 +123,9 @@ struct tree_transformator2 : public boost::static_visitor< void >
     {
         switch( n )
         {
-            case 'x' : tree_.insert_below( c_ , my_node( terminal_x() ) ); break;
-            case 'y' : tree_.insert_below( c_ , my_node( terminal_y() ) ); break;
-            case 'z' : tree_.insert_below( c_ , my_node( terminal_z() ) ); break;
+            case 'x' : tree_.insert_below( c_ , node_type( terminal_x() ) ); break;
+            case 'y' : tree_.insert_below( c_ , node_type( terminal_y() ) ); break;
+            case 'z' : tree_.insert_below( c_ , node_type( terminal_z() ) ); break;
         }
     }
 
@@ -188,10 +139,10 @@ struct tree_transformator2 : public boost::static_visitor< void >
         cursor c1;
         switch( expr.op )
         {
-            case '+' : c1 = tree_.insert_below( c_ , my_node( plus_func() ) ); break;
-            case '-' : c1 = tree_.insert_below( c_ , my_node( minus_func() ) ); break;
-            case '*' : c1 = tree_.insert_below( c_ , my_node( multiplies_func() ) ); break;
-            case '/' : c1 = tree_.insert_below( c_ , my_node( divides_func() ) ); break;
+            case '+' : c1 = tree_.insert_below( c_ , node_type( gpcxx::plus_func() ) ); break;
+            case '-' : c1 = tree_.insert_below( c_ , node_type( gpcxx::minus_func() ) ); break;
+            case '*' : c1 = tree_.insert_below( c_ , node_type( gpcxx::multiplies_func() ) ); break;
+            case '/' : c1 = tree_.insert_below( c_ , node_type( gpcxx::divides_func() ) ); break;
         }
         boost::apply_visitor( tree_transformator2( tree_ , c1 ) , expr.left.expr );
         boost::apply_visitor( tree_transformator2( tree_ , c1 ) , expr.right.expr );
@@ -202,10 +153,10 @@ struct tree_transformator2 : public boost::static_visitor< void >
         cursor c1;
         switch( expr.op )
         {
-            case 's' : c1 = tree_.insert_below( c_ , my_node( sin_func() ) ); break;
-            case 'c' : c1 = tree_.insert_below( c_ , my_node( cos_func() ) ); break;
-            case 'e' : c1 = tree_.insert_below( c_ , my_node( exp_func() ) ); break;
-            case 'l' : c1 = tree_.insert_below( c_ , my_node( log_func() ) ); break;
+            case 's' : c1 = tree_.insert_below( c_ , node_type( gpcxx::sin_func() ) ); break;
+            case 'c' : c1 = tree_.insert_below( c_ , node_type( gpcxx::cos_func() ) ); break;
+            case 'e' : c1 = tree_.insert_below( c_ , node_type( gpcxx::exp_func() ) ); break;
+            case 'l' : c1 = tree_.insert_below( c_ , node_type( gpcxx::log_func() ) ); break;
         }
         boost::apply_visitor( tree_transformator2( tree_ , c1 ) , expr.subject.expr );
     }
@@ -217,7 +168,7 @@ struct tree_transformator2 : public boost::static_visitor< void >
 
 void run_tree_type( std::string const &name , vector_type const &x1 , vector_type const &x2 , vector_type const &x3 , std::string const & filename )
 {
-    typedef gpcxx::intrusive_tree< my_node > tree_type;
+    typedef gpcxx::intrusive_tree< node_type > tree_type;
     std::vector< tree_type > trees;
 
     // read trees

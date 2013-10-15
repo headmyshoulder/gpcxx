@@ -12,7 +12,7 @@
 #ifndef GPCXX_TREE_INTRUSIVE_TREE_HPP_DEFINED
 #define GPCXX_TREE_INTRUSIVE_TREE_HPP_DEFINED
 
-#include <gpcxx/tree/detail/intrusive_node.h>
+#include <gpcxx/tree/intrusive_node.hpp>
 
 #include <iostream>
 #include <functional>
@@ -22,9 +22,9 @@
 #include <algorithm>
 
 
-namespace gpcxx {
-    
 
+
+namespace gpcxx {
 
 
 
@@ -35,8 +35,8 @@ public:
     
     typedef Node node_type;
     typedef node_type* node_pointer;
-    typedef intrusive_cursor< node_type > cursor;
-    typedef intrusive_cursor< node_type const > const_cursor;
+    typedef detail::intrusive_cursor< node_type > cursor;
+    typedef detail::intrusive_cursor< node_type const > const_cursor;
     typedef size_t size_type;
     
     //
