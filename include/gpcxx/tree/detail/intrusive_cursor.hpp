@@ -32,6 +32,7 @@ public:
     typedef node_type& node_reference;
     typedef node_type const& const_node_reference;
     typedef size_t size_type;
+    typedef node_type value_type;
 
 
     intrusive_cursor( node_pointer node = nullptr ) noexcept

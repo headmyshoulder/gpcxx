@@ -9,22 +9,25 @@
  */
 
 #include <gpcxx/operator/random_selector.hpp>
-#include "../common/test_tree.hpp"
-#include "../common/test_generator.hpp"
+
+#include "../common/test_template.hpp"
 
 #include <gtest/gtest.h>
 
-#define TESTNAME random_selector_tests
+template <class T>
+struct random_selector_tests : public test_template< T > { };
 
-using namespace std;
+using testing::Types;
 
-TEST( TESTNAME  , instanciation )
+typedef Types< basic_tree_tag , intrusive_tree_tag > Implementations;
+
+TYPED_TEST_CASE( random_selector_tests , Implementations );
+
+TYPED_TEST( random_selector_tests , instanciation )
 {
-    test_tree< basic_tree_tag > trees;
-    test_generator gen;
-    std::vector< test_tree< basic_tree_tag >::tree_type > pop( 10 , test_tree< basic_tree_tag >::tree_type() );
+    std::vector< typename TestFixture::tree_type > pop( 10 , typename TestFixture::tree_type() );
     std::vector< double > fitness( 10 );
-    auto selector = gpcxx::make_random_selector( gen.rng );
+    auto selector = gpcxx::make_random_selector( this->m_gen.rng );
     auto node = selector( pop , fitness );
 }
 

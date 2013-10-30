@@ -8,7 +8,7 @@
  copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include "../common/test_tree.hpp"
+#include "../common/test_template.hpp"
 
 #include <gtest/gtest.h>
 
@@ -37,24 +37,12 @@ void test_cursor( gpcxx::detail::intrusive_cursor< T > n , std::string const& va
 }
 
 
-template <class T>
-class general_tree_tests : public testing::Test
-{
-protected:
-    
-    typedef typename get_tree_type< T >::type tree_type;
-    typedef typename get_node_factory< T >::type node_factory_type;
-    typedef typename tree_type::cursor cursor;
-    typedef test_tree< T > test_tree_type;
-    
-    general_tree_tests( void )
-    : m_tree() , m_test_trees()
-    { };
 
-    tree_type m_tree;
-    test_tree_type m_test_trees;
-    node_factory_type m_factory;
-};
+
+template <class T>
+class general_tree_tests : public test_template< T > { };
+
+
 
 
 using testing::Types;
@@ -318,17 +306,17 @@ TYPED_TEST( general_tree_tests , equal_compare )
     EXPECT_EQ( ( this->m_test_trees.data ) , t );
 }
 
-// TYPED_TEST( general_tree_tests , rank_is )
-// {
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 0 ) , this->m_test_trees.data.root() );
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 1 ) , this->m_test_trees.data.root().children(0) );
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 2 ) , this->m_test_trees.data.root().children(1) );
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 3 ) , this->m_test_trees.data.root().children(0).children(0) );
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 4 ) , this->m_test_trees.data.root().children(1).children(0) );
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 5 ) , this->m_test_trees.data.root().children(1).children(1) );
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 6 ) , this->m_test_trees.data.shoot() );
-//     EXPECT_EQ( this->m_test_trees.data.rank_is( 7 ) , this->m_test_trees.data.shoot() );
-// }
+TYPED_TEST( general_tree_tests , rank_is )
+{
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 0 ) , this->m_test_trees.data.root() );
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 1 ) , this->m_test_trees.data.root().children(0) );
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 2 ) , this->m_test_trees.data.root().children(1) );
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 3 ) , this->m_test_trees.data.root().children(0).children(0) );
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 4 ) , this->m_test_trees.data.root().children(1).children(0) );
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 5 ) , this->m_test_trees.data.root().children(1).children(1) );
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 6 ) , this->m_test_trees.data.shoot() );
+    EXPECT_EQ( this->m_test_trees.data.rank_is( 7 ) , this->m_test_trees.data.shoot() );
+}
 
 TYPED_TEST( general_tree_tests , swap_subtrees1 )
 {

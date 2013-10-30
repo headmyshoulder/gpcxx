@@ -13,27 +13,28 @@
 #include <gpcxx/generate/basic_generate_strategy.hpp>
 #include <gpcxx/io/simple.hpp>
 
-#include "../common/test_tree.hpp"
-#include "../common/test_generator.hpp"
+#include "../common/test_template.hpp"
 
 #include <gtest/gtest.h>
 
-#include <sstream>
+template <class T>
+struct point_mutation_tests : public test_template< T > { };
 
-#define TESTNAME point_mutation_tests
-
-using namespace std;
+using testing::Types;
 using namespace gpcxx;
 
-TEST( TESTNAME , instanciation )
+typedef Types< basic_tree_tag , intrusive_tree_tag > Implementations;
+
+TYPED_TEST_CASE( point_mutation_tests , Implementations );
+
+TYPED_TEST( point_mutation_tests , instanciation )
 {
-    test_generator gen;
-    auto generator = make_basic_generate_strategy( gen.rng , gen.gen0 , gen.gen1 , gen.gen2 , 1 , 5 );
-    auto strategy = make_point_mutation( gen.rng , generator , 5 , 128 );
+    auto generator = make_basic_generate_strategy( this->m_gen.rng , this->m_gen.gen0 , this->m_gen.gen1 , this->m_gen.gen2 , 1 , 5 );
+    auto strategy = make_point_mutation( this->m_gen.rng , generator , 5 , 128 );
 
     for( size_t i=0 ; i<1000 ; ++i )
     {
-        basic_tree< std::string > tree;
+        typename TestFixture::tree_type tree;
         generator( tree );
         strategy( tree );
         EXPECT_LE( tree.root().height() , 5 );

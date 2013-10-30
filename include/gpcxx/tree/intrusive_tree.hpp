@@ -19,7 +19,7 @@
 #include <cmath>
 #include <cassert>
 #include <algorithm>
-
+#include <queue>
 
 
 
@@ -39,6 +39,7 @@ public:
     typedef detail::intrusive_cursor< node_type > cursor;
     typedef detail::intrusive_cursor< node_type const > const_cursor;
     typedef size_t size_type;
+    typedef node_type value_type;
     
     //
     // construct:
@@ -126,6 +127,42 @@ public:
         return const_cursor( m_root );
     }
     
+    const_cursor croot( void ) const
+    {
+        return root();
+    }
+    
+    cursor shoot( void )
+    {
+        return cursor( nullptr );
+    }
+    
+    const_cursor shoot( void ) const
+    {
+        return const_cursor( nullptr );
+    }
+    
+    const_cursor cshoot( void ) const
+    {
+        return shoot();
+    }
+
+
+    
+    cursor rank_is( size_type n ) noexcept
+    {
+        if( n >= m_size )
+            return shoot();
+        return rank_is_impl< cursor >( root() , n );
+    }
+    
+    const_cursor rank_is( size_type n ) const noexcept
+    {
+        if( n >= m_size )
+            return shoot();
+        return rank_is_impl< const_cursor >( root() , n );
+    }
+
     
     //
     // modifiers:
@@ -188,52 +225,6 @@ public:
         *this = std::move( tmp );
     }
     
-    static void swap_subtree_impl1( intrusive_tree &t1 , intrusive_tree &t2 , node_pointer n2 )
-    {
-        t1.m_root = n2;
-        node_pointer p2 = n2->parent();
-        if( p2 != nullptr )
-        {
-            n2->parent()->remove_child( n2 );
-        }
-        else
-        {
-            t2.m_root = nullptr;
-        }
-        n2->attach_parent( nullptr );
-    }
-    
-    static void swap_subtree_impl2( intrusive_tree &t1 , node_pointer n1 , intrusive_tree &t2 , node_pointer n2 )
-    {
-        node_pointer p1 = n1->parent();
-        node_pointer p2 = n2->parent();
-        
-        if( ( p1 == nullptr ) && ( p2 == nullptr ) )
-        {
-            t1.m_root = n2;
-            t2.m_root = n1;
-        }
-        else if( p1 == nullptr )
-        {
-            t1.m_root = n2;
-            p2->remove_child( n2 );
-            n2->attach_parent( nullptr );
-        }
-        else if( p2 == nullptr )
-        {
-            t2.m_root = n1;
-            p1->remove_child( n1 );
-            n1->attach_parent( nullptr );
-        }
-        else
-        {
-            * ( p1->find_child( n1 ) ) = n2;
-            * ( p2->find_child( n2 ) ) = n1;
-            n2->attach_parent( p1 );
-            n1->attach_parent( p2 );
-        }
-    }
-    
     void swap_subtrees( cursor c1 , intrusive_tree& other , cursor c2 )
     {
         node_pointer n1 = c1.node();
@@ -287,7 +278,70 @@ private:
             tree.m_root = nullptr;
             tree.m_size = 0;
         }
+    }
+    
+    static void swap_subtree_impl1( intrusive_tree &t1 , intrusive_tree &t2 , node_pointer n2 )
+    {
+        t1.m_root = n2;
+        node_pointer p2 = n2->parent();
+        if( p2 != nullptr )
+        {
+            n2->parent()->remove_child( n2 );
+        }
+        else
+        {
+            t2.m_root = nullptr;
+        }
+        n2->attach_parent( nullptr );
+    }
+    
+    static void swap_subtree_impl2( intrusive_tree &t1 , node_pointer n1 , intrusive_tree &t2 , node_pointer n2 )
+    {
+        node_pointer p1 = n1->parent();
+        node_pointer p2 = n2->parent();
+        
+        if( ( p1 == nullptr ) && ( p2 == nullptr ) )
+        {
+            t1.m_root = n2;
+            t2.m_root = n1;
+        }
+        else if( p1 == nullptr )
+        {
+            t1.m_root = n2;
+            p2->remove_child( n2 );
+            n2->attach_parent( nullptr );
+        }
+        else if( p2 == nullptr )
+        {
+            t2.m_root = n1;
+            p1->remove_child( n1 );
+            n1->attach_parent( nullptr );
+        }
+        else
+        {
+            * ( p1->find_child( n1 ) ) = n2;
+            * ( p2->find_child( n2 ) ) = n1;
+            n2->attach_parent( p1 );
+            n1->attach_parent( p2 );
+        }
+    }
 
+    
+    template< typename Cursor >
+    Cursor rank_is_impl( Cursor c , size_type remaining ) const
+    {
+        std::queue< Cursor > cursor_queue;
+        cursor_queue.push( c );
+
+        while( ( remaining != 0 ) && ( !cursor_queue.empty() ) )
+        {
+            Cursor current = cursor_queue.front();
+            for( size_t i=0 ; i<current.size() ; ++i ) cursor_queue.push( current.children( i ) );
+            cursor_queue.pop();
+            --remaining;
+        }
+        assert( !cursor_queue.empty() );
+        return cursor_queue.front();
     }
 
     node_pointer m_root;

@@ -28,6 +28,7 @@ struct intrusive_node_generator
     {
         if( s == "plus" ) return node_type( plus_func() , "plus" );
         if( s == "minus" ) return node_type( minus_func() , "minus" );
+        if( s == "multiplies" ) return node_type( minus_func() , "multiplies" );
         if( s == "+" ) return node_type( plus_func() , "+" );
         if( s == "-" ) return node_type( minus_func() , "-" );
         if( s == "*" ) return node_type( multiplies_func() , "*");

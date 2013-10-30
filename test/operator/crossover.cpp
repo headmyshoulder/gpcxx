@@ -11,22 +11,27 @@
 #include <gpcxx/operator/crossover.hpp>
 #include <gpcxx/operator/one_point_crossover_strategy.hpp>
 #include <gpcxx/operator/random_selector.hpp>
-#include "../common/test_tree.hpp"
-#include "../common/test_generator.hpp"
+
+#include "../common/test_template.hpp"
 
 #include <gtest/gtest.h>
 
-#define TESTNAME crossover_tests
+template <class T>
+struct crossover_tests : public test_template< T > { };
 
-using namespace std;
+using testing::Types;
 
-TEST( TESTNAME , instanciation )
+typedef Types< basic_tree_tag , intrusive_tree_tag > Implementations;
+
+TYPED_TEST_CASE( crossover_tests , Implementations );
+
+TYPED_TEST( crossover_tests , instanciation )
 {
-    test_tree< basic_tree_tag > tree;
-    test_generator gen;
-    std::vector< test_tree< basic_tree_tag >::tree_type > pop( 10 , test_tree< basic_tree_tag >::tree_type() );
+    std::vector< typename TestFixture::tree_type > pop( 10 , typename TestFixture::tree_type() );
     std::vector< double > fitness( 10 );
-    auto c = gpcxx::make_crossover( gpcxx::make_one_point_crossover_strategy( gen.rng , 10 ) , gpcxx::make_random_selector( gen.rng ) );
+    auto c = gpcxx::make_crossover(
+        gpcxx::make_one_point_crossover_strategy( this->m_gen.rng , 10 ) ,
+        gpcxx::make_random_selector( this->m_gen.rng ) );
     c( pop , fitness );
 }
 
