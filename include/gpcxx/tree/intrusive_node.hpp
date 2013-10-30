@@ -24,10 +24,14 @@ namespace detail
     struct intrusive_cursor;
 }
 
+template< typename Node >
+class intrusive_tree;
 
 template< typename Node >
 class intrusive_node
 {
+    friend class intrusive_tree< Node >;
+    
 public:
     
     static const size_t max_arity = 2;
@@ -140,7 +144,7 @@ public:
         }
         return count;
     }
-
+    
     
 protected:
     

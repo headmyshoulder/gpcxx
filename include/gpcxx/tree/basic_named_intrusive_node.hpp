@@ -41,6 +41,16 @@ public:
     
     std::string const& name( void ) const { return m_name; }
     
+    bool operator==( basic_named_intrusive_node const &other ) const
+    {
+        return m_name == other.m_name;
+    }
+    
+    bool operator!=( basic_named_intrusive_node const& other ) const
+    {
+        return ! ( *this == other );
+    }
+    
 private:
     
     func_type m_func;

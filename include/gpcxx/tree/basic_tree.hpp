@@ -286,7 +286,7 @@ public:
         parent1->set_children( i1 , n2 );
         parent2->set_children( i2 , n1 );
         
-        size_type num_nodes1 = 0 , num_nodes2 = 0;
+        long num_nodes1 = 0 , num_nodes2 = 0;
         if( n1 != nullptr )
         {
             n1->attach_parent( parent2 );
@@ -297,8 +297,8 @@ public:
             n2->attach_parent( parent1 );
             num_nodes2 = n2->count_nodes();
         }
-        m_size = m_size - num_nodes1 + num_nodes2;
-        other.m_size = other.m_size - num_nodes2 + num_nodes1;
+        m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
+        other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
     }
 
 

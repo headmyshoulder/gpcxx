@@ -12,12 +12,15 @@
 #ifndef GPCXX_TREE_DETAIL_INTRUSIVE_CURSOR_HPP_INCLUDED
 #define GPCXX_TREE_DETAIL_INTRUSIVE_CURSOR_HPP_INCLUDED
 
+#include <gpcxx/tree/detail/node_helpers.hpp>
+#include <gpcxx/tree/cursor_traits.hpp>
+
 
 namespace gpcxx {
 namespace detail {
 
 template< class Node >
-class intrusive_cursor
+class intrusive_cursor 
 {
 public:
     
@@ -157,6 +160,16 @@ public:
     {
         return m_node;
     }
+    
+    bool operator==( intrusive_cursor c ) const
+    {
+        return c.m_node == m_node;
+    }
+    
+    bool operator!=( intrusive_cursor c ) const
+    {
+        return !( *this == c );
+    }
 
     
 
@@ -228,8 +241,24 @@ private:
     node_pointer m_node;
 };
 
+template< typename Node1 , typename Node2 >
+bool cursor_comp( intrusive_cursor< Node1 > const& c1 , intrusive_cursor< Node2 > const& c2 )
+{
+    if( c1.size() != c2.size() ) return false;
+    if( *c1 != *c2 ) return false;
+    for( size_t i=0 ; i<c1.size() ; ++i )
+    {
+        if( !cursor_comp( c1.children(i) , c2.children(i) ) ) return false;
+    }
+    return true;
+}
 
 } // namespace detail
+
+template< typename Node >
+struct is_cursor< detail::intrusive_cursor< Node > > : public std::true_type { };
+
+
 } // namespace gpcxx
 
 
