@@ -14,7 +14,6 @@
 
 #include <gpcxx/tree/intrusive_node.hpp>
 
-#include <iostream>
 #include <functional>
 #include <array>
 #include <cmath>
@@ -189,15 +188,19 @@ public:
         *this = std::move( tmp );
     }
     
-    static void swap_subtree_impl1( intrusive_tree &t1 , node_pointer n1 , node_pointer n2 )
+    static void swap_subtree_impl1( intrusive_tree &t1 , intrusive_tree &t2 , node_pointer n2 )
     {
         t1.m_root = n2;
         node_pointer p2 = n2->parent();
         if( p2 != nullptr )
         {
             n2->parent()->remove_child( n2 );
-            n2->attach_parent( nullptr );
         }
+        else
+        {
+            t2.m_root = nullptr;
+        }
+        n2->attach_parent( nullptr );
     }
     
     static void swap_subtree_impl2( intrusive_tree &t1 , node_pointer n1 , intrusive_tree &t2 , node_pointer n2 )
@@ -244,12 +247,12 @@ public:
         else if( n1 == nullptr )
         {
             num_nodes2 = n2->count_nodes();
-            swap_subtree_impl1( *this , n1 , n2 );
+            swap_subtree_impl1( *this , other , n2 );
         }
         else if( n2 == nullptr )
         {
             num_nodes1 = n1->count_nodes();
-            swap_subtree_impl1( other , n2 , n1 );
+            swap_subtree_impl1( other , *this , n1 );
         }
         else
         {
@@ -257,8 +260,8 @@ public:
             num_nodes2 = n2->count_nodes();
             swap_subtree_impl2( *this , n1 , other , n2 );
         }
-        m_size = size_type( long( m_size ) - num_nodes1 + num_nodes2 );
-        other.m_size = size_type( long( other.m_size ) - num_nodes2 + num_nodes1 );
+        m_size = m_size - ( num_nodes1 - num_nodes2 );
+        other.m_size = other.m_size - ( num_nodes2 - num_nodes1 );
     }
 
 

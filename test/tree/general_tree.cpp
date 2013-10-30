@@ -351,6 +351,17 @@ TYPED_TEST( general_tree_tests , swap_subtrees2 )
     EXPECT_EQ( t2.size() , 1 );
 }
 
+TYPED_TEST( general_tree_tests , swap_subtrees2a )
+{
+    typename general_tree_tests< TypeParam >::tree_type t1 , t2;
+    t1.insert_below( t1.root() , this->m_factory( "+" ) );
+    swap_subtrees( t2 , t2.root() , t1 , t1.root() );
+    EXPECT_TRUE( t1.empty() );
+    EXPECT_FALSE( t2.empty() );
+    EXPECT_EQ( t1.size() , 0 );
+    EXPECT_EQ( t2.size() , 1 );
+}
+
 TYPED_TEST( general_tree_tests , swap_subtrees3 )
 {
     typename general_tree_tests< TypeParam >::tree_type t1 , t2;
@@ -365,6 +376,21 @@ TYPED_TEST( general_tree_tests , swap_subtrees3 )
     test_cursor( t2.root().children(0) , "-" , 0 , 1 , 1 );
 }
 
+TYPED_TEST( general_tree_tests , swap_subtrees3a )
+{
+    typename general_tree_tests< TypeParam >::tree_type t1 , t2;
+    auto c1 = t1.insert_below( t1.root() , this->m_factory( "+" ) );
+    t1.insert_below( c1 , this->m_factory( "-" ) );
+    swap_subtrees( t2 , t2.root() , t1 , t1.root() );
+    EXPECT_TRUE( t1.empty() );
+    EXPECT_FALSE( t2.empty() );
+    EXPECT_EQ( t1.size() , 0 );
+    EXPECT_EQ( t2.size() , 2 );
+    test_cursor( t2.root() , "+" , 1 , 2 , 0 );
+    test_cursor( t2.root().children(0) , "-" , 0 , 1 , 1 );
+}
+
+
 TYPED_TEST( general_tree_tests , swap_subtrees4 )
 {
     typename general_tree_tests< TypeParam >::tree_type t1 , t2;
@@ -378,6 +404,21 @@ TYPED_TEST( general_tree_tests , swap_subtrees4 )
     test_cursor( t1.root() , "+" , 0 , 1 , 0 );
     test_cursor( t2.root() , "-" , 0 , 1 , 0 );
 }
+
+TYPED_TEST( general_tree_tests , swap_subtrees4a )
+{
+    typename general_tree_tests< TypeParam >::tree_type t1 , t2;
+    auto c1 = t1.insert_below( t1.root() , this->m_factory( "+" ) );
+    t1.insert_below( c1 , this->m_factory( "-" ) );
+    swap_subtrees( t2 , t2.root() , t1 , t1.root().children(0) );
+    EXPECT_FALSE( t1.empty() );
+    EXPECT_FALSE( t2.empty() );
+    EXPECT_EQ( t1.size() , 1 );
+    EXPECT_EQ( t2.size() , 1 );
+    test_cursor( t1.root() , "+" , 0 , 1 , 0 );
+    test_cursor( t2.root() , "-" , 0 , 1 , 0 );
+}
+
 
 TYPED_TEST( general_tree_tests , swap_subtrees5 )
 {
