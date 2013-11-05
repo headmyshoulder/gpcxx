@@ -144,21 +144,6 @@ TYPED_TEST( general_tree_tests , insert_cursor )
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 TYPED_TEST( general_tree_tests , assign )
 {
     this->m_test_trees.data.assign( this->m_test_trees.data2.root() );
