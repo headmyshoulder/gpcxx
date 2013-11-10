@@ -64,6 +64,11 @@ struct regression_fitness
     }
 };
 
+template< typename Eval >
+regression_fitness< Eval > make_regression_fitness( Eval eval )
+{
+    return regression_fitness< Eval >( eval );
+}
 
 
 } // namespace gpcxx

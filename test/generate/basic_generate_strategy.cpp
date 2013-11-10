@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 
 template <class T>
-struct crossover_tests : public test_template< T > { };
+struct basic_generate_strategy_tests : public test_template< T > { };
 
 using testing::Types;
 

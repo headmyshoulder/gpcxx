@@ -238,11 +238,13 @@ public:
         else if( n1 == nullptr )
         {
             num_nodes2 = n2->count_nodes();
+            num_nodes1 = 1;
             swap_subtree_impl1( *this , other , n2 );
         }
         else if( n2 == nullptr )
         {
             num_nodes1 = n1->count_nodes();
+            num_nodes2 = 1;
             swap_subtree_impl1( other , *this , n1 );
         }
         else

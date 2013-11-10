@@ -2,3 +2,4 @@
 # Author: Karsten Ahnert (karsten.ahnert@gmx.de)
 
 add_executable ( performance_pagie2 performance_pagie2.cpp )
+add_executable ( performance_pagie2_intrusive performance_pagie2_intrusive.cpp )

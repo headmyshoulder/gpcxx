@@ -39,7 +39,10 @@ public:
         return m_func( context , *this );
     }
     
-    std::string const& name( void ) const { return m_name; }
+    std::string const& name( void ) const
+    {
+        return m_name;
+    }
     
     bool operator==( basic_named_intrusive_node const &other ) const
     {
@@ -56,6 +59,14 @@ private:
     func_type m_func;
     std::string m_name;
 };
+
+template< typename Res , typename Context >
+std::ostream& operator<<( std::ostream &out , basic_named_intrusive_node < Res , Context > const& node )
+{
+    out << node.name();
+    return out;
+}
+
 
 
 } // namespace gpcxx
