@@ -22,15 +22,15 @@ void print_simple_cursor( Cursor t , std::ostream &out , SymbolMapper const& map
     if( t.size() == 0 ) out << mapper( *t );
     else if( t.size() == 1 )
     {
-        Cursor child = t.begin();
+        Cursor child = t.children( 0 );
         out << mapper( *t ) << "( ";
         print_simple_cursor( child , out , mapper );
         out << " )";
     }
     else if( t.size() == 2 )
     {
-        Cursor left = t.begin();
-        Cursor right = left + 1;
+        Cursor left = t.children( 0 );
+        Cursor right = t.children( 1 );
 
         if( left.size() == 2 ) out << "( ";
         print_simple_cursor( left , out , mapper );
