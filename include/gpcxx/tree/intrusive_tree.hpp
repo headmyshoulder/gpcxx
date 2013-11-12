@@ -22,7 +22,6 @@
 #include <queue>
 
 
-
 namespace gpcxx {
 
 
@@ -229,7 +228,7 @@ public:
     {
         node_pointer n1 = c1.node();
         node_pointer n2 = c2.node();
-    
+        
         long num_nodes1 = 0 , num_nodes2 = 0;
         if( ( n1 == nullptr ) && ( n2 == nullptr ) )
         {
@@ -238,13 +237,11 @@ public:
         else if( n1 == nullptr )
         {
             num_nodes2 = n2->count_nodes();
-            num_nodes1 = 1;
             swap_subtree_impl1( *this , other , n2 );
         }
         else if( n2 == nullptr )
         {
             num_nodes1 = n1->count_nodes();
-            num_nodes2 = 1;
             swap_subtree_impl1( other , *this , n1 );
         }
         else
@@ -302,6 +299,13 @@ private:
         node_pointer p1 = n1->parent();
         node_pointer p2 = n2->parent();
         
+        auto swap1 = []( intrusive_tree &t1 , node_pointer n1 , node_pointer n2 , node_pointer p2 ) -> void {
+            t1.m_root = n2;
+            ( * ( p2->find_child( n2 ) ) ) = n1 ;
+            n2->attach_parent( nullptr );
+            n1->attach_parent( p2 );
+        };
+        
         if( ( p1 == nullptr ) && ( p2 == nullptr ) )
         {
             t1.m_root = n2;
@@ -309,15 +313,11 @@ private:
         }
         else if( p1 == nullptr )
         {
-            t1.m_root = n2;
-            p2->remove_child( n2 );
-            n2->attach_parent( nullptr );
+            swap1( t1 , n1 , n2 , p2 );
         }
         else if( p2 == nullptr )
         {
-            t2.m_root = n1;
-            p1->remove_child( n1 );
-            n1->attach_parent( nullptr );
+            swap1( t2 , n2 , n1 , p1 );
         }
         else
         {

@@ -31,7 +31,6 @@
 #include <boost/fusion/include/make_vector.hpp>
 #include <boost/container/deque.hpp>
 #include <libs/coroutine/example/c++11/tree.h>
-// #include <boost/bind/bind_template.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -127,7 +126,7 @@ int main( int argc , char *argv[] )
         node_type { gpcxx::divides_func{} , "/" }    
     } };
     
-    size_t population_size = 12 ; // 512;
+    size_t population_size = 512;
     size_t generation_size = 20;
     double number_elite = 1;
     double mutation_rate = 0.0;
@@ -137,7 +136,6 @@ int main( int argc , char *argv[] )
     size_t tournament_size = 15;
 
 
-    // generators< rng_type > gen( rng );
     std::array< double , 3 > weights = {{ 2.0 * double( terminal_gen.num_symbols() ) ,
                                        double( unary_gen.num_symbols() ) ,
                                        double( binary_gen.num_symbols() ) }};
@@ -173,27 +171,21 @@ int main( int argc , char *argv[] )
     std::cout << std::endl << std::endl;
 
     timer.restart();
-    for( size_t i=0 ; i<2 ; ++i )
+    for( size_t i=0 ; i<generation_size ; ++i )
     {
-        for( size_t j=0 ; j<population_size ; ++j )
-            std::cerr << j << "\t" << population[j].size() << "\t" << gpcxx::simple( population[j] ) << std::endl;
-
         gpcxx::timer iteration_timer;
         iteration_timer.restart();
         evolver.next_generation( population , fitness );
-        std::cerr << std::endl << std::endl << std::endl;
-        for( size_t j=0 ; j<population_size ; ++j )
-            std::cerr << j << "\t" << gpcxx::simple( population[j] ) << std::endl;
         double evolve_time = iteration_timer.seconds();
         iteration_timer.restart();
         std::transform( population.begin() , population.end() , fitness.begin() , [&]( tree_type const &t ) { return fitness_f( t , c ); } );
         double eval_time = iteration_timer.seconds();
         
         std::cout << gpcxx::indent( 1 ) << "Iteration " << i << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Evolve time " << evolve_time << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Eval time " << eval_time << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 2 , 10 ) << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Evolve time " << evolve_time << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Eval time " << eval_time << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 2 , 10 ) << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
     }
     std::cout << "Overall time : " << timer.seconds() << std::endl;
 

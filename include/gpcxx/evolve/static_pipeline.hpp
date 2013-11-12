@@ -18,13 +18,6 @@
 #include <cassert>
 
 
-#include <gpcxx/io/simple.hpp>
-#include <gpcxx/operator/one_point_crossover_strategy.hpp>
-#include <gpcxx/operator/tournament_selector.hpp>
-#include <iostream>
-using namespace std;
-
-
 namespace gpcxx {
     
     
@@ -82,10 +75,6 @@ private:
             new_pop.push_back( pop[ index ] );
         }
         
-        for( size_t j=0 ; j<new_pop.size() ; ++j )
-            cout << new_pop.size() << "\t" << simple( new_pop[j] ) << endl;
-
-
         size_t n = pop.size();
         std::discrete_distribution< int > dist( { m_mutation_rate , m_crossover_rate , m_reproduction_rate } );
         while( new_pop.size() < n )
@@ -101,27 +90,15 @@ private:
                     break;
                 case 1 : // crossover
                     {
-//                        std::pair< individual_type , individual_type > trees = m_crossover_function( pop , fitness );
-                        tournament_selector< Rng > selector( m_rng , 15 );
-                        auto t1 = selector( pop , fitness );
-                        auto t2 = selector( pop , fitness );
-                        cout << "CC: \t" << simple( t1 ) << " " << t1.size() << endl;
-                        cout << "CC: \t" << simple( t2 ) << " " << t2.size() << endl;
-                        one_point_crossover_strategy< Rng > crossover( m_rng , 8 , 100 );
-                        crossover( t1 , t2 );
-                        cout << "XCC: \t" << simple( t1 ) << " " << t1.size() << endl;
-                        cout << "XCC: \t" << simple( t2 ) << " " << t2.size() << endl;
+                        std::pair< individual_type , individual_type > trees = m_crossover_function( pop , fitness );
                         if( new_pop.size() == ( n - 1 ) )
                         {
-//                             new_pop.push_back( std::move( trees.first ) );
-                            new_pop.push_back( std::move( t1 ) );
+                            new_pop.push_back( std::move( trees.first ) );
                         }
                         else
                         {
-//                             new_pop.push_back( std::move( trees.first ) );
-//                             new_pop.push_back( std::move( trees.second ) );
-                            new_pop.push_back( std::move( t1 ) );
-                            new_pop.push_back( std::move( t2 ) );
+                            new_pop.push_back( std::move( trees.first ) );
+                            new_pop.push_back( std::move( trees.second ) );
                         }
                     }
                     break;
@@ -132,14 +109,7 @@ private:
                     }
                     break;
             }
-            
-            for( size_t j=0 ; j<new_pop.size() ; ++j )
-                cout << new_pop.size() << "\t" << choice << "\t" << simple( new_pop[j] ) << endl;
-            for( size_t j=0 ; j<pop.size() ; ++j )
-                cout << "xxx" << "\t" << simple( pop[j] ) << endl;
-            cout << endl;
         }
-        cout << endl << endl;
         
         pop = std::move( new_pop );
     }

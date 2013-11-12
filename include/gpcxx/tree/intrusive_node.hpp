@@ -15,6 +15,7 @@
 #include <array>
 #include <algorithm>
 #include <cassert>
+
     
 namespace gpcxx {
 
@@ -131,6 +132,13 @@ public:
         
         std::copy( iter + 1 , end-- , iter );
         *end = nullptr;
+    }
+    
+    void replace_child( node_pointer old_child , node_pointer new_child ) noexcept
+    {
+        typename children_type::iterator iter = find_child( old_child );
+        assert( iter != m_children.end() );
+        *iter = new_child;
     }
     
     size_t count_nodes( void ) const noexcept
