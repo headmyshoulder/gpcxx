@@ -3,16 +3,16 @@
 
 # set ( CMAKE_C_COMPILER "/home/karsten/boost/testing/gcc-4.7.0/build/bin/gcc" )
 # set ( CMAKE_CXX_COMPILER "//home/karsten/boost/testing/gcc-4.7.0/build/bin/g++" )
-set ( CMAKE_C_COMPILER "gcc-4.7" )
-set ( CMAKE_CXX_COMPILER "g++-4.7" )
+# set ( CMAKE_C_COMPILER "gcc-4.7" )
+# set ( CMAKE_CXX_COMPILER "g++-4.7" )
 
 
 project ( genetic_programming )
 cmake_minimum_required ( VERSION 2.8 )
 
-set ( CMAKE_C_COMPILER "g++-4.8" )
-set ( CMAKE_CXX_COMPILER "g++-4.8" )
-# set ( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
+# set ( CMAKE_C_COMPILER "g++-4.8" )
+# set ( CMAKE_CXX_COMPILER "g++-4.8" )
+# # set ( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
 set ( CMAKE_CXX_FLAGS "-std=c++11" )
 
 # Add path for custom modules
@@ -33,6 +33,11 @@ set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR} )
 
 find_package ( Boost REQUIRED COMPONENTS thread system )
 
+if ( ${Boost_FOUND} )
+  message ( STATUS "Using boost include dir from directory ${Boost_INCLUDE_DIRS}" )
+  message ( STATUS "Using the following boost libraries ${Boost_LIBRARIES}" )
+endif ()
+
 include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
@@ -40,15 +45,17 @@ add_subdirectory ( examples )
 add_subdirectory ( performance )
 add_subdirectory ( doc )
 
+set( GMOCK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gmock" )
+set( GTEST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gmock/gtest" )
 
-if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest )
+if ( IS_DIRECTORY ${GMOCK_ROOT}  AND IS_DIRECTORY ${GTEST_ROOT} )
   
-  include_directories ( third_party/gtest third_party/gtest/include third_party/gmock third_party/gmock/include )
+  include_directories ( ${GTEST_ROOT} ${GTEST_ROOT}/include ${GMOCK_ROOT} ${GMOCK_ROOT}/include )
   
-  add_library ( gtest third_party/gtest/src/gtest-all.cc )
+  add_library ( gtest ${GTEST_ROOT}/src/gtest-all.cc )
   target_link_libraries ( gtest pthread )
-  add_library ( gtest_main third_party/gtest/src/gtest_main.cc )
-  add_library ( gmock third_party/gmock/src/gmock-all.cc )
+  add_library ( gtest_main ${GTEST_ROOT}/src/gtest_main.cc )
+  add_library ( gmock ${GMOCK_ROOT}/src/gmock-all.cc )
   
   enable_testing ( true )
   
@@ -56,6 +63,14 @@ if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/third_party/gtest )
 
 else () 
 
-  message ( STATUS "googletest not found!" )
+  if ( NOT IS_DIRECTORY ${GMOCK_ROOT} )
+    message ( STATUS "Google C++ Mockin Framework not found in \"${GMOCK_ROOT}\" tests will be disabled !" )
+  endif ()
+
+  if ( NOT IS_DIRECTORY ${GTEST_ROOT} )
+    message ( STATUS "Google C++ Testing Framework not found in \"${GTEST_ROOT}\" tests will be disabled !" )
+  endif ()
+
+  message ( STATUS "    get googlemock/googletest by: svn checkout http://googlemock.googlecode.com/svn/trunk/ \"${GMOCK_ROOT}\" " )
 
 endif ()
