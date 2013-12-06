@@ -13,14 +13,19 @@ cmake_minimum_required ( VERSION 2.8 )
 # set ( CMAKE_C_COMPILER "g++-4.8" )
 # set ( CMAKE_CXX_COMPILER "g++-4.8" )
 # # set ( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
-set ( CMAKE_CXX_FLAGS "-std=c++11" )
+
+ADD_DEFINITIONS(
+    -std=c++11
+)
+
+set ( THIRDPARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party" )
 
 # Add path for custom modules
 set ( CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
-  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ctoolbox 
+  ${THIRDPARTY_ROOT}/ctoolbox 
   )
 
 include ( CreateVersionFile )
@@ -45,8 +50,8 @@ add_subdirectory ( examples )
 add_subdirectory ( performance )
 add_subdirectory ( doc )
 
-set( GMOCK_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gmock" )
-set( GTEST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/gmock/gtest" )
+set( GMOCK_ROOT "${THIRDPARTY_ROOT}/gmock" )
+set( GTEST_ROOT "${THIRDPARTY_ROOT}/gmock/gtest" )
 
 if ( IS_DIRECTORY ${GMOCK_ROOT}  AND IS_DIRECTORY ${GTEST_ROOT} )
   
