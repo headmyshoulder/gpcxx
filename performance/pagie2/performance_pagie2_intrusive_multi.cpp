@@ -109,16 +109,15 @@ template<
     typename SinglePassRange1,
     typename OutputIterator,
     typename UnaryOperation,
-    typename NThreadsType,
+    const size_t nThreads,
     typename ThreadType = boost::thread
 >
 OutputIterator transform( const SinglePassRange1 & rng,
                           OutputIterator out,
                           UnaryOperation fun,
-                          NThreadsType nth = UseNThreads<1>{}
+                          UseNThreads<nThreads> nth = UseNThreads<1>{}
                         )
 {
-    const size_t nThreads = NThreadsType::value;
     if ( nThreads == 1 )
         return boost::transform( rng, out, fun ); 
 
@@ -139,6 +138,52 @@ OutputIterator transform( const SinglePassRange1 & rng,
     return outBeginIter;
 }
 
+template<
+    typename SinglePassRange1,
+    typename SinglePassRange2,
+    typename OutputIterator,
+    typename UnaryOperation,
+    const size_t nThreads,
+    typename ThreadType = boost::thread
+>
+OutputIterator transform( const SinglePassRange1 & rng1,
+                          const SinglePassRange2 & rng2,
+                          OutputIterator out,
+                          UnaryOperation fun,
+                          UseNThreads<nThreads> nth = UseNThreads<1>{}
+                        )
+{
+    if ( nThreads == 1 )
+        return boost::transform( rng1, rng2, out, fun ); 
+
+    auto & outBeginIter = out;
+    auto outEndIter = advanceWithCopy( out,  boost::size( rng1 ) );
+
+    ThreadType worker[ nThreads ];
+    for (size_t i = 0; i < nThreads; ++i)
+    {            
+        auto outRngStrided = boost::make_iterator_range( advanceWithCopy( outBeginIter, i ),        outEndIter ) 
+            | boost::adaptors::strided( nThreads ); 
+        auto inRngStrided1 =  boost::make_iterator_range( advanceWithCopy( boost::begin( rng1 ), i ), boost::end( rng1 ) ) 
+            | boost::adaptors::strided( nThreads ); 
+        auto inRngStrided2 =  boost::make_iterator_range( advanceWithCopy( boost::begin( rng2 ), i ), boost::end( rng2 ) ) 
+            | boost::adaptors::strided( nThreads ); 
+        
+        worker[ i ] = std::move( ThreadType( [=](){ boost::transform( inRngStrided1, inRngStrided2, boost::begin( outRngStrided ), fun ); } ) );
+    }
+    for ( auto& w: worker ) w.join();
+    return outBeginIter;
+}
+
+
+// template<
+//     class SinglePassRange,
+//     class UnaryFunction
+// >
+// UnaryFunction for_each(SinglePassRange& rng, UnaryFunction fun)
+// {
+//     
+// }
 
 }
 namespace pl = std::placeholders;
@@ -216,6 +261,7 @@ int main( int argc , char *argv[] )
         tree_generator( population[i] );
         //fitness[i] = fitness_f( population[i] , c );
     }
+    
     multi::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } , multi::UseNThreads<2>{});
       
     std::cout << "Generation time " << timer.seconds() << std::endl;
