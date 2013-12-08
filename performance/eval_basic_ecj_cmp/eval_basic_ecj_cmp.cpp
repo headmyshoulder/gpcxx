@@ -218,7 +218,7 @@ std::tuple< double , double > run_test( Trees const &trees , const vector_type &
     {
         for( size_t i=0 ; i<number_of_datapoints ; ++i )
         {
-            context_type c { x1[i] , x2[i] , x3[i] };
+            context_type c { { x1[i] , x2[i] , x3[i] } };
             y[t][i] = eval_tree( trees[t] , c );
         }
     }
