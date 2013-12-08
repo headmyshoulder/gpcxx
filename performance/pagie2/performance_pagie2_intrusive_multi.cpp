@@ -30,6 +30,9 @@
 
 #include <boost/fusion/include/make_vector.hpp>
 #include <boost/container/deque.hpp>
+#include <boost/range/algorithm.hpp>
+#include <boost/range/adaptor/strided.hpp>
+#include <thread>
 //#include <libs/coroutine/example/c++11/tree.h>
 
 #include <iostream>
@@ -37,6 +40,7 @@
 #include <random>
 #include <vector>
 #include <functional>
+#include <boost/thread.hpp>
 
 #define tab "\t"
 
@@ -85,11 +89,58 @@ void generate_test_data( trainings_data_type &data, double rmin , double rmax , 
 
 
 
+namespace multi {
+
+template < typename InputIterator, typename Distance >
+InputIterator advanceWithCopy ( InputIterator it, Distance n )
+{
+    std::advance( it, n );
+    return it;
+}
+
+template<const size_t nThreads>
+struct UseNThreads
+{
+    static const size_t value = nThreads;
+};
 
 
+template<
+    typename SinglePassRange1,
+    typename OutputIterator,
+    typename UnaryOperation,
+    typename NThreadsType,
+    typename ThreadType = boost::thread
+>
+OutputIterator transform( const SinglePassRange1 & rng,
+                          OutputIterator out,
+                          UnaryOperation fun,
+                          NThreadsType nth = UseNThreads<1>{}
+                        )
+{
+    const size_t nThreads = NThreadsType::value;
+    if ( nThreads == 1 )
+        return boost::transform( rng, out, fun ); 
+
+    auto & outBeginIter = out;
+    auto outEndIter = advanceWithCopy( out,  boost::size( rng ) );
+
+    ThreadType worker[ nThreads ];
+    for (size_t i = 0; i < nThreads; ++i)
+    {            
+        auto outRngStrided = boost::make_iterator_range( advanceWithCopy( outBeginIter, i ),        outEndIter ) 
+            | boost::adaptors::strided( nThreads ); 
+        auto inRngStrided =  boost::make_iterator_range( advanceWithCopy( boost::begin( rng ), i ), boost::end( rng ) ) 
+            | boost::adaptors::strided( nThreads ); 
+        
+        worker[ i ] = std::move( ThreadType( [=](){ boost::transform( inRngStrided, boost::begin( outRngStrided ), fun ); } ) );
+    }
+    for ( auto& w: worker ) w.join();
+    return outBeginIter;
+}
 
 
-
+}
 namespace pl = std::placeholders;
 
 int main( int argc , char *argv[] )
@@ -163,8 +214,10 @@ int main( int argc , char *argv[] )
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
-        fitness[i] = fitness_f( population[i] , c );
+        //fitness[i] = fitness_f( population[i] , c );
     }
+    multi::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } , multi::UseNThreads<2>{});
+      
     std::cout << "Generation time " << timer.seconds() << std::endl;
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 , 10 ) << std::endl;
     std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
@@ -178,7 +231,7 @@ int main( int argc , char *argv[] )
         evolver.next_generation( population , fitness );
         double evolve_time = iteration_timer.seconds();
         iteration_timer.restart();
-        std::transform( population.begin() , population.end() , fitness.begin() , [&]( tree_type const &t ) { return fitness_f( t , c ); } );
+        multi::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } , multi::UseNThreads<2>{});
         double eval_time = iteration_timer.seconds();
         
         std::cout << gpcxx::indent( 1 ) << "Iteration " << i << std::endl;
