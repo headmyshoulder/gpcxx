@@ -176,14 +176,29 @@ OutputIterator transform( const SinglePassRange1 & rng1,
 }
 
 
-// template<
-//     class SinglePassRange,
-//     class UnaryFunction
-// >
-// UnaryFunction for_each(SinglePassRange& rng, UnaryFunction fun)
-// {
-//     
-// }
+template<
+    class SinglePassRange,
+    class UnaryFunction,
+    const size_t nThreads,
+    typename ThreadType = boost::thread
+>
+UnaryFunction for_each(SinglePassRange& rng, UnaryFunction fun, UseNThreads<nThreads> nth = UseNThreads<1>{})
+{
+    if ( nThreads == 1 )
+        return boost::for_each( rng, fun );
+    
+    ThreadType worker[ nThreads ];
+    for (size_t i = 0; i < nThreads; ++i)
+    {            
+        auto rngStrided = boost::make_iterator_range( advanceWithCopy( boost::begin( rng ), i ), boost::end( rng ) ) 
+            | boost::adaptors::strided( nThreads ); 
+
+        worker[ i ] = std::move( ThreadType( [=](){ boost::for_each( rngStrided, fun ); } ) );
+    }
+    for ( auto& w: worker ) w.join();
+    
+    return fun;
+}
 
 }
 namespace pl = std::placeholders;
@@ -256,11 +271,12 @@ int main( int argc , char *argv[] )
 
     // initialize population with random trees and evaluate fitness
     timer.restart();
-    for( size_t i=0 ; i<population.size() ; ++i )
-    {
-        tree_generator( population[i] );
-        //fitness[i] = fitness_f( population[i] , c );
-    }
+//     for( size_t i=0 ; i<population.size() ; ++i )
+//     {
+//         tree_generator( population[i] );
+//         //fitness[i] = fitness_f( population[i] , c );
+//     }
+    multi::for_each( population, [&tree_generator]( decltype(population)::value_type & p ) { tree_generator( p ); } , multi::UseNThreads<1>{});
     
     multi::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } , multi::UseNThreads<2>{});
       
