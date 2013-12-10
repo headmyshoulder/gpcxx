@@ -30,9 +30,6 @@
 
 #include <boost/fusion/include/make_vector.hpp>
 #include <boost/container/deque.hpp>
-#include <boost/range/algorithm.hpp>
-#include <boost/range/adaptor/strided.hpp>
-#include <thread>
 //#include <libs/coroutine/example/c++11/tree.h>
 
 #include <iostream>
@@ -40,7 +37,9 @@
 #include <random>
 #include <vector>
 #include <functional>
-#include <boost/thread.hpp>
+
+#include <gpcxx/util/parallel_algorithm.hpp>
+
 
 #define tab "\t"
 
@@ -89,118 +88,7 @@ void generate_test_data( trainings_data_type &data, double rmin , double rmax , 
 
 
 
-namespace multi {
 
-template < typename InputIterator, typename Distance >
-InputIterator advanceWithCopy ( InputIterator it, Distance n )
-{
-    std::advance( it, n );
-    return it;
-}
-
-template<const size_t nThreads>
-struct UseNThreads
-{
-    static const size_t value = nThreads;
-};
-
-
-template<
-    typename SinglePassRange1,
-    typename OutputIterator,
-    typename UnaryOperation,
-    const size_t nThreads,
-    typename ThreadType = boost::thread
->
-OutputIterator transform( const SinglePassRange1 & rng,
-                          OutputIterator out,
-                          UnaryOperation fun,
-                          UseNThreads<nThreads> nth = UseNThreads<1>{}
-                        )
-{
-    if ( nThreads == 1 )
-        return boost::transform( rng, out, fun ); 
-
-    auto & outBeginIter = out;
-    auto outEndIter = advanceWithCopy( out,  boost::size( rng ) );
-
-    ThreadType worker[ nThreads ];
-    for (size_t i = 0; i < nThreads; ++i)
-    {            
-        auto outRngStrided = boost::make_iterator_range( advanceWithCopy( outBeginIter, i ),        outEndIter ) 
-            | boost::adaptors::strided( nThreads ); 
-        auto inRngStrided =  boost::make_iterator_range( advanceWithCopy( boost::begin( rng ), i ), boost::end( rng ) ) 
-            | boost::adaptors::strided( nThreads ); 
-        
-        worker[ i ] = std::move( ThreadType( [=](){ boost::transform( inRngStrided, boost::begin( outRngStrided ), fun ); } ) );
-    }
-    for ( auto& w: worker ) w.join();
-    return outBeginIter;
-}
-
-template<
-    typename SinglePassRange1,
-    typename SinglePassRange2,
-    typename OutputIterator,
-    typename UnaryOperation,
-    const size_t nThreads,
-    typename ThreadType = boost::thread
->
-OutputIterator transform( const SinglePassRange1 & rng1,
-                          const SinglePassRange2 & rng2,
-                          OutputIterator out,
-                          UnaryOperation fun,
-                          UseNThreads<nThreads> nth = UseNThreads<1>{}
-                        )
-{
-    if ( nThreads == 1 )
-        return boost::transform( rng1, rng2, out, fun ); 
-
-    auto & outBeginIter = out;
-    auto outEndIter = advanceWithCopy( out,  boost::size( rng1 ) );
-
-    ThreadType worker[ nThreads ];
-    for (size_t i = 0; i < nThreads; ++i)
-    {            
-        auto outRngStrided = boost::make_iterator_range( advanceWithCopy( outBeginIter, i ),        outEndIter ) 
-            | boost::adaptors::strided( nThreads ); 
-        auto inRngStrided1 =  boost::make_iterator_range( advanceWithCopy( boost::begin( rng1 ), i ), boost::end( rng1 ) ) 
-            | boost::adaptors::strided( nThreads ); 
-        auto inRngStrided2 =  boost::make_iterator_range( advanceWithCopy( boost::begin( rng2 ), i ), boost::end( rng2 ) ) 
-            | boost::adaptors::strided( nThreads ); 
-        
-        worker[ i ] = std::move( ThreadType( [=](){ boost::transform( inRngStrided1, inRngStrided2, boost::begin( outRngStrided ), fun ); } ) );
-    }
-    for ( auto& w: worker ) w.join();
-    return outBeginIter;
-}
-
-
-template<
-    class SinglePassRange,
-    class UnaryFunction,
-    const size_t nThreads,
-    typename ThreadType = boost::thread
->
-UnaryFunction for_each(SinglePassRange& rng, UnaryFunction fun, UseNThreads<nThreads> nth = UseNThreads<1>{})
-{
-    if ( nThreads == 1 )
-        return boost::for_each( rng, fun );
-    
-    ThreadType worker[ nThreads ];
-    for (size_t i = 0; i < nThreads; ++i)
-    {            
-        auto rngStrided = boost::make_iterator_range( advanceWithCopy( boost::begin( rng ), i ), boost::end( rng ) ) 
-            | boost::adaptors::strided( nThreads ); 
-
-        worker[ i ] = std::move( ThreadType( [=](){ boost::for_each( rngStrided, fun ); } ) );
-    }
-    for ( auto& w: worker ) w.join();
-    
-    return fun;
-}
-
-}
 namespace pl = std::placeholders;
 
 int main( int argc , char *argv[] )
@@ -271,14 +159,9 @@ int main( int argc , char *argv[] )
 
     // initialize population with random trees and evaluate fitness
     timer.restart();
-//     for( size_t i=0 ; i<population.size() ; ++i )
-//     {
-//         tree_generator( population[i] );
-//         //fitness[i] = fitness_f( population[i] , c );
-//     }
-    multi::for_each( population, [&tree_generator]( decltype(population)::value_type & p ) { tree_generator( p ); } , multi::UseNThreads<1>{});
-    
-    multi::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } , multi::UseNThreads<2>{});
+
+    gpcxx::par::for_each(  population, [&tree_generator]( decltype(population)::value_type & p ) { tree_generator( p ); }, 1 );    
+    gpcxx::par::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } );
       
     std::cout << "Generation time " << timer.seconds() << std::endl;
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 , 10 ) << std::endl;
@@ -293,7 +176,7 @@ int main( int argc , char *argv[] )
         evolver.next_generation( population , fitness );
         double evolve_time = iteration_timer.seconds();
         iteration_timer.restart();
-        multi::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } , multi::UseNThreads<2>{});
+        gpcxx::par::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); });
         double eval_time = iteration_timer.seconds();
         
         std::cout << gpcxx::indent( 1 ) << "Iteration " << i << std::endl;

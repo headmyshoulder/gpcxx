@@ -16,6 +16,7 @@
 #include <gpcxx/util/identity.hpp>
 #include <gpcxx/util/indent.hpp>
 #include <gpcxx/util/iterate_until.hpp>
+#include <gpcxx/util/parallel_algorithm.hpp>
 #include <gpcxx/util/sort_indices.hpp>
 #include <gpcxx/util/version.hpp>
 
