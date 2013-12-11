@@ -40,7 +40,10 @@
 namespace gpcxx {
 
 namespace par {
-    
+
+std::tuple< size_t, size_t > partition( size_t n_partition,
+                                        size_t partition_number,
+                                        size_t rng_size );    
     
 template < typename InputIterator, typename Distance >
 InputIterator advance_with_copy ( InputIterator it, Distance n )
@@ -67,27 +70,32 @@ output_iterator transform( const single_pass_range1 & rng,
                            unary_operation fun,
                            size_t number_of_threads = gpcxx::par::hardware_concurrency()
                         )
-{
+{    
+    if ( boost::empty( rng ) )
+        return out;
+
     if ( number_of_threads == 1 )
         return boost::transform( rng, out, fun ); 
-
-    auto & out_begin_iter = out;
-    auto out_end_iter = advance_with_copy( out,  boost::size( rng ) );
-
-
+   
+    size_t rng_size = boost::size( rng );
+    
+    if( rng_size <= number_of_threads )
+        number_of_threads = rng_size;
+        
     std::vector< thread_type >  worker{}; worker.reserve(number_of_threads);
     
     for (size_t i = 0; i < number_of_threads; ++i)
-    {            
-        auto outRngStrided = boost::make_iterator_range( advance_with_copy( out_begin_iter, i ),        out_end_iter ) 
-            | boost::adaptors::strided( number_of_threads ); 
-        auto inRngStrided =  boost::make_iterator_range( advance_with_copy( boost::begin( rng ), i ), boost::end( rng ) ) 
-            | boost::adaptors::strided( number_of_threads ); 
+    {
+        auto parti =  partition(number_of_threads, i, rng_size );     
+        auto sub_rng = rng | boost::adaptors::sliced( std::get<0>(parti), std::get<1>(parti) );
+
+        std::advance( out, std::get<1>(parti) - std::get<0>(parti) );
         
-        worker.emplace_back( [=](){ boost::transform( inRngStrided, boost::begin( outRngStrided ), fun ); } );
+        worker.emplace_back( [=](){ boost::transform( sub_rng, out, fun ); } );
     }
     for ( auto& w: worker ) w.join();
-    return out_begin_iter;
+    
+    return out;
 }
 
 
@@ -120,13 +128,13 @@ template<
     typename single_pass_range1,
     typename single_pass_range2,
     typename output_iterator,
-    typename unary_operation,
+    typename binary_operation,
     typename thread_type = gpcxx_thread_default_impl
 >
 output_iterator transform( const single_pass_range1 & rng1,
                            const single_pass_range2 & rng2,
                            output_iterator out,
-                           unary_operation fun,
+                           binary_operation fun,
                            size_t number_of_threads = gpcxx::par::hardware_concurrency()
                         )
 {
@@ -150,9 +158,10 @@ output_iterator transform( const single_pass_range1 & rng1,
         auto parti =  partition(number_of_threads, i, rng1_size );     
         auto sub_rng1 = rng1 | boost::adaptors::sliced( std::get<0>(parti), std::get<1>(parti) );
         auto sub_rng2 = rng2 | boost::adaptors::sliced( std::get<0>(parti), std::get<1>(parti) );
-        auto out_iter = advance_with_copy( out, std::get<0>(parti) );
         
-        worker.emplace_back( [=](){ boost::transform( sub_rng1, sub_rng2, out_iter, fun ); } );
+        std::advance(out, std::get<1>(parti) - std::get<0>(parti) );
+        
+        worker.emplace_back( [=](){ boost::transform( sub_rng1, sub_rng2, out, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     
