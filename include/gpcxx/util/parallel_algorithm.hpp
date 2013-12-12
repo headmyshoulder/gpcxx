@@ -8,7 +8,6 @@
   copy at http://www.boost.org/LICENSE_1_0.txt)
 */
 
-
 #ifndef GPCXX_PARALLEL_ALGORITHM_HPP_DEFINED
 #define GPCXX_PARALLEL_ALGORITHM_HPP_DEFINED
 
@@ -20,8 +19,6 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/range/adaptor/sliced.hpp>
 #include <boost/range/adaptor/strided.hpp>
-
-
 
 #if GPCXX_USE_THREAD_IMPLEMENTATION == GPCXX_STD_THREAD
     #include <thread>
@@ -38,7 +35,6 @@
     
     
 namespace gpcxx {
-
 namespace par {
 
 std::tuple< size_t, size_t > partition( size_t n_partition,
@@ -52,11 +48,6 @@ InputIterator advance_with_copy ( InputIterator it, Distance n )
     return it;
 }
 
-template<const size_t nThreads>
-struct UseNThreads
-{
-    static const size_t value = nThreads;
-};
 
 
 template<
@@ -101,9 +92,9 @@ output_iterator transform( single_pass_range1 const & rng,
 
 
 
-std::tuple< size_t, size_t > partition(size_t n_partition,
-                                     size_t partition_number,
-                                     size_t rng_size )
+std::tuple< size_t, size_t > partition( size_t n_partition,
+                                        size_t partition_number,
+                                        size_t rng_size )
 {
     assert( n_partition > 0 );
     assert( n_partition > partition_number );
@@ -115,12 +106,12 @@ std::tuple< size_t, size_t > partition(size_t n_partition,
     int partition_size = rng_size / n_partition;
     
     if( remainder == 0 )
-        return std::tuple<size_t, size_t>{ partition_size * partition_number, partition_size * (partition_number + 1) };
+        return std::tuple< size_t, size_t >{ partition_size * partition_number, partition_size * (partition_number + 1) };
 
     if ( n_partition  == ( partition_number + 1 ))
-        return std::tuple<size_t, size_t>{ partition_size * partition_number, rng_size };
+        return std::tuple< size_t, size_t >{ partition_size * partition_number, rng_size };
     
-    return std::tuple<size_t, size_t>{ partition_size * partition_number, partition_size * (partition_number + 1)  };
+    return std::tuple< size_t, size_t >{ partition_size * partition_number, partition_size * (partition_number + 1)  };
 }
 
 
@@ -151,15 +142,15 @@ output_iterator transform( single_pass_range1 const & rng1,
     if( rng1_size <= number_of_threads )
         number_of_threads = rng1_size;
         
-    std::vector< thread_type >  worker{}; worker.reserve(number_of_threads);
+    std::vector< thread_type >  worker{}; worker.reserve( number_of_threads );
     
     for (size_t i = 0; i < number_of_threads; ++i)
     {
-        auto parti =  partition(number_of_threads, i, rng1_size );     
-        auto sub_rng1 = rng1 | boost::adaptors::sliced( std::get<0>(parti), std::get<1>(parti) );
-        auto sub_rng2 = rng2 | boost::adaptors::sliced( std::get<0>(parti), std::get<1>(parti) );
+        auto parti =  partition( number_of_threads, i, rng1_size );     
+        auto sub_rng1 = rng1 | boost::adaptors::sliced( std::get< 0 >(parti), std::get< 1 >(parti) );
+        auto sub_rng2 = rng2 | boost::adaptors::sliced( std::get< 0 >(parti), std::get< 1 >(parti) );
         
-        std::advance(out, std::get<1>(parti) - std::get<0>(parti) );
+        std::advance( out, std::get< 1 >( parti ) - std::get< 0 >( parti ) );
         
         worker.emplace_back( [=](){ boost::transform( sub_rng1, sub_rng2, out, fun ); } );
     }
@@ -176,7 +167,7 @@ template<
 >
 unary_function for_each( single_pass_range & rng, 
                          unary_function fun, 
-                         const size_t number_of_threads = gpcxx::par::hardware_concurrency()
+                         size_t number_of_threads = gpcxx::par::hardware_concurrency()
                        )
 {
     if ( boost::empty( rng ) )
@@ -196,15 +187,15 @@ unary_function for_each( single_pass_range & rng,
         auto parti =  partition( number_of_threads, i, rng_size );     
         auto sub_rng = rng | boost::adaptors::sliced( std::get< 0 >( parti ), std::get< 1 >( parti ) );
 
-        worker.emplace_back(  [=](){ boost::for_each( sub_rng, fun ); } );
+        worker.emplace_back( [=](){ boost::for_each( sub_rng, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     
     return fun;
 }
 
-} // namespace par
 
+} // namespace par
 } // namespace gpcxx
 
 
