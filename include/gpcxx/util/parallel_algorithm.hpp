@@ -68,12 +68,12 @@ output_iterator transform( single_pass_range1 const & rng,
     
     for (size_t i = 0; i < number_of_threads; ++i)
     {
-        auto parti =  partition(number_of_threads, i, rng_size );     
+        auto parti =  partition(number_of_threads, i, rng_size );  
         auto sub_rng = rng | boost::adaptors::sliced( std::get<0>( parti ), std::get<1>( parti ) );
 
-        std::advance( out, std::get<1>(parti) - std::get<0>(parti) );
+        auto out_iter_for_sub_range = advance_with_copy( out, std::get<0>(parti) );
         
-        worker.emplace_back( [=](){ boost::transform( sub_rng, out, fun ); } );
+        worker.emplace_back( [&](){ boost::transform( sub_rng, out_iter_for_sub_range, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     
@@ -141,9 +141,9 @@ output_iterator transform( single_pass_range1 const & rng1,
         auto sub_rng1 = rng1 | boost::adaptors::sliced( std::get< 0 >(parti), std::get< 1 >(parti) );
         auto sub_rng2 = rng2 | boost::adaptors::sliced( std::get< 0 >(parti), std::get< 1 >(parti) );
         
-        std::advance( out, std::get< 1 >( parti ) - std::get< 0 >( parti ) );
+        auto out_iter_for_sub_range = advance_with_copy( out,  std::get< 0 >( parti ) );
         
-        worker.emplace_back( [=](){ boost::transform( sub_rng1, sub_rng2, out, fun ); } );
+        worker.emplace_back( [&](){boost::transform( sub_rng1, sub_rng2, out_iter_for_sub_range, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     
@@ -175,10 +175,10 @@ unary_function for_each( single_pass_range & rng,
     std::vector< thread_type > worker{}; worker.reserve( number_of_threads );
     for (size_t i = 0; i < number_of_threads; ++i)
     {            
-        auto parti =  partition( number_of_threads, i, rng_size );     
+        auto parti =  partition( number_of_threads, i, rng_size );   
         auto sub_rng = rng | boost::adaptors::sliced( std::get< 0 >( parti ), std::get< 1 >( parti ) );
 
-        worker.emplace_back( [=](){ boost::for_each( sub_rng, fun ); } );
+        worker.emplace_back( [&](){ boost::for_each( sub_rng, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     

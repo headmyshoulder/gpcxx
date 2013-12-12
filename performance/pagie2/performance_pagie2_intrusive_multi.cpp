@@ -161,7 +161,7 @@ int main( int argc , char *argv[] )
     timer.restart();
 
     gpcxx::par::for_each(  population, [&tree_generator]( decltype(population)::value_type & p ) { tree_generator( p ); }, 1 );    
-    gpcxx::par::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } );
+    boost::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); } );
       
     std::cout << "Generation time " << timer.seconds() << std::endl;
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 , 10 ) << std::endl;
