@@ -15,22 +15,13 @@
 #include <cmath>
 #include <tuple>
 #include <cassert>
+#include <thread>
 
 #include <boost/range/algorithm.hpp>
 #include <boost/range/adaptor/sliced.hpp>
 #include <boost/range/adaptor/strided.hpp>
 
-#if GPCXX_USE_THREAD_IMPLEMENTATION == GPCXX_STD_THREAD
-    #include <thread>
-    typedef std::thread gpcxx_thread_default_impl; 
-    namespace gpcxx { namespace par { auto const hardware_concurrency = std::thread::hardware_concurrency; } }
-#elif GPCXX_USE_THREAD_IMPLEMENTATION == GPCXX_BOOST_THREAD
-    #include <boost/thread.hpp>
-    typedef boost::thread gpcxx_thread_default_impl;
-    namespace gpcxx { namespace par { auto const hardware_concurrency = boost::thread::hardware_concurrency; } }
-#elif GPCXX_USE_THREAD_IMPLEMENTATION == GPCXX_DUMMY_THREAD
-#   error "GPCXX_DUMMY_THREAD is not implemented"
-#endif
+
 
     
     
@@ -54,12 +45,12 @@ template<
     typename single_pass_range1,
     typename output_iterator,
     typename unary_operation,
-    typename thread_type = gpcxx_thread_default_impl
+    typename thread_type = std::thread
 >
 output_iterator transform( single_pass_range1 const & rng,
                            output_iterator out,
                            unary_operation fun,
-                           size_t number_of_threads = gpcxx::par::hardware_concurrency()
+                           size_t number_of_threads = std::thread::hardware_concurrency()
                         )
 {    
     if ( boost::empty( rng ) )
@@ -120,13 +111,13 @@ template<
     typename single_pass_range2,
     typename output_iterator,
     typename binary_operation,
-    typename thread_type = gpcxx_thread_default_impl
+    typename thread_type = std::thread
 >
 output_iterator transform( single_pass_range1 const & rng1,
                            single_pass_range2 const & rng2,
                            output_iterator out,
                            binary_operation fun,
-                           size_t number_of_threads = gpcxx::par::hardware_concurrency()
+                           size_t number_of_threads = std::thread::hardware_concurrency()
                         )
 {
     assert( boost::size(rng1) == boost::size(rng2) );
@@ -163,11 +154,11 @@ output_iterator transform( single_pass_range1 const & rng1,
 template<
     typename single_pass_range,
     typename unary_function,
-    typename thread_type = gpcxx_thread_default_impl
+    typename thread_type = std::thread
 >
 unary_function for_each( single_pass_range & rng, 
                          unary_function fun, 
-                         size_t number_of_threads = gpcxx::par::hardware_concurrency()
+                         size_t number_of_threads = std::thread::hardware_concurrency()
                        )
 {
     if ( boost::empty( rng ) )
