@@ -102,7 +102,15 @@ input_iterator advance_with_copy ( input_iterator it, distance n )
     return it;
 }
 
-
+struct n_threads
+{
+    std::size_t value;
+    n_threads()
+        : value ( std::thread::hardware_concurrency() ) {}
+    n_threads( std::size_t number_of_threads )
+        : value ( number_of_threads ) {}
+};
+    
 
 
 
@@ -115,7 +123,7 @@ template<
 output_iterator transform( single_pass_range1 const & rng,
                            output_iterator out,
                            unary_operation fun,
-                           std::size_t number_of_threads = std::thread::hardware_concurrency()
+                           n_threads number_of_threads = n_threads()
                         )
 {    
     using namespace gpcxx::par::adaptors;
@@ -124,23 +132,23 @@ output_iterator transform( single_pass_range1 const & rng,
     if ( boost::empty( rng ) )
         return out;
 
-    if ( number_of_threads == 1 )
+    if ( number_of_threads.value == 1 )
         return boost::transform( rng, out, fun ); 
    
     std::size_t rng_size = boost::size( rng );
     
-    if( rng_size < number_of_threads )
-        number_of_threads = rng_size;
+    if( rng_size < number_of_threads.value )
+        number_of_threads.value = rng_size;
         
-    std::vector< thread_type >  worker{}; worker.reserve(number_of_threads);
+    std::vector< thread_type >  worker{}; worker.reserve( number_of_threads.value );
     
-    for (std::size_t i = 0; i < number_of_threads; ++i)
+    for (std::size_t i = 0; i < number_of_threads.value; ++i)
     {
-        auto sub_rng = rng | partitioned( number_of_threads, i , rng_size );
+        auto sub_rng = rng | partitioned( number_of_threads.value, i , rng_size );
 
         auto out_iter_for_sub_range = advance_with_copy( 
             out, 
-            partition_lower_bound( number_of_threads, i , rng_size ) );
+            partition_lower_bound( number_of_threads.value, i , rng_size ) );
         
         worker.emplace_back( [&](){ boost::transform( sub_rng, out_iter_for_sub_range, fun ); } );
     }
@@ -157,11 +165,11 @@ template<
     typename binary_operation,
     typename thread_type = std::thread
 >
-output_iterator transform( single_pass_range1 const & rng1,
+output_iterator transform2( single_pass_range1 const & rng1,
                            single_pass_range2 const & rng2,
                            output_iterator out,
                            binary_operation fun,
-                           std::size_t number_of_threads = std::thread::hardware_concurrency()
+                           n_threads number_of_threads = n_threads()
                         )
 {
     assert( boost::size(rng1) == boost::size(rng2) );
@@ -172,24 +180,24 @@ output_iterator transform( single_pass_range1 const & rng1,
     if ( boost::empty( rng1 ) )
         return out;
 
-    if ( number_of_threads == 1 )
+    if ( number_of_threads.value == 1 )
         return boost::transform( rng1, rng2, out, fun ); 
    
     std::size_t rng1_size = boost::size( rng1 );
     
-    if( rng1_size < number_of_threads )
-        number_of_threads = rng1_size;
+    if( rng1_size < number_of_threads.value )
+        number_of_threads.value = rng1_size;
         
-    std::vector< thread_type >  worker{}; worker.reserve( number_of_threads );
+    std::vector< thread_type >  worker{}; worker.reserve( number_of_threads.value );
     
-    for (std::size_t i = 0; i < number_of_threads; ++i)
+    for (std::size_t i = 0; i < number_of_threads.value; ++i)
     {    
-        auto sub_rng1 = rng1 | partitioned( number_of_threads, i , rng1_size );
-        auto sub_rng2 = rng2 | partitioned( number_of_threads, i , rng1_size );
+        auto sub_rng1 = rng1 | partitioned( number_of_threads.value, i , rng1_size );
+        auto sub_rng2 = rng2 | partitioned( number_of_threads.value, i , rng1_size );
         
         auto out_iter_for_sub_range = advance_with_copy( 
             out, 
-            partition_lower_bound( number_of_threads, i , rng1_size ) );
+            partition_lower_bound( number_of_threads.value, i , rng1_size ) );
         
         worker.emplace_back( [&](){boost::transform( sub_rng1, sub_rng2, out_iter_for_sub_range, fun ); } );
     }
@@ -206,7 +214,7 @@ template<
 >
 unary_function for_each( single_pass_range & rng, 
                          unary_function fun, 
-                         std::size_t number_of_threads = std::thread::hardware_concurrency()
+                         n_threads number_of_threads = n_threads()
                        )
 {
     using namespace gpcxx::par::adaptors;
@@ -214,18 +222,18 @@ unary_function for_each( single_pass_range & rng,
     if ( boost::empty( rng ) )
         return fun;
     
-    if ( number_of_threads == 1 )
+    if ( number_of_threads.value == 1 )
         return boost::for_each( rng, fun );
        
     std::size_t rng_size = boost::size( rng );
     
-    if( rng_size < number_of_threads )
-        number_of_threads = rng_size;
+    if( rng_size < number_of_threads.value )
+        number_of_threads.value = rng_size;
     
-    std::vector< thread_type > worker{}; worker.reserve( number_of_threads );
-    for ( std::size_t i = 0; i < number_of_threads; ++i )
+    std::vector< thread_type > worker{}; worker.reserve( number_of_threads.value );
+    for ( std::size_t i = 0; i < number_of_threads.value; ++i )
     {            
-        auto sub_rng =  rng | partitioned( number_of_threads, i , rng_size );
+        auto sub_rng =  rng | partitioned( number_of_threads.value, i , rng_size );
 
         worker.emplace_back( [&](){ boost::for_each( sub_rng, fun ); } );
     }

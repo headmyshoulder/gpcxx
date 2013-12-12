@@ -40,7 +40,7 @@ TEST( TESTNAME , transform_binary )
             std::vector<int> out_singel_thread_std ( boost::size( rng1 ), 3 );
             
             boost::transform( rng1, rng2, boost::begin( out_singel_thread_boost ), fun );
-            gpcxx::par::transform( rng1, rng2, boost::begin( out_n_thread_gpcxx_par ), fun, nthreads );
+            gpcxx::par::transform2( rng1, rng2, boost::begin( out_n_thread_gpcxx_par ), fun, nthreads );
             std::transform( boost::begin( rng1 ), boost::end( rng1 ), boost::begin( rng2 ), boost::begin( out_singel_thread_std ), fun );
             EXPECT_EQ( out_singel_thread_boost , out_n_thread_gpcxx_par );
             EXPECT_EQ( out_singel_thread_std   , out_n_thread_gpcxx_par );            
