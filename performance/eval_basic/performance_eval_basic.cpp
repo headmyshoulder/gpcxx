@@ -120,7 +120,7 @@ std::tuple< double , double , double > run_test( rng_type &rng , size_t number_o
     {
         for( size_t i=0 ; i<number_of_datapoints ; ++i )
         {
-            context_type c { x1[i] , x2[i] , x3[i] };
+            context_type c { { x1[i] , x2[i] , x3[i] } };
             y[t][i] = eval( tree[t] , c );
         }
     }
