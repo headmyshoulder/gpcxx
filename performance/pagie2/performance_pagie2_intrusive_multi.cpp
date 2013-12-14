@@ -160,7 +160,7 @@ int main( int argc , char *argv[] )
     // initialize population with random trees and evaluate fitness
     timer.restart();
 
-    gpcxx::par::for_each(  population, [&tree_generator]( decltype(population)::value_type & p ) { tree_generator( p ); }, 1 );    
+    gpcxx::for_each(  population, [&tree_generator]( decltype(population)::value_type & p ) { tree_generator( p ); }, 1 );    
     boost::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); });
       
     std::cout << "Generation time " << timer.seconds() << std::endl;
@@ -176,7 +176,7 @@ int main( int argc , char *argv[] )
         evolver.next_generation( population , fitness );
         double evolve_time = iteration_timer.seconds();
         iteration_timer.restart();
-        gpcxx::par::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); }, gpcxx::par::n_threads( 4 ) );
+        gpcxx::transform( population, fitness.begin(), [&]( tree_type const &t ) { return fitness_f( t , c ); }, 4  );
         double eval_time = iteration_timer.seconds();
         
         std::cout << gpcxx::indent( 1 ) << "Iteration " << i << std::endl;

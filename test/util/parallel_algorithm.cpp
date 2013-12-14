@@ -40,7 +40,7 @@ TEST( TESTNAME , transform_binary )
             std::vector<int> out_singel_thread_std ( boost::size( rng1 ), 3 );
             
             boost::transform( rng1, rng2, boost::begin( out_singel_thread_boost ), fun );
-            gpcxx::par::transform2( rng1, rng2, boost::begin( out_n_thread_gpcxx_par ), fun, nthreads );
+            gpcxx::transform2( rng1, rng2, boost::begin( out_n_thread_gpcxx_par ), fun, nthreads );
             std::transform( boost::begin( rng1 ), boost::end( rng1 ), boost::begin( rng2 ), boost::begin( out_singel_thread_std ), fun );
             EXPECT_EQ( out_singel_thread_boost , out_n_thread_gpcxx_par );
             EXPECT_EQ( out_singel_thread_std   , out_n_thread_gpcxx_par );            
@@ -67,7 +67,7 @@ TEST( TESTNAME , transform_unary )
             std::vector<int> out_singel_thread_std ( boost::size( rng ), 3 );
             
             boost::transform( rng, boost::begin( out_singel_thread_boost ), fun );
-            gpcxx::par::transform( rng, boost::begin( out_n_thread_gpcxx_par ), fun, nthreads );
+            gpcxx::transform( rng, boost::begin( out_n_thread_gpcxx_par ), fun, nthreads );
             std::transform( boost::begin( rng ), boost::end( rng ), boost::begin( out_singel_thread_std ), fun );
             EXPECT_EQ( out_singel_thread_boost , out_n_thread_gpcxx_par );
             EXPECT_EQ( out_singel_thread_std   , out_n_thread_gpcxx_par );            
@@ -102,7 +102,7 @@ TEST( TESTNAME , for_each )
             
             
             boost::for_each( rng, std::get<0>(fun) );
-            gpcxx::par::for_each( rng, std::get<1>(fun), nthreads );
+            gpcxx::for_each( rng, std::get<1>(fun), nthreads );
             std::for_each( boost::begin( rng ), boost::end( rng ), std::get<2>(fun) );
             EXPECT_EQ( sum_singel_thread_boost , sum_n_thread_gpcxx_par );
             EXPECT_EQ( sum_singel_thread_std   , sum_n_thread_gpcxx_par );  
