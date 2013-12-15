@@ -146,8 +146,8 @@ OutputIterator transform( SinglePassRange const & rng,
         auto out_iter_for_sub_range = advance_with_copy( 
             out, 
             partition_lower_bound( number_of_threads , i , rng_size ) );
-        
-        worker.emplace_back( [&](){ boost::transform( sub_rng, out_iter_for_sub_range, fun ); } );
+            
+        worker.emplace_back( [=](){ boost::transform( sub_rng, out_iter_for_sub_range, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     
@@ -193,7 +193,7 @@ OutputIterator transform2( SinglePassRange1 const & rng1,
             out, 
             partition_lower_bound( number_of_threads , i , rng1_size ) );
         
-        worker.emplace_back( [&](){boost::transform( sub_rng1, sub_rng2, out_iter_for_sub_range, fun ); } );
+        worker.emplace_back( [=](){boost::transform( sub_rng1, sub_rng2, out_iter_for_sub_range, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     
@@ -226,7 +226,7 @@ UnaryFunction for_each( SinglePassRange & rng,
     {            
         auto sub_rng =  rng | partitioned( number_of_threads , i , rng_size );
 
-        worker.emplace_back( [&](){ boost::for_each( sub_rng, fun ); } );
+        worker.emplace_back( [=](){ boost::for_each( sub_rng, fun ); } );
     }
     for ( auto& w: worker ) w.join();
     
