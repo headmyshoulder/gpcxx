@@ -22,7 +22,7 @@
 #include <cmath>
 #include <array>
 
-#define tab "\t"
+const std::string tab = "\t";
 
 using namespace std;
 using namespace parser;

@@ -25,7 +25,7 @@
 #include <cmath>
 #include <array>
 
-#define tab "\t"
+const std::string tab = "\t";
 
 using namespace std;
 namespace fusion = boost::fusion;
@@ -59,10 +59,13 @@ void generate_test_data( vector_type &x1 , vector_type &x2 , vector_type &x3 , d
     }
 }
 
+
 inline value_type my_log( value_type v )
 {
     return ( std::abs( v ) < 1.0e-20 ) ? 0.0 : std::log( std::abs( v ) );
 }
+
+
 
 template< typename Cursor >
 inline value_type eval_cursor( Cursor const &c , context_type const &context )
@@ -82,6 +85,8 @@ inline value_type eval_cursor( Cursor const &c , context_type const &context )
         case '/' : return eval_cursor( c.children(0) , context ) / eval_cursor( c.children(1) , context ); break;
     }
 }
+
+
 
 template< typename Cursor >
 inline value_type eval_cursor2( Cursor const &c , context_type const &context )
@@ -116,6 +121,8 @@ inline value_type eval_cursor2( Cursor const &c , context_type const &context )
         }
     }
 }
+
+
 
 template< typename Cursor >
 struct eval_cursor3
@@ -167,6 +174,8 @@ struct eval_cursor3
         return (*f)( cursor , c );
     }
 };
+
+
 
 template< typename Tree >
 inline value_type eval_tree( Tree const &tree , context_type const &c )

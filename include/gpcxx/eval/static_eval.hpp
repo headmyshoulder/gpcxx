@@ -19,6 +19,7 @@
 #include <boost/fusion/include/for_each.hpp>
 #include <boost/fusion/include/at_c.hpp>
 #include <boost/fusion/include/front.hpp>
+#include <boost/fusion/include/make_vector.hpp>
 #include <boost/concept_check.hpp>
 
 #include <stdexcept>
@@ -222,6 +223,8 @@ make_static_eval( TerminalAttributes const& terminals , UnaryAttributes const& u
 {
     return static_eval< Value , Symbol , Context , TerminalAttributes , UnaryAttributes , BinaryAttributes >( terminals , unaries , binaries );
 }
+
+
 
 
 } // namespace gpcxx

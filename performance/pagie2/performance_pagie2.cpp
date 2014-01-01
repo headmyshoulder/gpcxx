@@ -38,6 +38,11 @@ namespace fusion = boost::fusion;
 
 typedef double value_type;
 typedef gpcxx::regression_training_data< value_type , 3 > trainings_data_type;
+typedef std::mt19937 rng_type ;
+typedef char symbol_type;
+typedef std::array< value_type , 3 > eval_context_type;
+typedef std::vector< value_type > fitness_type;
+
 
 
 
@@ -62,22 +67,11 @@ void generate_test_data( trainings_data_type &data, double rmin , double rmax , 
 }
 
 
-
-
-
-
-
-
 namespace pl = std::placeholders;
+
 
 int main( int argc , char *argv[] )
 {
-    typedef std::mt19937 rng_type ;
-    typedef char symbol_type;
-    typedef std::array< value_type , 3 > eval_context_type;
-    typedef std::vector< value_type > fitness_type;
-    
-
     rng_type rng;
 
     trainings_data_type c;
