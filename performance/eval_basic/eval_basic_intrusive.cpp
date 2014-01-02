@@ -1,5 +1,5 @@
 /*
- * eval_perf.cpp
+ * eval_basic_intrusive.cpp
  * Date: 2013-05-10
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
@@ -7,6 +7,7 @@
 #define FUSION_MAX_VECTOR_SIZE 20
 
 #include "parser.hpp"
+#include "generate_data.hpp"
 
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
@@ -42,25 +43,6 @@ using terminal_z = gpcxx::array_terminal< 2 >;
 
 
 
-void generate_test_data( vector_type &x1 , vector_type &x2 , vector_type &x3 , double rmin , double rmax , double stepsize )
-{
-    x1.clear() ;
-    x2.clear() ;
-    x3.clear();
-    
-    for( double xx = rmin ; xx <= rmax ; xx += stepsize )
-    {
-        for( double yy = rmin ; yy <= rmax ; yy += stepsize )
-        {
-            for( double zz = rmin ; zz <= rmax ; zz += stepsize )
-            {
-                x1.push_back( xx );
-                x2.push_back( yy );
-                x3.push_back( zz );
-            }
-        }
-    }
-}
 
 
 
