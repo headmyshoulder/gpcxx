@@ -15,6 +15,7 @@
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/app/timer.hpp>
+#include <gpcxx/stat/node_statistics.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
@@ -53,6 +54,10 @@ struct my_div
     }
 };
 
+double objective_function( double x1 , double x2 , double x3 )
+{
+    return  1.0 / ( 1.0 + pow( x1 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x2 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x3 , -4.0 ) );
+};
 
 struct eval_cursor1
 {
@@ -214,7 +219,7 @@ auto eval_cursor4 = gpcxx::make_static_eval< value_type , symbol_type , context_
 
 /// \return time for evaluation of tree, result sum
 template< typename Evaluator , typename Trees >
-std::tuple< double , double > run_test( Evaluator const &eval , Trees const &trees , const vector_type &x1 , const vector_type &x2 , const vector_type &x3 )
+std::tuple< double , double > run_test( Evaluator const &eval , Trees const &trees , const vector_type &x1 , const vector_type &x2 , const vector_type &x3 , std::vector< double > &fitness )
 {
     std::tuple< double , double > res;
 
@@ -238,18 +243,18 @@ std::tuple< double , double > run_test( Evaluator const &eval , Trees const &tre
     std::get< 0 >( res ) = timer.seconds();
 
     double sum = 0.0;
+    
     for( size_t t=0 ; t<number_of_trees ; ++t )
     {
-//        double sum2 = 0.0;
-        // cout << gpcxx::simple( trees[t] ) << endl << endl;
+        double chi2 = 0.0;
         for( size_t i=0 ; i<number_of_datapoints ; ++i )
         {
             sum += y[t][i];
-            // sum2 += y[t][i];
-            // cout << y[t][i] << x1[i] << " " << x2[i] << " " << x3[i] << endl;
+            double diff = y[t][i] - objective_function( x1[i] , x2[i] , x3[i] );
+            chi2 += std::abs( diff );
         }
-//        sum += sum2;
-//        cout << sum2 << " : " << gpcxx::simple( trees[t] ) << " : " << "\n";
+        chi2 /= double( x1.size() );
+        fitness.push_back( 1.0 / ( 1.0 + chi2 ) );
     }
     std::get< 1 >( res ) = sum;
 
@@ -271,13 +276,29 @@ void run_tree_type( std::string const &name , Evaluator const& eval , vector_typ
         parser::tree_transformator< Tree > trafo( trees.back() , trees.back().root() );
         parser::parse_tree( line , trafo );
     }
+    
+    std::vector< double > fitness;
 
     cout.precision( 14 );
     cout << "Starting test " << name << endl;
-    auto times = run_test( eval , trees , x1 , x2 , x3 );
+    auto times = run_test( eval , trees , x1 , x2 , x3 , fitness );
     cout << tab << "Finished!" << endl;
     cout << tab << "Evaluation time " << std::get< 0 >( times ) << endl;
     cout << tab << "Result sum " << std::get< 1 >( times ) << endl << endl;
+    
+    std::ofstream fout( std::string( "eval_" ) + name + ".dat" );
+    fout.precision( 14 );
+    for( size_t i=0 ; i<fitness.size() ; ++i )
+    {
+        gpcxx::node_statistics stat = gpcxx::calc_node_statistics_tree( trees[i] );
+        
+        fout << i;
+        fout << tab << fitness[i];
+        fout << tab << trees[i].root().height();
+        fout << tab << stat.num_nodes;
+        fout << tab << gpcxx::simple( trees[i] );
+        fout << "\n";
+    }
 }
 
 
@@ -295,10 +316,10 @@ int main( int argc , char *argv[] )
     generate_test_data( x1 , x2 , x3 , -5.0 , 5.0 + 0.1 , 0.4 );
 
     // run test for several tree tests
-    run_tree_type< gpcxx::basic_tree< char > >( "basic tree eval1" , eval_cursor1() , x1 , x2 , x3 , argv[1] );
-//     run_tree_type< gpcxx::basic_tree< char > >( "basic tree eval2" , eval_cursor2() , x1 , x2 , x3 , argv[1] );
-//     run_tree_type< gpcxx::basic_tree< char > >( "basic tree eval3" , eval_cursor3< gpcxx::basic_tree< char >::const_cursor >() , x1 , x2 , x3 , argv[1] );
-//     run_tree_type< gpcxx::basic_tree< char > >( "basic tree eval4" , eval_cursor4 , x1 , x2 , x3 , argv[1] );
+    run_tree_type< gpcxx::basic_tree< char > >( "basic_tree_eval1" , eval_cursor1() , x1 , x2 , x3 , argv[1] );
+//     run_tree_type< gpcxx::basic_tree< char > >( "basic_tree_eval2" , eval_cursor2() , x1 , x2 , x3 , argv[1] );
+//     run_tree_type< gpcxx::basic_tree< char > >( "basic_tree_eval3" , eval_cursor3< gpcxx::basic_tree< char >::const_cursor >() , x1 , x2 , x3 , argv[1] );
+//     run_tree_type< gpcxx::basic_tree< char > >( "basic_tree_eval4" , eval_cursor4 , x1 , x2 , x3 , argv[1] );
 
     return 0;
 }

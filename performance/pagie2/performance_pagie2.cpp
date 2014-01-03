@@ -32,7 +32,7 @@
 #include <vector>
 #include <functional>
 
-#define tab "\t"
+const std::string tab = "\t";
 
 namespace fusion = boost::fusion;
 
@@ -95,7 +95,7 @@ int main( int argc , char *argv[] )
             fusion::make_vector( 's' , []( double v ) -> double { return std::sin( v ); } )
           , fusion::make_vector( 'c' , []( double v ) -> double { return std::cos( v ); } ) 
           , fusion::make_vector( 'e' , []( double v ) -> double { return std::exp( v ); } ) 
-          , fusion::make_vector( 'l' , []( double v ) -> double { return ( std::abs( v ) < 1.0e-20 ) ? 0.0 : std::log( std::abs( v ) ); } ) 
+          , fusion::make_vector( 'l' , []( double v ) -> double { return ( std::abs( v ) < 1.0e-20 ) ? log( 1.0e-20 ) : std::log( std::abs( v ) ); } ) 
           ) ,
         fusion::make_vector(
             fusion::make_vector( '+' , std::plus< double >() )
@@ -111,13 +111,13 @@ int main( int argc , char *argv[] )
     typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
 
     
-    size_t population_size = 12 ; // 512;
+    size_t population_size = 1000;
     size_t generation_size = 20;
     double number_elite = 1;
     double mutation_rate = 0.0;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
-    size_t min_tree_height = 8 , max_tree_height = 8;
+    size_t min_tree_height = 1 , max_tree_height = 8;
     size_t tournament_size = 15;
 
 
@@ -128,7 +128,7 @@ int main( int argc , char *argv[] )
     std::array< double , 3 > weights = {{ 2.0 * double( terminal_gen.num_symbols() ) ,
                                        double( unary_gen.num_symbols() ) ,
                                        double( binary_gen.num_symbols() ) }};
-    auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
+    auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , 0.5 , weights );
     
 
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
@@ -148,6 +148,7 @@ int main( int argc , char *argv[] )
     gpcxx::timer timer;
 
 
+
     // initialize population with random trees and evaluate fitness
     timer.restart();
     for( size_t i=0 ; i<population.size() ; ++i )
@@ -155,31 +156,27 @@ int main( int argc , char *argv[] )
         tree_generator( population[i] );
         fitness[i] = fitness_f( population[i] , c );
     }
-    std::cout << "Generation time " << timer.seconds() << std::endl;
-    std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 , 10 ) << std::endl;
-    std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
-    std::cout << std::endl << std::endl;
+    std::cout << gpcxx::indent( 0 ) << "Generation time " << timer.seconds() << std::endl;
+    std::cout << gpcxx::indent( 1 ) << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 , 10 ) << std::endl;
+    std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
+    std::cout << gpcxx::indent( 1 ) << std::endl << std::endl;
 
     timer.restart();
-    for( size_t i=0 ; i<2 ; ++i )
+    for( size_t generation=1 ; generation<=generation_size ; ++generation )
     {
         gpcxx::timer iteration_timer;
         iteration_timer.restart();
         evolver.next_generation( population , fitness );
-        std::cerr << std::endl << std::endl << std::endl;
-        for( size_t j=0 ; j<population_size ; ++j )
-            std::cerr << j << "\t" << gpcxx::simple( population[j] ) << std::endl;
         double evolve_time = iteration_timer.seconds();
         iteration_timer.restart();
-        for( size_t i=0 ; i<population.size() ; ++i )
-            fitness[i] = fitness_f( population[i] , c );
+        std::transform( population.begin() , population.end() , fitness.begin() , [&]( tree_type const &t ) { return fitness_f( t , c ); } );
         double eval_time = iteration_timer.seconds();
         
-        std::cout << gpcxx::indent( 1 ) << "Iteration " << i << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Evolve time " << evolve_time << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Eval time " << eval_time << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 2 , 10 ) << std::endl;
-        std::cout << gpcxx::indent( 1 )  << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+        std::cout << gpcxx::indent( 0 ) << "Generation " << generation << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Evolve time " << evolve_time << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Eval time " << eval_time << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 2 , 10 ) << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
     }
     std::cout << "Overall time : " << timer.seconds() << std::endl;
 
