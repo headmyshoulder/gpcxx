@@ -7,7 +7,7 @@ endif ()
 set ( GPCXX_VERSION_FILE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp )
 set ( GPCXX_VERSION_FILE_TEMPLATE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp.cmake )
 
-execute_process ( COMMAND git describe --abbrev=4 HEAD
+execute_process ( COMMAND git describe --abbrev=4 --match v*.* HEAD
                   COMMAND sed -e "s/-/./g"
                   OUTPUT_VARIABLE GPCXX_GIT_VERSION
                   OUTPUT_STRIP_TRAILING_WHITESPACE )
