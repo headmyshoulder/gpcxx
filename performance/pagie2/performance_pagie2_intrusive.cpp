@@ -38,9 +38,9 @@
 #include <vector>
 #include <functional>
 
-#define tab "\t"
+const std::string tab = "\t";
 
-namespace fusion = boost::fusion;
+
 
 typedef double value_type;
 typedef gpcxx::regression_training_data< value_type , 3 > trainings_data_type;
