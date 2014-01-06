@@ -44,8 +44,8 @@ OutputIterator transform(  RandomAccessRange const & rng,
     for (size_t i = 0; i < number_of_threads ; ++i)
     {
         auto sub_rng = rng | equal_sliceed( i, number_of_threads );
-        auto sub_out = out + equal_slice_lower_bound( i, number_of_threads,  boost::size( rng ) ) ;            
-        worker.emplace_back( [=](){ boost::transform( sub_rng, sub_out, fun ); } );
+        worker.emplace_back( [=](){ boost::transform( sub_rng, out, fun ); } );     
+        std::advance( out, equal_slice_size( i, number_of_threads,  boost::size( rng ) ) );
     }
     for ( auto& w: worker ) w.join();
     
@@ -78,11 +78,9 @@ OutputIterator transform2( RandomAccessRange1 const & rng1,
     for (size_t i = 0; i < number_of_threads ; ++i)
     {    
         auto sub_rng1 = rng1 | equal_sliceed( i, number_of_threads );
-        auto sub_rng2 = rng2 | equal_sliceed( i, number_of_threads );
-        
-        auto sub_out = out + equal_slice_lower_bound( i, number_of_threads,  boost::size( rng1 ) ) ;
-        
-        worker.emplace_back( [=](){boost::transform( sub_rng1, sub_rng2, sub_out, fun ); } );
+        auto sub_rng2 = rng2 | equal_sliceed( i, number_of_threads );   
+        worker.emplace_back( [=](){boost::transform( sub_rng1, sub_rng2, out, fun ); } );
+        std::advance( out, equal_slice_size( i, number_of_threads,  boost::size( rng1 ) ) );
     }
     for ( auto& w: worker ) w.join();
     
@@ -106,7 +104,7 @@ UnaryFunction for_each(  RandomAccessRange & rng,
     std::vector< std::thread > worker{};
     for ( size_t i = 0; i < number_of_threads ; ++i )
     {            
-        auto sub_rng =  rng | equal_sliceed( i, number_of_threads );
+        auto sub_rng = rng | equal_sliceed( i, number_of_threads );
         worker.emplace_back( [=](){ boost::for_each( sub_rng, fun ); } );
     }
     for ( auto& w: worker ) w.join();

@@ -1,7 +1,7 @@
 /*
   gpcxx/util/equal_slice.hpp
 
-  Copyright 2013 Gerard Choinka
+  Copyright 2014 Gerard Choinka
 
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or
@@ -29,20 +29,27 @@ namespace detail {
     {
         assert( n_equal_slices > equal_slice_number );
                 
-        size_t equal_slice_size = rng_size / n_equal_slices ;
+        size_t equal_slice_size = rng_size / n_equal_slices;
                     
-        if ( n_equal_slices  == ( equal_slice_number + 1 ))
+        if ( n_equal_slices  == ( equal_slice_number + 1 ) )
             return std::tuple< size_t, size_t >{ equal_slice_size * equal_slice_number, rng_size };
         
         return std::tuple< size_t, size_t >{ equal_slice_size * equal_slice_number, equal_slice_size * (equal_slice_number + 1)  };
     }
 
+    
+    inline size_t equal_slice_size( size_t equal_slice_number,
+                                    size_t n_equal_slices,
+                                    size_t rng_size )
+    {
+        auto bounds = equal_slice_bounds( equal_slice_number, n_equal_slices, rng_size );
+        return std::get<1>( bounds ) - std::get<0>( bounds );
+    }
 
     inline size_t equal_slice_upper_bound( size_t equal_slice_number, size_t n_equal_slices, size_t rng_size )
     {
         return std::get<1>( equal_slice_bounds( equal_slice_number, n_equal_slices,  rng_size) );
     }
-
 
     inline size_t equal_slice_lower_bound( size_t equal_slice_number, size_t n_equal_slices, size_t rng_size )
     {
@@ -81,7 +88,7 @@ struct equal_sliceed
     
 template< typename RandomAccessRange >
 inline auto
-operator | ( RandomAccessRange& rng,  equal_sliceed const & f ) 
+operator | ( RandomAccessRange & rng,  equal_sliceed const & f ) 
     -> decltype( equal_slice( rng, f.equal_slice_number, f.n_equal_slices ) )
 {
     return equal_slice( rng, f.equal_slice_number , f.n_equal_slices );
