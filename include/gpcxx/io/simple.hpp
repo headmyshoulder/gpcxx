@@ -67,7 +67,10 @@ struct simple_printer
 };
 
 template< typename T , typename SymbolMapper = gpcxx::identity >
-simple_printer< T , SymbolMapper > simple( T const& t , SymbolMapper const &mapper = SymbolMapper() ) { return simple_printer< T , SymbolMapper >( t , mapper ); }
+simple_printer< T , SymbolMapper > simple( T const& t , SymbolMapper const &mapper = SymbolMapper() )
+{
+    return simple_printer< T , SymbolMapper >( t , mapper );
+}
 
 
 template< typename T , typename SymbolMapper >
