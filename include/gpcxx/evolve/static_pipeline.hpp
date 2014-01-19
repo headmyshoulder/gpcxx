@@ -83,31 +83,31 @@ private:
             switch( choice )
             {
                 case 0 : // mutation
-                    {
-                        individual_type mutated_tree = m_mutation_function( pop , fitness );
-                        new_pop.push_back( std::move( mutated_tree ) );
-                    }
-                    break;
+                {
+                    individual_type mutated_tree = m_mutation_function( pop , fitness );
+                    new_pop.push_back( std::move( mutated_tree ) );
+                }
+                break;
                 case 1 : // crossover
+                {
+                    std::pair< individual_type , individual_type > trees = m_crossover_function( pop , fitness );
+                    if( new_pop.size() == ( n - 1 ) )
                     {
-                        std::pair< individual_type , individual_type > trees = m_crossover_function( pop , fitness );
-                        if( new_pop.size() == ( n - 1 ) )
-                        {
-                            new_pop.push_back( std::move( trees.first ) );
-                        }
-                        else
-                        {
-                            new_pop.push_back( std::move( trees.first ) );
-                            new_pop.push_back( std::move( trees.second ) );
-                        }
+                        new_pop.push_back( std::move( trees.first ) );
                     }
-                    break;
+                    else
+                    {
+                        new_pop.push_back( std::move( trees.first ) );
+                        new_pop.push_back( std::move( trees.second ) );
+                    }
+                }
+                break;
                 case 2 : // reproduction
-                    {
-                        individual_type reproduced_node = m_reproduction_function( pop , fitness );
-                        new_pop.push_back( std::move( reproduced_node ) );
-                    }
-                    break;
+                {
+                    individual_type reproduced_node = m_reproduction_function( pop , fitness );
+                    new_pop.push_back( std::move( reproduced_node ) );
+                }
+                break;
             }
         }
         
