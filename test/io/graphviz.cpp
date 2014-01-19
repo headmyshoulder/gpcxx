@@ -69,10 +69,7 @@ TEST( TESTNAME , graphviz2 )
 
 TEST( TESTNAME , graphviz3 )
 {
-    std::map< std::string , std::string > mapping = {
-        std::make_pair( "plus" , "+" ) ,
-        std::make_pair( "minus" , "-" )
-    };
+    std::map< std::string , std::string > mapping = { { "plus" , "+" } , { "minus" , "-" } };
     
     auto mapper = [mapping]( std::string const& s ) -> std::string {
         auto iter = mapping.find( s );
