@@ -7,33 +7,33 @@
 #ifndef GRAPHVIZ_HPP_INCLUDED
 #define GRAPHVIZ_HPP_INCLUDED
 
+#include <gpcxx/util/identity.hpp>
 
-/**************************************************
- **************************************************
- *
- * NOT TESTED. WILL NOT WORK RIGHT NOW!!!
- *
- **************************************************
- **************************************************/
+#include <fstream>
+
+
 
 namespace gpcxx {
 
-/*
+
 namespace detail {
 
-template< class Node >
-void print_graph_node( const Node *n , std::ostream &out , size_t &count )
+template< typename Cursor , typename SymbolMapper >
+void print_graphviz_cursor( Cursor const &n , std::ostream &out , size_t &count , SymbolMapper const& mapper , bool print_node_info )
 {
     size_t cc = count;
-    out << "NODE" << cc << " [ label = \"" << n->value 
-        << "(" << n->num_elements << " " << n->height << " " << n->level << ")"
-        << "\" ]\n";
+    out << "NODE" << cc << " [ label = \"" << mapper( *n );
+    if( print_node_info )
+    {
+        out << "(" << n.height() << " " << n.level() << ")";
+    }
+    out << "\" ]\n";
         
-    for( size_t i=0 ; i<n->arity ; ++i )
+    for( size_t i=0 ; i<n.size() ; ++i )
     {
         ++count;
         out << "NODE" << cc << " -> " << "NODE" << count << "\n";
-        print_graph_node( n->children[i] , out , count );
+        print_graphviz_cursor( n.children( i ) , out , count , mapper , print_node_info );
     }
 }
 
@@ -41,17 +41,57 @@ void print_graph_node( const Node *n , std::ostream &out , size_t &count )
 
 
 
-template< class T >
-void print_graph( const tree< T > &t , const std::string &filename )
+template< typename Tree , typename SymbolMapper >
+void print_graphviz( Tree const& t , std::ostream &out , SymbolMapper const& mapper , bool print_node_info )
 {
-    std::ofstream fout( "__tmp__.dot" );
-    fout << "digraph G\n{\n";
-    if( t.m_data != 0 )
+    out << "digraph G\n";
+    out << "{\n";
+    if( !t.empty() )
     {
         size_t count = 0;
-        detail::print_graph_node( t.m_data , fout , count );
+        detail::print_graphviz_cursor( t.root() , out , count , mapper , print_node_info );
     }
-    fout << "}\n";
+    out << "}\n";
+}
+
+
+template< typename Tree , typename SymbolMapper >
+struct graphviz_printer
+{
+    Tree const& m_t;
+    SymbolMapper const& m_mapper;
+    bool m_print_node_info;
+    
+    graphviz_printer( Tree const& t , SymbolMapper const& mapper , bool print_node_info )
+    : m_t( t ) , m_mapper( mapper ) , m_print_node_info( print_node_info ) { }
+    
+    std::ostream& operator()( std::ostream& out ) const
+    {
+        print_graphviz( m_t , out , m_mapper , m_print_node_info );
+        return out;
+    }
+};
+
+template< typename T , typename SymbolMapper = gpcxx::identity >
+graphviz_printer< T , SymbolMapper > graphviz( T const& t , bool print_node_info = false , SymbolMapper const &mapper = SymbolMapper() )
+{
+    return graphviz_printer< T , SymbolMapper >( t , mapper , print_node_info );
+}
+
+
+template< typename T , typename SymbolMapper >
+std::ostream& operator<<( std::ostream& out , graphviz_printer< T , SymbolMapper > const& p )
+{
+    return p( out );
+}
+
+
+
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
+void generate_graphviz_pdf( const Tree &t , const std::string &filename , SymbolMapper const& mapper = SymbolMapper() )
+{
+    std::ofstream fout( "__tmp__.dot" );
+    print_graphviz( t , fout , mapper );
     fout.close();
 
     system ( "dot -Tps2 __tmp__.dot > __tmp__.ps" );
@@ -59,7 +99,8 @@ void print_graph( const tree< T > &t , const std::string &filename )
     system ( "rm __tmp__.dot" );
     system ( "rm __tmp__.ps" );
 }
-*/
+
+
 
 
 } // namespace gpcxx

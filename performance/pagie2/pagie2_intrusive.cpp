@@ -37,6 +37,7 @@
 #include <random>
 #include <vector>
 #include <functional>
+#include <fstream>
 
 const std::string tab = "\t";
 
@@ -87,6 +88,44 @@ void generate_test_data( trainings_data_type &data, double rmin , double rmax , 
 
 
 
+template< typename Pop >
+void write_height_hist( Pop const& p , std::ostream &out )
+{
+    std::map< size_t , size_t > h;
+    for( auto const& t : p )
+    {
+        h[ t.root().height() ] ++;
+    }
+    for( auto const &e : h )
+        out << e.first << " " << e.second << "\n";
+}
+
+template< typename Pop >
+void write_height_hist( Pop const& p , std::string const &filename )
+{
+    std::ofstream fout( filename );
+    write_height_hist( p , fout );
+}
+
+
+template< typename Pop >
+void write_size_hist( Pop const& p , std::ostream &out )
+{
+    std::map< size_t , size_t > h;
+    for( auto const& t : p )
+    {
+        h[ t.size() ] ++;
+    }
+    for( auto const &e : h )
+        out << e.first << " " << e.second << "\n";
+}
+
+template< typename Pop >
+void write_size_hist( Pop const& p , std::string const &filename )
+{
+    std::ofstream fout( filename );
+    write_size_hist( p , fout );
+}
 
 
 
@@ -141,6 +180,7 @@ int main( int argc , char *argv[] )
                                           double( binary_gen.num_symbols() ) }};
     // auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , 0.5 , weights );
     auto tree_generator = gpcxx::make_basic_generate_strategy( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , weights );
+    auto new_tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
 
 
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
@@ -155,6 +195,7 @@ int main( int argc , char *argv[] )
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
+    // evolver.reproduction_function() = [&]( population_type const& p , fitness_type const &f ) { tree_type t; new_tree_generator( t ); return t; };
     
     gpcxx::timer timer;
     auto fitness_f = gpcxx::make_regression_fitness( evaluator() );
@@ -171,6 +212,9 @@ int main( int argc , char *argv[] )
     std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
     std::cout << gpcxx::indent( 1 ) << std::endl << std::endl;
     
+    write_height_hist( population , "initial_height.hist" );
+    write_size_hist( population , "initial_size.hist" );
+    
     timer.restart();
     for( size_t generation=1 ; generation<=generation_size ; ++generation )
     {
@@ -181,6 +225,9 @@ int main( int argc , char *argv[] )
         iteration_timer.restart();
         std::transform( population.begin() , population.end() , fitness.begin() , [&]( tree_type const &t ) { return fitness_f( t , c ); } );
         double eval_time = iteration_timer.seconds();
+        
+        write_height_hist( population , "height_" + std::to_string( generation ) + ".hist" );
+        write_size_hist( population , "size_" + std::to_string( generation ) + ".hist" );
         
         std::cout << gpcxx::indent( 0 ) << "Generation " << generation << std::endl;
         std::cout << gpcxx::indent( 1 ) << "Evolve time " << evolve_time << std::endl;
