@@ -74,7 +74,7 @@ private:
             size_t index = indices[i] ;
             new_pop.push_back( pop[ index ] );
         }
-
+        
         size_t n = pop.size();
         std::discrete_distribution< int > dist( { m_mutation_rate , m_crossover_rate , m_reproduction_rate } );
         while( new_pop.size() < n )

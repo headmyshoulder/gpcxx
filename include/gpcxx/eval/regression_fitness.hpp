@@ -30,8 +30,24 @@ template< typename Value , size_t Dim >
 using regression_context = std::array< Value , Dim >;
 
 
+namespace detail {
+    
+    struct abs
+    {
+        template< typename T >
+        T operator()( T t ) const { return std::abs( t ); }
+    };
+    
+    struct square
+    {
+        template< typename T >
+        T operator()( T t ) const { return t * t; }
+    };
+    
+} // namespace detail
 
-template< typename Eval >
+
+template< typename Eval , typename Norm = detail::abs >
 struct regression_fitness
 {
     typedef Eval eval_type;
@@ -52,7 +68,7 @@ struct regression_fitness
             context_type cc;
             for( size_t j=0 ; j<TrainingData::dim ; ++j ) cc[j] = c.x[j][i];
             value_type yy = m_eval( t , cc );
-            chi2 += ( yy - c.y[i] ) * ( yy - c.y[i] );
+            chi2 += Norm()( yy - c.y[i] );
         }
         return chi2 / value_type( c.x[0].size() );
     }
@@ -64,6 +80,11 @@ struct regression_fitness
     }
 };
 
+template< typename Eval >
+regression_fitness< Eval > make_regression_fitness( Eval eval )
+{
+    return regression_fitness< Eval >( eval );
+}
 
 
 } // namespace gpcxx

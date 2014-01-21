@@ -4,7 +4,10 @@ if ( NOT EXISTS "${CMAKE_SOURCE_DIR}/.git/" )
   return ()
 endif ()
 
-execute_process ( COMMAND git describe --abbrev=4 HEAD
+set ( GPCXX_VERSION_FILE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp )
+set ( GPCXX_VERSION_FILE_TEMPLATE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp.cmake )
+
+execute_process ( COMMAND git describe --abbrev=4 --match v*.* HEAD
                   COMMAND sed -e "s/-/./g"
                   OUTPUT_VARIABLE GPCXX_GIT_VERSION
                   OUTPUT_STRIP_TRAILING_WHITESPACE )
@@ -34,10 +37,10 @@ set ( GPCXX_VERSION_SHORT "${GPCXX_VERSION_MAJOR}.${GPCXX_VERSION_MINOR}.${GPCXX
 # message ( STATUS "${GPCXX_VERSION_SHA1}" )
 # message ( STATUS "${GPCXX_VERSION_SHORT}" )
 
-if ( NOT ( GPCXX_GIT_STATUS STREQUAL "" ) )
+if ( ( NOT ( GPCXX_GIT_STATUS STREQUAL "" ) ) OR ( NOT EXISTS ${GPCXX_VERSION_FILE} ) )
 
-  message ( STATUS "generating new config_version.hpp" )
-  configure_file ( ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp.cmake ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp )
+  message ( STATUS "generating new version file ${GPCXX_VERSION_FILE} from ${GPCXX_VERSION_FILE_TEMPLATE}" )
+  configure_file ( ${GPCXX_VERSION_FILE_TEMPLATE} ${GPCXX_VERSION_FILE}  )
 
 endif ()
 

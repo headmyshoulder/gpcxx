@@ -12,12 +12,11 @@
 #ifndef GPCXX_TREE_DETAIL_BASIC_CURSOR_HPP_DEFINED
 #define GPCXX_TREE_DETAIL_BASIC_CURSOR_HPP_DEFINED
 
+#include <gpcxx/tree/detail/node_helpers.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/iterator/iterator_concepts.hpp>
-#include <boost/mpl/eval_if.hpp>
-#include <boost/mpl/identity.hpp>
 
 #include <type_traits>
 
@@ -27,23 +26,6 @@ template< typename T , typename A > class basic_tree;
 
 namespace detail {
 
-template< typename Node >
-struct node_value_getter : public boost::mpl::eval_if<
-    std::is_const< Node > ,
-    std::add_const< typename Node::value_type > ,
-    boost::mpl::identity< typename Node::value_type >
-  >
-{
-};
-
-template< typename Node >
-struct node_base_getter : public boost::mpl::eval_if<
-    std::is_const< Node > ,
-    std::add_const< typename Node::node_base_type > ,
-    boost::mpl::identity< typename Node::node_base_type >
-    >
-{
-};
 
 template< typename Node >
 class basic_node_cursor : public boost::iterator_facade<
@@ -56,7 +38,7 @@ class basic_node_cursor : public boost::iterator_facade<
 {
     
     friend class boost::iterator_core_access;
-    template<typename U> friend class basic_node_cursor;
+    template< typename U > friend class basic_node_cursor;
     template< typename T , typename A > friend class basic_tree;
 
     

@@ -7,44 +7,41 @@
 #include <gpcxx/generate/basic_generate_strategy.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
 
-#include "../common/test_generator.hpp"
-
-#include <random>
+#include "../common/test_template.hpp"
 
 #include <gtest/gtest.h>
 
-#define TESTNAME basic_generate_strategy_tests
+template <class T>
+struct basic_generate_strategy_tests : public test_template< T > { };
 
+using testing::Types;
 
-TEST( TESTNAME , generate_radnom_linked_tree_test1 )
+typedef Types< basic_tree_tag , intrusive_tree_tag > Implementations;
+
+TYPED_TEST_CASE( basic_generate_strategy_tests , Implementations );
+
+TYPED_TEST( basic_generate_strategy_tests , instanciation )
 {
-    test_generator gen;
-
-    std::mt19937 rng;
     std::array< double , 3 > weights{{ 1.0 , 1.0 , 1.0 }};
 
     for( size_t i=0 ; i<1000 ; ++i )
     {
-        gpcxx::basic_tree< std::string > tree;
+        typename TestFixture::tree_type tree;
         
-        auto generator = gpcxx::make_basic_generate_strategy( rng , gen.gen0 , gen.gen1 , gen.gen2 , 2 , 4 , weights );
+        auto generator = gpcxx::make_basic_generate_strategy( this->m_gen.rng , this->m_gen.gen0 , this->m_gen.gen1 , this->m_gen.gen2 , 2 , 4 , weights );
         generator( tree );
         EXPECT_TRUE( tree.root().height() >= 2 );
         EXPECT_TRUE( tree.root().height() <= 4 );
     }
 }
 
-TEST( TESTNAME , generate_radnom_linked_tree_test2 )
+TYPED_TEST( basic_generate_strategy_tests , generate_radnom_linked_tree_test2 )
 {
-    test_generator gen;
-
-    std::mt19937 rng;
-
     for( size_t i=0 ; i<1000 ; ++i )
     {
-        gpcxx::basic_tree< std::string > tree;
+        typename TestFixture::tree_type tree;
         
-        auto generator = gpcxx::make_basic_generate_strategy( rng , gen.gen0 , gen.gen1 , gen.gen2 , 2 , 4 );
+        auto generator = gpcxx::make_basic_generate_strategy( this->m_gen.rng , this->m_gen.gen0 , this->m_gen.gen1 , this->m_gen.gen2 , 2 , 4 );
         generator( tree );
         EXPECT_TRUE( tree.root().height() >= 2 );
         EXPECT_TRUE( tree.root().height() <= 4 );

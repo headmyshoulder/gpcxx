@@ -19,7 +19,7 @@ namespace gpcxx {
 struct identity
 {
     template< typename T >
-    T operator()( T const &t ) const
+    T const& operator()( T const &t ) const
     {
         return t;
     }
