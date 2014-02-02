@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #include <sstream>
+#include <map>
 
 
 #define TESTNAME polish_tests
@@ -24,7 +25,7 @@ using namespace std;
 
 TEST( TESTNAME , polish_tree1_withseparator )
 {
-   test_tree< basic_tree_tag > tree;
+    test_tree< basic_tree_tag > tree;
     ostringstream str;
     str << polish( tree.data );
     EXPECT_EQ( str.str() , "plus|sin|x|minus|y|2" );
@@ -32,10 +33,25 @@ TEST( TESTNAME , polish_tree1_withseparator )
 
 TEST( TESTNAME , polish_tree1_withoutseparator )
 {
-   test_tree< basic_tree_tag > tree;
+    test_tree< basic_tree_tag > tree;
     ostringstream str;
     str << polish( tree.data , "" );
     EXPECT_EQ( str.str() , "plussinxminusy2" );
+}
+
+TEST( TESTNAME , polish_tree1_withseparator_and_mapper )
+{
+    std::map< std::string , std::string > mapping = { { "plus" , "+" } , { "minus" , "-" } };
+    
+    auto mapper = [mapping]( std::string const& s ) -> std::string {
+        auto iter = mapping.find( s );
+        if( iter != mapping.end() ) return iter->second;
+        else return s; };
+        
+   test_tree< basic_tree_tag > tree;
+    ostringstream str;
+    str << polish( tree.data , "|" , mapper );
+    EXPECT_EQ( str.str() , "+|sin|x|-|y|2" );
 }
 
 
