@@ -17,7 +17,7 @@
 #include <sstream>
 
 
-#define TESTNAME graphviz_io_test
+#define TESTNAME graphviz_io_tests
 
 using namespace std;
 
