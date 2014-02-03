@@ -50,9 +50,25 @@ TEST( TESTNAME , polish_tree1_withseparator_and_mapper )
         
    test_tree< basic_tree_tag > tree;
     ostringstream str;
-    str << polish( tree.data , "|" , mapper );
+    str << polish( tree.data , "|" , "" , "" , mapper );
     EXPECT_EQ( str.str() , "+|sin|x|-|y|2" );
 }
+
+TEST( TESTNAME , polish_tree1_withseparator_and_brackets )
+{
+    std::map< std::string , std::string > mapping = { { "plus" , "+" } , { "minus" , "-" } };
+    
+    auto mapper = [mapping]( std::string const& s ) -> std::string {
+        auto iter = mapping.find( s );
+        if( iter != mapping.end() ) return iter->second;
+        else return s; };
+        
+   test_tree< basic_tree_tag > tree;
+    ostringstream str;
+    str << polish( tree.data , " " , "[" , "]" , mapper );
+    EXPECT_EQ( str.str() , "[+ [sin x] [- y 2]]" );
+}
+
 
 
 TEST( TESTNAME , polish_tree2_withseparator )
