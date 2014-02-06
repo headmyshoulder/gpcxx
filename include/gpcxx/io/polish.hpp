@@ -8,12 +8,18 @@
 #define POLISH_HPP_INCLUDED
 
 #include <gpcxx/util/identity.hpp>
+#include <gpcxx/io/detail/read_polish.hpp>
+
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/find_iterator.hpp>
+#include <boost/algorithm/string/finder.hpp>
 
 #include <ostream>
 
 
 namespace gpcxx {
 
+    
 template< typename Cursor , typename SymbolMapper >
 void print_polish_cursor( Cursor t , std::ostream &out , std::string const& sep , std::string const &opening , std::string const& closing , SymbolMapper const& mapper )
 {
@@ -58,6 +64,7 @@ struct polish_printer
     }
 };
 
+
 template< typename T , typename SymbolMapper = gpcxx::identity >
 polish_printer< T , SymbolMapper > polish( T const& t , std::string const& sep = "|" , std::string const &opening = "" , std::string const& closing = "" , SymbolMapper const &mapper = SymbolMapper() )
 {
@@ -72,9 +79,18 @@ std::ostream& operator<<( std::ostream& out , polish_printer< T , SymbolMapper >
 }
 
 
-
-
+template< typename Tree , typename NodeMapper >
+void read_polish( std::string str , Tree &tree , NodeMapper const& mapper , std::string const& sep = "|" , std::string const &opening = "" , std::string const& closing = "" )
+{
+    using iterator = boost::split_iterator< std::string::const_iterator >;
     
+    if( opening != "" ) boost::algorithm::erase_all( str , opening );
+    if( closing != "" ) boost::algorithm::erase_all( str , closing );
+    
+    iterator first = iterator { str , boost::first_finder( sep , boost::is_iequal() ) };
+    
+    detail::read_polish( first , tree , tree.root() , mapper );
+}
     
 
 }
