@@ -26,7 +26,7 @@ Iter read_polish( Iter first , Tree &tree , Cursor cursor , Mapper const& mapper
     
     std::string elem { boost::begin( *first ) , boost::end( *first ) };
     
-    auto const& generator = mapper.at( elem );
+    auto const& generator = mapper( elem );
     auto current = tree.insert_below( cursor , generator.second() );
 
     for( size_t i=0 ; i<generator.first ; ++i )
