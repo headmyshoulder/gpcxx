@@ -50,16 +50,24 @@ struct intrusive_node_generator
         if( s == "7" ) return node_type( constant_terminal< 7 >() , "7" );
         if( s == "8" ) return node_type( constant_terminal< 8 >() , "8" );
         if( s == "9" ) return node_type( constant_terminal< 9 >() , "9" );
-        if( s == "10" ) return node_type( constant_terminal< 1 >() , "10" );
-        if( s == "11" ) return node_type( constant_terminal< 1 >() , "11" );
-        if( s == "12" ) return node_type( constant_terminal< 1 >() , "12" );
-        if( s == "13" ) return node_type( constant_terminal< 1 >() , "13" );
-        if( s == "14" ) return node_type( constant_terminal< 1 >() , "14" );
-        if( s == "15" ) return node_type( constant_terminal< 1 >() , "15" );
-        if( s == "16" ) return node_type( constant_terminal< 1 >() , "16" );
-        if( s == "17" ) return node_type( constant_terminal< 1 >() , "17" );
-        if( s == "18" ) return node_type( constant_terminal< 1 >() , "18" );
-        if( s == "19" ) return node_type( constant_terminal< 1 >() , "19" );
+        if( s == "10" ) return node_type( constant_terminal< 10 >() , "10" );
+        if( s == "11" ) return node_type( constant_terminal< 11 >() , "11" );
+        if( s == "12" ) return node_type( constant_terminal< 12 >() , "12" );
+        if( s == "13" ) return node_type( constant_terminal< 13 >() , "13" );
+        if( s == "14" ) return node_type( constant_terminal< 14 >() , "14" );
+        if( s == "15" ) return node_type( constant_terminal< 15 >() , "15" );
+        if( s == "16" ) return node_type( constant_terminal< 16 >() , "16" );
+        if( s == "17" ) return node_type( constant_terminal< 17 >() , "17" );
+        if( s == "18" ) return node_type( constant_terminal< 18 >() , "18" );
+        if( s == "19" ) return node_type( constant_terminal< 19 >() , "19" );
+        
+        try
+        {
+            return node_type( double_terminal<>( std::stod( s ) ) , s );
+        }
+        catch( std::exception &e )
+        {
+        }
         
         
         throw std::runtime_error( std::string( "No node for " ) + s + " found!" );
