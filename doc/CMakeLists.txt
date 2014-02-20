@@ -1,6 +1,9 @@
-find_package ( Doxygen REQUIRED )
-find_package ( XSLTPROC REQUIRED )
+find_package ( Doxygen )
+find_package ( XSLTPROC )
 find_package ( QuickBook )
+
+
+if ( ${DOXYGEN_FOUND} AND ${XSLTPROC_FOUND} AND ${QuickBook_FOUND} )
 
 
 set ( catalog "${CMAKE_CURRENT_BINARY_DIR}/catalog.xml" )
@@ -108,3 +111,10 @@ add_custom_target ( documentation
   "${CMAKE_CURRENT_BINARY_DIR}/html/boostbook.css"
   "${CMAKE_CURRENT_BINARY_DIR}/html/images" 
   )
+
+
+else ()
+
+  message ( WARNING "Could not find Doxygon, Xstlproc, or Quickbook. Doc will not be generated" )
+
+endif ()
