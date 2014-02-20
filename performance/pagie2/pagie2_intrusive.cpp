@@ -28,10 +28,7 @@
 #include <gpcxx/app/timer.hpp>
 #include <gpcxx/app/normalize.hpp>
 
-#include <boost/fusion/include/make_vector.hpp>
-#include <boost/container/deque.hpp>
-#include <libs/coroutine/example/c++11/tree.h>
-
+#include <map>
 #include <iostream>
 #include <fstream>
 #include <random>
