@@ -45,6 +45,8 @@
 
 [def __space '''&#8203;''']
 
+[def __gpcxx gpcxx]
+[def __gpcxx_github '''<ulink url="https://github.com/Ambrosys/gpcxx" target="_blank">github.com/Ambrosys/gpcxx</ulink>''']
 
 
 [template super[x]'''<superscript>'''[x]'''</superscript>''']
@@ -55,19 +57,9 @@
 [/ [template github_link[url text]'''<ulink url="../../../../../'''[url]'''" target="_blank">'''[text]'''</ulink>''']]
 
 
-[section Getting started]
+[include getting_started.qbk]
 
-About
-
-Download
-
-Installation
-
-[endsect]
-
-[section Tutorial]
-
-[endsect]
+[include tutorial.qbk]
 
 [section Genetic programming basics]
 
