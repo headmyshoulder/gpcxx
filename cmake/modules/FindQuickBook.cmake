@@ -62,23 +62,29 @@ find_path ( BOOSTBOOK_XSL_DIR html.xsl      PATHS "${BOOSTBOOK_ROOT}/xsl" )
 find_path ( DOCBOOK_DTD_DIR   docbookx.dtd  PATHS "${DOCBOOK_ROOT}/docbook-dtd"  )
 find_path ( DOCBOOK_XSL_DIR   html/html.xsl PATHS "${DOCBOOK_ROOT}/docbook-xsl" )
 
+set ( QuickBook_FOUND TRUE )
 
 if ( NOT QUICKBOOK_EXECUTABLE )
   message ( WARNING "could not find quickbook" )
+  set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT BOOSTBOOK_DTD_DIR )
   message ( WARNING "could not find Boostbook DTD!" )
+  set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT BOOSTBOOK_XSL_DIR )
   message ( WARNING "could not find Boostbook XSL stylesheets!" )
+  set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT DOCBOOK_DTD_DIR )
   message ( WARNING "could not find DocBook DTD!" )
+  set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT DOCBOOK_XSL_DIR )
   message ( WARNING "could not find DocBook XSL stylesheets!" )
+  set ( QuickBook_FOUND FALSE )
 endif ()

@@ -15,7 +15,6 @@
 #include <cmath>
 #include <cstddef>
 
-
 namespace gpcxx {
 
 namespace detail {
@@ -61,6 +60,7 @@ BINARY_OPERATOR( divides_func , / );
 
 
 
+
 template< size_t I >
 struct array_terminal
 {
@@ -68,7 +68,7 @@ struct array_terminal
     typename Node::result_type operator()( Context const& c , Node const& node ) const
     {
         typedef typename Node::result_type result_type;
-        return result_type( c[I] );
+        return static_cast< result_type >( c[I] );
     }
 };
 
@@ -79,7 +79,21 @@ struct constant_terminal
     typename Node::result_type operator()( Context const& c , Node const& node ) const
     {
         typedef typename Node::result_type result_type;
-        return result_type( V );
+        return static_cast< result_type >( V );
+    }
+};
+
+template< typename Value = double >
+struct double_terminal
+{
+    Value m_value;
+    double_terminal( Value value ) : m_value( value ) { }
+    
+    template< typename Context , typename Node >
+    typename Node::result_type operator()( Context const& c , Node const& node ) const
+    {
+        typedef typename Node::result_type result_type;        
+        return static_cast< result_type >( m_value );
     }
 };
 

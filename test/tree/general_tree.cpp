@@ -9,6 +9,7 @@
  */
 
 #include "../common/test_template.hpp"
+#include "../common/test_functions.hpp"
 
 #include <gtest/gtest.h>
 
@@ -18,25 +19,6 @@ using namespace std;
 using namespace gpcxx;
 
    
-template< typename Cursor >
-void test_cursor( Cursor n , std::string const& value , size_t arity , size_t height , size_t level )
-{
-    EXPECT_EQ( *n , value );
-    EXPECT_EQ( n.size() , arity );
-    EXPECT_EQ( n.height() , height );
-    EXPECT_EQ( n.level() , level );
-}
-
-template< typename T >
-void test_cursor( gpcxx::detail::intrusive_cursor< T > n , std::string const& value , size_t arity , size_t height , size_t level )
-{
-    EXPECT_EQ( n.node()->name() , value );
-    EXPECT_EQ( n.size() , arity );
-    EXPECT_EQ( n.height() , height );
-    EXPECT_EQ( n.level() , level );
-}
-
-
 
 
 template <class T>
