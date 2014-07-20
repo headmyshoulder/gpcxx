@@ -34,7 +34,6 @@ struct  position2d
 };
 
 
-
 class board
 {
 public:             
@@ -43,7 +42,6 @@ public:
     :m_size_x(size_x), m_size_y(size_y)
     {
     }
-    
     
     position1d pos2dto1d(position2d pos2d) const
     {
@@ -59,8 +57,7 @@ public:
     
     position1d move_pos ( position1d current_pos, direction dir ) const
     {
-        position2d pos2d = pos1dto2d( current_pos ) ;
-        
+        position2d pos2d = pos1dto2d( current_pos ) ;   
         switch(dir)
         {
             case north:
@@ -76,42 +73,43 @@ public:
                 pos2d.x -= 1;
                 break;
         }
-        //wrap at corners
-        pos2d.y += ( pos2d.y + 0 ) % m_size_y;
-        pos2d.x += ( pos2d.x + 0 ) % m_size_x;
-        
+        //wrap at border
+        pos2d.y = ( pos2d.y + m_size_y ) % m_size_y;
+        pos2d.x = ( pos2d.x + m_size_x ) % m_size_x;
         return pos2dto1d(pos2d);
     }
 
 private:
-    size_t m_size_x;
-    size_t m_size_y;
+    size_t const m_size_x;
+    size_t const m_size_y;
 };
 
 class ant
 {
 public:
     ant(position1d position, direction direction)
-    :m_position(position), m_direction(direction)
+    :m_position(position), m_direction(direction), m_steps_done(0)
     {
     }
     
-
     void turnleft()
     {
         direction const lut_directions[]  = { west, north, east, south };
         m_direction = lut_directions[ m_direction ];
+        m_steps_done++;
     }
     
     void turnright()
     {
         direction const lut_directions[] = { east, south, west, north };
         m_direction = lut_directions[ m_direction ];
+        m_steps_done++;
     }
     
     void move(board const & b)
     {
         m_position = b.move_pos(m_position, m_direction);
+        m_steps_done++;
     }
     
     position1d pos() const
@@ -126,8 +124,28 @@ public:
     
 
 private:
+    int         m_steps_done;
     position1d  m_position;
     direction   m_direction;
+};
+
+
+
+
+
+class ant_simulation
+{
+public:
+    ant_simulation(std::unordered_map< position1d, bool > food_tail, size_t x_size, size_t y_size, position2d startpos, direction direction)
+    :m_food_tail{food_tail}, m_board{x_size, y_size}, m_ant{m_board.pos2dto1d(startpos), direction}
+    {
+    }
+    
+    
+private:
+    std::unordered_map< position1d, bool > m_food_tail;
+    ant     m_ant;
+    board   m_board;
 };
 
 
@@ -140,8 +158,6 @@ std::string print_ant(ant a, board b)
     oss << direction2str[a.dir()] << p2d.x << ":" << p2d.y;
     return oss.str();
 }
-
-std::unordered_map< size_t, bool > has_food_;
 
 
 
