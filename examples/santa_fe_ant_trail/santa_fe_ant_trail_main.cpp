@@ -18,6 +18,50 @@ enum move { move , turnleft , turnright };
 ant, board = operation( move , ant , board )
 */
 
+namespace santa_fe 
+{
+bool const X = true;
+bool const s = false;
+
+size_t const x_size = 32;
+size_t const y_size = 32;
+
+char const * const board[y_size] = {
+" XXX                            ",
+"   X                            ",
+"   X                    .XXX..  ",
+"   X                    X    X  ",
+"   X                    X    X  ",
+"   XXXX.XXXXX       .XX..    .  ",
+"            X       .        X  ",
+"            X       X        .  ",
+"            X       X        X  ",
+"            X       X        .  ",
+"            .       X        .  ",
+"            X       .        X  ",
+"            X       .        .  ",
+"            X       X  ...XXX.  ",
+"            X       X  X        ",
+"            .   .X...  .        ",
+"            .   .      .        ",
+"            X   .      .X...    ",
+"            X   X          X    ",
+"            X   X          .    ",
+"            X   X          .    ",
+"            X   X      ...X.    ",
+"            X   .      X        ",
+"            X   .               ",
+" ..XX..XXXXX.   X               ",
+" X              X               ",
+" X              X               ",
+" X     .XXXXXXX..               ",
+" X     X                        ",
+" .     X                        ",
+" .XXXX..                        ",
+"                                "
+};
+} // namespace santa_fe 
+
 enum direction
 {
     north = 0, east = 1, south = 2, west = 3
@@ -122,13 +166,25 @@ public:
         return m_direction;
     }
     
-
+    position1d front_pos(board const & b) const
+    {
+        return b.move_pos(m_position, m_direction);
+    }
+    
+    int steps_done()
+    {
+        return m_steps_done;
+    }
+    
 private:
     int         m_steps_done;
     position1d  m_position;
     direction   m_direction;
 };
 
+struct has_food
+{
+};
 
 
 
@@ -136,16 +192,57 @@ private:
 class ant_simulation
 {
 public:
-    ant_simulation(std::unordered_map< position1d, bool > food_tail, size_t x_size, size_t y_size, position2d startpos, direction direction)
-    :m_food_tail{food_tail}, m_board{x_size, y_size}, m_ant{m_board.pos2dto1d(startpos), direction}
+    typedef std::unordered_map< position1d, has_food > food_tail_type;
+    
+    ant_simulation(food_tail_type food_tail, size_t x_size, size_t y_size, position2d startpos, direction direction, int max_steps)
+    :m_food_tail{food_tail}, m_board{x_size, y_size}, m_ant{m_board.pos2dto1d(startpos), direction}, m_food_start_count(food_tail.size()), m_max_steps(max_steps)
     {
     }
     
+    bool food_in_front()
+    {
+        position1d front_pos = m_ant.front_pos(m_board);
+        auto found = m_food_tail.find(front_pos);
+        return found != m_food_tail.end();
+    }
     
+    
+    void turnleft()
+    {
+        m_ant.turnleft();
+    }
+    
+    void turnright()
+    {
+        m_ant.turnright();
+    }
+    
+    void move()
+    {
+        m_ant.move(m_board);
+        auto on_food = m_food_tail.find(m_ant.pos());
+        if(on_food != m_food_tail.end())
+        {
+            m_food_tail.erase(on_food);
+        }
+    }
+    
+    bool isfinsh()
+    {
+        return m_food_tail.size() == 0 || m_ant.steps_done() >= m_max_steps;
+    }
+    
+    int food_eaten()
+    {
+        return m_food_start_count - m_food_tail.size();
+    }
+        ant             m_ant;
 private:
-    std::unordered_map< position1d, bool > m_food_tail;
-    ant     m_ant;
-    board   m_board;
+    food_tail_type  m_food_tail;
+    int const       m_food_start_count;
+
+    board           m_board;
+    int             m_max_steps;
 };
 
 
@@ -163,15 +260,29 @@ std::string print_ant(ant a, board b)
 
 int main( int argc , char *argv[] )
 {
-    board b(10, 10);
-    ant a( b.pos2dto1d(position2d{0,0}) , north );
-    
-   // a.move(b);
-    for(int i = 0; i < 20; ++i)
-    {
-        std::cout << print_ant( a, b ) << "\n";
-        a.move(b);
-    }
+    board b(santa_fe::x_size, santa_fe::y_size);
+    ant_simulation::food_tail_type santa_fe_tail;
+    for(int x = 0; x < santa_fe::x_size; ++x)
+        for(int y = 0; y < santa_fe::y_size; ++y)
+            if(santa_fe::board[y][x] == 'X')
+                santa_fe_tail[b.pos2dto1d({x, y})] = has_food();
+                
+    ant_simulation as{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
+
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
+    as.move();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
+    as.move();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) << "\n";
+    as.move();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) << "\n";
+        as.turnleft();
+    as.move();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
+    as.move();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
+
     
     return 0;
 }
+
