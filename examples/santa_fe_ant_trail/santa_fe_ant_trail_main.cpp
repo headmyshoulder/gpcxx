@@ -182,9 +182,7 @@ private:
     direction   m_direction;
 };
 
-struct has_food
-{
-};
+
 
 
 
@@ -192,7 +190,7 @@ struct has_food
 class ant_simulation
 {
 public:
-    typedef std::unordered_map< position1d, has_food > food_tail_type;
+    typedef std::unordered_map< position1d, bool > food_tail_type;
     
     ant_simulation(food_tail_type food_tail, size_t x_size, size_t y_size, position2d startpos, direction direction, int max_steps)
     :m_food_tail{food_tail}, m_board{x_size, y_size}, m_ant{m_board.pos2dto1d(startpos), direction}, m_food_start_count(food_tail.size()), m_max_steps(max_steps)
@@ -203,7 +201,7 @@ public:
     {
         position1d front_pos = m_ant.front_pos(m_board);
         auto found = m_food_tail.find(front_pos);
-        return found != m_food_tail.end();
+        return found != m_food_tail.end() && found->second;
     }
     
     
@@ -221,40 +219,42 @@ public:
     {
         m_ant.move(m_board);
         auto on_food = m_food_tail.find(m_ant.pos());
-        if(on_food != m_food_tail.end())
+        if(on_food != m_food_tail.end() && on_food->second)
         {
-            m_food_tail.erase(on_food);
+            m_food_eaten++;
+            on_food->second = false;
         }
     }
     
     bool isfinsh()
     {
-        return m_food_tail.size() == 0 || m_ant.steps_done() >= m_max_steps;
+        return m_food_eaten == m_food_start_count || m_ant.steps_done() >= m_max_steps;
     }
     
     int food_eaten()
     {
-        return m_food_start_count - m_food_tail.size();
+        return m_food_eaten;
     }
-        ant             m_ant;
+
+    std::string ant_simulation_to_str()
+    {
+        position1d p = m_ant.pos();
+        position2d p2d = m_board.pos1dto2d(p);
+    
+        std::ostringstream oss;
+        oss << direction2str[m_ant.dir()] << p2d.x << ":" << p2d.y;
+        return oss.str();
+    }
 private:
     food_tail_type  m_food_tail;
     int const       m_food_start_count;
-
+    int             m_food_eaten;
+    ant             m_ant;
     board           m_board;
     int             m_max_steps;
 };
 
 
-std::string print_ant(ant a, board b)
-{
-    position1d p = a.pos();
-    position2d p2d = b.pos1dto2d(p);
-    
-    std::ostringstream oss;
-    oss << direction2str[a.dir()] << p2d.x << ":" << p2d.y;
-    return oss.str();
-}
 
 
 
@@ -265,23 +265,25 @@ int main( int argc , char *argv[] )
     for(int x = 0; x < santa_fe::x_size; ++x)
         for(int y = 0; y < santa_fe::y_size; ++y)
             if(santa_fe::board[y][x] == 'X')
-                santa_fe_tail[b.pos2dto1d({x, y})] = has_food();
+                santa_fe_tail[b.pos2dto1d({x, y})] = true;
                 
     ant_simulation as{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
 
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) << "\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() << "\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) << "\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() << "\n";
         as.turnleft();
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << print_ant(as.m_ant, b) <<"\n";
-
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
+    as.turnleft();
+    as.turnleft();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
     
     return 0;
 }
