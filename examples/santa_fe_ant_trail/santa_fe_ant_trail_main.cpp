@@ -7,22 +7,11 @@
 
 #include <sstream>
 #include <iostream>
-#include <tuple>
 #include <unordered_map>
-#include <boost/concept_check.hpp>
 
-
-
-/*
-enum move { move , turnleft , turnright };
-ant, board = operation( move , ant , board )
-*/
 
 namespace santa_fe 
 {
-bool const X = true;
-bool const s = false;
-
 size_t const x_size = 32;
 size_t const y_size = 32;
 
@@ -67,11 +56,11 @@ enum direction
     north = 0, east = 1, south = 2, west = 3
 };
 
-char const * const direction2str[] = { "N", "E", "S", "W" };
+char const * const direction_to_str[] = { "N", "E", "S", "W" };
 
-typedef int position1d;
+typedef int position_1d;
 
-struct  position2d
+struct  position_2d
 {
     int x;
     int y;
@@ -81,27 +70,26 @@ struct  position2d
 class board
 {
 public:             
-    
     board(size_t size_x, size_t size_y)
     :m_size_x(size_x), m_size_y(size_y)
     {
     }
     
-    position1d pos2dto1d(position2d pos2d) const
+    position_1d pos_2d_to_1d(position_2d pos2d) const
     {
         return pos2d.y * m_size_x + pos2d.x;
     }
     
-    position2d pos1dto2d(position1d pos1d) const
+    position_2d pos_1d_to_2d(position_1d pos1d) const
     {
         int x_pos = pos1d % m_size_x;
         int y_pos = pos1d / m_size_x;
         return {x_pos, y_pos};
     }   
     
-    position1d move_pos ( position1d current_pos, direction dir ) const
+    position_1d move_pos ( position_1d current_pos, direction dir ) const
     {
-        position2d pos2d = pos1dto2d( current_pos ) ;   
+        position_2d pos2d = pos_1d_to_2d( current_pos ) ;   
         switch(dir)
         {
             case north:
@@ -120,7 +108,7 @@ public:
         //wrap at border
         pos2d.y = ( pos2d.y + m_size_y ) % m_size_y;
         pos2d.x = ( pos2d.x + m_size_x ) % m_size_x;
-        return pos2dto1d(pos2d);
+        return pos_2d_to_1d(pos2d);
     }
 
 private:
@@ -131,19 +119,19 @@ private:
 class ant
 {
 public:
-    ant(position1d position, direction direction)
+    ant(position_1d position, direction direction)
     :m_position(position), m_direction(direction), m_steps_done(0)
     {
     }
     
-    void turnleft()
+    void turn_left()
     {
         direction const lut_directions[]  = { west, north, east, south };
         m_direction = lut_directions[ m_direction ];
         m_steps_done++;
     }
     
-    void turnright()
+    void turn_right()
     {
         direction const lut_directions[] = { east, south, west, north };
         m_direction = lut_directions[ m_direction ];
@@ -156,7 +144,7 @@ public:
         m_steps_done++;
     }
     
-    position1d pos() const
+    position_1d pos() const
     {
         return m_position;
     }
@@ -166,19 +154,19 @@ public:
         return m_direction;
     }
     
-    position1d front_pos(board const & b) const
+    position_1d front_pos(board const & b) const
     {
         return b.move_pos(m_position, m_direction);
     }
     
-    int steps_done()
+    int steps_done() const
     {
         return m_steps_done;
     }
     
 private:
     int         m_steps_done;
-    position1d  m_position;
+    position_1d m_position;
     direction   m_direction;
 };
 
@@ -190,29 +178,29 @@ private:
 class ant_simulation
 {
 public:
-    typedef std::unordered_map< position1d, bool > food_tail_type;
+    typedef std::unordered_map< position_1d, bool > food_tail_type;
     
-    ant_simulation(food_tail_type food_tail, size_t x_size, size_t y_size, position2d startpos, direction direction, int max_steps)
-    :m_food_tail{food_tail}, m_board{x_size, y_size}, m_ant{m_board.pos2dto1d(startpos), direction}, m_food_start_count(food_tail.size()), m_max_steps(max_steps)
+    ant_simulation(food_tail_type food_tail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps)
+    :m_food_tail{food_tail}, m_board{x_size, y_size}, m_ant{m_board.pos_2d_to_1d(start_pos), start_direction}, m_food_start_count(food_tail.size()), m_max_steps(max_steps)
     {
     }
     
-    bool food_in_front()
+    bool food_in_front() const
     {
-        position1d front_pos = m_ant.front_pos(m_board);
+        position_1d front_pos = m_ant.front_pos(m_board);
         auto found = m_food_tail.find(front_pos);
         return found != m_food_tail.end() && found->second;
     }
     
     
-    void turnleft()
+    void turn_left()
     {
-        m_ant.turnleft();
+        m_ant.turn_left();
     }
     
-    void turnright()
+    void turn_right()
     {
-        m_ant.turnright();
+        m_ant.turn_right();
     }
     
     void move()
@@ -226,25 +214,25 @@ public:
         }
     }
     
-    bool isfinsh()
+    bool is_finsh() const
     {
         return m_food_eaten == m_food_start_count || m_ant.steps_done() >= m_max_steps;
     }
     
-    int food_eaten()
+    int food_eaten() const 
     {
         return m_food_eaten;
     }
 
-    std::string ant_simulation_to_str()
-    {
-        position1d p = m_ant.pos();
-        position2d p2d = m_board.pos1dto2d(p);
     
-        std::ostringstream oss;
-        oss << direction2str[m_ant.dir()] << p2d.x << ":" << p2d.y;
-        return oss.str();
+    friend std::ostream & operator<<(std::ostream & os, ant_simulation const & asim)
+    {
+        position_1d p = asim.m_ant.pos();
+        position_2d p2d = asim.m_board.pos_1d_to_2d(p);
+        os << direction_to_str[asim.m_ant.dir()] << p2d.x << ":" << p2d.y;
+        return os;
     }
+        
 private:
     food_tail_type  m_food_tail;
     int const       m_food_start_count;
@@ -265,25 +253,25 @@ int main( int argc , char *argv[] )
     for(int x = 0; x < santa_fe::x_size; ++x)
         for(int y = 0; y < santa_fe::y_size; ++y)
             if(santa_fe::board[y][x] == 'X')
-                santa_fe_tail[b.pos2dto1d({x, y})] = true;
+                santa_fe_tail[b.pos_2d_to_1d({x, y})] = true;
                 
     ant_simulation as{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
 
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() << "\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() << "\n";
-        as.turnleft();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+    as.turn_left();
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
     as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
-    as.turnleft();
-    as.turnleft();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as.ant_simulation_to_str() <<"\n";
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+    as.turn_left();
+    as.turn_left();
+    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
     
     return 0;
 }
