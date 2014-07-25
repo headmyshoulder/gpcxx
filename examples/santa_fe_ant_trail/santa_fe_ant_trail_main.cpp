@@ -8,7 +8,11 @@
 #include <sstream>
 #include <iostream>
 #include <unordered_map>
+#include <random>
 
+#include <gpcxx/tree/intrusive_tree.hpp>
+#include <gpcxx/tree/basic_named_intrusive_node.hpp>
+#include <gpcxx/generate/uniform_symbol.hpp>
 
 namespace santa_fe 
 {
@@ -224,6 +228,10 @@ public:
         return m_food_eaten;
     }
 
+    int score() const
+    {
+        return m_food_start_count - m_food_eaten;
+    }
     
     friend std::ostream & operator<<(std::ostream & os, ant_simulation const & asim)
     {
@@ -242,8 +250,85 @@ private:
     int             m_max_steps;
 };
 
+typedef ant_simulation value_type;
+typedef std::mt19937 rng_type;
+typedef ant_simulation eval_context_type;
+typedef ant_simulation result_type;
+typedef gpcxx::basic_named_intrusive_node< result_type , eval_context_type > node_type;
+typedef gpcxx::intrusive_tree< node_type > tree_type;
 
 
+struct evaluator
+{
+    typedef eval_context_type context_type;
+
+    int operator()( tree_type const& t , context_type & c ) const
+    {
+        while( !c.is_finsh() ) 
+        {
+            t.root()->eval( c );
+        }
+        return c.score();
+    }
+};
+
+struct prog2                                                                                           
+{                                                                                                     
+    template< typename Context , typename Node >                                                      
+    inline typename Node::result_type operator()( Context& ant_sim , Node const& node ) const         
+    {
+        node.children( 0 )->eval( ant_sim );
+        node.children( 1 )->eval( ant_sim );
+        return ant_sim;                       
+    }                                                                                                 
+};
+
+struct if_food_ahead                                                                                           
+{                                                                                                     
+    template< typename Context , typename Node >                                                      
+    inline typename Node::result_type operator()( Context& ant_sim , Node const& node ) const         
+    {
+        if(ant_sim.food_in_front())
+        {
+            node.children( 0 )->eval( ant_sim );
+        }
+        else
+        {
+            node.children( 1 )->eval( ant_sim );
+        }
+        return ant_sim;                       
+    }                                                                                                 
+};
+
+struct ant_move_task_terminal
+{
+    template< typename Context , typename Node >
+    typename Node::result_type operator()( Context & ant_sim , Node const& node ) const
+    {
+        ant_sim.move();
+        return ant_sim;
+    }
+};
+
+struct ant_turn_left_task_terminal
+{
+    template< typename Context , typename Node >
+    typename Node::result_type operator()( Context & ant_sim , Node const& node ) const
+    {
+        ant_sim.turn_left();
+        return ant_sim;
+    }
+};
+
+struct ant_turn_right_task_terminal
+{
+    template< typename Context , typename Node >
+    typename Node::result_type operator()( Context & ant_sim , Node const& node ) const
+    {
+        ant_sim.turn_right();
+        return ant_sim;
+    }
+};
 
 
 int main( int argc , char *argv[] )
@@ -256,6 +341,17 @@ int main( int argc , char *argv[] )
                 santa_fe_tail[b.pos_2d_to_1d({x, y})] = true;
                 
     ant_simulation as{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
+    
+    typedef std::mt19937 rng_type;
+    
+    evaluator fitness_f{};
+    
+    
+    gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
+        node_type { ant_move_task_terminal{} ,          "m" } ,
+        node_type { ant_turn_left_task_terminal{} ,     "l" } ,
+        node_type { ant_turn_right_task_terminal{} ,    "r" } 
+    } };
 
     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
     as.move();
