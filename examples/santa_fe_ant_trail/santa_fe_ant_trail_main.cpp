@@ -4,7 +4,7 @@
  * Author: Gerard Choinka (gerard.choinka+gpcxx@gmail.com)
  */
 
-
+#include <string>
 #include <sstream>
 #include <iostream>
 #include <unordered_map>
@@ -138,6 +138,15 @@ public:
         return pos_2d_to_1d(pos2d);
     }
 
+    size_t get_size_x()
+    {
+        return m_size_x;
+    }
+    
+    size_t get_size_y()
+    {
+        return m_size_y;
+    }
 private:
     size_t const m_size_x;
     size_t const m_size_y;
@@ -263,6 +272,16 @@ public:
         os << direction_to_str[asim.m_ant.dir()] << p2d.x << ":" << p2d.y;
         return os;
     }
+    
+    food_tail_type get_food_tail()
+    {
+        return m_food_tail;
+    }
+    
+    board get_board()
+    {
+        return m_board;
+    }
         
 private:
     food_tail_type  m_food_tail;
@@ -271,6 +290,75 @@ private:
     ant             m_ant;
     board           m_board;
     int             m_max_steps;
+};
+
+class ant_simulation_decorator
+{
+public:
+    ant_simulation_decorator(ant_simulation & ant_sim)
+    :m_ant_sim(ant_sim)
+    {
+    }
+    
+    bool food_in_front() const
+    {
+        return m_ant_sim.food_in_front();
+    }
+    
+    
+    void turn_left()
+    {
+        m_ant_sim.turn_left();
+    }
+    
+    void turn_right()
+    {
+        m_ant_sim.turn_right();
+    }
+    
+    void move()
+    {
+        m_ant_sim.move();
+    }
+    
+    bool is_finsh() const
+    {
+        return m_ant_sim.is_finsh();
+    }
+    
+    int food_eaten() const 
+    {
+        return m_ant_sim.food_eaten();
+    }
+
+    int score() const
+    {
+        return m_ant_sim.score();
+    }
+    
+    friend std::ostream & operator<<(std::ostream & os, ant_simulation_decorator const & asim)
+    {
+        os << asim.m_ant_sim;
+        return os;
+    }
+    
+    std::string get_board_as_str()
+    {
+        std::ostringstream oss;
+        board b = m_ant_sim.get_board();
+        for(int x = 0; x < b.get_size_x(); ++x)
+        {
+            for(int y = 0; y < b.get_size_y(); ++y)
+            {
+                oss << 'X';
+            }
+            oss << "\n";
+        }
+        return oss.str();
+    }
+    
+private:
+    ant_simulation & m_ant_sim;
 };
 
 bool operator<(ant_simulation const & lhs, ant_simulation const & rhs)
@@ -436,7 +524,8 @@ int main( int argc , char *argv[] )
             if(santa_fe::board[y][x] == 'X')
                 santa_fe_tail[b.pos_2d_to_1d({x, y})] = true;
                 
-    ant_simulation as{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
+    ant_simulation as_real{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
+    ant_simulation_decorator as(as_real);
     
     typedef std::mt19937 rng_type;
     rng_type rng;
@@ -463,18 +552,18 @@ int main( int argc , char *argv[] )
     size_t min_tree_height = 1 , max_tree_height = 8;
     size_t tournament_size = 15;
 
-
+     /*
     std::array< double , 3 > weights = {{ double( terminal_gen.num_symbols() ) ,
                                           double( unary_gen.num_symbols() ) ,
                                           double( binary_gen.num_symbols() ) }};    
     auto tree_generator = gpcxx::make_basic_generate_strategy( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , weights );
     auto new_tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
-    
+      
     typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
     std::vector< int > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
-    
+ 
     evolver.mutation_function() = gpcxx::make_mutation(
         gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
@@ -482,7 +571,7 @@ int main( int argc , char *argv[] )
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
-    /*
+
     node_factory nf;
     
     auto root = add( nf.make('?'), nf.make('m'),
@@ -523,6 +612,8 @@ int main( int argc , char *argv[] )
     as.turn_left();
     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
    
+    std::cout << "\n";
+    std::cout  << "\n" << as.get_board_as_str() << "\n";
     return 0;
 }
 
