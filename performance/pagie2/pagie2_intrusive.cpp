@@ -45,7 +45,7 @@ typedef gpcxx::regression_training_data< value_type , 3 > trainings_data_type;
 typedef std::mt19937 rng_type ;
 typedef std::array< value_type , 3 > eval_context_type;
 typedef std::vector< value_type > fitness_type;
-typedef gpcxx::basic_named_intrusive_node< double , eval_context_type > node_type;
+typedef gpcxx::basic_named_intrusive_node< double , eval_context_type const > node_type;
 typedef gpcxx::intrusive_tree< node_type > tree_type;
 typedef std::vector< tree_type > population_type;
 

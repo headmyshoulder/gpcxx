@@ -9,10 +9,33 @@
 #include <iostream>
 #include <unordered_map>
 #include <random>
+#include <boost/concept_check.hpp>
 
 #include <gpcxx/tree/intrusive_tree.hpp>
 #include <gpcxx/tree/basic_named_intrusive_node.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>
+#include <gpcxx/generate/ramp.hpp>
+#include <gpcxx/evolve/static_pipeline.hpp>
+#include <gpcxx/operator/simple_mutation_strategy.hpp>
+#include <gpcxx/operator/reproduce.hpp>
+#include <gpcxx/operator/mutation.hpp>
+#include <gpcxx/operator/tournament_selector.hpp>
+#include <gpcxx/generate/uniform_symbol.hpp>
+#include <gpcxx/generate/ramp.hpp>
+#include <gpcxx/operator/mutation.hpp>
+#include <gpcxx/operator/simple_mutation_strategy.hpp>
+#include <gpcxx/operator/random_selector.hpp>
+#include <gpcxx/operator/tournament_selector.hpp>
+#include <gpcxx/operator/crossover.hpp>
+#include <gpcxx/operator/one_point_crossover_strategy.hpp>
+#include <gpcxx/operator/reproduce.hpp>
+#include <gpcxx/eval/static_eval.hpp>
+#include <gpcxx/eval/regression_fitness.hpp>
+#include <gpcxx/evolve/static_pipeline.hpp>
+#include <gpcxx/io/best_individuals.hpp>
+#include <gpcxx/stat/population_statistics.hpp>
+#include <gpcxx/app/timer.hpp>
+#include <gpcxx/app/normalize.hpp>
 
 namespace santa_fe 
 {
@@ -250,12 +273,20 @@ private:
     int             m_max_steps;
 };
 
-typedef ant_simulation value_type;
-typedef std::mt19937 rng_type;
-typedef ant_simulation eval_context_type;
-typedef ant_simulation result_type;
-typedef gpcxx::basic_named_intrusive_node< result_type , eval_context_type > node_type;
-typedef gpcxx::intrusive_tree< node_type > tree_type;
+bool operator<(ant_simulation const & lhs, ant_simulation const & rhs)
+{
+    return lhs.score() < rhs.score();
+}
+
+using value_type = ant_simulation;
+using rng_type = std::mt19937 ;
+using eval_context_type = ant_simulation;
+using result_type = void ;
+using node_type = gpcxx::basic_named_intrusive_node< result_type , eval_context_type > ;
+using tree_type = gpcxx::intrusive_tree< node_type >;
+using population_type = std::vector< tree_type >;
+using fitness_type = std::vector< value_type >;
+
 
 
 struct evaluator
@@ -278,8 +309,18 @@ struct prog2
     inline typename Node::result_type operator()( Context& ant_sim , Node const& node ) const         
     {
         node.children( 0 )->eval( ant_sim );
+        node.children( 1 )->eval( ant_sim );             
+    }                                                                                                 
+};
+
+struct prog3                                                                                           
+{                                                                                                     
+    template< typename Context , typename Node >                                                      
+    inline typename Node::result_type operator()( Context& ant_sim , Node const& node ) const         
+    {
+        node.children( 0 )->eval( ant_sim );
         node.children( 1 )->eval( ant_sim );
-        return ant_sim;                       
+        node.children( 2 )->eval( ant_sim );            
     }                                                                                                 
 };
 
@@ -295,8 +336,7 @@ struct if_food_ahead
         else
         {
             node.children( 1 )->eval( ant_sim );
-        }
-        return ant_sim;                       
+        }                     
     }                                                                                                 
 };
 
@@ -306,7 +346,6 @@ struct ant_move_task_terminal
     typename Node::result_type operator()( Context & ant_sim , Node const& node ) const
     {
         ant_sim.move();
-        return ant_sim;
     }
 };
 
@@ -316,7 +355,6 @@ struct ant_turn_left_task_terminal
     typename Node::result_type operator()( Context & ant_sim , Node const& node ) const
     {
         ant_sim.turn_left();
-        return ant_sim;
     }
 };
 
@@ -326,13 +364,71 @@ struct ant_turn_right_task_terminal
     typename Node::result_type operator()( Context & ant_sim , Node const& node ) const
     {
         ant_sim.turn_right();
-        return ant_sim;
     }
+};
+
+
+node_type & add( node_type & parent, node_type & child1 )
+{
+    parent.attach_child( &child1 );
+    return parent;
+}
+
+
+node_type & add( node_type & parent, node_type & child1, node_type & child2 )
+{
+    parent.attach_child( &child1 );
+    parent.attach_child( &child2 );
+    return parent;
+}
+
+node_type & add( node_type & parent, node_type & child1, node_type & child2, node_type & child3 )
+{
+    parent.attach_child( &child1 );
+    parent.attach_child( &child2 );
+    parent.attach_child( &child3 );
+    return parent;
+}
+
+class node_factory
+{
+public:
+    
+    node_type & make(char key)
+    {
+        switch(key)
+        {
+            case 'l':
+                m_clones.emplace_back( node_type { ant_turn_left_task_terminal{} , "l" } );
+            break;
+            case 'r':
+                m_clones.emplace_back( node_type { ant_turn_right_task_terminal{} , "r" } );
+            break;
+            case 'm':
+                m_clones.emplace_back( node_type { ant_move_task_terminal{} , "m" } );
+            break;
+            case '2':
+                m_clones.emplace_back( node_type { prog2{} , "2" } );
+            break;
+            case '3':
+                m_clones.emplace_back( node_type { prog3{} , "3" } );
+            break;
+            case '?':
+                m_clones.emplace_back( node_type { if_food_ahead{} , "?" } );
+            break;            
+        }        
+        return m_clones.back();
+    }
+    
+private:
+    std::vector< node_type > m_clones;
+        
 };
 
 
 int main( int argc , char *argv[] )
 {
+   
     board b(santa_fe::x_size, santa_fe::y_size);
     ant_simulation::food_tail_type santa_fe_tail;
     for(int x = 0; x < santa_fe::x_size; ++x)
@@ -343,7 +439,7 @@ int main( int argc , char *argv[] )
     ant_simulation as{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
     
     typedef std::mt19937 rng_type;
-    
+    rng_type rng;
     evaluator fitness_f{};
     
     
@@ -352,6 +448,64 @@ int main( int argc , char *argv[] )
         node_type { ant_turn_left_task_terminal{} ,     "l" } ,
         node_type { ant_turn_right_task_terminal{} ,    "r" } 
     } };
+    gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type >{} };
+    gpcxx::uniform_symbol< node_type > binary_gen { std::vector< node_type > {
+        node_type { prog2{} , "&" } ,
+        node_type { if_food_ahead{} , "?" }  
+    } };
+
+    size_t population_size = 1000;
+    size_t generation_size = 20;
+    double number_elite = 1;
+    double mutation_rate = 0.0;
+    double crossover_rate = 0.6;
+    double reproduction_rate = 0.3;
+    size_t min_tree_height = 1 , max_tree_height = 8;
+    size_t tournament_size = 15;
+
+
+    std::array< double , 3 > weights = {{ double( terminal_gen.num_symbols() ) ,
+                                          double( unary_gen.num_symbols() ) ,
+                                          double( binary_gen.num_symbols() ) }};    
+    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , weights );
+    auto new_tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
+    
+    typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
+    evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
+    std::vector< int > fitness( population_size , 0.0 );
+    std::vector< tree_type > population( population_size );
+    
+    evolver.mutation_function() = gpcxx::make_mutation(
+        gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
+    evolver.crossover_function() = gpcxx::make_crossover( 
+        gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
+    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
+    /*
+    node_factory nf;
+    
+    auto root = add( nf.make('?'), nf.make('m'),
+                              add( nf.make('3'), nf.make('l'),
+                                           add(  nf.make('2'), add( nf.make('?'), nf.make('m'),
+                                                                                  nf.make('r')),
+                                                               add( nf.make('2'), nf.make('r'),
+                                                                             add( nf.make('2'), nf.make('l'), nf.make('r') )
+                                                                  )
+                                              ),
+                                           add(  nf.make('2'), add( nf.make('?'), nf.make('m'), nf.make('l') ), nf.make('m') )   
+                                 )
+                   );
+                                                                     
+    
+
+    while( !as.is_finsh() ) 
+    {
+        root.eval( as );
+    }
+    std::cout << as.score() << "\n";
+    */
+
 
     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
     as.move();
@@ -368,7 +522,7 @@ int main( int argc , char *argv[] )
     as.turn_left();
     as.turn_left();
     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-    
+   
     return 0;
 }
 
