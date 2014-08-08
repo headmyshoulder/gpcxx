@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <random>
 #include <boost/concept_check.hpp>
+#include <boost/function.hpp>
 
 #include <gpcxx/tree/intrusive_tree.hpp>
 #include <gpcxx/tree/basic_named_intrusive_node.hpp>
@@ -282,6 +283,12 @@ public:
     {
         return m_board;
     }
+    
+    ant const & get_ant()
+    {
+        return m_ant;
+    }
+        
         
 private:
     food_tail_type  m_food_tail;
@@ -295,8 +302,8 @@ private:
 class ant_simulation_decorator
 {
 public:
-    ant_simulation_decorator(ant_simulation & ant_sim)
-    :m_ant_sim(ant_sim)
+    ant_simulation_decorator(ant_simulation & ant_sim, boost::function<void(ant_simulation_decorator const &)> on_every_step)
+    :m_ant_sim(ant_sim), m_on_every_step(on_every_step)
     {
     }
     
@@ -309,16 +316,19 @@ public:
     void turn_left()
     {
         m_ant_sim.turn_left();
+        m_on_every_step(*this);
     }
     
     void turn_right()
     {
         m_ant_sim.turn_right();
+        m_on_every_step(*this);
     }
     
     void move()
     {
         m_ant_sim.move();
+        m_on_every_step(*this);
     }
     
     bool is_finsh() const
@@ -336,21 +346,36 @@ public:
         return m_ant_sim.score();
     }
     
+    ant const & get_ant()
+    {
+        return m_ant_sim.get_ant();
+    }
+    
     friend std::ostream & operator<<(std::ostream & os, ant_simulation_decorator const & asim)
     {
         os << asim.m_ant_sim;
         return os;
     }
     
-    std::string get_board_as_str()
+    
+    
+    std::string get_board_as_str() const
     {
         std::ostringstream oss;
         board b = m_ant_sim.get_board();
-        for(int x = 0; x < b.get_size_x(); ++x)
+
+        for(int y = b.get_size_y()-1; y >= 0 ; --y)
         {
-            for(int y = 0; y < b.get_size_y(); ++y)
+            for(int x = 0; x < b.get_size_x(); ++x)
             {
-                oss << 'X';
+                int pos_1d = b.pos_2d_to_1d({x,y});
+                
+                if(m_ant_sim.get_ant().pos() == pos_1d)
+                    oss << direction_to_str[m_ant_sim.get_ant().dir()];
+                else if(m_ant_sim.get_food_tail()[pos_1d])
+                    oss << '0';
+                else
+                    oss << ' ';
             }
             oss << "\n";
         }
@@ -358,6 +383,7 @@ public:
     }
     
 private:
+    boost::function<void(ant_simulation_decorator const &)> m_on_every_step;
     ant_simulation & m_ant_sim;
 };
 
@@ -366,9 +392,9 @@ bool operator<(ant_simulation const & lhs, ant_simulation const & rhs)
     return lhs.score() < rhs.score();
 }
 
-using value_type = ant_simulation;
+using value_type = ant_simulation_decorator;
 using rng_type = std::mt19937 ;
-using eval_context_type = ant_simulation;
+using eval_context_type = ant_simulation_decorator;
 using result_type = void ;
 using node_type = gpcxx::basic_named_intrusive_node< result_type , eval_context_type > ;
 using tree_type = gpcxx::intrusive_tree< node_type >;
@@ -456,67 +482,9 @@ struct ant_turn_right_task_terminal
 };
 
 
-node_type & add( node_type & parent, node_type & child1 )
-{
-    parent.attach_child( &child1 );
-    return parent;
-}
-
-
-node_type & add( node_type & parent, node_type & child1, node_type & child2 )
-{
-    parent.attach_child( &child1 );
-    parent.attach_child( &child2 );
-    return parent;
-}
-
-node_type & add( node_type & parent, node_type & child1, node_type & child2, node_type & child3 )
-{
-    parent.attach_child( &child1 );
-    parent.attach_child( &child2 );
-    parent.attach_child( &child3 );
-    return parent;
-}
-
-class node_factory
-{
-public:
-    
-    node_type & make(char key)
-    {
-        switch(key)
-        {
-            case 'l':
-                m_clones.emplace_back( node_type { ant_turn_left_task_terminal{} , "l" } );
-            break;
-            case 'r':
-                m_clones.emplace_back( node_type { ant_turn_right_task_terminal{} , "r" } );
-            break;
-            case 'm':
-                m_clones.emplace_back( node_type { ant_move_task_terminal{} , "m" } );
-            break;
-            case '2':
-                m_clones.emplace_back( node_type { prog2{} , "2" } );
-            break;
-            case '3':
-                m_clones.emplace_back( node_type { prog3{} , "3" } );
-            break;
-            case '?':
-                m_clones.emplace_back( node_type { if_food_ahead{} , "?" } );
-            break;            
-        }        
-        return m_clones.back();
-    }
-    
-private:
-    std::vector< node_type > m_clones;
-        
-};
-
 
 int main( int argc , char *argv[] )
 {
-   
     board b(santa_fe::x_size, santa_fe::y_size);
     ant_simulation::food_tail_type santa_fe_tail;
     for(int x = 0; x < santa_fe::x_size; ++x)
@@ -524,23 +492,101 @@ int main( int argc , char *argv[] )
             if(santa_fe::board[y][x] == 'X')
                 santa_fe_tail[b.pos_2d_to_1d({x, y})] = true;
                 
-    ant_simulation as_real{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
-    ant_simulation_decorator as(as_real);
+
+   
     
+    tree_type tree;
+    auto root = tree.root();
+    auto a01 = tree.insert_below( root, node_type { if_food_ahead{} , "?" } );
+    
+    auto b01 = tree.insert_below( a01,  node_type { ant_move_task_terminal{} , "m" } );
+    auto b02 = tree.insert_below( a01,  node_type { prog2{} , "&" } );
+     
+    auto c02 = tree.insert_below( b02,  node_type { ant_turn_left_task_terminal{} , "l" } );
+    auto c03 = tree.insert_below( b02,  node_type { prog2{} , "&" } );
+    
+    auto d03 = tree.insert_below( c03,  node_type { prog2{} , "&" } );
+    auto d08 = tree.insert_below( c03,  node_type { prog2{} , "&" } );
+    
+    auto e03 = tree.insert_below( d03,  node_type { if_food_ahead{} , "?" } );
+    auto e05 = tree.insert_below( d03,  node_type { prog2{} , "&" } );
+    auto e08 = tree.insert_below( d08,  node_type { if_food_ahead{} , "?" } );
+    auto e10 = tree.insert_below( d08,  node_type { ant_move_task_terminal{} , "m" } );
+    
+    auto f03 = tree.insert_below( e03,  node_type { ant_move_task_terminal{} , "m" } );
+    auto f04 = tree.insert_below( e03,  node_type { ant_turn_right_task_terminal{} , "r" } );
+    auto f05 = tree.insert_below( e05,  node_type { ant_turn_right_task_terminal{} , "r" } );
+    auto f06 = tree.insert_below( e05,  node_type { prog2{} , "&" } );
+    auto f08 = tree.insert_below( e08,  node_type { ant_move_task_terminal{} , "m" } );
+    auto f09 = tree.insert_below( e08,  node_type { ant_turn_left_task_terminal{} , "l" } );
+    
+    auto g06 = tree.insert_below( f06,  node_type { ant_turn_left_task_terminal{} , "l" } );
+    auto g07 = tree.insert_below( f06,  node_type { ant_turn_right_task_terminal{} , "r" } );
+    
+
+    ant_simulation ant_sim{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
+    ant_simulation_decorator ant_sim_dec(ant_sim, [](ant_simulation_decorator const & ant_sim_dec){std::cout << ant_sim_dec.get_board_as_str() << "\n"; });
+    
+    while( !ant_sim_dec.is_finsh() ) 
+    {
+        tree.root()->eval(ant_sim_dec);
+    }
+    std::cout << ant_sim_dec.score() << "\n";
+    
+    
+
+    
+    /*
+    
+    auto n2 = tree.insert_below( n1,  node_type { prog2{} , "2" } );
+    
+    auto n3_0 = tree.insert_below( n2,  node_type { ant_turn_left_task_terminal{} , "l" } );
+    auto n3_1 = tree.insert_below( n2,  node_type { prog2{} , "2" } );
+    auto n3_2 = tree.insert_below( n2,  node_type { prog2{} , "2" } );
+    
+    
+    auto n4_0 = tree.insert_below( n3_1,  node_type { if_food_ahead{} , "?" } );
+    auto n4_1 = tree.insert_below( n3_1,  node_type { prog2{} , "2" } );
+    
+    auto n4_2 = tree.insert_below( n3_2,  node_type { if_food_ahead{} , "?" } );
+    auto n4_3 = tree.insert_below( n3_2,  node_type { ant_move_task_terminal{} , "m" } );
+    
+    
+    auto n5_0 = tree.insert_below( n4_0,  node_type { ant_move_task_terminal{} , "m" } );
+    auto n5_1 = tree.insert_below( n4_0,  node_type { ant_turn_right_task_terminal{} , "r" } );
+    
+    auto n5_3 = tree.insert_below( n4_1,  node_type { ant_turn_right_task_terminal{} , "r" } );
+    auto n5_4 = tree.insert_below( n4_1,  node_type { prog2{} , "2" } );
+    
+    
+    auto n5_5 = tree.insert_below( n4_2,  node_type { ant_move_task_terminal{} , "m" } );
+    auto n5_6 = tree.insert_below( n4_2,  node_type { ant_turn_left_task_terminal{} , "l" } );
+    */
+    
+    /*
+    while( !ant_sim_dec.is_finsh() ) 
+    {
+        tree.root()->eval(ant_sim_dec);
+    }
+    std::cout << ant_sim_dec.score() << "\n";
+    */
+    
+            /*
     typedef std::mt19937 rng_type;
     rng_type rng;
     evaluator fitness_f{};
     
-    
+
     gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
         node_type { ant_move_task_terminal{} ,          "m" } ,
         node_type { ant_turn_left_task_terminal{} ,     "l" } ,
         node_type { ant_turn_right_task_terminal{} ,    "r" } 
     } };
-    gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type >{} };
+    //gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type >{} };
     gpcxx::uniform_symbol< node_type > binary_gen { std::vector< node_type > {
-        node_type { prog2{} , "&" } ,
-        node_type { if_food_ahead{} , "?" }  
+        node_type { prog2{} , "2" } ,
+        node_type { if_food_ahead{} , "?" },
+        node_type { prog3{} , "3" }
     } };
 
     size_t population_size = 1000;
@@ -552,9 +598,9 @@ int main( int argc , char *argv[] )
     size_t min_tree_height = 1 , max_tree_height = 8;
     size_t tournament_size = 15;
 
-     /*
+     
     std::array< double , 3 > weights = {{ double( terminal_gen.num_symbols() ) ,
-                                          double( unary_gen.num_symbols() ) ,
+                                       //  double( unary_gen.num_symbols() ) ,
                                           double( binary_gen.num_symbols() ) }};    
     auto tree_generator = gpcxx::make_basic_generate_strategy( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , weights );
     auto new_tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
@@ -563,7 +609,9 @@ int main( int argc , char *argv[] )
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
     std::vector< int > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
- 
+    */
+    
+ /*
     evolver.mutation_function() = gpcxx::make_mutation(
         gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
@@ -571,8 +619,8 @@ int main( int argc , char *argv[] )
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
-
-    node_factory nf;
+*/
+/*    node_factory nf;
     
     auto root = add( nf.make('?'), nf.make('m'),
                               add( nf.make('3'), nf.make('l'),
@@ -582,38 +630,38 @@ int main( int argc , char *argv[] )
                                                                              add( nf.make('2'), nf.make('l'), nf.make('r') )
                                                                   )
                                               ),
-                                           add(  nf.make('2'), add( nf.make('?'), nf.make('m'), nf.make('l') ), nf.make('m') )   
+                                          add(  nf.make('2'), add( nf.make('?'), nf.make('m'), nf.make('l') ), nf.make('m') )   
                                  )
                    );
-                                                                     
+                           */                                          
     
 
-    while( !as.is_finsh() ) 
-    {
-        root.eval( as );
-    }
-    std::cout << as.score() << "\n";
-    */
+    //while( !as.is_finsh() ) 
+    //{
+    //    root.eval( as );
+    //}
+    //std::cout << as.score() << "\n";
+    
 
 
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-    as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-    as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-    as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-    as.turn_left();
-    as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-    as.move();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-    as.turn_left();
-    as.turn_left();
-    std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-   
-    std::cout << "\n";
-    std::cout  << "\n" << as.get_board_as_str() << "\n";
+//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+//     as.move();
+//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+//     as.move();
+//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+//     as.move();
+//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+//     as.turn_left();
+//     as.move();
+//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+//     as.move();
+//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+//     as.turn_left();
+//     as.turn_left();
+//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
+//    
+//     std::cout << "\n";
+//     std::cout  << "\n" << as.get_board_as_str() << "\n";
     return 0;
 }
 
