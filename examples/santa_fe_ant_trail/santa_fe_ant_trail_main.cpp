@@ -121,13 +121,13 @@ public:
         switch(dir)
         {
             case north:
-                pos2d.y += 1;
+                pos2d.y -= 1;
                 break;
             case east:
                 pos2d.x += 1;
                 break;
             case south:
-                pos2d.y -= 1;
+                pos2d.y += 1;
                 break;
             case west:
                 pos2d.x -= 1;
@@ -364,7 +364,8 @@ public:
         std::ostringstream oss;
         board b = m_ant_sim.get_board();
 
-        for(int y = b.get_size_y()-1; y >= 0 ; --y)
+        //for(int y = b.get_size_y()-1; y >= 0 ; --y)
+        for(int y = 0; y < b.get_size_y() ; ++y)
         {
             for(int x = 0; x < b.get_size_x(); ++x)
             {
