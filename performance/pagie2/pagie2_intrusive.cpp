@@ -13,6 +13,7 @@
 
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/generate/ramp.hpp>
+#include <gpcxx/generator/node_generator.hpp>
 #include <gpcxx/operator/mutation.hpp>
 #include <gpcxx/operator/simple_mutation_strategy.hpp>
 #include <gpcxx/operator/random_selector.hpp>
@@ -143,10 +144,8 @@ int main( int argc , char *argv[] )
         fout1 << c.y[i] << " " << c.x[0][i] << " " << c.x[1][i] << " " << c.x[2][i] << "\n";
     fout1.close();
     
-   
-    typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
 
-    gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
+	gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
         node_type { gpcxx::array_terminal< 0 >{} , "x" } ,
         node_type { gpcxx::array_terminal< 1 >{} , "y" } ,
         node_type { gpcxx::array_terminal< 2 >{} , "z" } } };
@@ -162,7 +161,9 @@ int main( int argc , char *argv[] )
         node_type { gpcxx::divides_func{} , "/" }    
     } };
     
-    size_t population_size = 1000;
+    gpcxx::node_generator< value_type , node_type , rng_type , 3 > node_generator { terminal_gen , unary_gen , binary_gen };
+    
+    size_t population_size = 512;
     size_t generation_size = 20;
     double number_elite = 1;
     double mutation_rate = 0.0;
@@ -175,11 +176,15 @@ int main( int argc , char *argv[] )
     std::array< double , 3 > weights = {{ double( terminal_gen.num_symbols() ) ,
                                           double( unary_gen.num_symbols() ) ,
                                           double( binary_gen.num_symbols() ) }};
-    // auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , 0.5 , weights );
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , weights );
-    auto new_tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
+    auto tree_generator = gpcxx::make_basic_generate_strategy( rng ,
+		terminal_gen , unary_gen , binary_gen ,
+		max_tree_height , max_tree_height , weights );
+    auto new_tree_generator = gpcxx::make_ramp( rng ,
+		terminal_gen , unary_gen , binary_gen ,
+		min_tree_height , max_tree_height , 0.5 , weights );
 
 
+	typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
@@ -191,8 +196,8 @@ int main( int argc , char *argv[] )
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
-    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
-    // evolver.reproduction_function() = [&]( population_type const& p , fitness_type const &f ) { tree_type t; new_tree_generator( t ); return t; };
+    evolver.reproduction_function() = gpcxx::make_reproduce(
+		gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     gpcxx::timer timer;
     auto fitness_f = gpcxx::make_regression_fitness( evaluator() );
@@ -233,6 +238,14 @@ int main( int argc , char *argv[] )
         std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
     }
     std::cout << "Overall time : " << timer.seconds() << std::endl;
+
+
+	generate_data();
+	init_constants();
+	init_node_types();   // init generators
+	init_population();
+	evolve();
+	report();
 
     return 0;
 }
