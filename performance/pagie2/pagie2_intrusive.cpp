@@ -13,7 +13,7 @@
 
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/generate/ramp.hpp>
-#include <gpcxx/generator/node_generator.hpp>
+#include <gpcxx/generate/node_generator.hpp>
 #include <gpcxx/operator/mutation.hpp>
 #include <gpcxx/operator/simple_mutation_strategy.hpp>
 #include <gpcxx/operator/random_selector.hpp>
@@ -161,7 +161,8 @@ int main( int argc , char *argv[] )
         node_type { gpcxx::divides_func{} , "/" }    
     } };
     
-    gpcxx::node_generator< value_type , node_type , rng_type , 3 > node_generator { terminal_gen , unary_gen , binary_gen };
+    gpcxx::node_generator< value_type , node_type , rng_type , 3 > node_generator {
+        { 1.0 , 0 , terminal_gen } , { 1.0 , 1 , unary_gen } , { 1.0 , 2 , binary_gen } };
     
     size_t population_size = 512;
     size_t generation_size = 20;
@@ -240,12 +241,12 @@ int main( int argc , char *argv[] )
     std::cout << "Overall time : " << timer.seconds() << std::endl;
 
 
-	generate_data();
-	init_constants();
-	init_node_types();   // init generators
-	init_population();
-	evolve();
-	report();
+// 	generate_data();
+// 	init_constants();
+// 	init_node_types();   // init generators
+// 	init_population();
+// 	evolve();
+// 	report();
 
     return 0;
 }

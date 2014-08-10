@@ -103,6 +103,7 @@ xsltproc(
   )
 
 add_custom_target ( documentation
+  ALL
   DEPENDS
   "${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
   "${CMAKE_CURRENT_BINARY_DIR}/html/boostbook.css"
