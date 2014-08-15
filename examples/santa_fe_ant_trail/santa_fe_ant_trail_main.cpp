@@ -274,17 +274,17 @@ public:
         return os;
     }
     
-    food_tail_type get_food_tail()
+    food_tail_type const &  get_food_tail() const
     {
         return m_food_tail;
     }
     
-    board get_board()
+    board get_board() const 
     {
         return m_board;
     }
     
-    ant const & get_ant()
+    ant const & get_ant() const
     {
         return m_ant;
     }
@@ -346,7 +346,7 @@ public:
         return m_ant_sim.score();
     }
     
-    ant const & get_ant()
+    ant const & get_ant() const
     {
         return m_ant_sim.get_ant();
     }
@@ -373,15 +373,27 @@ public:
                 
                 if(m_ant_sim.get_ant().pos() == pos_1d)
                     oss << direction_to_str[m_ant_sim.get_ant().dir()];
-                else if(m_ant_sim.get_food_tail()[pos_1d])
-                    oss << '0';
-                else
-                    oss << ' ';
+                else 
+                {
+                    auto found = m_ant_sim.get_food_tail().find(pos_1d);
+                    if(found != m_ant_sim.get_food_tail().cend())
+                        if(found->second)
+                            oss << '0';
+                        else
+                            oss << '*';
+                    else
+                        oss << ' ';
+                }
             }
             oss << "\n";
         }
         return oss.str();
     }
+/*    
+    operator double() const
+    {
+        return m_ant_sim.score();
+    }*/
     
 private:
     boost::function<void(ant_simulation_decorator const &)> m_on_every_step;
@@ -393,14 +405,13 @@ bool operator<(ant_simulation const & lhs, ant_simulation const & rhs)
     return lhs.score() < rhs.score();
 }
 
-using value_type = ant_simulation_decorator;
 using rng_type = std::mt19937 ;
-using eval_context_type = ant_simulation_decorator;
+using eval_context_type = ant_simulation;
 using result_type = void ;
 using node_type = gpcxx::basic_named_intrusive_node< result_type , eval_context_type > ;
 using tree_type = gpcxx::intrusive_tree< node_type >;
 using population_type = std::vector< tree_type >;
-using fitness_type = std::vector< value_type >;
+using fitness_type = std::vector< int >;
 
 
 
@@ -408,7 +419,7 @@ struct evaluator
 {
     typedef eval_context_type context_type;
 
-    int operator()( tree_type const& t , context_type & c ) const
+    int operator()( tree_type const& t , context_type c ) const
     {
         while( !c.is_finsh() ) 
         {
@@ -455,6 +466,15 @@ struct if_food_ahead
     }                                                                                                 
 };
 
+struct do_nothing                                                                                           
+{                                                                                                     
+    template< typename Context , typename Node >                                                      
+    inline typename Node::result_type operator()( Context& ant_sim , Node const& node ) const         
+    {
+        node.children( 0 )->eval( ant_sim );                    
+    }                                                                                                 
+};
+
 struct ant_move_task_terminal
 {
     template< typename Context , typename Node >
@@ -494,8 +514,6 @@ int main( int argc , char *argv[] )
                 santa_fe_tail[b.pos_2d_to_1d({x, y})] = true;
                 
 
-   
-    
     tree_type tree;
     auto root = tree.root();
     auto a01 = tree.insert_below( root, node_type { if_food_ahead{} , "?" } );
@@ -525,54 +543,9 @@ int main( int argc , char *argv[] )
     auto g07 = tree.insert_below( f06,  node_type { ant_turn_right_task_terminal{} , "r" } );
     
 
-    ant_simulation ant_sim{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
-    ant_simulation_decorator ant_sim_dec(ant_sim, [](ant_simulation_decorator const & ant_sim_dec){std::cout << ant_sim_dec.get_board_as_str() << "\n"; });
-    
-    while( !ant_sim_dec.is_finsh() ) 
-    {
-        tree.root()->eval(ant_sim_dec);
-    }
-    std::cout << ant_sim_dec.score() << "\n";
-    
-    
+    ant_simulation ant_sim_santa_fe{santa_fe_tail, santa_fe::x_size, santa_fe::y_size, {0, 0}, east, 400 };
 
-    
-    /*
-    
-    auto n2 = tree.insert_below( n1,  node_type { prog2{} , "2" } );
-    
-    auto n3_0 = tree.insert_below( n2,  node_type { ant_turn_left_task_terminal{} , "l" } );
-    auto n3_1 = tree.insert_below( n2,  node_type { prog2{} , "2" } );
-    auto n3_2 = tree.insert_below( n2,  node_type { prog2{} , "2" } );
-    
-    
-    auto n4_0 = tree.insert_below( n3_1,  node_type { if_food_ahead{} , "?" } );
-    auto n4_1 = tree.insert_below( n3_1,  node_type { prog2{} , "2" } );
-    
-    auto n4_2 = tree.insert_below( n3_2,  node_type { if_food_ahead{} , "?" } );
-    auto n4_3 = tree.insert_below( n3_2,  node_type { ant_move_task_terminal{} , "m" } );
-    
-    
-    auto n5_0 = tree.insert_below( n4_0,  node_type { ant_move_task_terminal{} , "m" } );
-    auto n5_1 = tree.insert_below( n4_0,  node_type { ant_turn_right_task_terminal{} , "r" } );
-    
-    auto n5_3 = tree.insert_below( n4_1,  node_type { ant_turn_right_task_terminal{} , "r" } );
-    auto n5_4 = tree.insert_below( n4_1,  node_type { prog2{} , "2" } );
-    
-    
-    auto n5_5 = tree.insert_below( n4_2,  node_type { ant_move_task_terminal{} , "m" } );
-    auto n5_6 = tree.insert_below( n4_2,  node_type { ant_turn_left_task_terminal{} , "l" } );
-    */
-    
-    /*
-    while( !ant_sim_dec.is_finsh() ) 
-    {
-        tree.root()->eval(ant_sim_dec);
-    }
-    std::cout << ant_sim_dec.score() << "\n";
-    */
-    
-            /*
+            
     typedef std::mt19937 rng_type;
     rng_type rng;
     evaluator fitness_f{};
@@ -583,15 +556,17 @@ int main( int argc , char *argv[] )
         node_type { ant_turn_left_task_terminal{} ,     "l" } ,
         node_type { ant_turn_right_task_terminal{} ,    "r" } 
     } };
-    //gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type >{} };
+    
+    //this is just filled with a dummy node, 
+    gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type >{ node_type { do_nothing{} , " " } } };
+    
     gpcxx::uniform_symbol< node_type > binary_gen { std::vector< node_type > {
         node_type { prog2{} , "2" } ,
-        node_type { if_food_ahead{} , "?" },
-        node_type { prog3{} , "3" }
+        node_type { if_food_ahead{} , "?" }
     } };
 
     size_t population_size = 1000;
-    size_t generation_size = 20;
+    size_t generation_size = 200;
     double number_elite = 1;
     double mutation_rate = 0.0;
     double crossover_rate = 0.6;
@@ -599,9 +574,9 @@ int main( int argc , char *argv[] )
     size_t min_tree_height = 1 , max_tree_height = 8;
     size_t tournament_size = 15;
 
-     
+ 
     std::array< double , 3 > weights = {{ double( terminal_gen.num_symbols() ) ,
-                                       //  double( unary_gen.num_symbols() ) ,
+                                          0.0 ,
                                           double( binary_gen.num_symbols() ) }};    
     auto tree_generator = gpcxx::make_basic_generate_strategy( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , weights );
     auto new_tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , min_tree_height , max_tree_height , 0.5 , weights );
@@ -610,59 +585,72 @@ int main( int argc , char *argv[] )
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
     std::vector< int > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
-    */
+    //std::vector< eval_context_type > ant_simulations (population_size, ant_sim_santa_fe);
     
- /*
+    
+ 
     evolver.mutation_function() = gpcxx::make_mutation(
         gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
+    
+    
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
-*/
-/*    node_factory nf;
-    
-    auto root = add( nf.make('?'), nf.make('m'),
-                              add( nf.make('3'), nf.make('l'),
-                                           add(  nf.make('2'), add( nf.make('?'), nf.make('m'),
-                                                                                  nf.make('r')),
-                                                               add( nf.make('2'), nf.make('r'),
-                                                                             add( nf.make('2'), nf.make('l'), nf.make('r') )
-                                                                  )
-                                              ),
-                                          add(  nf.make('2'), add( nf.make('?'), nf.make('m'), nf.make('l') ), nf.make('m') )   
-                                 )
-                   );
-                           */                                          
-    
 
-    //while( !as.is_finsh() ) 
-    //{
-    //    root.eval( as );
-    //}
-    //std::cout << as.score() << "\n";
     
+    gpcxx::timer timer;
+    timer.restart();
+    for( size_t i=0 ; i<population.size() ; ++i )
+    {
+        tree_generator( population[i] );
+        fitness[i] = fitness_f( population[i] , ant_sim_santa_fe );
+    }
+    
+    std::cout << gpcxx::indent( 0 ) << "Generation time " << timer.seconds() << std::endl;
+    std::cout << gpcxx::indent( 1 ) << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 , 10 ) << std::endl;
+    std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
+    std::cout << gpcxx::indent( 1 ) << std::endl << std::endl;
 
+    timer.restart();
+    for( size_t generation=1 ; generation<=generation_size ; ++generation )
+    {
+        gpcxx::timer iteration_timer;
+        iteration_timer.restart();
+        evolver.next_generation( population , fitness );
+        double evolve_time = iteration_timer.seconds();
+        iteration_timer.restart();
+        std::transform( population.begin() , population.end() , fitness.begin() , [&]( tree_type const &t ) { return fitness_f( t , ant_sim_santa_fe ); } );
+        double eval_time = iteration_timer.seconds();
+        
+        
+        std::cout << gpcxx::indent( 0 ) << "Generation " << generation << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Evolve time " << evolve_time << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Eval time " << eval_time << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 2 , 10 ) << std::endl;
+        std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+    }
+    std::cout << "Overall time : " << timer.seconds() << std::endl;
+    
+    
+    std::vector< size_t > idx;
+    gpcxx::sort_indices( fitness , idx );
+    
+    std::cout << idx[0] << fitness_f( population[idx[0]] , ant_sim_santa_fe );
+    /*
+    ant_simulation_decorator ant_sim_dec(ant_sim_santa_fe, 
+                                        [](ant_simulation_decorator const & ant_sim_dec){
+                                             std::cout << ant_sim_dec.get_board_as_str() << "\n"; 
+                                             std::cout << "Scrore: " << ant_sim_dec.score() << " Steps:" << ant_sim_dec.get_ant().steps_done() << "\n";
+                                        });
+    
+    while( !ant_sim_dec.is_finsh() ) 
+    {
+        tree.root()->eval(ant_sim_dec);
+    }
+    */
 
-//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-//     as.move();
-//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-//     as.move();
-//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-//     as.move();
-//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-//     as.turn_left();
-//     as.move();
-//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-//     as.move();
-//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-//     as.turn_left();
-//     as.turn_left();
-//     std::cout << as.food_in_front() << " " << as.food_eaten()  << " " << as << "\n";
-//    
-//     std::cout << "\n";
-//     std::cout  << "\n" << as.get_board_as_str() << "\n";
     return 0;
 }
 
