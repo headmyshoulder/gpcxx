@@ -302,8 +302,8 @@ private:
 class ant_simulation_decorator
 {
 public:
-    ant_simulation_decorator(ant_simulation & ant_sim, boost::function<void(ant_simulation_decorator const &)> on_every_step)
-    :m_ant_sim(ant_sim), m_on_every_step(on_every_step)
+    ant_simulation_decorator(ant_simulation & ant_sim, boost::function< void( ant_simulation_decorator const & ) > on_every_step)
+    :m_ant_sim( ant_sim ), m_on_every_step( on_every_step )
     {
     }
     
@@ -316,19 +316,19 @@ public:
     void turn_left()
     {
         m_ant_sim.turn_left();
-        m_on_every_step(*this);
+        m_on_every_step( *this );
     }
     
     void turn_right()
     {
         m_ant_sim.turn_right();
-        m_on_every_step(*this);
+        m_on_every_step( *this );
     }
     
     void move()
     {
         m_ant_sim.move();
-        m_on_every_step(*this);
+        m_on_every_step( *this );
     }
     
     bool is_finsh() const
@@ -408,7 +408,7 @@ bool operator<(ant_simulation const & lhs, ant_simulation const & rhs)
 using rng_type = std::mt19937 ;
 using eval_context_type = ant_simulation;
 using result_type = void ;
-using node_type = gpcxx::basic_named_intrusive_node< result_type , eval_context_type > ;
+using node_type = gpcxx::basic_named_intrusive_node< result_type , eval_context_type, 2 > ;
 using tree_type = gpcxx::intrusive_tree< node_type >;
 using population_type = std::vector< tree_type >;
 using fitness_type = std::vector< int >;

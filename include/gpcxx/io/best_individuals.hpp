@@ -23,7 +23,7 @@ void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f
 {
     std::vector< size_t > idx;
     auto iter = gpcxx::sort_indices( f , idx );
-    std::string newline{""};
+    std::string newline{ "" };
     for( size_t i=0 ; i<num_individuals ; ++i )
     {
         out << newline << indent( ind ) << i << " " << f[ idx[i] ] << " : " << simple( p[ idx[i] ] , mapper );
