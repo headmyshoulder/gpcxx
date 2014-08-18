@@ -12,12 +12,14 @@
 #ifndef GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_NODES_HPP_INCLUDED
 #define GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_NODES_HPP_INCLUDED
 
+#include "ant_simulation.hpp"
+
+#include <gpcxx/tree.hpp>
+
 #include <vector>
 
-#include <gpcxx/tree/basic_named_intrusive_node.hpp>
-#include <gpcxx/tree/intrusive_tree.hpp>
 
-#include "ant_simulation.hpp"
+
 
 namespace ant_example {
     

@@ -12,11 +12,15 @@
 #ifndef GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_HPP_INCLUDED
 #define GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_HPP_INCLUDED
 
-#include <unordered_map>
-#include <sstream>
+#include "board.hpp"
+
 #include <boost/function.hpp>
 
-#include "board.hpp"
+#include <unordered_map>
+#include <sstream>
+
+
+
 
 namespace ant_example {
 

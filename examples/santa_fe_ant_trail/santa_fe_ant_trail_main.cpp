@@ -9,30 +9,24 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
+#include "ant_simulation.hpp"
+#include "ant_simulation_nodes.hpp"
+#include "santa_fe_trail.hpp"
+
+#include <gpcxx/app.hpp>
+#include <gpcxx/evolve.hpp>
+#include <gpcxx/generate.hpp>
+#include <gpcxx/io.hpp>
+#include <gpcxx/operator.hpp>
+#include <gpcxx/stat.hpp>
+
 #include <string>
 #include <iostream>
 #include <random>
 #include <algorithm>
 
 
-#include <gpcxx/app/timer.hpp>
-#include <gpcxx/evolve/static_pipeline.hpp>
-#include <gpcxx/generate/ramp.hpp>
-#include <gpcxx/generate/uniform_symbol.hpp>
-#include <gpcxx/io/best_individuals.hpp>
-#include <gpcxx/operator/crossover.hpp>
-#include <gpcxx/operator/mutation.hpp>
-#include <gpcxx/operator/one_point_crossover_strategy.hpp>
-#include <gpcxx/operator/reproduce.hpp>
-#include <gpcxx/operator/simple_mutation_strategy.hpp>
-#include <gpcxx/operator/tournament_selector.hpp>
-#include <gpcxx/stat/population_statistics.hpp>
 
-
-
-#include "ant_simulation.hpp"
-#include "ant_simulation_nodes.hpp"
-#include "santa_fe_trail.hpp"
 
 
 int main( int argc , char *argv[] )
@@ -128,7 +122,7 @@ int main( int argc , char *argv[] )
         
         has_optimal_fitness = std::any_of( fitness.begin(), fitness.end(), []( int fitness ){ return fitness == 0; } );
         
-    }while( !has_optimal_fitness && (generation < generation_max) );
+    } while( !has_optimal_fitness && (generation < generation_max) );
     
     std::cout << "Overall time : " << timer.seconds() << newl;
     return 0;
