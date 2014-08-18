@@ -41,8 +41,6 @@ public:
         size_t index = dist( m_rng );
         individual_type const* best = &( pop[ index ] );
         double best_value = fitness[ index ];
-        //typename Pop::value_type const& best_value = fitness[ index ];
-
         
         for( size_t i=1 ; i<m_tournament_size ; ++i )
         {

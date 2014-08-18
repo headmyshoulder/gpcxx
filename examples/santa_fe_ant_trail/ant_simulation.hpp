@@ -79,13 +79,13 @@ private:
 class ant_simulation
 {
 public:
-    typedef std::unordered_map< position_1d, bool > food_tail_type;
+    typedef std::unordered_map< position_1d, bool > food_trail_type;
     
-    ant_simulation(food_tail_type food_tail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps)
-    : m_food_tail{food_tail}, 
+    ant_simulation(food_trail_type food_trail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps)
+    : m_food_trail{food_trail}, 
       m_board{x_size, y_size}, 
       m_ant{m_board.pos_2d_to_1d(start_pos), start_direction}, 
-      m_food_start_count(food_tail.size()), 
+      m_food_start_count(food_trail.size()), 
       m_max_steps(max_steps)
     {
     }
@@ -93,8 +93,8 @@ public:
     bool food_in_front() const
     {
         position_1d front_pos = m_ant.front_pos(m_board);
-        auto found = m_food_tail.find(front_pos);
-        return found != m_food_tail.end() && found->second;
+        auto found = m_food_trail.find(front_pos);
+        return found != m_food_trail.end() && found->second;
     }
     
     
@@ -111,8 +111,8 @@ public:
     void move()
     {
         m_ant.move(m_board);
-        auto on_food = m_food_tail.find(m_ant.pos());
-        if(on_food != m_food_tail.end() && on_food->second)
+        auto on_food = m_food_trail.find(m_ant.pos());
+        if(on_food != m_food_trail.end() && on_food->second)
         {
             m_food_eaten++;
             on_food->second = false;
@@ -142,9 +142,9 @@ public:
         return os;
     }
     
-    food_tail_type const &  get_food_tail() const
+    food_trail_type const &  get_food_trail() const
     {
-        return m_food_tail;
+        return m_food_trail;
     }
     
     board get_board() const 
@@ -159,7 +159,7 @@ public:
         
         
 private:
-    food_tail_type  m_food_tail;
+    food_trail_type  m_food_trail;
     int const       m_food_start_count;
     int             m_food_eaten;
     ant             m_ant;
@@ -242,8 +242,8 @@ public:
                     oss << direction_to_str[m_ant_sim.get_ant().dir()];
                 else 
                 {
-                    auto found = m_ant_sim.get_food_tail().find(pos_1d);
-                    if(found != m_ant_sim.get_food_tail().cend())
+                    auto found = m_ant_sim.get_food_trail().find(pos_1d);
+                    if(found != m_ant_sim.get_food_trail().cend())
                         if(found->second)
                             oss << '0';
                         else

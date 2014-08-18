@@ -43,8 +43,8 @@ int main( int argc , char *argv[] )
     
             
     board b(santa_fe::x_size, santa_fe::y_size);
-    ant_simulation::food_tail_type santa_fe_tail { santa_fe::make_santa_fe_tail( b ) };
-    ant_simulation ant_sim_santa_fe{ santa_fe_tail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, 400 };
+    ant_simulation::food_trail_type santa_fe_trail { santa_fe::make_santa_fe_trail( b ) };
+    ant_simulation ant_sim_santa_fe{ santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, 400 };
     
 
 
