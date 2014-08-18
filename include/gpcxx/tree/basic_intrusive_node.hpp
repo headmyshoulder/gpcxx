@@ -16,14 +16,14 @@
 
 namespace gpcxx {
 
-template< typename Res , typename Context >
-class basic_intrusive_node : public gpcxx::intrusive_node< basic_intrusive_node< Res , Context > >
+template< typename Res , typename Context , size_t Arity = 2 >
+class basic_intrusive_node : public gpcxx::intrusive_node< basic_intrusive_node< Res , Context , Arity > , Arity >
 {
 public:
     
     typedef Res result_type;
     typedef Context context_type;
-    typedef basic_intrusive_node< result_type , context_type > node_type;
+    typedef basic_intrusive_node< result_type , context_type, Arity > node_type;
     
     typedef std::function< result_type( context_type const& , node_type const& ) > func_type;
     

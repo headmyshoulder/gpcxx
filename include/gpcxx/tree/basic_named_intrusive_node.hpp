@@ -20,21 +20,21 @@
 namespace gpcxx {
 
 
-template< typename Res , typename Context >
-class basic_named_intrusive_node : public gpcxx::intrusive_node< basic_named_intrusive_node< Res , Context > >
+template< typename Res , typename Context, size_t Arity = 2 >
+class basic_named_intrusive_node : public gpcxx::intrusive_node< basic_named_intrusive_node< Res , Context , Arity > , Arity >
 {
 public:
     
     typedef Res result_type;
     typedef Context context_type;
-    typedef basic_named_intrusive_node< result_type , context_type > node_type;
+    typedef basic_named_intrusive_node< result_type , context_type , Arity > node_type;
     
-    typedef std::function< result_type( context_type const& , node_type const& ) > func_type;
+    typedef std::function< result_type( context_type& , node_type const& ) > func_type;
     
     basic_named_intrusive_node( func_type f , std::string name )
     : m_func( std::move( f ) ) , m_name( std::move( name ) ) { }
     
-    result_type eval( context_type const & context ) const
+    result_type eval( context_type & context ) const
     {
         return m_func( context , *this );
     }
