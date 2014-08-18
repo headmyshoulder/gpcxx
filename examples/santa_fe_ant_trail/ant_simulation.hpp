@@ -14,10 +14,8 @@
 
 #include "board.hpp"
 
-#include <boost/function.hpp>
-
 #include <unordered_map>
-#include <sstream>
+#include <ostream>
 
 
 
@@ -27,6 +25,7 @@ namespace ant_example {
 class ant
 {
 public:
+    
     ant(position_1d position, direction direction)
     :m_position(position), m_direction(direction), m_steps_done(0)
     {
@@ -83,7 +82,8 @@ private:
 class ant_simulation
 {
 public:
-    typedef std::unordered_map< position_1d, bool > food_trail_type;
+    
+    using food_trail_type = std::unordered_map< position_1d, bool >;
     
     ant_simulation(food_trail_type food_trail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps)
     : m_food_trail{food_trail}, 
@@ -138,14 +138,6 @@ public:
         return m_food_start_count - m_food_eaten;
     }
     
-    friend std::ostream & operator<<(std::ostream & os, ant_simulation const & asim)
-    {
-        position_1d p = asim.m_ant.pos();
-        position_2d p2d = asim.m_board.pos_1d_to_2d(p);
-        os << direction_to_str[asim.m_ant.dir()] << p2d.x << ":" << p2d.y;
-        return os;
-    }
-    
     food_trail_type const &  get_food_trail() const
     {
         return m_food_trail;
@@ -160,10 +152,19 @@ public:
     {
         return m_ant;
     }
-        
-        
+    
+    friend std::ostream & operator<<(std::ostream & os, ant_simulation const & asim)
+    {
+        position_1d p = asim.m_ant.pos();
+        position_2d p2d = asim.m_board.pos_1d_to_2d(p);
+        os << direction_to_str(asim.m_ant.dir()) << p2d.x << ":" << p2d.y;
+        return os;
+    }
+
+    
 private:
-    food_trail_type  m_food_trail;
+
+    food_trail_type m_food_trail;
     int const       m_food_start_count;
     int             m_food_eaten;
     ant             m_ant;
@@ -171,105 +172,6 @@ private:
     int             m_max_steps;
 };
 
-class ant_simulation_decorator
-{
-public:
-    ant_simulation_decorator(ant_simulation & ant_sim, boost::function< void( ant_simulation_decorator const & ) > on_every_step)
-    :m_ant_sim( ant_sim ), m_on_every_step( on_every_step )
-    {
-    }
-    
-    bool food_in_front() const
-    {
-        return m_ant_sim.food_in_front();
-    }
-    
-    
-    void turn_left()
-    {
-        m_ant_sim.turn_left();
-        m_on_every_step( *this );
-    }
-    
-    void turn_right()
-    {
-        m_ant_sim.turn_right();
-        m_on_every_step( *this );
-    }
-    
-    void move()
-    {
-        m_ant_sim.move();
-        m_on_every_step( *this );
-    }
-    
-    bool is_finsh() const
-    {
-        return m_ant_sim.is_finsh();
-    }
-    
-    int food_eaten() const 
-    {
-        return m_ant_sim.food_eaten();
-    }
-
-    int score() const
-    {
-        return m_ant_sim.score();
-    }
-    
-    ant const & get_ant() const
-    {
-        return m_ant_sim.get_ant();
-    }
-    
-    friend std::ostream & operator<<(std::ostream & os, ant_simulation_decorator const & asim)
-    {
-        os << asim.m_ant_sim;
-        return os;
-    }
-    
-    
-    
-    std::string get_board_as_str() const
-    {
-        std::ostringstream oss;
-        board b = m_ant_sim.get_board();
-
-        for(int y = 0; y < b.get_size_y() ; ++y)
-        {
-            for(int x = 0; x < b.get_size_x(); ++x)
-            {
-                int pos_1d = b.pos_2d_to_1d({x,y});
-                
-                if(m_ant_sim.get_ant().pos() == pos_1d)
-                    oss << direction_to_str[m_ant_sim.get_ant().dir()];
-                else 
-                {
-                    auto found = m_ant_sim.get_food_trail().find(pos_1d);
-                    if(found != m_ant_sim.get_food_trail().cend())
-                        if(found->second)
-                            oss << '0';
-                        else
-                            oss << '*';
-                    else
-                        oss << ' ';
-                }
-            }
-            oss << "\n";
-        }
-        return oss.str();
-    }
-    
-private:
-    boost::function<void(ant_simulation_decorator const &)> m_on_every_step;
-    ant_simulation & m_ant_sim;
-};
-
-bool operator<(ant_simulation const & lhs, ant_simulation const & rhs)
-{
-    return lhs.score() < rhs.score();
-}
 
 } // namespace ant_example
 

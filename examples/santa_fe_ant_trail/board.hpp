@@ -12,6 +12,8 @@
 #ifndef GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_BOARD_HPP_INCLUDED
 #define GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_BOARD_HPP_INCLUDED
 
+#include <cstddef>
+
 namespace ant_example {
 
 enum direction
@@ -19,9 +21,14 @@ enum direction
     north = 0, east = 1, south = 2, west = 3
 };
 
-char const * const direction_to_str[] = { "N", "E", "S", "W" };
+const char* direction_to_str( direction dir )
+{
+    char const * lut[] = { "N", "E", "S", "W" };
+    return lut[dir];
+}
 
-typedef int position_1d;
+
+using position_1d = int;
 
 struct  position_2d
 {
@@ -32,18 +39,19 @@ struct  position_2d
 
 class board
 {
-public:             
+public:
+    
     board(size_t size_x, size_t size_y)
     :m_size_x(size_x), m_size_y(size_y)
     {
     }
     
-    position_1d pos_2d_to_1d(position_2d pos2d) const
+    position_1d pos_2d_to_1d( position_2d pos2d ) const
     {
         return pos2d.y * m_size_x + pos2d.x;
     }
     
-    position_2d pos_1d_to_2d(position_1d pos1d) const
+    position_2d pos_1d_to_2d( position_1d pos1d ) const
     {
         int x_pos = pos1d % m_size_x;
         int y_pos = pos1d / m_size_x;
@@ -74,18 +82,19 @@ public:
         return pos_2d_to_1d(pos2d);
     }
 
-    size_t get_size_x()
+    size_t get_size_x() const
     {
         return m_size_x;
     }
     
-    size_t get_size_y()
+    size_t get_size_y() const
     {
         return m_size_y;
     }
 private:
-    size_t const m_size_x;
-    size_t const m_size_y;
+    
+    size_t m_size_x;
+    size_t m_size_y;
 };
 
 } // namespace ant_example
