@@ -41,9 +41,12 @@ int main( int argc , char *argv[] )
     using namespace ant_example;
     char const newl = '\n';
     
+            
     board b(santa_fe::x_size, santa_fe::y_size);
     ant_simulation::food_tail_type santa_fe_tail { santa_fe::make_santa_fe_tail( b ) };
     ant_simulation ant_sim_santa_fe{ santa_fe_tail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, 400 };
+    
+
 
     gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
         node_type { ant_move_task_terminal{} ,          "move" } ,
@@ -112,6 +115,7 @@ int main( int argc , char *argv[] )
         evolver.next_generation( population , fitness );
         double evolve_time = iteration_timer.seconds();
         generation++;
+        std::transform( population.begin() , population.end() , fitness.begin() , [&]( tree_type const &t ) { return fitness_f( t , ant_sim_santa_fe ); } );
         iteration_timer.restart();
         
         double eval_time = iteration_timer.seconds();
@@ -122,8 +126,9 @@ int main( int argc , char *argv[] )
         std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 10 ) << newl;
         std::cout << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << newl;
         
-        bool has_optimal_fitness = std::any_of( fitness.begin(), fitness.end(), []( int fitness ){ return fitness == 0; } );
-    }while(!has_optimal_fitness && generation < generation_max );
+        has_optimal_fitness = std::any_of( fitness.begin(), fitness.end(), []( int fitness ){ return fitness == 0; } );
+        
+    }while( !has_optimal_fitness && (generation < generation_max) );
     
     std::cout << "Overall time : " << timer.seconds() << newl;
     return 0;
