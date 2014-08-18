@@ -13,7 +13,6 @@
 
 #include <ostream>
 #include <vector>
-#include <string>
 
 namespace gpcxx {
 
@@ -23,11 +22,11 @@ void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f
 {
     std::vector< size_t > idx;
     auto iter = gpcxx::sort_indices( f , idx );
-    std::string newline{ "" };
+    bool first = true;
     for( size_t i=0 ; i<num_individuals ; ++i )
     {
-        out << newline << indent( ind ) << i << " " << f[ idx[i] ] << " : " << simple( p[ idx[i] ] , mapper );
-        newline = "\n";
+        if( first ) first = false; else out << "\n";
+        out << indent( ind ) << i << " " << f[ idx[i] ] << " : " << simple( p[ idx[i] ] , mapper );
     }
 }
 
