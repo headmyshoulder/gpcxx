@@ -161,7 +161,7 @@ int main( int argc , char *argv[] )
         node_type { gpcxx::divides_func{} , "/" }    
     } };
     
-    gpcxx::node_generator< value_type , node_type , rng_type , 3 > node_generator {
+    gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
         { 1.0 , 0 , terminal_gen } , { 1.0 , 1 , unary_gen } , { 1.0 , 2 , binary_gen } };
     
     size_t population_size = 512;

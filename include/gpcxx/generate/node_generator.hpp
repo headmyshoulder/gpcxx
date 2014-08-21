@@ -21,19 +21,18 @@
 namespace gpcxx {
 
 // implement new generate strategy
-template< typename Value , typename Node , typename Rng , size_t Dim >
+template< typename Node , typename Rng , size_t Dim >
 class node_generator
 {
 public:
 
     // typedefs
     static const size_t dim = Dim;
-    using value_type = Value;
     using rng_type = Rng;
     using node_type = Node;
     using generator_type = std::function< node_type( rng_type& ) >;
     using weighted_generator_type = struct {
-        value_type weight;
+        double weight;
         size_t arity;
         generator_type generator; };
     using generator_container = std::array< weighted_generator_type , Dim >;
@@ -101,12 +100,12 @@ public:
     
     
     // accessors
-    value_type weight( size_t i ) const
+    double weight( size_t i ) const
     {
         return m_generators[i].weight;
     }
     
-    void set_weight( size_t i , value_type w )
+    void set_weight( size_t i , double w )
     {
         m_generators[i].weight = w;
         prepare();
@@ -128,33 +127,44 @@ public:
         return m_generators[i].arity;
     }
     
-    void set_arity( size_t i , size_t a )
-    {
-        m_generators[i].arity = a;
-        prepare();
-    }
+//     void set_arity( size_t i , size_t a )
+//     {
+//         m_generators[i].arity = a;
+//         prepare();
+//     }
     
     
     
     // 
-    node_type get_non_terminal_node( rng_type& rng )
+    std::pair< node_type , size_t > get_non_terminal_node( rng_type& rng ) const
     {
-        return m_non_terminal_generators[ m_non_terminal_dist( rng ) ].generator( rng );
+        return generate( rng , m_non_terminal_generators[ m_non_terminal_dist( rng ) ] );
     }
     
-    node_type get_node( rng_type& rng )
+    std::pair< node_type , size_t > get_node( rng_type& rng ) const
     {
-        return m_generators[ m_dist( rng ) ].generator( rng );
+        return generate( rng , m_generators[ m_dist( rng ) ] );
+    }
+    
+    std::pair< node_type , size_t > get_terminal( rng_type& rng ) const
+    {
+        return std::make_pair( m_terminal_generator( rng ) , 0 );
     }
 
 
     
 private:
     
+    std::pair< node_type , size_t > generate( rng_type& rng , weighted_generator_type const& gen ) const
+    {
+        return std::make_pair( gen.generator( rng ) , gen.arity );
+    }
+    
     void prepare( void )
     {
         prepare_non_terminal_dist();
         prepare_dist();
+        prepare_terminal_generator();
     }
     
     void prepare_non_terminal_dist( void )
@@ -177,12 +187,21 @@ private:
         m_dist = std::discrete_distribution<>( weight.begin() , weight.end() );
     }
     
+    void prepare_terminal_generator( void )
+    {
+        auto is_terminal = []( weighted_generator_type const& w ) -> bool { return w.arity == 0; };
+        assert( std::count_if( m_generators.begin() , m_generators.end() , is_terminal ) == 1 );
+        auto w_iter = std::find_if( m_generators.begin() , m_generators.end() , is_terminal );
+        assert( w_iter != m_generators.end() );
+        m_terminal_generator = w_iter->generator;
+    }
+    
     generator_container m_generators;
     generator_container m_non_terminal_generators;
-    std::discrete_distribution<> m_dist;
-    std::discrete_distribution<> m_non_terminal_dist;
+    generator_type m_terminal_generator;
+    mutable std::discrete_distribution<> m_dist;
+    mutable std::discrete_distribution<> m_non_terminal_dist;
 };
-
 
 
 

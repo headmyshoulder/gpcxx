@@ -5,7 +5,6 @@
  */
 
 #include <gpcxx/generate/basic_generate_strategy.hpp>
-#include <gpcxx/tree/basic_tree.hpp>
 
 #include "../common/test_template.hpp"
 
