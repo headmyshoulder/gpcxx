@@ -33,7 +33,7 @@ template<> struct get_tree_type< basic_tree_tag >
 
 template<> struct get_tree_type< intrusive_tree_tag >
 {
-    typedef gpcxx::intrusive_tree< gpcxx::basic_named_intrusive_node< double , context_type > > type;
+    typedef gpcxx::intrusive_tree< gpcxx::basic_named_intrusive_node< double , context_type const > > type;
 };
 
 

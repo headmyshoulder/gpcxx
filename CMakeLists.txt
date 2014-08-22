@@ -6,6 +6,7 @@ cmake_minimum_required ( VERSION 2.8 )
 
 ADD_DEFINITIONS ( -std=c++11 )
 
+
 set ( THIRDPARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party" )
 
 # Add path for custom modules
@@ -13,7 +14,6 @@ set ( CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
-  ${THIRDPARTY_ROOT}/ctoolbox 
   )
 
 include ( CreateVersionFile )
@@ -26,13 +26,6 @@ find_package ( Boost REQUIRED COMPONENTS thread system )
 find_package ( Doxygen )
 find_package ( XSLTPROC )
 find_package ( QuickBook )
-
-if ( ${Boost_FOUND} )
-  message ( STATUS "Found boost include dir ${Boost_INCLUDE_DIRS}" )
-  message ( STATUS "Found boost libraries ${Boost_LIBRARIES}" )
-endif ()
-
-
 
 include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
@@ -67,6 +60,6 @@ else ()
     message ( STATUS "Google C++ Testing Framework not found in \"${GTEST_ROOT}\" tests will be disabled !" )
   endif ()
 
-  message ( STATUS "    get googlemock/googletest by: svn checkout http://googlemock.googlecode.com/svn/trunk/ \"${GMOCK_ROOT}\" " )
+  message ( STATUS "    get googlemock/googletest by: wget http://googlemock.googlecode.com/files/gmock-1.7.0.zip" )
 
 endif ()

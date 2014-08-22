@@ -28,14 +28,18 @@ namespace detail
 template< typename Node >
 class intrusive_tree;
 
-template< typename Node >
+template< typename Node , size_t Arity = 2 >
 class intrusive_node
 {
-    friend class intrusive_tree< Node >;
+    template< typename T >
+    friend class intrusive_tree;
+    
+    template< typename T >
+    friend class detail::intrusive_cursor;
     
 public:
     
-    static const size_t max_arity = 2;
+    static const size_t max_arity = Arity;
     typedef Node node_type;
     typedef node_type* node_pointer;
     typedef node_type const* const_node_pointer;
@@ -51,6 +55,37 @@ public:
     {
         clear_children();
     }
+
+    cursor children( size_t i ) noexcept;
+    
+    const_cursor children( size_t i ) const  noexcept;
+
+    
+    size_t max_size( void ) const noexcept
+    {
+        return max_arity;
+    }
+    
+    
+    size_t size( void ) const noexcept
+    {
+        typename children_type::const_iterator end = std::find( m_children.begin() , m_children.end() , nullptr );
+        return std::distance( m_children.begin() , end );
+    }
+
+    size_t count_nodes( void ) const noexcept
+    {
+        size_t count = 1;
+        typename children_type::const_iterator iter = m_children.begin();
+        typename children_type::const_iterator end = m_children.begin() + size();
+        for( ; iter != end ; ++iter )
+        {
+            count += ( (*iter)->count_nodes() );
+        }
+        return count;
+    }
+
+protected:
     
     void clear_children( void ) noexcept
     {
@@ -69,11 +104,8 @@ public:
         return m_children[i];
     }
     
-    cursor children( size_t i ) noexcept;
     
-    const_cursor children( size_t i ) const  noexcept;
-    
-    void set_children( size_t i , node_type* n ) noexcept
+    void set_children( size_t i , node_pointer n ) noexcept
     {
         m_children[i] = n;
     }
@@ -90,26 +122,13 @@ public:
         return m_parent;
     }
 
-    size_t child_index( node_type const* child ) const
+    size_t child_index( const_node_pointer child ) const
     {
         return std::distance( m_children.begin() , find_child( child ) );
     }
     
     
-    size_t max_size( void ) const noexcept
-    {
-        return max_arity;
-    }
-    
-    
-    size_t size( void ) const noexcept
-    {
-        typename children_type::const_iterator end = std::find( m_children.begin() , m_children.end() , nullptr );
-        return std::distance( m_children.begin() , end );
-    }
-    
-    
-    size_t attach_child( node_type *child ) noexcept
+    size_t attach_child( node_pointer child ) noexcept
     {
         typename children_type::iterator iter = find_free_child_entry();
         assert( iter != m_children.end() );
@@ -141,18 +160,7 @@ public:
         *iter = new_child;
     }
     
-    size_t count_nodes( void ) const noexcept
-    {
-        size_t count = 1;
-        typename children_type::const_iterator iter = m_children.begin();
-        typename children_type::const_iterator end = m_children.begin() + size();
-        for( ; iter != end ; ++iter )
-        {
-            count += ( (*iter)->count_nodes() );
-        }
-        return count;
-    }
-    
+  
     
 protected:
     
@@ -188,14 +196,14 @@ protected:
 
 namespace gpcxx {
 
-template< typename Node >
-typename intrusive_node< Node >::cursor intrusive_node< Node >::children( size_t i ) noexcept
+template< typename Node , size_t Arity >
+typename intrusive_node< Node , Arity >::cursor intrusive_node< Node , Arity >::children( size_t i ) noexcept
 {
     return cursor( m_children[ i ] );
 }
     
-template< typename Node >
-typename intrusive_node< Node >::const_cursor intrusive_node< Node >::children( size_t i ) const noexcept
+template< typename Node , size_t Arity >
+typename intrusive_node< Node , Arity >::const_cursor intrusive_node< Node , Arity >::children( size_t i ) const noexcept
 {
     return const_cursor( m_children[i] );
 }
