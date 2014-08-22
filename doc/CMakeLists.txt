@@ -110,6 +110,7 @@ add_custom_target ( documentation
   "${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
   "${CMAKE_CURRENT_BINARY_DIR}/html/boostbook.css"
   "${CMAKE_CURRENT_BINARY_DIR}/html/images" 
+  "${CMAKE_CURRENT_BINARY_DIR}/*.qbk"
   )
 
 

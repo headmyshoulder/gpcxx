@@ -10,4 +10,6 @@ symbolic regression we will create artificial test data and apply gpcxx to this 
 
 [endsect]
 
+[include tutorial_artificial_ant.qbk]
+
 [endsect]

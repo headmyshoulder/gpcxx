@@ -3,7 +3,7 @@
      [id gpcxx]
      [dirname gpcxx]
      [authors [Ahnert, Karsten]]
-     [copyright 2013 Karsten Ahnert]
+     [copyright 2013-2014 Karsten Ahnert]
      [category math]
      [purpose 
         Genetic programming.
@@ -16,8 +16,9 @@
 ]
 
 
+[def __koza1_ref [link koza1 \[1\] ]]
 
-
+[def __wiki_santa_fe_trail_problem [@http://en.wikipedia.org/wiki/Santa_Fe_Trail_problem Wikipedia: Santa Fe Trail problem]]
 
 
 
@@ -70,6 +71,8 @@
 [endsect]
 
 [include concepts.qbk]
+
+[include literature.qbk]
 
 [xinclude reference.xml]
 

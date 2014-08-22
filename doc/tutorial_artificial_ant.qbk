@@ -1,0 +1,83 @@
+[section Artificial ant]
+[import ../examples/artificial_ant/ant_simulation_nodes.hpp]
+[import ../examples/artificial_ant/ant_simulation.hpp]
+[import ../examples/artificial_ant/artificial_ant_main.cpp]
+[import ../examples/artificial_ant/board.hpp]
+[import ../examples/artificial_ant/santa_fe_trail.hpp]
+
+Introduction
+
+The artificial ant simulates an ant searching for food, it consists of an ant, a grid and food placed on the grid.
+We set the goal for the ant, to efficiently find the food. The ant has some abilities:
+
+* Sensing food if it's in front of the ant
+* Moving forward (also eating if the ant moved over food)
+* Turing right and left
+
+Within the constrains of the simulation.
+
+* If the ant steps out of the grid, it is beamed to the other side.
+* a food cell is empty after it was vised by the ant
+
+A trivial solution would be to random walk the grid. To avoid this solution we introduce second rules.
+
+* The ant can only make a max number of actions
+* every move or turn reduces the amount of available actions
+* the food is places in a trail
+ * the trail can have gaps
+ * the trail can have corners
+
+For comparability to other GP frameworks the Santa-Fe-Trail was chosen. As seen in __koza1_ref (page 152) or __wiki_santa_fe_trail_problem.
+
+Legend:
+
+* Cell with an X has food
+* Cell with a dot is on the virtual track. For the simulation the dot cells are ignored, the only reason for the dot cell is to visualize the track for humans.
+[santa_fe_trail_definition]
+
+
+
+[h1 Simulation]
+
+[h2 Design decision]
+[h3 Board dimensions]
+
+In this example we choose to map 2 dimension position to 1 dimension position. This decision is not based on a limitation of gpcxx, the mapping allows easier change to N-dimension problems, moreover it trades CPU load against memory saving.
+The class ant_example::board holds the board size information and helps to convert between the 2 dimension and 1 dimension representation.
+Furthermore ant_example::board holds the logic for movement and handling of the boarder.
+
+[h3 Contex modification]
+The solution we use in this example makes strong use of the context modification. Context in this case is the class ant_example::ant, ant_example::board, ant_example::ant::food_trail and meta informations.
+Combined in the class ant_example::ant_simulation.
+
+[h2 Desing order]
+
+The nature of this example makes it necessary to implement a not trivial simulation. This simulation is needed for scoring of the solution/tree. It is a recommended practice to make this simulation without dependencies to gppxx.
+This allows manual verification of the system.
+
+
+
+[node_types_delerations]
+
+[//main //]
+
+[world_definition]
+
+[node_generate]
+
+[envolve_settings]
+
+[tree_generator]
+
+[evolver_definition]
+
+[fitness_defintion]
+
+[fitness_calculation]
+
+[breakup_conditions]
+
+
+[endsect]
+
+
