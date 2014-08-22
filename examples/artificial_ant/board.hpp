@@ -1,5 +1,5 @@
 /*
- * gpcxx/examples/santa_fe_ant_trail/board.hpp
+ * gpcxx/examples/artificial_ant/board.hpp
  * Date: 2014-08-18
  * Author: Gerard Choinka (gerard.choinka+gpcxx@gmail.com)
  * Copyright: Gerard Choinka
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_BOARD_HPP_INCLUDED
-#define GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_BOARD_HPP_INCLUDED
+#ifndef GPCXX_EXAMPLES_ARTIFICIAL_ANT_BOARD_HPP_INCLUDED
+#define GPCXX_EXAMPLES_ARTIFICIAL_ANT_BOARD_HPP_INCLUDED
 
 #include <cstddef>
 
@@ -21,16 +21,16 @@ enum direction
     north = 0, east = 1, south = 2, west = 3
 };
 
-const char* direction_to_str( direction dir )
+char const * const direction_to_str( direction dir )
 {
-    char const * lut[] = { "N", "E", "S", "W" };
+    char const * const lut[] = { "N", "E", "S", "W" };
     return lut[dir];
 }
 
 
 using position_1d = int;
 
-struct  position_2d
+struct position_2d
 {
     int x;
     int y;
@@ -93,10 +93,10 @@ public:
     }
 private:
     
-    size_t m_size_x;
-    size_t m_size_y;
+    size_t const m_size_x;
+    size_t const m_size_y;
 };
 
 } // namespace ant_example
 
-#endif // GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_BOARD_HPP_INCLUDED
+#endif // GPCXX_EXAMPLES_ARTIFICIAL_ANT_BOARD_HPP_INCLUDED

@@ -2,4 +2,4 @@
 # Author: Karsten Ahnert (karsten.ahnert@gmx.de)
 
 add_subdirectory ( symb_reg )
-add_subdirectory ( santa_fe_ant_trail )
+add_subdirectory ( artificial_ant )
