@@ -33,6 +33,7 @@ using population_type = std::vector< tree_type >;
 using fitness_type = std::vector< int >;
 //]
 
+//[evaluator_delerations  
 struct evaluator
 {
     int operator()( tree_type const& t , context_type c ) const
@@ -44,6 +45,8 @@ struct evaluator
         return c.score();
     }
 };
+//]
+
 
 struct prog2                                                                                           
 {                                                                                                     
@@ -89,6 +92,7 @@ struct do_nothing
 };
 //]
 
+//[action_nodes 
 struct ant_move_task_terminal
 {
     void operator()( context_type & ant_sim , node_type const& node ) const
@@ -112,7 +116,7 @@ struct ant_turn_right_task_terminal
         ant_sim.turn_right();
     }
 }; 
-
+//]
     
 } // namespace ant_example
 

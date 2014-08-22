@@ -26,8 +26,8 @@ class ant
 {
 public:
     
-    ant(position_1d position, direction direction)
-    :m_position(position), m_direction(direction), m_steps_done(0)
+    ant( position_1d position, direction direction )
+    : m_position( position ), m_direction( direction ), m_steps_done( 0 )
     {
     }
     
@@ -45,9 +45,9 @@ public:
         m_steps_done++;
     }
     
-    void move(board const & b)
+    void move( board const & b )
     {
-        m_position = b.move_pos(m_position, m_direction);
+        m_position = b.move_pos( m_position, m_direction );
         m_steps_done++;
     }
     
@@ -61,9 +61,9 @@ public:
         return m_direction;
     }
     
-    position_1d front_pos(board const & b) const
+    position_1d front_pos( board const & b ) const
     {
-        return b.move_pos(m_position, m_direction);
+        return b.move_pos( m_position, m_direction );
     }
     
     int steps_done() const
@@ -85,19 +85,19 @@ public:
     
     using food_trail_type = std::unordered_map< position_1d, bool >;
     
-    ant_simulation(food_trail_type food_trail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps)
-    : m_food_trail{food_trail}, 
-      m_board{x_size, y_size}, 
-      m_ant{m_board.pos_2d_to_1d(start_pos), start_direction}, 
-      m_food_start_count(food_trail.size()), 
-      m_max_steps(max_steps)
+    ant_simulation( food_trail_type food_trail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps )
+    : m_food_trail{ food_trail }, 
+      m_board{ x_size, y_size }, 
+      m_ant{ m_board.pos_2d_to_1d( start_pos ), start_direction }, 
+      m_food_start_count( food_trail.size() ), 
+      m_max_steps( max_steps )
     {
     }
     
     bool food_in_front() const
     {
-        position_1d front_pos = m_ant.front_pos(m_board);
-        auto found = m_food_trail.find(front_pos);
+        position_1d front_pos = m_ant.front_pos( m_board );
+        auto found = m_food_trail.find( front_pos );
         return found != m_food_trail.end() && found->second;
     }
     
@@ -114,8 +114,8 @@ public:
     
     void move()
     {
-        m_ant.move(m_board);
-        auto on_food = m_food_trail.find(m_ant.pos());
+        m_ant.move( m_board );
+        auto on_food = m_food_trail.find( m_ant.pos() );
         if(on_food != m_food_trail.end() && on_food->second)
         {
             m_food_eaten++;
@@ -153,11 +153,11 @@ public:
         return m_ant;
     }
     
-    friend std::ostream & operator<<(std::ostream & os, ant_simulation const & asim)
+    friend std::ostream & operator<<( std::ostream & os, ant_simulation const & asim )
     {
         position_1d p = asim.m_ant.pos();
-        position_2d p2d = asim.m_board.pos_1d_to_2d(p);
-        os << direction_to_str(asim.m_ant.dir()) << p2d.x << ":" << p2d.y;
+        position_2d p2d = asim.m_board.pos_1d_to_2d( p );
+        os << direction_to_str( asim.m_ant.dir() ) << p2d.x << ":" << p2d.y;
         return os;
     }
 

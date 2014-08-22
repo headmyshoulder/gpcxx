@@ -21,7 +21,7 @@ namespace santa_fe
 using namespace ant_example;
 size_t const x_size = 32;
 size_t const y_size = 32;
-
+//[santa_fe_trail_definition
 char const * const board[y_size] = {
 " XXX                            ",
 "   X                            ",
@@ -56,14 +56,15 @@ char const * const board[y_size] = {
 " .XXXX..                        ",
 "                                "
 };
+//]
 
-ant_simulation::food_trail_type make_santa_fe_trail(ant_example::board b)
+ant_simulation::food_trail_type make_santa_fe_trail( ant_example::board b )
 {
     ant_simulation::food_trail_type santa_fe_trail;
-    for(int x = 0; x < santa_fe::x_size; ++x)
-        for(int y = 0; y < santa_fe::y_size; ++y)
-            if(santa_fe::board[y][x] == 'X')
-                santa_fe_trail[b.pos_2d_to_1d({x, y})] = true;
+    for( int x = 0; x < santa_fe::x_size; ++x )
+        for( int y = 0; y < santa_fe::y_size; ++y )
+            if( santa_fe::board[ y ][ x ] == 'X' )
+                santa_fe_trail[ b.pos_2d_to_1d( { x, y } ) ] = true;
     return santa_fe_trail;
 }
 
