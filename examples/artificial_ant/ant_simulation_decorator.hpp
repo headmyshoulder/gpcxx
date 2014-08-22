@@ -1,5 +1,5 @@
 /*
- * gpcxx/examples/santa_fe_ant_trail/ant_simulation_decorator.hpp
+ * gpcxx/examples/artificial_ant/ant_simulation_decorator.hpp
  * Date: 2014-08-18
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_DECORATOR_HPP_INCLUDED
-#define GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_DECORATOR_HPP_INCLUDED
+#ifndef GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_DECORATOR_HPP_INCLUDED
+#define GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_DECORATOR_HPP_INCLUDED
 
 #include "ant_simulation.hpp"
 
@@ -120,4 +120,4 @@ private:
 } // namespace gpcxx
 
 
-#endif // GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_DECORATOR_HPP_INCLUDED
+#endif // GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_DECORATOR_HPP_INCLUDED

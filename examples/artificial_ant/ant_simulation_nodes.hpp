@@ -1,5 +1,5 @@
 /*
- * gpcxx/examples/santa_fe_ant_trail/ant_simulation_nodes.hpp
+ * gpcxx/examples/artificial_ant/ant_simulation_nodes.hpp
  * Date: 2014-08-18
  * Author: Gerard Choinka (gerard.choinka+gpcxx@gmail.com)
  * Copyright: Gerard Choinka
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_NODES_HPP_INCLUDED
-#define GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_NODES_HPP_INCLUDED
+#ifndef GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_NODES_HPP_INCLUDED
+#define GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_NODES_HPP_INCLUDED
 
 #include "ant_simulation.hpp"
 
@@ -112,4 +112,4 @@ struct ant_turn_right_task_terminal
 } // namespace ant_example
 
 
-#endif // GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_NODES_HPP_INCLUDED
+#endif // GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_NODES_HPP_INCLUDED

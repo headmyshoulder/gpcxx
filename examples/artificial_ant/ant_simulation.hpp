@@ -1,5 +1,5 @@
 /*
- * gpcxx/examples/santa_fe_ant_trail/ant_simulation.hpp
+ * gpcxx/examples/artificial_ant/ant_simulation.hpp
  * Date: 2014-08-18
  * Author: Gerard Choinka (gerard.choinka+gpcxx@gmail.com)
  * Copyright: Gerard Choinka
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_HPP_INCLUDED
-#define GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_HPP_INCLUDED
+#ifndef GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_HPP_INCLUDED
+#define GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_HPP_INCLUDED
 
 #include "board.hpp"
 
@@ -168,11 +168,11 @@ private:
     int const       m_food_start_count;
     int             m_food_eaten;
     ant             m_ant;
-    board           m_board;
-    int             m_max_steps;
+    board const     m_board;
+    int const       m_max_steps;
 };
 
 
 } // namespace ant_example
 
-#endif // GPCXX_EXAMPLES_SANTA_FE_ANT_TRAIL_ANT_SIMULATION_HPP_INCLUDED
+#endif // GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_HPP_INCLUDED

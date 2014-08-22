@@ -1,5 +1,5 @@
 /*
- * gpcxx/examples/santa_fe_ant_trail/santa_fe_ant_trail_main.cpp
+ * gpcxx/examples/artificial_ant/santa_fe_ant_trail_main.cpp
  * Date: 2014-07-18
  * Author: Gerard Choinka (gerard.choinka+gpcxx@gmail.com)
  * Copyright: Gerard Choinka
@@ -27,20 +27,17 @@
 
 
 
-
-
 int main( int argc , char *argv[] )
 {
     using rng_type = std::mt19937;
     using namespace ant_example;
     char const newl = '\n';
     
-            
+       
     board b(santa_fe::x_size, santa_fe::y_size);
     ant_simulation::food_trail_type santa_fe_trail { santa_fe::make_santa_fe_trail( b ) };
     ant_simulation ant_sim_santa_fe{ santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, 400 };
     
-
 
     gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
         node_type { ant_move_task_terminal{} ,          "move" } ,
