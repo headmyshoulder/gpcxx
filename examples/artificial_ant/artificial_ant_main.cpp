@@ -19,9 +19,11 @@
 #include <gpcxx/io.hpp>
 #include <gpcxx/operator.hpp>
 #include <gpcxx/stat.hpp>
+#include <gpcxx/io/graphviz.hpp>
 
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <random>
 #include <algorithm>
 
@@ -65,7 +67,7 @@ int main( int argc , char *argv[] )
     double const crossover_rate = 0.6;
     double const reproduction_rate = 0.3;
     size_t const min_tree_height = 1; 
-    size_t const max_tree_height = 8;
+    size_t const max_tree_height = 5;
     size_t const tournament_size = 15;
     //]
 
@@ -113,11 +115,11 @@ int main( int argc , char *argv[] )
         //]
         double eval_time = iteration_timer.seconds();
         
-        std::cout << gpcxx::indent( 0 ) << "Generation "    << generation << newl;
-        std::cout << gpcxx::indent( 1 ) << "Evolve time "   << evolve_time << newl;
-        std::cout << gpcxx::indent( 1 ) << "Eval time "     << eval_time << newl;
-        std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 10 ) << newl;
-        std::cout << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << newl;
+        std::cerr << gpcxx::indent( 0 ) << "Generation "    << generation << newl;
+        std::cerr << gpcxx::indent( 1 ) << "Evolve time "   << evolve_time << newl;
+        std::cerr << gpcxx::indent( 1 ) << "Eval time "     << eval_time << newl;
+        std::cerr << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 10 ) << newl;
+        std::cerr << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << newl;
         
         //[breakup_conditions
         generation++;
@@ -125,7 +127,15 @@ int main( int argc , char *argv[] )
         //]
     } while( !has_optimal_fitness && generation < generation_max );
     
-    std::cout << "Overall time : " << overall_timer.seconds() << newl;
+    
+    std::cerr << "Overall time : " << overall_timer.seconds() << newl;
+    
+    int distance = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
+    tree_type optimal_tree = population[distance];
+    
+    // ./artificial_ant | dot -Tsvg | display -
+    std::cout << gpcxx::graphviz( optimal_tree , true );
+    
     return 0;
 }
 
