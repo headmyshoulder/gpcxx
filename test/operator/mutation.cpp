@@ -26,7 +26,7 @@ TYPED_TEST( mutation_tests , instanciation )
     std::vector< typename TestFixture::tree_type > pop( 10 , typename TestFixture::tree_type() );
     std::vector< double > fitness( 10 );
     auto m = gpcxx::make_mutation(
-        gpcxx::make_simple_mutation_strategy( this->m_gen.rng , this->m_gen.gen0 , this->m_gen.gen1 , this->m_gen.gen2 ) ,
+        gpcxx::make_simple_mutation_strategy( this->m_gen.rng , this->m_gen.node_generator ) ,
         gpcxx::make_random_selector( this->m_gen.rng ) );
     m( pop , fitness );
 }

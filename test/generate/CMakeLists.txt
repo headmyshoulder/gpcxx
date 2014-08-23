@@ -10,7 +10,6 @@ add_executable ( generate_tests
   uniform_symbol_erc.cpp
   basic_generate_strategy.cpp
   node_generator.cpp
-  node_generator_generate_strategy.cpp
   )
 
 target_link_libraries ( generate_tests gtest gtest_main )

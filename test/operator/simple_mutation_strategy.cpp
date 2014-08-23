@@ -24,6 +24,6 @@ TYPED_TEST_CASE( simple_mutation_strategy_tests , Implementations );
 
 TYPED_TEST( simple_mutation_strategy_tests , instanciation )
 {
-    auto strategy = gpcxx::make_simple_mutation_strategy( this->m_gen.rng , this->m_gen.gen0 , this->m_gen.gen1 , this->m_gen.gen2 );
+    auto strategy = gpcxx::make_simple_mutation_strategy( this->m_gen.rng , this->m_gen.node_generator );
     strategy( this->m_test_trees.data );
 }
