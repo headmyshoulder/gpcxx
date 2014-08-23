@@ -13,6 +13,7 @@
 #define GPCXX_GENERATE_HPP_DEFINED
 
 
+#include <gpcxx/generate/node_generator.hpp>
 #include <gpcxx/generate/basic_generate_strategy.hpp>
 #include <gpcxx/generate/ramp.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>

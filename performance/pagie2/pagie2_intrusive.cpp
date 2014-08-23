@@ -12,8 +12,9 @@
 #include <gpcxx/tree/intrusive_func.hpp>
 
 #include <gpcxx/generate/uniform_symbol.hpp>
-#include <gpcxx/generate/ramp.hpp>
 #include <gpcxx/generate/node_generator.hpp>
+#include <gpcxx/generate/basic_generate_strategy.hpp>
+#include <gpcxx/generate/ramp.hpp>
 #include <gpcxx/operator/mutation.hpp>
 #include <gpcxx/operator/simple_mutation_strategy.hpp>
 #include <gpcxx/operator/random_selector.hpp>
@@ -28,6 +29,7 @@
 #include <gpcxx/stat/population_statistics.hpp>
 #include <gpcxx/app/timer.hpp>
 #include <gpcxx/app/normalize.hpp>
+
 
 #include <map>
 #include <iostream>
@@ -177,28 +179,28 @@ int main( int argc , char *argv[] )
     std::array< double , 3 > weights = {{ double( terminal_gen.num_symbols() ) ,
                                           double( unary_gen.num_symbols() ) ,
                                           double( binary_gen.num_symbols() ) }};
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng ,
-		terminal_gen , unary_gen , binary_gen ,
-		max_tree_height , max_tree_height , weights );
-    auto new_tree_generator = gpcxx::make_ramp( rng ,
-		terminal_gen , unary_gen , binary_gen ,
-		min_tree_height , max_tree_height , 0.5 , weights );
+    
+    
+
+    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , max_tree_height , max_tree_height );
+    auto new_tree_generator = gpcxx::make_ramp( rng , node_generator ,
+        min_tree_height , max_tree_height , 0.5 );
 
 
-	typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
+    typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
     std::vector< double > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
 
 
     evolver.mutation_function() = gpcxx::make_mutation(
-        gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
+        gpcxx::make_simple_mutation_strategy( rng , node_generator ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce(
-		gpcxx::make_tournament_selector( rng , tournament_size ) );
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     gpcxx::timer timer;
     auto fitness_f = gpcxx::make_regression_fitness( evaluator() );

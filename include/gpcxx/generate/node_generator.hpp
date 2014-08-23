@@ -21,7 +21,7 @@
 namespace gpcxx {
 
 // implement new generate strategy
-template< typename Node , typename Rng , size_t Dim >
+template< typename Node , typename Rng , size_t Dim , typename Value = double >
 class node_generator
 {
 public:
@@ -31,8 +31,9 @@ public:
     using rng_type = Rng;
     using node_type = Node;
     using generator_type = std::function< node_type( rng_type& ) >;
+    using value_type = Value;
     using weighted_generator_type = struct {
-        double weight;
+        value_type weight;
         size_t arity;
         generator_type generator; };
     using generator_container = std::array< weighted_generator_type , Dim >;
@@ -54,7 +55,7 @@ public:
     node_generator( weighted_generator_type gen1 , weighted_generator_type gen2 )
     : m_generators { { std::move( gen1 ) , std::move( gen2 ) } }
     {
-        static_assert( dim == 2 , "Dimension must be one." );
+        static_assert( dim == 2 , "Dimension must be two." );
         prepare();
     }
     
@@ -62,7 +63,7 @@ public:
     node_generator( weighted_generator_type gen1 , weighted_generator_type gen2 , weighted_generator_type gen3 )
     : m_generators { { std::move( gen1 ) , std::move( gen2 ) , std::move( gen3 ) } }
     {
-        static_assert( dim == 3 , "Dimension must be one." );
+        static_assert( dim == 3 , "Dimension must be three." );
         prepare();
     }
     
@@ -81,7 +82,7 @@ public:
         { 1.0 , 1 , std::move( unary ) }
         } }
     {
-        static_assert( dim == 2 , "Dimension must be one." );
+        static_assert( dim == 2 , "Dimension must be two." );
         prepare();
     }
     
@@ -93,19 +94,21 @@ public:
         { 1.0 , 2 , std::move( binary ) }
         } }
     {
-        static_assert( dim == 3 , "Dimension must be one." );
+        static_assert( dim == 3 , "Dimension must be three." );
         prepare();
     }
+    
 
+            
     
     
     // accessors
-    double weight( size_t i ) const
+    value_type weight( size_t i ) const
     {
         return m_generators[i].weight;
     }
     
-    void set_weight( size_t i , double w )
+    void set_weight( size_t i , value_type w )
     {
         m_generators[i].weight = w;
         prepare();
@@ -132,18 +135,25 @@ public:
 //         m_generators[i].arity = a;
 //         prepare();
 //     }
-    
-    
-    
-    // 
-    std::pair< node_type , size_t > get_non_terminal_node( rng_type& rng ) const
+
+    node_type get_node2( rng_type& rng , size_t arity ) const
     {
-        return generate( rng , m_non_terminal_generators[ m_non_terminal_dist( rng ) ] );
+        auto iter = std::find_if( m_generators.begin() , m_generators.end() , [arity]( weighted_generator_type const& w ) -> bool {
+            return arity == w.arity; } );
+        assert( iter != m_generators.end() );
+        return iter->generator( rng );
     }
-    
+
+
     std::pair< node_type , size_t > get_node( rng_type& rng ) const
     {
         return generate( rng , m_generators[ m_dist( rng ) ] );
+    }
+
+    
+    std::pair< node_type , size_t > get_non_terminal_node( rng_type& rng ) const
+    {
+        return generate( rng , m_non_terminal_generators[ m_non_terminal_dist( rng ) ] );
     }
     
     std::pair< node_type , size_t > get_terminal( rng_type& rng ) const
@@ -169,7 +179,7 @@ private:
     
     void prepare_non_terminal_dist( void )
     {
-        std::array< double , dim > weight;
+        std::array< value_type , dim > weight;
         auto t_iter = std::copy_if( m_generators.begin() , m_generators.end() , m_non_terminal_generators.begin() ,
                       []( weighted_generator_type const& w ) -> bool { return w.arity != 0; } );
         std::ptrdiff_t len = std::distance( m_non_terminal_generators.begin() , t_iter );
@@ -181,7 +191,7 @@ private:
     
     void prepare_dist( void )
     {
-        std::array< double , dim > weight;
+        std::array< value_type , dim > weight;
         std::transform( m_generators.begin() , m_generators.end() , weight.begin() ,
                         []( weighted_generator_type const& w ) { return w.weight; } );
         m_dist = std::discrete_distribution<>( weight.begin() , weight.end() );
