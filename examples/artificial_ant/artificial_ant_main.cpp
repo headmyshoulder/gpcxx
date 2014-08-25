@@ -50,15 +50,20 @@ int main( int argc , char *argv[] )
         node_type { if_food_ahead{} , "if" }
     } };
     
-    gpcxx::node_generator< node_type , rng_type , 2 > node_generator {
+    gpcxx::uniform_symbol< node_type > ternary_gen { std::vector< node_type > {
+        node_type { prog3{} , "p3" }
+    } };
+    
+    gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
         { double( terminal_gen.num_symbols() ) , 0 , terminal_gen } ,
-        { double( binary_gen.num_symbols() ) , 2 , binary_gen } };
+        { double( binary_gen.num_symbols() ) , 2 , binary_gen } ,
+        { double( ternary_gen.num_symbols() ) , 3 , ternary_gen } };
 
-    size_t population_size = 2048;
+    size_t population_size = 8192;
     size_t generation_max = 200;
     double number_elite = 2;
-    double mutation_rate = 0.3;
-    double crossover_rate = 0.4;
+    double mutation_rate = 0.1;
+    double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
     size_t min_tree_height = 1; 
     size_t max_tree_height = 5;
@@ -72,12 +77,12 @@ int main( int argc , char *argv[] )
     std::vector< int > fitness( population_size , 0.0 );
     std::vector< tree_type > population( population_size );
 
-    evolver.mutation_function() = gpcxx::make_mutation(
-        gpcxx::make_simple_mutation_strategy( rng , node_generator ) ,
-        gpcxx::make_tournament_selector( rng , tournament_size ) );
 //     evolver.mutation_function() = gpcxx::make_mutation(
-//         gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 10 ) ,
+//         gpcxx::make_simple_mutation_strategy( rng , node_generator ) ,
 //         gpcxx::make_tournament_selector( rng , tournament_size ) );
+    evolver.mutation_function() = gpcxx::make_mutation(
+        gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     
     evolver.crossover_function() = gpcxx::make_crossover( 

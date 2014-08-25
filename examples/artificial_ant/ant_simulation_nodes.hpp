@@ -25,7 +25,7 @@ namespace ant_example {
     
     
 using context_type = ant_simulation;
-using node_type = gpcxx::basic_named_intrusive_node< void , context_type, 2 > ;
+using node_type = gpcxx::basic_named_intrusive_node< void , context_type, 3 > ;
 using tree_type = gpcxx::intrusive_tree< node_type >;
 using population_type = std::vector< tree_type >;
 using fitness_type = std::vector< int >;
