@@ -28,12 +28,12 @@ template< typename Tag > struct get_tree_type;
 
 template<> struct get_tree_type< basic_tree_tag >
 {
-    typedef gpcxx::basic_tree< std::string > type;
+    typedef gpcxx::basic_tree< std::string , 3 > type;
 };
 
 template<> struct get_tree_type< intrusive_tree_tag >
 {
-    typedef gpcxx::intrusive_tree< gpcxx::basic_named_intrusive_node< double , context_type const > > type;
+    typedef gpcxx::intrusive_tree< gpcxx::basic_named_intrusive_node< double , context_type const , 3 > > type;
 };
 
 
@@ -62,7 +62,7 @@ struct test_tree
 
 
     test_tree( void )
-        : data() , data2()
+        : data() , data2() , data3()
     {
         {
             auto i1 = data.insert_below( data.root() , m_factory( "plus" ) );
@@ -79,10 +79,24 @@ struct test_tree
             auto i3 = data2.insert_below( i2 , m_factory( "y" ) );
             auto i4 = data2.insert_below( i1 , m_factory( "x" ) );
         }
+        
+        {
+            auto i1 = data3.insert_below( data3.root() , m_factory( "plus3" ) );
+            auto i2 = data3.insert_below( i1 , m_factory( "sin" ) );
+            auto i3 = data3.insert_below( i2 , m_factory( "x" ) );
+            auto i4 = data3.insert_below( i1 , m_factory( "minus" ) );
+            auto i5 = data3.insert_below( i4 , m_factory( "y" ) );
+            auto i6 = data3.insert_below( i4 , m_factory( "2" ) );
+            auto i7 = data3.insert_below( i1 , m_factory( "minus" ) );
+            auto i8 = data3.insert_below( i7 , m_factory( "cos" ) );
+            auto i9 = data3.insert_below( i8 , m_factory( "y" ) );
+            auto i10 = data3.insert_below( i7 , m_factory( "x" ) );
+        }
     }
 
     tree_type data;
     tree_type data2;
+    tree_type data3;
 };
 
 

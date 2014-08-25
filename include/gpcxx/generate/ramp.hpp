@@ -41,12 +41,12 @@ public:
         
         if( method == 0 ) // grow method
         {
-            auto generate = make_node_generator_generate_strategy( m_rng , m_gen , 1 , height );
+            auto generate = make_basic_generate_strategy( m_rng , m_gen , 1 , height );
             generate( tree );
         }
         else // full method
         {
-            auto generate = make_node_generator_generate_strategy( m_rng , m_gen , height - 1 , height );
+            auto generate = make_basic_generate_strategy( m_rng , m_gen , height - 1 , height );
             generate( tree );
         }
         

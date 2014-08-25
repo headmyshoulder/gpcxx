@@ -25,8 +25,8 @@ namespace detail {
     template< class Cursor , class Generator >
     void simple_mutation_impl( Cursor node , Generator &generator )
     {
-        typedef typename cursor_value< Cursor >::type value_type;
-        *node = generator( node.size() );
+        auto g = generator( node.size() );
+        *node = g;
     }
 
 

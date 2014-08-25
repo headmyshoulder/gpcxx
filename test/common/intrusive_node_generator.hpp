@@ -18,6 +18,14 @@
 
 using namespace gpcxx;
 
+struct plus3_func
+{
+    template< typename Context , typename Node >
+    inline typename Node::result_type operator()( Context const& c , Node const& node ) const
+    {
+        return node.children( 0 )->eval( c ) + node.children( 1 )->eval( c ) + node.children( 2 )->eval( c );
+    }
+};
 
 template< typename Node >
 struct intrusive_node_generator
@@ -27,6 +35,7 @@ struct intrusive_node_generator
     node_type operator()( std::string const& s ) const
     {
         if( s == "plus" ) return node_type( plus_func() , "plus" );
+        if( s == "plus3" ) return node_type( plus3_func() , "plus3" );
         if( s == "minus" ) return node_type( minus_func() , "minus" );
         if( s == "multiplies" ) return node_type( minus_func() , "multiplies" );
         if( s == "+" ) return node_type( plus_func() , "+" );

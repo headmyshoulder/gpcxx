@@ -25,9 +25,9 @@ class basic_named_intrusive_node : public gpcxx::intrusive_node< basic_named_int
 {
 public:
     
-    typedef Res result_type;
-    typedef Context context_type;
-    typedef basic_named_intrusive_node< result_type , context_type , Arity > node_type;
+    using result_type = Res;
+    using context_type = Context;
+    using node_type = basic_named_intrusive_node< result_type , context_type , Arity >;
     
     typedef std::function< result_type( context_type& , node_type const& ) > func_type;
     
@@ -60,8 +60,8 @@ private:
     std::string m_name;
 };
 
-template< typename Res , typename Context >
-std::ostream& operator<<( std::ostream &out , basic_named_intrusive_node < Res , Context > const& node )
+template< typename Res , typename Context , size_t Arity >
+std::ostream& operator<<( std::ostream &out , basic_named_intrusive_node < Res , Context , Arity > const& node )
 {
     out << node.name();
     return out;

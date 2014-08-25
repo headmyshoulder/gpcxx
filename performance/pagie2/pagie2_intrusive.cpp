@@ -164,7 +164,9 @@ int main( int argc , char *argv[] )
     } };
     
     gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
-        { 1.0 , 0 , terminal_gen } , { 1.0 , 1 , unary_gen } , { 1.0 , 2 , binary_gen } };
+        { double ( terminal_gen.num_symbols() ) , 0 , terminal_gen } ,
+        { double ( unary_gen.num_symbols() ) , 1 , unary_gen } ,
+        { double ( binary_gen.num_symbols() ) , 2 , binary_gen } };
     
     size_t population_size = 512;
     size_t generation_size = 20;

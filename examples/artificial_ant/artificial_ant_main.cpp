@@ -31,41 +31,41 @@ int main( int argc , char *argv[] )
 {
     using rng_type = std::mt19937;
     using namespace ant_example;
-    char const newl = '\n';
+    char newl = '\n';
     
        
-    board b(santa_fe::x_size, santa_fe::y_size);
+    board b( santa_fe::x_size , santa_fe::y_size );
     ant_simulation::food_trail_type santa_fe_trail { santa_fe::make_santa_fe_trail( b ) };
-    ant_simulation ant_sim_santa_fe{ santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, 400 };
+    ant_simulation ant_sim_santa_fe { santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, 400 };
     
 
     gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
-        node_type { ant_move_task_terminal{} ,          "move" } ,
-        node_type { ant_turn_left_task_terminal{} ,     "turn_left" } ,
-        node_type { ant_turn_right_task_terminal{} ,    "turn_right" } 
+        node_type { ant_move_task_terminal{} ,          "m" } ,
+        node_type { ant_turn_left_task_terminal{} ,     "l" } ,
+        node_type { ant_turn_right_task_terminal{} ,    "r" } 
     } };
-    
-    //this is just filled with a dummy node, 
-    gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type >{ node_type { do_nothing{} , " " } } };
     
     gpcxx::uniform_symbol< node_type > binary_gen { std::vector< node_type > {
-        node_type { prog2{} , "prog2" } ,
-        node_type { if_food_ahead{} , "if_food_ahead" }
+        node_type { prog2{} , "p2" } ,
+        node_type { if_food_ahead{} , "if" }
     } };
+    
+    gpcxx::node_generator< node_type , rng_type , 2 > node_generator {
+        { double( terminal_gen.num_symbols() ) , 0 , terminal_gen } ,
+        { double( binary_gen.num_symbols() ) , 2 , binary_gen } };
 
-    size_t population_size = 1000;
+    size_t population_size = 2048;
     size_t generation_max = 200;
-    double number_elite = 1;
-    double mutation_rate = 0.0;
-    double crossover_rate = 0.6;
+    double number_elite = 2;
+    double mutation_rate = 0.3;
+    double crossover_rate = 0.4;
     double reproduction_rate = 0.3;
     size_t min_tree_height = 1; 
-    size_t max_tree_height = 8;
+    size_t max_tree_height = 5;
     size_t tournament_size = 15;
 
     rng_type rng;
-    std::array< double , 3 > weights = { { double( terminal_gen.num_symbols() ) , 0.0 , double( binary_gen.num_symbols() ) } };    
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , weights );
+    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , max_tree_height , max_tree_height );
       
     typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
@@ -73,8 +73,12 @@ int main( int argc , char *argv[] )
     std::vector< tree_type > population( population_size );
 
     evolver.mutation_function() = gpcxx::make_mutation(
-        gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
+        gpcxx::make_simple_mutation_strategy( rng , node_generator ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
+//     evolver.mutation_function() = gpcxx::make_mutation(
+//         gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 10 ) ,
+//         gpcxx::make_tournament_selector( rng , tournament_size ) );
+    
     
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
@@ -92,7 +96,7 @@ int main( int argc , char *argv[] )
 
    
     std::cout << gpcxx::indent( 0 ) << "Generation time " << timer.seconds() << newl;
-    std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 1 , 10 ) << newl;
+    std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 3 , false ) << newl;
     std::cout << gpcxx::indent( 1 ) << "Statistics : " << gpcxx::calc_population_statistics( population ) << newl << newl;
 
     timer.restart();
@@ -114,7 +118,7 @@ int main( int argc , char *argv[] )
         std::cout << gpcxx::indent( 0 ) << "Generation "    << generation << newl;
         std::cout << gpcxx::indent( 1 ) << "Evolve time "   << evolve_time << newl;
         std::cout << gpcxx::indent( 1 ) << "Eval time "     << eval_time << newl;
-        std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 10 ) << newl;
+        std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 3 , false ) << newl;
         std::cout << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << newl;
         
         has_optimal_fitness = std::any_of( fitness.begin(), fitness.end(), []( int fitness ){ return fitness == 0; } );
