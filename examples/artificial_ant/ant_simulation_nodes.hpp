@@ -24,7 +24,7 @@
 namespace ant_example {
     
 //[node_types_delerations  
-int const max_children = 2;
+size_t const max_children = 2;
 using context_type = ant_simulation;
 using node_return_type = void;
 using node_type = gpcxx::basic_named_intrusive_node< node_return_type , context_type, max_children > ;
