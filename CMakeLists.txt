@@ -32,7 +32,9 @@ include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 add_subdirectory ( examples )
 add_subdirectory ( performance )
-add_subdirectory ( doc )
+if ( GPCXX_BUILD_DOCS )
+  add_subdirectory ( doc )
+endif ()
 
 set( GMOCK_ROOT "${THIRDPARTY_ROOT}/gmock" )
 set( GTEST_ROOT "${THIRDPARTY_ROOT}/gmock/gtest" )

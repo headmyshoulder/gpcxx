@@ -1,0 +1,1 @@
+option ( GPCXX_BUILD_DOCS "Build gpcxx documentation" OFF )

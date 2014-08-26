@@ -204,21 +204,23 @@ namespace parser
     };
 
 
-    template< typename Tree >
+    template< typename Tree , typename Transform = gpcxx::identity >
     struct tree_transformator : public boost::static_visitor< void >
     {
         typedef Tree tree_type;
         typedef typename Tree::cursor cursor;
+        typedef Transform transform_type;
         
         
-        tree_transformator( tree_type &tree , cursor c ) : tree_( tree ) , c_( c ) { }
+        tree_transformator( tree_type &tree , cursor c , transform_type transform = transform_type{} )
+        : m_tree( tree ) , m_c( c ) , m_transform( std::move( transform ) ) { }
         
     
         void operator()( qi::info::nil ) const {}
         
         void operator()( char n ) const
         {
-            tree_.insert_below( c_ , n );
+            m_tree.insert_below( m_c , m_transform( n ) );
         }
 
         void operator()( expression_ast const& ast ) const
@@ -228,19 +230,20 @@ namespace parser
 
         void operator()( binary_op const& expr ) const
         {
-            cursor c1 = tree_.insert_below( c_ , expr.op );
-            boost::apply_visitor( tree_transformator( tree_ , c1 ) , expr.left.expr );
-            boost::apply_visitor( tree_transformator( tree_ , c1 ) , expr.right.expr );
+            cursor c1 = m_tree.insert_below( m_c , m_transform( expr.op ) );
+            boost::apply_visitor( tree_transformator( m_tree , c1 ) , expr.left.expr );
+            boost::apply_visitor( tree_transformator( m_tree , c1 ) , expr.right.expr );
         }
 
         void operator()( unary_op const& expr ) const
         {
-            cursor c1 = tree_.insert_below( c_ , expr.op );
-            boost::apply_visitor( tree_transformator( tree_ , c1 ) , expr.subject.expr );
+            cursor c1 = m_tree.insert_below( m_c , m_transform( expr.op ) );
+            boost::apply_visitor( tree_transformator( m_tree , c1 ) , expr.subject.expr );
         }
 
-        tree_type &tree_;
-        cursor c_;
+        tree_type &m_tree;
+        cursor m_c;
+        transform_type m_transform;
     };
     
     template< typename Trafo >

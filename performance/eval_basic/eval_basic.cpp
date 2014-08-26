@@ -214,6 +214,22 @@ auto eval_cursor4 = gpcxx::make_static_eval< value_type , symbol_type , context_
 
 
 
+struct eval_cursor5
+{
+    template< typename Tree >
+    static inline value_type eval_tree( Tree const& t , context_type const& context )
+    {
+        value_type tmp = t.root()->eval( context , t->root() );
+    }
+    
+    template< typename Tree >
+    inline value_type operator()( Tree const& t , context_type const& context ) const
+    {
+        return eval_tree( t , context );
+    }
+};
+
+
 
 
 
