@@ -34,11 +34,11 @@ int main( int argc , char *argv[] )
     using namespace ant_example;
     using rng_type = std::mt19937;
     rng_type rng;
-    char const newl = '\n';
+    char const newl { '\n' };
     
     //[world_definition 
-    board const b(santa_fe::x_size, santa_fe::y_size);
-    int const max_steps = 400;
+    board const b{ santa_fe::x_size, santa_fe::y_size };
+    int const max_steps { 400 };
     ant_simulation::food_trail_type const santa_fe_trail { santa_fe::make_santa_fe_trail( b ) };
     ant_simulation const                  ant_sim_santa_fe{ santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, max_steps };
     //]
@@ -59,8 +59,14 @@ int main( int argc , char *argv[] )
         node_type { prog3{} , "p3" }
     } };
     
+    gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
+        { double( terminal_gen.num_symbols() ) , 0 , terminal_gen } ,
+        { double( binary_gen.num_symbols() ) , 2 , binary_gen } ,
+        { double( ternary_gen.num_symbols() ) , 3 , ternary_gen } };
+    //]
+    
     //[envolve_settings
-    size_t const population_size = 1024;
+    size_t const population_size = 8192;
     size_t const generation_max = 200;
     double const number_elite = 2;
     double const mutation_rate = 0.1;
@@ -70,37 +76,29 @@ int main( int argc , char *argv[] )
     size_t const max_tree_height = 5;
     size_t const tournament_size = 15;
     //]
+        
+    population_type population( population_size );
     
-    gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
-        { double( terminal_gen.num_symbols() ) , 0 , terminal_gen } ,
-        { double( binary_gen.num_symbols() ) , 2 , binary_gen } ,
-        { double( ternary_gen.num_symbols() ) , 3 , ternary_gen } };
-    
+    //[tree_generator
+    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , max_tree_height , max_tree_height );
+    for( auto & individum :  population )
+        tree_generator( individum );
+    //]
+
      //[evolver_definition
     using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type > ;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
-    //]
-    
-  
-    //[tree_generator
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , max_tree_height );
-    population_type population( population_size );
-    for( auto & individum :  population )
-        tree_generator( individum );
-        std::cerr << ".";
-    //]
 
-
-//     evolver.mutation_function() = gpcxx::make_mutation(
-//         gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
-//         gpcxx::make_tournament_selector( rng , tournament_size ) );
-    
+    evolver.mutation_function() = gpcxx::make_mutation(
+         gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
+         gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
+    
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
-
+    //]
     
     //[fitness_defintion
     evaluator       fitness_f;
@@ -115,7 +113,7 @@ int main( int argc , char *argv[] )
         gpcxx::timer iteration_timer;
         if( generation != 0 )
             evolver.next_generation( population , fitness );
-        double evolve_time = iteration_timer.seconds();
+        double evolve_time { iteration_timer.seconds() };
         
         iteration_timer.restart();
         //[fitness_calculation
@@ -140,11 +138,11 @@ int main( int argc , char *argv[] )
     
     std::cerr << "Overall time : " << overall_timer.seconds() << newl;
     
-    int distance = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
-    tree_type optimal_tree = population[distance];
+    auto fittest_individual_position = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
+    tree_type const & fittest_individual { population[fittest_individual_position] };
     
     // ./artificial_ant | dot -Tsvg | display -
-    std::cout << gpcxx::graphviz( optimal_tree , true );
+    std::cout << gpcxx::graphviz( fittest_individual , true );
     
     return 0;
 }
