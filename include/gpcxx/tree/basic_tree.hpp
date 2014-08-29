@@ -27,12 +27,12 @@
 namespace gpcxx {
 
 
-template< typename T , typename Allocator = std::allocator< T > >
+template< typename T , size_t MaxArity = 2 , typename Allocator = std::allocator< T > >
 class basic_tree
 {
-    typedef basic_tree< T , Allocator > self_type;
+    typedef basic_tree< T , MaxArity , Allocator > self_type;
 
-    static const size_t max_arity = 2;
+    static const size_t max_arity = MaxArity;
     typedef detail::basic_node< T , max_arity >                     node_type;
     typedef node_type*                                              node_pointer;
     typedef typename node_type::node_base_type                      node_base_type;
@@ -67,9 +67,9 @@ public:
     typedef typename std::allocator_traits< allocator_type >::pointer       pointer;
     typedef typename std::allocator_traits< allocator_type >::const_pointer const_pointer;
 
-    template< typename U > struct rebind
+    template< typename U , size_t M > struct rebind
     {
-        typedef basic_tree< U, typename Allocator::template rebind<U>::other > other;
+        typedef basic_tree< U, M , typename Allocator::template rebind<U>::other > other;
     };
 
     
@@ -413,15 +413,15 @@ private:
 //
 // compare algorithms:
 //
-template< typename T , typename Allocator >
-bool operator==( basic_tree< T , Allocator > const& x , basic_tree< T , Allocator > const& y )
+template< typename T , size_t MaxArity , typename Allocator >
+bool operator==( basic_tree< T , MaxArity , Allocator > const& x , basic_tree< T , MaxArity , Allocator > const& y )
 {
     if( x.size() != y.size() ) return false;
     return detail::cursor_comp( x.root() , y.root() );
 }
 
-template< typename T, typename Allocator >
-bool operator!=( basic_tree< T , Allocator > const& x , basic_tree< T , Allocator > const& y )
+template< typename T, size_t MaxArity , typename Allocator >
+bool operator!=( basic_tree< T , MaxArity , Allocator > const& x , basic_tree< T , MaxArity , Allocator > const& y )
 {
     return !( x == y );
 }
@@ -430,17 +430,17 @@ bool operator!=( basic_tree< T , Allocator > const& x , basic_tree< T , Allocato
 //
 // specialized algorithms:
 //
-template< typename T , typename Allocator >
-void swap( basic_tree< T , Allocator >& x , basic_tree< T , Allocator >& y )
+template< typename T , size_t MaxArity , typename Allocator >
+void swap( basic_tree< T , MaxArity , Allocator >& x , basic_tree< T , MaxArity , Allocator >& y )
 {
     x.swap( y );
 }
 
-template< typename T , typename Allocator >
-void swap_subtrees( basic_tree< T , Allocator >& t1 ,
-                    typename basic_tree< T , Allocator >::cursor c1 ,
-                    basic_tree< T , Allocator >& t2 ,
-                    typename basic_tree< T , Allocator >::cursor c2 )
+template< typename T , size_t MaxArity , typename Allocator >
+void swap_subtrees( basic_tree< T , MaxArity , Allocator >& t1 ,
+                    typename basic_tree< T , MaxArity , Allocator >::cursor c1 ,
+                    basic_tree< T , MaxArity , Allocator >& t2 ,
+                    typename basic_tree< T , MaxArity , Allocator >::cursor c2 )
 {
     t1.swap_subtrees( c1 , t2 , c2 );
 }

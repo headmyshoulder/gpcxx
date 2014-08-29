@@ -14,6 +14,7 @@
 
 #include "test_tree.hpp"
 #include <gpcxx/generate/uniform_symbol.hpp>
+#include <gpcxx/generate/node_generator.hpp>
 
 #include <random>
 #include <vector>
@@ -24,10 +25,12 @@
 template< typename TreeTag >
 struct generic_generator
 {
+    typedef std::mt19937 rng_type;
     typedef typename get_tree_type< TreeTag >::type tree_type;
     typedef typename get_node_factory< TreeTag >::type factory_type;
     typedef std::vector< typename tree_type::value_type > symbol_container;
     typedef gpcxx::uniform_symbol< typename tree_type::value_type > generator_type;
+    typedef gpcxx::node_generator< typename tree_type::value_type , rng_type , 3 > node_generator_type;
 
 
 
@@ -38,18 +41,22 @@ struct generic_generator
           binary_symbols( { m_factory( "plus" ) , m_factory( "minus" ) , m_factory( "multiplies" ) } ) ,
           gen0( term_symbols ) ,
           gen1( unary_symbols ) ,
-          gen2( binary_symbols ) 
-    { }
+          gen2( binary_symbols ) ,
+          node_generator()
+    {
+        node_generator = node_generator_type { gen0 , gen1 , gen2 };
+    }
 
     factory_type m_factory;
 
-    std::mt19937 rng;
+    rng_type rng;
     symbol_container term_symbols;
     symbol_container unary_symbols;
     symbol_container binary_symbols;
     generator_type gen0;
     generator_type gen1;
     generator_type gen2;
+    node_generator_type node_generator;
 };
 
 

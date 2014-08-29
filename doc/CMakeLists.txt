@@ -1,6 +1,3 @@
-find_package ( Doxygen )
-find_package ( XSLTPROC )
-find_package ( QuickBook )
 
 
 if ( ${DOXYGEN_FOUND} AND ${XSLTPROC_FOUND} AND ${QuickBook_FOUND} )
@@ -106,11 +103,11 @@ xsltproc(
   )
 
 add_custom_target ( documentation
+  ALL
   DEPENDS
   "${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
   "${CMAKE_CURRENT_BINARY_DIR}/html/boostbook.css"
   "${CMAKE_CURRENT_BINARY_DIR}/html/images" 
-  "${CMAKE_CURRENT_BINARY_DIR}/*.qbk"
   )
 
 

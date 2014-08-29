@@ -22,9 +22,6 @@
 
 
 
-# if ( NOT DEFINED GTEST_ROOT )
-#     set( GTEST_ROOT $ENV{GTEST_ROOT} ) 
-# endif ()   
 
 if ( IS_DIRECTORY $ENV{QUICKBOOK_ROOT} )
     if ( DEFINED QUICKBOOK_ROOT )
@@ -65,26 +62,26 @@ find_path ( DOCBOOK_XSL_DIR   html/html.xsl PATHS "${DOCBOOK_ROOT}/docbook-xsl" 
 set ( QuickBook_FOUND TRUE )
 
 if ( NOT QUICKBOOK_EXECUTABLE )
-  message ( WARNING "could not find quickbook" )
+  message ( WARNING "Could not find quickbook. You need to install boost in order to use quickbook and to put it into your default search path or set an environment variable QUICKBOOK_ROOT on the location of quickbook. Quickbook is usually located in $BOOST_ROOT/dist/bin." )
   set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT BOOSTBOOK_DTD_DIR )
-  message ( WARNING "could not find Boostbook DTD!" )
+  message ( WARNING "Could not find Boostbook DTD!" )
   set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT BOOSTBOOK_XSL_DIR )
-  message ( WARNING "could not find Boostbook XSL stylesheets!" )
+  message ( WARNING "Could not find Boostbook XSL stylesheets!" )
   set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT DOCBOOK_DTD_DIR )
-  message ( WARNING "could not find DocBook DTD!" )
+  message ( WARNING "Could not find DocBook DTD!" )
   set ( QuickBook_FOUND FALSE )
 endif ()
 
 if ( NOT DOCBOOK_XSL_DIR )
-  message ( WARNING "could not find DocBook XSL stylesheets!" )
+  message ( WARNING "Could not find DocBook XSL stylesheets!" )
   set ( QuickBook_FOUND FALSE )
 endif ()

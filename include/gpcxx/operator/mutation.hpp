@@ -24,7 +24,7 @@ public:
 
     template< typename Pop , typename Fitness >
     typename Pop::value_type
-    operator()( Pop &pop , Fitness &fitness )
+    operator()( Pop const& pop , Fitness const& fitness )
     {
         typedef typename Pop::value_type individual_type;
         individual_type node = m_selector( pop , fitness );

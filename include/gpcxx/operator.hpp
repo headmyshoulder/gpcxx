@@ -19,6 +19,6 @@
 #include <gpcxx/operator/reproduce.hpp>
 #include <gpcxx/operator/simple_mutation_strategy.hpp>
 #include <gpcxx/operator/tournament_selector.hpp>
-
+#include <gpcxx/operator/point_mutation.hpp>
 
 #endif // GPCXX_OPERATOR_HPP_DEFINED

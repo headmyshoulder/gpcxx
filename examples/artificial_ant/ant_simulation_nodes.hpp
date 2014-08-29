@@ -82,15 +82,6 @@ struct if_food_ahead
     }                                                                                                 
 };
 
-//[do_nothing_node 
-struct do_nothing                                                                                           
-{                                                                                                     
-    void operator()( context_type& ant_sim , node_type const& node ) const         
-    {
-        node.children( 0 )->eval( ant_sim );                    
-    }                                                                                                 
-};
-//]
 
 //[action_nodes 
 struct ant_move_task_terminal

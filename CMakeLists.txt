@@ -1,13 +1,11 @@
 # Date: 2013-01-25
 # Author: Karsten Ahnert (karsten.ahnert@gmx.de)
 
-
-project ( genetic_programming )
+project ( gpcxx )
 cmake_minimum_required ( VERSION 2.8 )
 
-ADD_DEFINITIONS(
-    -std=c++11
-)
+ADD_DEFINITIONS ( -std=c++11 )
+
 
 set ( THIRDPARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party" )
 
@@ -24,9 +22,10 @@ message ( STATUS "Building project ${CMAKE_PROJECT_NAME}" )
 message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
 
 
-set ( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR} )
-
 find_package ( Boost REQUIRED COMPONENTS thread system )
+find_package ( Doxygen )
+find_package ( XSLTPROC )
+find_package ( QuickBook )
 
 include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )

@@ -27,7 +27,7 @@ public:
     
     template< typename Pop , typename Fitness >
     std::pair< typename Pop::value_type , typename Pop::value_type >
-    operator()( Pop &pop , Fitness &fitness )
+    operator()( Pop const& pop , Fitness const& fitness )
     {
         typedef typename Pop::value_type individual_type;
         individual_type node1 = m_selector( pop , fitness );

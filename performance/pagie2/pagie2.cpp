@@ -8,6 +8,7 @@
 
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>
+#include <gpcxx/generate/node_generator.hpp>
 #include <gpcxx/generate/ramp.hpp>
 #include <gpcxx/operator/mutation.hpp>
 #include <gpcxx/operator/simple_mutation_strategy.hpp>
@@ -125,10 +126,12 @@ int main( int argc , char *argv[] )
     auto terminal_gen = eval.get_terminal_symbol_distribution();
     auto unary_gen = eval.get_unary_symbol_distribution();
     auto binary_gen = eval.get_binary_symbol_distribution();
-    std::array< double , 3 > weights = {{ 2.0 * double( terminal_gen.num_symbols() ) ,
-                                       double( unary_gen.num_symbols() ) ,
-                                       double( binary_gen.num_symbols() ) }};
-    auto tree_generator = gpcxx::make_ramp( rng , terminal_gen , unary_gen , binary_gen , max_tree_height , max_tree_height , 0.5 , weights );
+    gpcxx::node_generator< node_attribute_type , rng_type , 3 > node_generator {
+        { 2.0 * double( terminal_gen.num_symbols() ) , 0 , terminal_gen } ,
+        { double( unary_gen.num_symbols() ) , 1 , unary_gen } ,
+        { double( binary_gen.num_symbols() ) , 2 , binary_gen } };
+
+    auto tree_generator = gpcxx::make_ramp( rng , node_generator , max_tree_height , max_tree_height , 0.5 );
     
 
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
@@ -138,7 +141,7 @@ int main( int argc , char *argv[] )
 
     auto fitness_f = gpcxx::regression_fitness< eval_type >( eval );
     evolver.mutation_function() = gpcxx::make_mutation(
-        gpcxx::make_simple_mutation_strategy( rng , terminal_gen , unary_gen , binary_gen ) ,
+        gpcxx::make_simple_mutation_strategy( rng , node_generator ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,

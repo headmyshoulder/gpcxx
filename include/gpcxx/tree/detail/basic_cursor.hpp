@@ -22,7 +22,7 @@
 
 namespace gpcxx {
 
-template< typename T , typename A > class basic_tree;
+template< typename T , size_t MaxArity , typename A > class basic_tree;
 
 namespace detail {
 
@@ -39,7 +39,7 @@ class basic_node_cursor : public boost::iterator_facade<
     
     friend class boost::iterator_core_access;
     template< typename U > friend class basic_node_cursor;
-    template< typename T , typename A > friend class basic_tree;
+    template< typename T , size_t MaxArity , typename A > friend class basic_tree;
 
     
     typedef Node node_type;

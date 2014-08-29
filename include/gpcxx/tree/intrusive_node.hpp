@@ -28,7 +28,7 @@ namespace detail
 template< typename Node >
 class intrusive_tree;
 
-template< typename Node , size_t Arity = 2 >
+template< typename Node , size_t MaxArity = 2 >
 class intrusive_node
 {
     template< typename T >
@@ -39,21 +39,31 @@ class intrusive_node
     
 public:
     
-    static const size_t max_arity = Arity;
-    typedef Node node_type;
-    typedef node_type* node_pointer;
-    typedef node_type const* const_node_pointer;
-    typedef detail::intrusive_cursor< node_type > cursor;
-    typedef detail::intrusive_cursor< node_type const > const_cursor;    
-    typedef std::array< node_pointer , max_arity > children_type;
-    
-    
-    
+    static const size_t max_arity = MaxArity;
+    using node_type = Node;
+    using node_pointer = node_type*;
+    using const_node_pointer = node_type const*;
+    using cursor = detail::intrusive_cursor< node_type >;
+    using const_cursor = detail::intrusive_cursor< node_type const >;
+    using children_type = std::array< node_pointer , max_arity >;
     
     intrusive_node( node_type *parent = nullptr ) noexcept
     : m_parent( parent ) , m_children()
     {
         clear_children();
+    }
+    
+    intrusive_node( intrusive_node const& ) = default;
+    intrusive_node( intrusive_node && ) = default;
+    
+    intrusive_node& operator=( intrusive_node const& )
+    {
+        return *this;
+    }
+    
+    intrusive_node& operator=( intrusive_node && )
+    {
+        return *this;
     }
 
     cursor children( size_t i ) noexcept;

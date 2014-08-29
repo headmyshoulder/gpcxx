@@ -64,7 +64,7 @@ protected:
             make_pair( "x" , make_pair( 0 , []() { return string( "x" ); } ) ) ,
             make_pair( "y" , make_pair( 0 , []() { return string( "y" ); } ) ) ,
             make_pair( "z" , make_pair( 0 , []() { return string( "z" ); } ) ) ,
-            make_pair( "2" , make_pair( 0 , []() { return string( "2" ); } ) ) 
+            make_pair( "2" , make_pair( 0 , []() { return string( "2" ); } ) )
         };
         
         m_basic_mapper = [this] ( std::string const& str ) -> basic_mapped_func {

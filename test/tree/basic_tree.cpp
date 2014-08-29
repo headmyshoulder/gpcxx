@@ -150,7 +150,7 @@ TEST( TESTNAME , clear )
 TEST( TESTNAME , iterator_construct )
 {
     test_tree< basic_tree_tag > trees;
-    basic_tree< std::string > t( trees.data2.root() );
+    test_tree< basic_tree_tag >::tree_type t( trees.data2.root() );
     
     EXPECT_EQ( t.size() , 4 );
     EXPECT_FALSE( t.empty() );
@@ -163,7 +163,7 @@ TEST( TESTNAME , iterator_construct )
 TEST( TESTNAME , copy_construct )
 {
     test_tree< basic_tree_tag > trees;
-    basic_tree< std::string > t( trees.data2 );
+    test_tree< basic_tree_tag >::tree_type t( trees.data2 );
     
     EXPECT_EQ( trees.data2.size() , 4 );
     EXPECT_FALSE( trees.data2.empty() );
@@ -178,7 +178,7 @@ TEST( TESTNAME , copy_construct )
 TEST( TESTNAME , move_construct )
 {
     test_tree< basic_tree_tag > trees;
-    basic_tree< std::string > t( std::move( trees.data2 ) );
+    test_tree< basic_tree_tag >::tree_type t( std::move( trees.data2 ) );
     
     EXPECT_EQ( trees.data2.size() , 0 );
     EXPECT_TRUE( trees.data2.empty() );
@@ -271,7 +271,7 @@ TEST( TESTNAME , swap_function )
 TEST( TESTNAME , equal_compare )
 {
     test_tree< basic_tree_tag > trees;
-    basic_tree< std::string > t = trees.data;
+    test_tree< basic_tree_tag >::tree_type t = trees.data;
     
     EXPECT_FALSE( trees.data == trees.data2 );
     EXPECT_TRUE( trees.data != trees.data2 );
