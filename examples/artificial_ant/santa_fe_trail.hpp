@@ -15,6 +15,8 @@
 #include "board.hpp"
 #include "ant_simulation.hpp"
 
+#include <cstddef>
+
 namespace santa_fe 
 {
 

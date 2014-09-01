@@ -18,8 +18,6 @@
 #include <ostream>
 
 
-
-
 namespace ant_example {
 
 //[ant_class    
@@ -131,40 +129,8 @@ public:
     {
         return m_food_start_count - m_food_eaten;
     }
-
-private:
-    
-    int food_eaten() const 
-    {
-        return m_food_eaten;
-    }
-    
-    food_trail_type const &  get_food_trail() const
-    {
-        return m_food_trail;
-    }
-    
-    board get_board() const 
-    {
-        return m_board;
-    }
-    
-    ant const & get_ant() const
-    {
-        return m_ant;
-    }
-    
-    friend std::ostream & operator<<( std::ostream & os, ant_simulation const & asim )
-    {
-        position_1d p = asim.m_ant.pos();
-        position_2d p2d = asim.m_board.pos_1d_to_2d( p );
-        os << direction_to_str( asim.m_ant.dir() ) << p2d.x << ":" << p2d.y;
-        return os;
-    }
-
     
 private:
-
     food_trail_type m_food_trail;
     int const       m_food_start_count;
     int             m_food_eaten;

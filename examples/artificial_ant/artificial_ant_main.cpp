@@ -19,7 +19,6 @@
 #include <gpcxx/io.hpp>
 #include <gpcxx/operator.hpp>
 #include <gpcxx/stat.hpp>
-#include <gpcxx/io/graphviz.hpp>
 
 #include <string>
 #include <iostream>
@@ -146,18 +145,3 @@ int main( int argc , char *argv[] )
     
     return 0;
 }
-
-
-
-bool ant_simulation_test()
-{
-    size_t board_size_x = 32;
-    size_t board_size_y = 32;
-    ant_example::board b { board_size_x , board_size_y };
-    
-    ant_example::ant an_ant { b.pos_2d_to_1d( { 0, 0 } ), ant_example::east };
-    
-    an_ant.move(b);
-    
-    assert( an_ant.pos() == b.pos_2d_to_1d( { 1, 0 } ) );
-}    
