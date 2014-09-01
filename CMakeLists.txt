@@ -60,6 +60,6 @@ else ()
     message ( STATUS "Google C++ Testing Framework not found in \"${GTEST_ROOT}\" tests will be disabled !" )
   endif ()
 
-  message ( STATUS "    get googlemock/googletest by: wget http://googlemock.googlecode.com/files/gmock-1.7.0.zip" )
+  message ( STATUS "    get googlemock/googletest by: svn checkout http://googlemock.googlecode.com/svn/tags/release-1.7.0/ \"${THIRDPARTY_ROOT}/gmock\"" )
 
 endif ()

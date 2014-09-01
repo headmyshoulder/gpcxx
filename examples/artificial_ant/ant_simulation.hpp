@@ -22,6 +22,7 @@
 
 namespace ant_example {
 
+//[ant_class    
 class ant
 {
 public:
@@ -76,13 +77,12 @@ private:
     position_1d m_position;
     direction   m_direction;
 };
+//]
 
-
-
+//[ant_wold
 class ant_simulation
 {
 public:
-    
     using food_trail_type = std::unordered_map< position_1d, bool >;
     
     ant_simulation( food_trail_type food_trail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps )
@@ -100,7 +100,6 @@ public:
         auto found = m_food_trail.find( front_pos );
         return found != m_food_trail.end() && found->second;
     }
-    
     
     void turn_left()
     {
@@ -128,14 +127,16 @@ public:
         return m_food_eaten == m_food_start_count || m_ant.steps_done() >= m_max_steps;
     }
     
-    int food_eaten() const 
-    {
-        return m_food_eaten;
-    }
-
     int score() const
     {
         return m_food_start_count - m_food_eaten;
+    }
+
+private:
+    
+    int food_eaten() const 
+    {
+        return m_food_eaten;
     }
     
     food_trail_type const &  get_food_trail() const
@@ -171,7 +172,7 @@ private:
     board const     m_board;
     int const       m_max_steps;
 };
-
+//]
 
 } // namespace ant_example
 

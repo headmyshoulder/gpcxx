@@ -50,10 +50,19 @@ Furthermore ant_example::board holds the logic for movement and handling of the 
 The solution we use in this example makes strong use of the context modification. Context in this case is the class ant_example::ant, ant_example::board, ant_example::ant::food_trail and meta informations.
 Combined in the class ant_example::ant_simulation.
 
-[h2 Desing order]
+[h2 Design order]
 
-The nature of this example makes it necessary to implement a not trivial simulation. This simulation is needed for scoring of the solution/tree. It is a recommended practice to make this simulation without dependencies to gppxx.
-This allows manual verification of the system.
+The nature of this example makes it necessary to implement a not trivial simulation. This simulation is needed for scoring of the solution/tree. It is a recommended practice to make this simulation without dependencies to gppxx. This allows manual verification of the system.
+
+The simulation consist of an ant
+[ant_class]
+
+The ant has 3 basic actions move, turn_left and turn_right. In every action the step counter is incremented. It is also stores its direction and position.
+
+The ant_simulation class bundles the ant, the board and the food trail. ant_simulation will become later the context on which the tree is working. The public interface needs all the methods to allow the node-tree to work on, beside this it need methods to score and decide if its finished.
+
+[ant_wold]
+
 
 
 

@@ -5,3 +5,4 @@ build*
 *.kate-swp
 third_party/gmock
 third_party/gtest
+third_party/docbook
