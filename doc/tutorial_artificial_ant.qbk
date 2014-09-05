@@ -116,7 +116,7 @@ To reduce the complexity of the example, only the amount of eaten food in allowe
 * versatilely, how good is the individual on a different track
 * node usage, how many nodes are used and or how fast it can be evaluated
 
-If evaluator is chosen to making the calculation of the fitness, it is necessary to normalize the fitness so `0` is the best possible solution. In this example calculation is done by the `ant_example::ant_simulation::score()` method.
+If evaluator is chosen to making the calculation of the fitness, it is necessary to normalize the fitness so `0` is the best possible solution. In this example calculation is done by the  `ant_example::ant_simulation::score()` method.
 [endsect]
 
 
@@ -133,13 +133,23 @@ For this example we use the same Santa Fe Trail as in __koza1_ref (page 152).
 [world_definition]
 
 
-The instance `ant_sim_santa_fe` is defined const, later on copys will be made from this object. This const will help to avoid that we change the state of this `ant_simulation`
-
+The instance `ant_sim_santa_fe` is defined const, later on copy's will be made from this object. This const helps to avoid changes to this `ant_simulation`, so every individual gets a fresh, unused copy of the trail.
 
 
 [node_generate]
+In this part the node_generator is initialized, with a list of `gpcxx::node_generator<>::weighted_generator_type`-structs,
+* 1st value, the weight, how often should these nodes be used in the generation of the population.
+* 2nd value, the arity of the nodes, how many children needs be connected to these nodes
+* 3rd value, the generator
 
+[section Envolve settings]
+These settings have direct influence on how fast a solution is found.
 [envolve_settings]
+
+* `population_size` how many individual, should be competing. 
+
+
+[endsect]
 
 [tree_generator]
 

@@ -71,7 +71,7 @@ int main( int argc , char *argv[] )
     double const mutation_rate = 0.1;
     double const crossover_rate = 0.6;
     double const reproduction_rate = 0.3;
-    size_t const min_tree_height = 1; 
+    size_t const min_tree_height = 5; 
     size_t const max_tree_height = 5;
     size_t const tournament_size = 15;
     //]
@@ -79,7 +79,7 @@ int main( int argc , char *argv[] )
     population_type population( population_size );
     
     //[tree_generator
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , max_tree_height , max_tree_height );
+    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , max_tree_height );
     for( auto & individum :  population )
         tree_generator( individum );
     //]
