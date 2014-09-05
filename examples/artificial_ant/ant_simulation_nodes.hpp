@@ -47,7 +47,7 @@ struct evaluator
 };
 //]
 
-
+//[branch_nodes
 struct prog2                                                                                           
 {                                                                                                     
     void operator()( context_type& ant_sim , node_type const& node ) const         
@@ -81,6 +81,7 @@ struct if_food_ahead
         }                     
     }                                                                                                 
 };
+//]
 
 
 //[action_nodes 

@@ -2,10 +2,11 @@
 [import ../examples/artificial_ant/ant_simulation_nodes.hpp]
 [import ../examples/artificial_ant/ant_simulation.hpp]
 [import ../examples/artificial_ant/artificial_ant_main.cpp]
+[import ../examples/artificial_ant/ant_simulation_tests_main.cpp]
 [import ../examples/artificial_ant/board.hpp]
 [import ../examples/artificial_ant/santa_fe_trail.hpp]
 
-Introduction
+[section Introduction]
 
 The artificial ant simulates an ant searching for food, it consists of an ant, a grid and food placed on the grid.
 We set the goal for the ant, to efficiently find the food. The ant has some abilities:
@@ -32,45 +33,109 @@ For comparability to other GP frameworks the Santa-Fe-Trail was chosen. As seen 
 Legend:
 
 * Cell with an X has food
-* Cell with a dot is on the virtual track. For the simulation the dot cells are ignored, the only reason for the dot cell is to visualize the track for humans.
+* Cell with a dot is on the virtual track. For the simulation the dot cells are ignored, the only reason for the dot cells is to visualize the track for humans.
 [santa_fe_trail_definition]
 
+[endsect]
 
-
-[h1 Simulation]
-
-[h2 Design decision]
-[h3 Board dimensions]
+[section Simulation]
+[section Design decisions]
+[section Board dimensions]
 
 In this example we choose to map 2 dimension position to 1 dimension position. This decision is not based on a limitation of gpcxx, the mapping allows easier change to N-dimension problems, moreover it trades CPU load against memory saving.
-The class ant_example::board holds the board size information and helps to convert between the 2 dimension and 1 dimension representation.
-Furthermore ant_example::board holds the logic for movement and handling of the boarder.
+The class `ant_example::board` holds the board size information and helps to convert between the 2 dimension and 1 dimension representation.
+Furthermore, `ant_example::board` holds the logic for movement and handling of the boarder.
+[endsect]
 
-[h3 Contex modification]
-The solution we use in this example makes strong use of the context modification. Context in this case is the class ant_example::ant, ant_example::board, ant_example::ant::food_trail and meta informations.
-Combined in the class ant_example::ant_simulation.
+[section Design order]
 
-[h2 Design order]
+The nature of this example makes it necessary to implement a not trivial simulation. This simulation is needed for scoring of the solution/tree. It is a recommended practice to make this simulation without dependencies to gpcxx. This allows manual verification of the system, as seen in
 
-The nature of this example makes it necessary to implement a not trivial simulation. This simulation is needed for scoring of the solution/tree. It is a recommended practice to make this simulation without dependencies to gppxx. This allows manual verification of the system.
-
-The simulation consist of an ant
+The simulation consist of an ant class:
 [ant_class]
 
 The ant has 3 basic actions move, turn_left and turn_right. In every action the step counter is incremented. It is also stores its direction and position.
+It is questionable if a real ant knows it positions/direction on the grid or if the ant in this simulation knows it's position. The design can be made in different ways, this is one of it.
 
-The ant_simulation class bundles the ant, the board and the food trail. ant_simulation will become later the context on which the tree is working. The public interface needs all the methods to allow the node-tree to work on, beside this it need methods to score and decide if its finished.
+As the ant and `ant_example::ant_simulation` have no dependencies to gpcxx they can be self-contained tested.
+[ant_move_test]
 
+The `ant_example::ant_simulation` class bundles the ant, the board and the food trail. `ant_example::ant_simulation` will become later the context on which the nodes/tree will be working. The public interface needs all the methods to allow the node-tree to work on, beside this it need methods to score and decide if its finished.
+The context is the data which is
+
+* transferred between the nodes
+* modified in the nodes
+
+The solution we use in this example makes use of the context modification. As seen in other genetic programming examples like symbolic regression, the context can be also be a constant, nodes can only use the value to generate new values and pass them to the children nodes. A constant context reduces the side effects, in trade of for copying the context. For simpler types it may be negligibly. The `ant_example::ant_simulation` has many states (ant position, direction, food eaten on which position, ...) so its no light wight to copy.
 [ant_wold]
 
 
+[section Individual]
 
+An individual is a configuration of nodes, represented as a tree. Every node gets the context as argument makes a distinctive task on it and passes it forwards to its children nodes. How the nodes are connected, can be describe as a tree of nodes. Nodes which have no child nodes are terminals. In this `ant_example` the terminals are the nodes which commands the `ant_example::ant_simulation` to do the tasks, they are intended to.
+[action_nodes]
+
+So we call nodes which have no child nodes terminals, terminals can be uses as a data source, for the parent nodes. We have nodes with child nodes, they can do operations on the context. They are configured as a tree and this is called individual. In genetic programming a number of different individuals are created and tested for fitness.
+
+Beside the terminal-nodes there are also branching nodes, these nodes selectively making a task on its children. 
+
+* `ant_example::if_food_ahead-node` ask the context if the ant is in front of food, if yes the first child node is evaluated, if not the second.
+* `ant_example::prog2` evaluates first child node and then the second child node
+* `ant_example::prog3` the same as `ant_example::prog2` just with 3 child nodes
+
+[branch_nodes]
+
+[section Node signature and configuration]
+The node signature and configuration, is an imported task.
 
 [node_types_delerations]
 
-[//main //]
+* `max_children` is the parameter which describes how many child nodes, a node can have. In this example it is set to 3 for `ant_example::prog3`
+* `context_type` is the type which is pass from node to node, in this example it is `ant_example::ant_simulation`
+* `node_return_type` , what is calculated by the nodes and returned
+* `node_type` is the class which will hold our application specific nodes (`ant_example::if_food_ahead`, `ant_example::prog2`, `ant_example::ant_move_task_terminal`)
 
+`node_type` as `gpcxx::basic_named_intrusive_node<...>` is a decorating class to `gpcxx::basic_intrusive_node`, it adds the ability to give the node a name, which is use later used for printing. 
+The classes `gpcxx::basic_intrusive_node` and `gpcxx::intrusive_node` (Superclasses of basic_named_intrusive_node) with the class `gpcxx::intrusive_tree` provides the tree structure for the application specific nodes.
+
+* `tree_type` is the type of the individual
+* `population_type` is a type which can holds a number of individuals
+* `fitness_type` is the array which will stores all fitness values for the individuals, this is internally used to evaluate the best individuals for the next generation
+
+
+[endsect]
+
+[section Fitness evaluator]
+[evaluator_delerations]
+In this evaluator most calculation are made by the `ant_example::ant_simulation`, but this could also be done in this evaluator. It would allow to be more specific about the fitness goals.
+The fitness is driving the evolution of the population, so the evaluator is vital for the end goal. Normally an individual could be scored by one evaluation of the nodes (as seen in symbolic regression). This example is different in a way that is repeats the evaluation of the individual on the context, as long as not all food is eaten and the max allowed steps are reached. 
+
+To reduce the complexity of the example, only the amount of eaten food in allowed steps is scored. Possible options for more advanced evaluatores would be:
+
+* efficiency, how many steps was used to find all the food
+* versatilely, how good is the individual on a different track
+* node usage, how many nodes are used and or how fast it can be evaluated
+
+If evaluator is chosen to making the calculation of the fitness, it is necessary to normalize the fitness so `0` is the best possible solution. In this example calculation is done by the `ant_example::ant_simulation::score()` method.
+[endsect]
+
+
+
+
+[endsect]
+[endsect]
+[endsect]
+
+
+
+[section Main application]
+For this example we use the same Santa Fe Trail as in __koza1_ref (page 152).
 [world_definition]
+
+
+The instance `ant_sim_santa_fe` is defined const, later on copys will be made from this object. This const will help to avoid that we change the state of this `ant_simulation`
+
+
 
 [node_generate]
 
@@ -86,7 +151,8 @@ The ant_simulation class bundles the ant, the board and the food trail. ant_simu
 
 [breakup_conditions]
 
-
+[endsect]
+[endsect]
 [endsect]
 
 
