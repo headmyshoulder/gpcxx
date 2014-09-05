@@ -122,11 +122,11 @@ int main( int argc , char *argv[] )
         //]
         double eval_time = iteration_timer.seconds();
         
-        std::cerr << gpcxx::indent( 0 ) << "Generation "    << generation << newl;
-        std::cerr << gpcxx::indent( 1 ) << "Evolve time "   << evolve_time << newl;
-        std::cerr << gpcxx::indent( 1 ) << "Eval time "     << eval_time << newl;
-        std::cerr << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 3 , false ) << newl;
-        std::cerr << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << newl;
+        std::cout << gpcxx::indent( 0 ) << "Generation "    << generation << newl;
+        std::cout << gpcxx::indent( 1 ) << "Evolve time "   << evolve_time << newl;
+        std::cout << gpcxx::indent( 1 ) << "Eval time "     << eval_time << newl;
+        std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 3 , false ) << newl;
+        std::cout << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << newl;
         
         //[breakup_conditions
         generation++;
@@ -135,13 +135,13 @@ int main( int argc , char *argv[] )
     } while( !has_optimal_fitness && generation < generation_max );
     
     
-    std::cerr << "Overall time : " << overall_timer.seconds() << newl;
+    std::cout << "Overall time : " << overall_timer.seconds() << newl;
     
     auto fittest_individual_position = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
     tree_type const & fittest_individual { population[fittest_individual_position] };
     
-    // ./artificial_ant | dot -Tsvg | display -
-    std::cout << gpcxx::graphviz( fittest_individual , true );
+    // cat artificial_ant_fittest_individual.dot | dot -Tsvg | display -
+    std::ofstream("artificial_ant_fittest_individual.dot") << gpcxx::graphviz( fittest_individual , true );
     
     return 0;
 }

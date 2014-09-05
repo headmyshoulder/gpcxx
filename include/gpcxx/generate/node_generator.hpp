@@ -45,7 +45,7 @@ public:
     
     /// Constructs a node generator.
     node_generator( weighted_generator_type gen1 )
-    : m_generators { std::move( gen1 ) }
+    : m_generators { { std::move( gen1 ) } }
     {
         static_assert( dim == 1 , "Dimension must be one." );
         prepare();
@@ -69,7 +69,7 @@ public:
     
     /// Constructs a note generator, the weight is one
     node_generator( generator_type terminal )
-    : m_generators { { 1.0 , 0 , std::move( terminal ) } }
+    : m_generators { { { 1.0 , 0 , std::move( terminal ) } } }
     {
         static_assert( dim == 1 , "Dimension must be one." );
         prepare();
