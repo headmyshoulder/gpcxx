@@ -1,15 +1,19 @@
 [section Getting started]
 
-[Overview]
+[section Overview]
 
 __gpcxx is a library for genetic programming in C++. It is written in modern C++ style using features C++11. 
 
 __gpcxx is distributed under the Boost license and can be obtained from __gpcxx_github
 
-[Installation]
+[endsect]
+
+[section Installation]
 
 __gpcxx is a header only library. So there is no need to install the library. Simply get the files from
 __gpcxx_github and set your include path to the include directory in the gpcxx folder. The repository also provides
 unit test, some performance test and example programs. They can be build by cmake.
+
+[endsect]
 
 [endsect]

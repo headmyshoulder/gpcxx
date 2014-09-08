@@ -46,15 +46,16 @@ xsltproc(
   PARAMETERS "boost.doxygen.header.prefix=gpcxx"
   )
 
+file( GLOB_RECURSE QBK_FILES *.qbk )
 
-  
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   COMMAND
     ${CMAKE_COMMAND} -E copy
     "${CMAKE_CURRENT_SOURCE_DIR}/gpcxx.qbk"
     "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/gpcxx.qbk"
+    ${QBK_FILES}
+    # "${CMAKE_CURRENT_SOURCE_DIR}/gpcxx.qbk"
   )
 
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
