@@ -1,0 +1,41 @@
+[section __gpcxx in detail]
+
+[section Operations on tree]
+
+insert nodes
+
+swap nodes
+
+cursors
+
+accessor, size, height, ...
+
+[endsect]
+
+[section Tree input output]
+
+simple
+
+polish
+
+inverse polish
+
+graphviz
+
+[endsect]
+
+[section Genetic operations on trees]
+
+mutation - pictures
+
+crossover - pictures
+
+tree generation - pictures
+
+[endsect]
+
+[section Evaluation of trees]
+
+[endsect]
+
+[endsect]

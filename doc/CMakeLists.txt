@@ -21,32 +21,34 @@ file(WRITE "${doxyfile}"
   )
   
 
-add_custom_command(
-  OUTPUT
-    "${xml_dir}/index.xml"
-    "${xml_dir}/combine.xslt"
-  COMMAND
-    ${DOXYGEN_EXECUTABLE} ${doxyfile}
-  DEPENDS
-    "${CMAKE_SOURCE_DIR}/include/gpcxx"
-  )
-  
-# Collect Doxygen XML into a single XML file
-xsltproc(
-  INPUT "${xml_dir}/index.xml"
-  OUTPUT "${xml_dir}/all.xml"
-  STYLESHEET "${xml_dir}/combine.xslt"
-  )
-
-  # Transform single Doxygen XML file into BoostBook XML
-xsltproc(
-  INPUT "${xml_dir}/all.xml"
-  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
-  STYLESHEET "${BOOSTBOOK_XSL_DIR}/doxygen/doxygen2boostbook.xsl"
-  PARAMETERS "boost.doxygen.header.prefix=gpcxx"
-  )
+# add_custom_command(
+#   OUTPUT
+#     "${xml_dir}/index.xml"
+#     "${xml_dir}/combine.xslt"
+#   COMMAND
+#     ${DOXYGEN_EXECUTABLE} ${doxyfile}
+#   DEPENDS
+#     "${CMAKE_SOURCE_DIR}/include/gpcxx"
+#   )
+#   
+# # Collect Doxygen XML into a single XML file
+# xsltproc(
+#   INPUT "${xml_dir}/index.xml"
+#   OUTPUT "${xml_dir}/all.xml"
+#   STYLESHEET "${xml_dir}/combine.xslt"
+#   )
+# 
+#   # Transform single Doxygen XML file into BoostBook XML
+# xsltproc(
+#   INPUT "${xml_dir}/all.xml"
+#   OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
+#   STYLESHEET "${BOOSTBOOK_XSL_DIR}/doxygen/doxygen2boostbook.xsl"
+#   PARAMETERS "boost.doxygen.header.prefix=gpcxx"
+#   )
 
 file( GLOB_RECURSE QBK_FILES *.qbk )
+
+message ( STATUS "Qbk files for doc: ${QBK_FILES}" )
 
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   COMMAND
@@ -55,7 +57,6 @@ add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
     "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   DEPENDS
     ${QBK_FILES}
-    # "${CMAKE_CURRENT_SOURCE_DIR}/gpcxx.qbk"
   )
 
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
@@ -66,8 +67,9 @@ add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
     --include-path "${CMAKE_CURRENT_SOURCE_DIR}"
     --output-file "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
   DEPENDS
+    ${QBK_FILES}
     "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
-    "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
+#     "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
   )
   
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/boostbook.css"

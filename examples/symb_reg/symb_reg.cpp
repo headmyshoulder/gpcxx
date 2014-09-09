@@ -27,7 +27,13 @@ const std::string tab = "\t";
 
 int main( int argc , char *argv[] )
 {
+    //[ create_training_data
     using rng_type = std::mt19937;
+    rng_type rng;    
+    gpcxx::regression_training_data< double , 3 > c;
+    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
+            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * x3 + 1.0 ; } );
+    //]
     
     using context_type = gpcxx::regression_context< double , 3 >;
     using node_type = gpcxx::basic_named_intrusive_node< double , const context_type > ;
@@ -101,11 +107,6 @@ int main( int argc , char *argv[] )
         gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
-
-    gpcxx::regression_training_data< double , 3 > c;
-    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
-            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * x3 + 1.0 ; } );
-
 
     fitness_type fitness( population_size , 0.0 );
     population_type population( population_size );
