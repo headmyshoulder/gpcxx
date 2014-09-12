@@ -63,15 +63,19 @@ int main( int argc , char *argv[] )
     typedef decltype( eval ) eval_type;
     
    
-    size_t population_size = 100;
+    size_t population_size = 812;
     size_t number_elite = 1;
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
-    size_t min_tree_height = 8 , max_tree_height = 8;
+    size_t min_tree_height = 4 , max_tree_height = 12;
+    size_t tournament_size = 15;
     
     rng_type rng;
     auto node_generator = eval.get_node_generator< rng_type >();
+    node_generator.set_weight( 0 , 1.0 );
+    node_generator.set_weight( 1 , 1.0 );
+    node_generator.set_weight( 2 , 1.0 );
     auto tree_generator = gpcxx::make_ramp( rng , node_generator , min_tree_height , max_tree_height , 0.5 );
 
     typedef std::vector< tree_type > population_type;
@@ -83,16 +87,16 @@ int main( int argc , char *argv[] )
 
     auto fitness_f = gpcxx::regression_fitness< eval_type >( eval );
     evolver.mutation_function() = gpcxx::make_mutation(
-        gpcxx::make_simple_mutation_strategy( rng , node_generator ) ,
-        gpcxx::make_random_selector( rng ) );
+        gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
-        gpcxx::make_random_selector( rng ) );
-    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_random_selector( rng ) );
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
+    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     gpcxx::regression_training_data< double , 3 > c;
     gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
-            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * x3 + 1.0 ; } );
 
 
     std::vector< double > fitness( population_size , 0.0 );
@@ -110,7 +114,7 @@ int main( int argc , char *argv[] )
     std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
     std::cout << std::endl << std::endl;
 
-    for( size_t i=0 ; i<100 ; ++i )
+    for( size_t i=0 ; i<10 ; ++i )
     {
         evolver.next_generation( population , fitness );
         for( size_t i=0 ; i<population.size() ; ++i )

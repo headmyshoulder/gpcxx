@@ -15,7 +15,6 @@
 #include <gpcxx/stat.hpp>
 #include <gpcxx/app.hpp>
 
-#include <boost/fusion/include/make_vector.hpp>
 
 #include <iostream>
 #include <random>
@@ -25,81 +24,93 @@
 const std::string tab = "\t";
 
 
-namespace pl = std::placeholders;
-namespace fusion = boost::fusion;
 
 int main( int argc , char *argv[] )
 {
-    typedef std::mt19937 rng_type ;
-
-    typedef gpcxx::basic_tree< char > tree_type;
-    typedef gpcxx::regression_context< double , 3 > context_type;
-
-    auto eval = gpcxx::make_static_eval< double , char , context_type >(
-        fusion::make_vector(
-            fusion::make_vector( '1' , []( context_type const& t ) { return 1.0; } )
-          , fusion::make_vector( '2' , []( context_type const& t ) { return 2.0; } )
-          , fusion::make_vector( '3' , []( context_type const& t ) { return 3.0; } )
-          , fusion::make_vector( '4' , []( context_type const& t ) { return 4.0; } )
-          , fusion::make_vector( '5' , []( context_type const& t ) { return 5.0; } )
-          , fusion::make_vector( '6' , []( context_type const& t ) { return 6.0; } )
-          , fusion::make_vector( '7' , []( context_type const& t ) { return 7.0; } )
-          , fusion::make_vector( '8' , []( context_type const& t ) { return 8.0; } )
-          , fusion::make_vector( '9' , []( context_type const& t ) { return 9.0; } )
-          , fusion::make_vector( 'x' , []( context_type const& t ) { return t[0]; } )
-          , fusion::make_vector( 'y' , []( context_type const& t ) { return t[1]; } )
-          , fusion::make_vector( 'z' , []( context_type const& t ) { return t[2]; } )          
-          ) ,
-        fusion::make_vector(
-            fusion::make_vector( 's' , []( double v ) -> double { return std::sin( v ); } )
-          , fusion::make_vector( 'c' , []( double v ) -> double { return std::cos( v ); } ) 
-          ) ,
-        fusion::make_vector(
-            fusion::make_vector( '+' , std::plus< double >() )
-          , fusion::make_vector( '-' , std::minus< double >() )
-          , fusion::make_vector( '*' , std::multiplies< double >() ) 
-          , fusion::make_vector( '/' , std::divides< double >() ) 
-          ) );
-    typedef decltype( eval ) eval_type;
+    //[ create_training_data
+    using rng_type = std::mt19937;
+    rng_type rng;    
+    gpcxx::regression_training_data< double , 3 > c;
+    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
+            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * x3 + 1.0 ; } );
+    //]
     
-   
-    size_t population_size = 100;
+    using context_type = gpcxx::regression_context< double , 3 >;
+    using node_type = gpcxx::basic_named_intrusive_node< double , const context_type > ;
+    using tree_type = gpcxx::intrusive_tree< node_type >;
+    using population_type = std::vector< tree_type >;
+    using fitness_type = std::vector< double >;
+    using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type >;
+    using evaluator = struct {
+        using context_type = gpcxx::regression_context< double , 3 >;
+        using value_type = double;
+        value_type operator()( tree_type const& t , context_type const& c ) const {
+            return t.root()->eval( c );
+        } };
+
+    
+    gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
+        node_type { []( context_type const& c , node_type const& n ) { return 1.0; } ,      "1" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 2.0; } ,      "2" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 3.0; } ,      "3" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 4.0; } ,      "4" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 5.0; } ,      "5" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 6.0; } ,      "6" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 7.0; } ,      "7" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 8.0; } ,      "8" } ,
+        node_type { []( context_type const& c , node_type const& n ) { return 9.0; } ,      "9" } ,
+        node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" } ,
+        node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,
+        node_type { gpcxx::array_terminal< 2 >{}                                     ,      "z" }
+    } };
+
+    gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type > {
+        node_type { gpcxx::sin_func {}                                               ,      "s" } ,
+        node_type { gpcxx::cos_func {}                                               ,      "c" }
+    } };
+
+    gpcxx::uniform_symbol< node_type > binary_gen{ std::vector< node_type > {
+        node_type { gpcxx::plus_func {}                                              ,      "+" } ,
+        node_type { gpcxx::minus_func {}                                             ,      "-" } ,
+        node_type { gpcxx::multiplies_func {}                                        ,      "*" } ,
+        node_type { gpcxx::divides_func {}                                           ,      "/" }
+    } };
+
+
+    gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
+        { 1.0 , 0 , terminal_gen } ,
+        { 1.0 , 1 , unary_gen } ,
+        { 1.0 , 2 , binary_gen } };
+
+
+    
+    size_t population_size = 812;
     size_t number_elite = 1;
     double mutation_rate = 0.2;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
-    size_t min_tree_height = 8 , max_tree_height = 8;
-    
+    size_t min_tree_height = 4 , max_tree_height = 12;
+    size_t tournament_size = 15;
+
+
     rng_type rng;
-    auto node_generator = eval.get_node_generator< rng_type >();
     auto tree_generator = gpcxx::make_ramp( rng , node_generator , min_tree_height , max_tree_height , 0.5 );
-
-    typedef std::vector< tree_type > population_type;
-    typedef std::vector< double > fitness_type;
-    typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;
-
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
+    
+    
 
-
-    auto fitness_f = gpcxx::regression_fitness< eval_type >( eval );
+    auto fitness_f = gpcxx::make_regression_fitness( evaluator {} );
     evolver.mutation_function() = gpcxx::make_mutation(
-        gpcxx::make_simple_mutation_strategy( rng , node_generator ) ,
-        gpcxx::make_random_selector( rng ) );
+        gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.crossover_function() = gpcxx::make_crossover( 
         gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
-        gpcxx::make_random_selector( rng ) );
-    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_random_selector( rng ) );
-    
-    gpcxx::regression_training_data< double , 3 > c;
-    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
-            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * ( x3 - 4.0 ) + 1.0 ; } );
+        gpcxx::make_tournament_selector( rng , tournament_size ) );
+    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
 
+    fitness_type fitness( population_size , 0.0 );
+    population_type population( population_size );
 
-    std::vector< double > fitness( population_size , 0.0 );
-    std::vector< tree_type > population( population_size );
-
-
-    // initialize population with random trees and evaluate fitness
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
@@ -110,7 +121,7 @@ int main( int argc , char *argv[] )
     std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
     std::cout << std::endl << std::endl;
 
-    for( size_t i=0 ; i<100 ; ++i )
+    for( size_t i=0 ; i<10 ; ++i )
     {
         evolver.next_generation( population , fitness );
         for( size_t i=0 ; i<population.size() ; ++i )

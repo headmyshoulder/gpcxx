@@ -2,13 +2,9 @@
 
 In this tutorial we will explore the basic features of __gpcxx and go step by step through some basic examples.
 
-[section Symbolic regression]
+[include tutorial_symbolic_regression.qbk]
 
-The first example is symbolic regression. Symbolic regression can be used to obtain models from measured data
-without specific a predefined model. Instead one obtains a general "formula" which describes the data. To understand
-symbolic regression we will create artificial test data and apply gpcxx to this data.
-
-[endsect]
+[include tutorial_gpcxx_in_detail.qbk]
 
 [include tutorial_artificial_ant.qbk]
 

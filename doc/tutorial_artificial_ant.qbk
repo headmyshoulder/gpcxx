@@ -153,6 +153,8 @@ These settings have direct influence on how fast a solution is found.
 
 [tree_generator]
 
+[generation_loop]
+
 [evolver_definition]
 
 [fitness_defintion]

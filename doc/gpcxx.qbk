@@ -74,11 +74,11 @@
 
 [include literature.qbk]
 
-[xinclude reference.xml]
+[/ [xinclude reference.xml] ]
 
 [section Index]
 
-[endsect]
+[endsect] 
 
 
 
