@@ -2,25 +2,28 @@
 
 [section Operations on tree]
 
-insert nodes
+construction
 
-swap nodes
+insert nodes - pictures
+
+accessor, size, height, ...
+
+swap nodes - pictures
 
 cursors
 
-accessor, size, height, ...
 
 [endsect]
 
 [section Tree input output]
 
-simple
+simple 
 
 polish
 
 inverse polish
 
-graphviz
+graphviz - pictures
 
 [endsect]
 
@@ -35,6 +38,8 @@ tree generation - pictures
 [endsect]
 
 [section Evaluation of trees]
+
+später
 
 [endsect]
 
