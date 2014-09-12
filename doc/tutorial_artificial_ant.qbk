@@ -143,25 +143,68 @@ In this part the node_generator is initialized, with a list of `gpcxx::node_gene
 * 3rd value, the generator
 
 [section Envolve settings]
-These settings have direct influence on how fast a solution is found.
+
 [envolve_settings]
 
-* `population_size` how many individual, should be competing. 
+* `population_size` how many individual, should be competing. Bigger population increases the resource's usage (run time and memory) but also decreases the time to find a solution.
+* `generation_max` at which generation should gpcxx stop if other break up condition are meet (e.g. an optimal solution was found). 
+* `number_elite` [/ TODO ]
+* `mutation_rate` how often a node should be changed randomly
+* `crossover_rate` [/ TODO ]
+* `reproduction_rate` [/ TODO ]
+* `min_tree_height` and `max_tree_height` how deep can the tree be, max_tree_height limits the size of the individual. Big individuals are slower to evaluate, but can handle more complex problems. In comparison, `min_tree_height` can be set to 1 up to `max_tree_height`. An individual can stay as small it wants, as long it can compete against other/bigger individuals. 
+* `tournament_size` [/ TODO ]
 
+These settings have direct influence on how fast a solution is found. In some cases it makes sens to adjust these settings, but mostly it will just cut the run time. While optimizing these setting, the program could find a solution by its self, just with a longer run time.
+The critical settings for memory usage are `population_size` and `max_tree_height`, if these values are to big for the host PC, the operating system will start to move memory to the swapping area and this will dramatic increase the run time of the application.
+
+
+gpcxx is in highly way configurable, these are the points where the evolving strategies can be changed.
+[evolver_definition]
 
 [endsect]
 
 [tree_generator]
+One Way to generate the first generation is to randomly build up the individuals from nodes. Advanced cases could use hand made individuals or other generations of the population. More intelligent ways to generate the individuals leads to faster optimization times.  
 
+
+[section Generation loop]
 [generation_loop]
+The generation loop represents the cycle of life for the individuals:
 
-[evolver_definition]
+* reproduction
+* being judged / selection
+* does it make sens to go on 
 
-[fitness_defintion]
 
+[section Fitness_calculation]
 [fitness_calculation]
+This is the part where fitness vector is filled with the measured fitness of the population. The measuring is done by the fitness_f function object.
+The `std::transform` function iterates throw the population and for every individuals, the following lambda function is called:
+``
+[&]( tree_type const &t ) { return fitness_f( t , ant_sim_santa_fe ); }
+`` 
 
+`fitness_f` gets the individual (`t`) and a reference to `ant_sim_santa_fe` (`ant_simulation const`) and returns the measured fitness.
+The lambda function is one possible customization point for the fitness. It is to remember that genetic programming optimize to meet the fitness function, this can lead to individuals that are perfect able to find all food on the trail, but failing to solve the trail, if they start from the end.
+A possible fix could see like this
+
+``
+[&]( tree_type const &t ) { 
+	return fitness_f( t , ant_sim_santa_fe ) + 
+	       fitness_f( t , other_trail ); 
+}
+``
+
+[endsect]
+[section Breakup conditions]
 [breakup_conditions]
+
+if a solution is optimal in the sense of the fitness function it, can not be more improved. If there are still wishes/improvements for the solution, then this is a hint that the fitness function does not cover all aspects of the task. 
+
+
+[endsect]
+[endsect]
 
 [endsect]
 [endsect]
