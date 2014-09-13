@@ -104,6 +104,7 @@ int main( int argc , char *argv[] )
     fitness_type    fitness( population_size , 0.0 );
     //]
     
+    //[generation_loop
     gpcxx::timer overall_timer; 
     bool    has_optimal_fitness { false };
     size_t  generation { 0 };
@@ -131,8 +132,9 @@ int main( int argc , char *argv[] )
         //[breakup_conditions
         generation++;
         has_optimal_fitness = ( 0 == *std::min_element( fitness.begin(), fitness.end() ) );
-        //]
     } while( !has_optimal_fitness && generation < generation_max );
+    //]
+    //]
     
     
     std::cout << "Overall time : " << overall_timer.seconds() << newl;
@@ -141,7 +143,7 @@ int main( int argc , char *argv[] )
     tree_type const & fittest_individual { population[fittest_individual_position] };
     
     // cat artificial_ant_fittest_individual.dot | dot -Tsvg | display -
-    std::ofstream("artificial_ant_fittest_individual.dot") << gpcxx::graphviz( fittest_individual , true );
+    std::ofstream("artificial_ant_fittest_individual.dot") << gpcxx::graphviz( fittest_individual , false );
     
     return 0;
 }
