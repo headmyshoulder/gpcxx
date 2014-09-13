@@ -10,7 +10,7 @@ First, we create an artifical test data set
 
 [create_training_data]
 
-Here, '''regression_training_data''' is basically a class consisting of one vector '''y''' and '''N''' vectors '''x''.
+Here, '''regression_training_data''' is basically a class consisting of one vector '''y''' and '''N''' vectors '''x'''.
 It is assumed, that an element of y depends on the according N elements of x. Finding this dependency ['y=f(x[0],x[1],x[2])] 
 is the task of the genetic program.
 
