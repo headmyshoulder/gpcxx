@@ -118,7 +118,6 @@ run_ant_result run_ant_gp(
         generation++;
         has_optimal_fitness = ( 0 == *std::min_element( fitness.begin(), fitness.end() ) );
     } while( !has_optimal_fitness && generation < generation_max );
-    //]
     
     auto fittest_individual_position = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
     tree_type const & fittest_individual { population[fittest_individual_position] };
@@ -127,42 +126,94 @@ run_ant_result run_ant_gp(
 }
 
 
-
-int main( int argc , char *argv[] )
+template<typename T>
+class frange
 {
-    size_t population_size_min = 25;
-    size_t population_size_max = 10000;
-    size_t population_size_step = 5;
-    size_t population_size_n = (population_size_max-population_size_min)/population_size_step;
+public:
+    frange() = default;
+    frange(frange const &) = default;
     
-    size_t const generation_max = 1000;
-    double const number_elite = 2;
-    double const mutation_rate = 0.1;
-    double const crossover_rate = 0.6;
-    double const reproduction_rate = 0.3;
-    size_t const min_tree_height = 1;
-    size_t const max_tree_height = 8;
-    size_t const tournament_size = 15;
+    frange(T start, T end, T step)
+    :m_start(start), m_end(end), m_step(step)
+    { 
+    }
     
-    std::cout << "# i " <<  "\t" 
-            << "res.generation" << "\t" 
-            << "res.time" << "\t" 
-            << "res.has_optimal_fitness" << "\t" 
-            << "res.best_result" << "\t"  
-            << "res.time / res.generation" << "\t" 
-            << "population_size" << "\t"
-            << "generation_max" << "\t"
-            << "number_elite" << "\t"
-            << "mutation_rate" << "\t"
-            << "crossover_rate" << "\t"
-            << "reproduction_rate" << "\t"
-            << "min_tree_height" << "\t"
-            << "max_tree_height" << "\t"
-            << "tournament_size" 
-            << "\n";
-    for(int i = 0; i < population_size_n; ++i)
+    frange(T start, T end)
+    :m_start(start), m_end(end), m_step(1)
+    { 
+    }
+    
+    frange(T start)
+    :m_start(start), m_end(start), m_step(1)
+    { 
+    }
+    
+    T value() const 
     {
-        auto population_size = population_size_min + i * population_size_step;
+        return m_start + (m_step * iteration);
+    }
+    
+    bool has_next() const
+    {
+        return iteration < iteration_max();
+    }
+    
+    void make_step() 
+    {
+        if(iteration < iteration_max())
+            ++iteration;
+    }
+    
+private:
+    int iteration_max() const
+    {   
+        return static_cast<int>((m_end-m_start)/m_step);
+    }
+    
+private:
+    T m_start;
+    T m_end;
+    T m_step;
+    int iteration;
+};
+
+using arguments_type = std::unordered_map< std::string, frange< double > >;
+
+run_ant_result run_ant_gp_wrapper(
+    arguments_type arguments,
+    std::ostream & out
+)
+{
+    out << "# i " <<  "\t" 
+        << "res.generation" << "\t" 
+        << "res.time" << "\t" 
+        << "res.has_optimal_fitness" << "\t" 
+        << "res.best_result" << "\t"  
+        << "res.time / res.generation" << "\t" 
+        << "population_size" << "\t"
+        << "generation_max" << "\t"
+        << "number_elite" << "\t"
+        << "mutation_rate" << "\t"
+        << "crossover_rate" << "\t"
+        << "reproduction_rate" << "\t"
+        << "min_tree_height" << "\t"
+        << "max_tree_height" << "\t"
+        << "tournament_size" 
+        << "\n";
+    size_t iteration = 0;
+    bool any_has_next = false;
+    do
+    {
+        auto population_size =   arguments["population_size"].value();
+        auto generation_max =    arguments["generation_max"].value();
+        auto number_elite =      arguments["number_elite"].value();
+        auto mutation_rate =     arguments["mutation_rate"].value();
+        auto crossover_rate =    arguments["crossover_rate"].value();
+        auto reproduction_rate = arguments["reproduction_rate"].value();
+        auto min_tree_height =   arguments["min_tree_height"].value();
+        auto max_tree_height =   arguments["max_tree_height"].value();
+        auto tournament_size =   arguments["tournament_size"].value();
+    
         auto res = run_ant_gp(
             population_size,
             generation_max,
@@ -175,22 +226,67 @@ int main( int argc , char *argv[] )
             tournament_size                   
         );
         
-        std::cout   << i <<  "\t" 
-                    << res.generation << "\t" 
-                    << res.time << "\t" 
-                    << res.has_optimal_fitness << "\t" 
-                    << res.best_result << "\t"  
-                    << res.time / res.generation << "\t" 
-                    << population_size << "\t"
-                    << generation_max << "\t"
-                    << number_elite << "\t"
-                    << mutation_rate << "\t"
-                    << crossover_rate << "\t"
-                    << reproduction_rate << "\t"
-                    << min_tree_height << "\t"
-                    << max_tree_height << "\t"
-                    << tournament_size 
-                    << "\n";
-    }
+        out << iteration <<  "\t" 
+            << res.generation << "\t" 
+            << res.time << "\t" 
+            << res.has_optimal_fitness << "\t" 
+            << res.best_result << "\t"  
+            << res.time / res.generation << "\t" 
+            << population_size << "\t"
+            << generation_max << "\t"
+            << number_elite << "\t"
+            << mutation_rate << "\t"
+            << crossover_rate << "\t"
+            << reproduction_rate << "\t"
+            << min_tree_height << "\t"
+            << max_tree_height << "\t"
+            << tournament_size 
+            << "\n";
+        ++iteration;
+        any_has_next = std::any_of(arguments.begin(), arguments.end(), [](decltype(arguments)::value_type const & v){ 
+            return v.second.has_next(); 
+        });
+        for_each(arguments.begin(), arguments.end(), [](decltype(arguments)::value_type & v){ 
+            if(v.second.has_next()) v.second.make_step(); 
+        });
+        
+    }while(any_has_next);
+}
+
+
+int main( int argc , char *argv[] )
+{
+    arguments_type  const default_arguments 
+    {
+        { "population_size" ,   frange< double >( 1000 ) },
+        { "generation_max" ,    frange< double >( 1000) },
+        { "number_elite" ,      frange< double >( 2 ) },
+        { "mutation_rate" ,     frange< double >( 0.1 ) },
+        { "crossover_rate" ,    frange< double >( 0.6 ) },
+        { "reproduction_rate" , frange< double >( 0.3 ) },
+        { "min_tree_height" ,   frange< double >( 1 ) },
+        { "max_tree_height" ,   frange< double >( 8 ) },
+        { "tournament_size" ,   frange< double >( 15 ) }
+    };
     
+    std::unordered_map<std::string, arguments_type > variations 
+    {
+        { "population_variation.dat",        { { "population_size", frange< double >( 25, 1000, 25 ) } } },
+        { "number_elite_variation.dat",      { { "number_elite",    frange< double >( 1, 100, 5 ) } } },
+        { "mutation_rate_variation.dat",     { { "mutation_rate",   frange< double >( 0, 1, 0.05 ) } } },
+        { "crossover_rate_variation.dat",    { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
+        { "reproduction_rate_variation.dat", { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
+        { "min_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1, 16, 1 ) }, { "max_tree_height", frange< double >( 16 ) } } },
+        { "max_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1  ) }, { "max_tree_height", frange< double >( 1, 16, 1 ) } } },
+        { "tournament_size_variation.dat",   { { "tournament_size", frange< double >( 1, 50, 5 ) } } }
+    };
+    
+    for( auto const & task : variations )
+    {
+        arguments_type default_arguments_copy{ task.second };
+        default_arguments_copy.insert(default_arguments.begin(), default_arguments.end());
+    
+        std::ofstream outfile{ task.first };
+        run_ant_gp_wrapper(default_arguments_copy, outfile);
+    }
 }
