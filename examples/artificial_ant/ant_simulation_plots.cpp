@@ -19,6 +19,8 @@
 #include <gpcxx/operator.hpp>
 #include <gpcxx/stat.hpp>
 
+#include <boost/lexical_cast.hpp>
+
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -185,11 +187,10 @@ run_ant_result run_ant_gp_wrapper(
 )
 {
     out << "# i " <<  "\t" 
-        << "res.generation" << "\t" 
-        << "res.time" << "\t" 
-        << "res.has_optimal_fitness" << "\t" 
-        << "res.best_result" << "\t"  
-        << "res.time / res.generation" << "\t" 
+        << "gener." << "\t" 
+        << "time" << "\t" 
+        << "has_optimal_fitness" << "\t" 
+        << "best_fitness" << "\t"  
         << "population_size" << "\t"
         << "generation_max" << "\t"
         << "number_elite" << "\t"
@@ -199,7 +200,7 @@ run_ant_result run_ant_gp_wrapper(
         << "min_tree_height" << "\t"
         << "max_tree_height" << "\t"
         << "tournament_size" 
-        << "\n";
+        << std::endl;
     size_t iteration = 0;
     bool any_has_next = false;
     do
@@ -225,13 +226,12 @@ run_ant_result run_ant_gp_wrapper(
             max_tree_height,
             tournament_size                   
         );
-        
+        out << std::fixed;
         out << iteration <<  "\t" 
             << res.generation << "\t" 
             << res.time << "\t" 
             << res.has_optimal_fitness << "\t" 
             << res.best_result << "\t"  
-            << res.time / res.generation << "\t" 
             << population_size << "\t"
             << generation_max << "\t"
             << number_elite << "\t"
@@ -241,7 +241,7 @@ run_ant_result run_ant_gp_wrapper(
             << min_tree_height << "\t"
             << max_tree_height << "\t"
             << tournament_size 
-            << "\n";
+            << std::endl;
         ++iteration;
         any_has_next = std::any_of(arguments.begin(), arguments.end(), [](decltype(arguments)::value_type const & v){ 
             return v.second.has_next(); 
@@ -249,7 +249,6 @@ run_ant_result run_ant_gp_wrapper(
         for_each(arguments.begin(), arguments.end(), [](decltype(arguments)::value_type & v){ 
             if(v.second.has_next()) v.second.make_step(); 
         });
-        
     }while(any_has_next);
 }
 
@@ -268,21 +267,41 @@ int main( int argc , char *argv[] )
         { "max_tree_height" ,   frange< double >( 8 ) },
         { "tournament_size" ,   frange< double >( 15 ) }
     };
-    
+    /*
     std::unordered_map<std::string, arguments_type > variations 
     {
-        { "population_variation.dat",        { { "population_size", frange< double >( 25, 1000, 25 ) } } },
-        { "number_elite_variation.dat",      { { "number_elite",    frange< double >( 1, 100, 5 ) } } },
-        { "mutation_rate_variation.dat",     { { "mutation_rate",   frange< double >( 0, 1, 0.05 ) } } },
-        { "crossover_rate_variation.dat",    { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
-        { "reproduction_rate_variation.dat", { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
-        { "min_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1, 16, 1 ) }, { "max_tree_height", frange< double >( 16 ) } } },
-        { "max_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1  ) }, { "max_tree_height", frange< double >( 1, 16, 1 ) } } },
-        { "tournament_size_variation.dat",   { { "tournament_size", frange< double >( 1, 50, 5 ) } } }
+        //{ "population_variation.dat",        { { "population_size", frange< double >( 25, 1000, 25 ) } } },
+        //{ "number_elite_variation.dat",      { { "number_elite",    frange< double >( 1, 100, 5 ) } } },
+        //{ "mutation_rate_variation.dat",     { { "mutation_rate",   frange< double >( 0, 1, 0.05 ) } } },
+        //{ "crossover_rate_variation.dat",    { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
+        //{ "reproduction_rate_variation.dat", { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
+        //{ "min_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1, 8, 1 ) }, { "max_tree_height", frange< double >( 8 ) } } },
+        //{ "max_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1  ) }, { "max_tree_height", frange< double >( 1, 8, 1 ) } } },
+        { "tournament_size_variation.dat",   { { "tournament_size", frange< double >( 2, 50, 5 ) } } }
     };
+    */
+    if(((argc - 2) % 4)  != 0)
+    {
+        std::cerr << "Usage: " << argv[0] << 
+        " <filename> <argumentname> <range_start> <range_end> <range_step> [[<argumentname> <range_start> <range_end> <range_step>] [...]] " << std::endl;
+        return 1;
+    }
+    std::string filename {argv[1]};
+    arguments_type arguments;
+    for(int i = 0; i < ((argc - 2) / 4); ++i)
+    {
+        size_t offset = (i*4)+2;
+        std::string  argname { argv[offset + 0] };
+        double start    = boost::lexical_cast<double>( argv[offset + 1] );
+        double end      = boost::lexical_cast<double>( argv[offset + 2] );
+        double step     = boost::lexical_cast<double>( argv[offset + 3] );
+        arguments.emplace( arguments_type::value_type( argname, frange<double>{start, end, step} ) );
+    }
+    std::unordered_map<std::string, arguments_type > variations{ { filename, arguments } };
     
     for( auto const & task : variations )
     {
+        std::cout << "Task:" << task.first << "\n";
         arguments_type default_arguments_copy{ task.second };
         default_arguments_copy.insert(default_arguments.begin(), default_arguments.end());
     
