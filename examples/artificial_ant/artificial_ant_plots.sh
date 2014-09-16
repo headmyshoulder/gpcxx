@@ -1,7 +1,7 @@
 #!/bin/bash
 artificial_ant_plots_bin=./artificial_ant_plots
 
-$artificial_ant_plots_bin population_variation.dat population_size 25 1000 25
+#$artificial_ant_plots_bin population_variation.dat population_size 25 1000 25
 $artificial_ant_plots_bin number_elite_variation.dat number_elite 1 100 5
 $artificial_ant_plots_bin mutation_rate_variation.dat mutation_rate 0 1 0.05
 $artificial_ant_plots_bin crossover_rate_variation.dat crossover_rate 0 1 0.05
