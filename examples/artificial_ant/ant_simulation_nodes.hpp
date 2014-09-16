@@ -23,13 +23,17 @@
 
 namespace ant_example {
     
-    
+//[node_types_delerations  
+size_t const max_children = 3;
 using context_type = ant_simulation;
-using node_type = gpcxx::basic_named_intrusive_node< void , context_type, 3 > ;
+using node_return_type = void;
+using node_type = gpcxx::basic_named_intrusive_node< node_return_type , context_type, max_children > ;
 using tree_type = gpcxx::intrusive_tree< node_type >;
 using population_type = std::vector< tree_type >;
 using fitness_type = std::vector< int >;
-    
+//]
+
+//[evaluator_delerations  
 struct evaluator
 {
     int operator()( tree_type const& t , context_type c ) const
@@ -41,7 +45,9 @@ struct evaluator
         return c.score();
     }
 };
+//]
 
+//[branch_nodes
 struct prog2                                                                                           
 {                                                                                                     
     void operator()( context_type& ant_sim , node_type const& node ) const         
@@ -75,15 +81,10 @@ struct if_food_ahead
         }                     
     }                                                                                                 
 };
+//]
 
-struct do_nothing                                                                                           
-{                                                                                                     
-    void operator()( context_type& ant_sim , node_type const& node ) const         
-    {
-        node.children( 0 )->eval( ant_sim );                    
-    }                                                                                                 
-};
 
+//[action_nodes 
 struct ant_move_task_terminal
 {
     void operator()( context_type & ant_sim , node_type const& node ) const
@@ -107,7 +108,7 @@ struct ant_turn_right_task_terminal
         ant_sim.turn_right();
     }
 }; 
-
+//]
     
 } // namespace ant_example
 

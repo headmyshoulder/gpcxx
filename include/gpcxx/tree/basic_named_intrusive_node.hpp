@@ -60,6 +60,7 @@ private:
     std::string m_name;
 };
 
+
 template< typename Res , typename Context , size_t Arity >
 std::ostream& operator<<( std::ostream &out , basic_named_intrusive_node < Res , Context , Arity > const& node )
 {

@@ -1,0 +1,213 @@
+[section Artificial ant]
+[import ../examples/artificial_ant/ant_simulation_nodes.hpp]
+[import ../examples/artificial_ant/ant_simulation.hpp]
+[import ../examples/artificial_ant/artificial_ant_main.cpp]
+[import ../examples/artificial_ant/ant_simulation_tests_main.cpp]
+[import ../examples/artificial_ant/board.hpp]
+[import ../examples/artificial_ant/santa_fe_trail.hpp]
+
+[section Introduction]
+
+The artificial ant simulates an ant searching for food, it consists of an ant, a wold grid and food placed on the grid.
+We set the goal for the ant, to efficiently find the food which is laid on a trail. The ant has some limited abilities:
+
+* Sensing food if it's in front of the ant
+* Moving forward (also eating, if the ant moved over food)
+* Turing right and left
+
+Within the constrains of the simulation.
+
+* If the ant steps out of the grid, it is beamed to the other side of the grid.
+* a food cell is empty after it was vised by the ant
+
+A trivial solution would be to random walk the grid. To avoid this solution we introduce second rules.
+
+* The ant can only make a max number of actions
+* every move or turn reduces the amount of available actions
+* the food is places in a trail
+ * the trail has gaps
+ * the trail has corners
+
+For comparability to other genetic programming frameworks the Santa-Fe-Trail was chosen. As seen in __koza1_ref (page 152) or __wiki_santa_fe_trail_problem.
+
+For simplicity of the example the Santa-Fe-Trail is defined as a global variable. Reading test data from a separate file is preferable as it allows changing the task for the ant without recompiling.
+
+[santa_fe_trail_definition]
+
+* Cells with an X have food
+* Cells with a dot are on the virtual track. In the simulation the dot cells are ignored, the only reason for the dot cells is to visualize the track for human reader.
+
+[endsect]
+
+[section Simulation]
+[section Design decisions]
+[section Board dimensions]
+
+In this example we choose to map 2 dimension position to 1 dimension. This decision is not based on a limitation of gpcxx, the mapping allows easier change to N-dimension problems, moreover it trades CPU load against memory saving.
+The class `ant_example::board` holds the board size information and helps to convert between the 2 dimension and 1 dimension representation.
+Furthermore, `ant_example::board` holds the logic for movement and handling of the boarder.
+[endsect]
+
+[section Design order]
+
+The nature of this example makes it necessary to implement a complex simulation. This simulation is necessary for keeping track of eaten food and scoring of the solution/tree. It is a recommended practice to make this simulation without dependencies to gpcxx. This allows manual verification of the system as seen below.
+[ant_move_test]
+
+
+The simulation consist of an ant class:
+[ant_class]
+
+The ant has 3 basic actions move, turn_left and turn_right. In every action the step counter is incremented.
+The ant stores its direction and position. It is questionable if a real ant would knows it positions/direction on the grid or if the ant in this simulation knows it's position. The design can be made in different ways, this is one of it.
+
+
+The `ant_example::ant_simulation` class bundles the ant, the board and the food trail. `ant_example::ant_simulation` will become later the context on which the nodes/tree will be working. The public interface needs all the methods to allow the nodes to work on, beside this, it need methods to score and decide if its finished.
+The context is the data which is
+
+* transferred between the nodes
+* modified in the nodes
+
+The solution we use in this example makes use of context modification. In other genetic programming examples like symbolic regression, the context is constant. Nodes can only use the value to generate new values and pass them to the children nodes. A constant context reduces the side effects, in trade of the cost of copying the context. For simpler types it may be negligibly. The `ant_example::ant_simulation` has many states (ant position, direction, food eaten on which position, ...) so its costly to make a copy.
+[ant_wold]
+
+
+[section Individual]
+
+An individual is a configuration of nodes, represented as a tree. Every node gets the context as argument makes a distinctive task with it and passes it forwards to its children nodes. Nodes which have no child nodes are terminals. In this `ant_example` the terminals are the nodes which commands the `ant_example::ant_simulation` to do the tasks, they are intended to.
+[action_nodes]
+
+The nodes which have no childs nodes attach are terminals, terminals can be uses as a data source. Beside the terminal-nodes there are also branching nodes, these nodes selectively making a task on its children. They nodes are configured as a tree structure. 
+
+[branch_nodes]
+
+* `ant_example::if_food_ahead-node` ask the context if the ant is in front of food, if yes the first child node is evaluated, if not the second.
+* `ant_example::prog2` evaluates first child node and then the second child node
+* `ant_example::prog3` the same as `ant_example::prog2` just with 3 child nodes
+
+
+[section Node signature and Type configuration]
+
+
+[node_types_delerations]
+
+* `max_children` is the parameter which describes how many child nodes, a node can have. In this example it is set to 3 used by `ant_example::prog3`
+* `context_type` is the type which is pass from node to node, in this example it is `ant_example::ant_simulation`
+* `node_return_type` what is calculated by the nodes and returned
+* `node_type` is the class which will hold our application specific nodes (`ant_example::if_food_ahead`, `ant_example::prog2`, `ant_example::ant_move_task_terminal`)
+
+`node_type` as `gpcxx::basic_named_intrusive_node<...>` is a decorating class to `gpcxx::basic_intrusive_node`, it adds the ability to give the node a name, which is use later used for printing. 
+The classes `gpcxx::basic_intrusive_node` and `gpcxx::intrusive_node` (Superclasses of basic_named_intrusive_node) with the class `gpcxx::intrusive_tree` provides the tree structure for the application specific nodes.
+
+* `tree_type` is the type of the individual
+* `population_type` is a type which can holds a number of individuals
+* `fitness_type` is the array which will stores all fitness values for the individuals, this is internally used to evaluate the best individuals for the next generation
+
+
+[endsect]
+
+[section Fitness evaluator]
+[evaluator_delerations]
+In this evaluator most calculation are made by the `ant_example::ant_simulation`, but this could also be done in this evaluator. It would allow to be more specific about the fitness goals.
+The fitness is driving the evolution of the population, so the evaluator is vital for the end goal. 
+
+Normally an individual could be scored by one evaluation of the nodes (as seen in symbolic regression). This example is different in a way that is repeats the evaluation of the individual on the context, as long as not all food is eaten and the max allowed steps are reached, the same individual is rerun on the board.
+
+Without the repeating, it would be necessary for an individual to have enough nodes to make a run trough the grid. And this individual would mostly specialize for a trail.
+Every traversing/evaluation of the nodes  
+
+To reduce the complexity of the example, only the amount of eaten food is scored (in max allowed steps). Possible options for more advanced evaluatores would be:
+
+* efficiency, how many steps where used to find the food
+* versatilely, how good is the individual on a different track
+* node usage, how big is the individual, how many nodes are used and or how fast it can be evaluated
+
+If evaluator is chosen to making the calculation of the fitness, it is necessary to normalize the fitness so `0` is the best possible solution. In this example thw calculation is done by the  `ant_example::ant_simulation::score()` method.
+[endsect]
+
+
+[endsect]
+[endsect]
+[endsect]
+
+
+[section Main application]
+For this example we use the same Santa Fe Trail as in __koza1_ref (page 152).
+[world_definition]
+
+The instance `ant_sim_santa_fe` is defined constant, later on this object will be used as a blueprint for copies (every individual needs his own simulation and in every generation the food trail has to be reset). The const helps to avoid unintended changes to blueprint, so every individual gets a fresh, unused copy of the trail.
+
+
+[node_generate]
+In this part the node_generator is initialized, with a list of `gpcxx::node_generator<>::weighted_generator_type`-structs,
+* 1st value, the weight, how often should these nodes be used in the generation of the population.
+* 2nd value, the arity of the nodes, how many children needs be connected to these nodes
+* 3rd value, the generator
+
+[section Envolve settings]
+
+[envolve_settings]
+
+* `population_size` how many individual, should be competing. Bigger population increases the resource's usage (run time and memory) but also decreases the time to find a solution.
+* `generation_max` at which generation should gpcxx stop if other break up condition are meet (e.g. an optimal solution was found). 
+* `number_elite` [/ TODO ]
+* `mutation_rate` how often a node should be changed randomly
+* `crossover_rate` [/ TODO ]
+* `reproduction_rate` [/ TODO ]
+* `min_tree_height` and `max_tree_height` how deep can the tree be, max_tree_height limits the size of the individual. Big individuals are slower to evaluate, but can handle more complex problems. In comparison, `min_tree_height` can be set to 1 up to `max_tree_height`. An individual can stay as small it wants, as long it can compete against other/bigger individuals. 
+* `tournament_size` [/ TODO ]
+
+These settings have direct influence on how fast a solution is found. In some cases it makes sens to adjust these settings, but mostly it will just cut the run time. While optimizing these setting, the program could find a solution by its self, just with a longer run time.
+The critical settings for memory usage are `population_size` and `max_tree_height`, if these values are to big for the host PC, the operating system will start to move memory to the swapping area and this will dramatic increase the run time of the application.
+
+gpcxx is in highly way configurable, these are the customization points where the evolving strategies can be changed.
+[evolver_definition]
+
+[endsect]
+
+[tree_generator]
+One way to generate the first generation is to randomly build up the individuals from nodes. Advanced cases could use hand made individuals or other generations of the population. More intelligent ways to generate the individuals leads to faster optimization times.  
+
+
+[section Generation loop]
+[generation_loop]
+The generation loop represents the cycle of life for the individuals:
+
+* reproduction
+* being judged / selection
+* does it make sens to go on 
+
+
+[section Fitness_calculation]
+[fitness_calculation]
+This is the part where fitness vector is filled with the measured fitness of the population. The measuring is done by the fitness_f function object.
+The `std::transform` function iterates throw the population and for every individuals, the following lambda function is called:
+``
+[&]( tree_type const &t ) { return fitness_f( t , ant_sim_santa_fe ); }
+`` 
+
+`fitness_f` gets the individual (`t`) and a reference to `ant_sim_santa_fe` (`ant_simulation const`) and returns the measured fitness.
+The lambda function is one possible customization point for the fitness. It is to remember that genetic programming optimize to meet the fitness function, this can lead to individuals that are perfectly able to find all food on the trail, but failing to solve the trail, if they start from the end.
+A possible fix could see like this
+
+``
+[&]( tree_type const &t ) { 
+	return fitness_f( t , ant_sim_santa_fe ) + 
+	       fitness_f( t , other_trail ); 
+}
+``
+
+[endsect]
+[section Breakup conditions]
+[breakup_conditions]
+
+If a solution is optimal in the sense of the fitness function, the generation loop is stopped. If there are still wishes/improvements left unsatisfied by the solution, then the fitness function does not cover all aspects of the task and has to be extend. To implement the wished fitness measure can be the hardest part.
+
+
+[endsect]
+[endsect]
+
+[endsect]
+[endsect]
+[endsect]
+
+
