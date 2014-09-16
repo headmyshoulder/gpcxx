@@ -186,7 +186,7 @@ run_ant_result run_ant_gp_wrapper(
     std::ostream & out
 )
 {
-    out << "# i " <<  "\t" 
+    out << "i " <<  "\t" 
         << "gener." << "\t" 
         << "time" << "\t" 
         << "has_optimal_fitness" << "\t" 
@@ -295,7 +295,7 @@ int main( int argc , char *argv[] )
         double start    = boost::lexical_cast<double>( argv[offset + 1] );
         double end      = boost::lexical_cast<double>( argv[offset + 2] );
         double step     = boost::lexical_cast<double>( argv[offset + 3] );
-        arguments.emplace( arguments_type::value_type( argname, frange<double>{start, end, step} ) );
+        arguments[argname] = frange<double>{ start, end, step };
     }
     std::unordered_map<std::string, arguments_type > variations{ { filename, arguments } };
     
