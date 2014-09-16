@@ -35,20 +35,15 @@ int main( int argc , char *argv[] )
             { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * x3 + 1.0 ; } );
     //]
     
+    //[ define_tree_types
     using context_type = gpcxx::regression_context< double , 3 >;
     using node_type = gpcxx::basic_named_intrusive_node< double , const context_type > ;
     using tree_type = gpcxx::intrusive_tree< node_type >;
-    using population_type = std::vector< tree_type >;
-    using fitness_type = std::vector< double >;
-    using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type >;
-    using evaluator = struct {
-        using context_type = gpcxx::regression_context< double , 3 >;
-        using value_type = double;
-        value_type operator()( tree_type const& t , context_type const& c ) const {
-            return t.root()->eval( c );
-        } };
-
+    //]
     
+    
+    
+    //[ define_terminal_set
     gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
         node_type { []( context_type const& c , node_type const& n ) { return 1.0; } ,      "1" } ,
         node_type { []( context_type const& c , node_type const& n ) { return 2.0; } ,      "2" } ,
@@ -63,7 +58,9 @@ int main( int argc , char *argv[] )
         node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,
         node_type { gpcxx::array_terminal< 2 >{}                                     ,      "z" }
     } };
+    //]
 
+    //[ define_function_set
     gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type > {
         node_type { gpcxx::sin_func {}                                               ,      "s" } ,
         node_type { gpcxx::cos_func {}                                               ,      "c" }
@@ -75,13 +72,29 @@ int main( int argc , char *argv[] )
         node_type { gpcxx::multiplies_func {}                                        ,      "*" } ,
         node_type { gpcxx::divides_func {}                                           ,      "/" }
     } };
+    //]
 
-
+    //[ define_node_generator
     gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
         { 1.0 , 0 , terminal_gen } ,
         { 1.0 , 1 , unary_gen } ,
         { 1.0 , 2 , binary_gen } };
-
+    //]
+        
+    //[ define_some_helper_types
+    using population_type = std::vector< tree_type >;
+    using fitness_type = std::vector< double >;
+    //]
+    
+    //[ define_evolution_and_evaluation
+    using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type >;
+    using evaluator = struct {
+        using context_type = gpcxx::regression_context< double , 3 >;
+        using value_type = double;
+        value_type operator()( tree_type const& t , context_type const& c ) const {
+            return t.root()->eval( c );
+        } };
+    //]
 
     
     size_t population_size = 812;
