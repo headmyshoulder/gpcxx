@@ -23,6 +23,36 @@
 
 const std::string tab = "\t";
 
+/*
+//[ intrusive_node_implementation
+template< typename Res , typename Context, size_t MaxArity = 2 >
+class basic_named_intrusive_node : implementation_sepecific
+{
+public:
+    
+    using result_type = Res;
+    using context_type = Context;
+    using node_type = basic_named_intrusive_node< result_type , context_type , MaxArity >;
+    
+    typedef std::function< result_type( context_type& , node_type const& ) > func_type;
+    
+    basic_named_intrusive_node( func_type f , std::string name )
+    : m_func( std::move( f ) ) , m_name( std::move( name ) ) { }
+    
+    result_type eval( context_type & context ) const;
+    
+    std::string const& name( void ) const;
+    
+    cursor children( size_t i ) noexcept;
+    
+    const_cursor children( size_t i ) const  noexcept;
+
+    size_t size( void ) const noexcept;
+};
+//]
+*/
+
+
 
 
 int main( int argc , char *argv[] )

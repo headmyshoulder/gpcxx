@@ -21,10 +21,19 @@ we define
 
 The `context_type` is the type which will be passed to the tree and which represent the vector ['x]. It is predefined in __gpcxx, but
 it is basically a `std::array< double , 3 >`. To represent the expressions we use the predefine `intrusive_tree<>` class. This
-requires that the node type has some specific properties which are all fullfilled by the `intrusive_node<>`.
+requires that the node type has some specific properties which are all fullfilled by the `basic_named_intrusive_node<>`. In principle,
+the implementation of `basic_named_intrusive_node<>` is similar to 
+
+[intrusive_node_implementation]
+
+That is, the node has the following functionality
+
+* It holds a polymorphic function object of type `func_type` performing the actual evaluation of the current node.
+* It has a name.
+* It can evaluate the context to the current value of the node.
 
 Next, we need to define the set of terminal nodes and the set of function nodes. We start with the terminals. All nodes
-enter the program only 
+enter the program only from 
 
 [define_terminal_set]
 
