@@ -19,7 +19,9 @@
 #include <gpcxx/operator.hpp>
 #include <gpcxx/stat.hpp>
 
+
 #include <boost/lexical_cast.hpp>
+#include <boost/range/numeric.hpp>
 
 #include <string>
 #include <iostream>
@@ -27,30 +29,85 @@
 #include <random>
 #include <algorithm>
 #include <tuple>
+#include <cmath>
 
-using run_ant_result = struct {
+using run_ant_result = struct 
+{
     double time;
     size_t generation;
     bool has_optimal_fitness;
     int best_result;
 };
 
+using run_ant_result_avg = struct 
+{
+    size_t count;
+    double time;
+    double avg_generations;
+    double min_generations;
+    double max_generations;
+    double std_generations;
+    double avg_fitness;
+    double min_fitness;
+    double max_fitness;
+    double std_fitness;
+    int optimal_fitness_count;
+};
+
+run_ant_result_avg make_stat(std::vector<run_ant_result> runs)
+{
+    run_ant_result_avg avg_result { runs.size(), 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 ,  0 };
+    if( runs.empty() )
+        return avg_result;
+    
+    avg_result.min_generations = runs.front().generation;
+    avg_result.max_generations = runs.front().generation;
+    avg_result.min_fitness = runs.front().best_result;
+    avg_result.max_fitness = runs.front().best_result;
+    for(run_ant_result oner : runs)
+    {
+        avg_result.time += oner.time / runs.size();
+        avg_result.avg_generations += (double)oner.generation / runs.size();
+        avg_result.avg_fitness += (double)oner.best_result / runs.size();
+        avg_result.optimal_fitness_count += oner.has_optimal_fitness ? 1 : 0;      
+        avg_result.min_generations = std::min( avg_result.min_generations, (double)oner.generation );
+        avg_result.max_generations = std::max( avg_result.max_generations, (double)oner.generation );
+        avg_result.min_fitness = std::min( avg_result.min_fitness, (double)oner.best_result );
+        avg_result.max_fitness = std::max( avg_result.max_fitness, (double)oner.best_result );
+    }
+    
+    double var_generations = 0;
+    double var_fitness = 0;
+    for(run_ant_result oner : runs)
+    {
+        var_generations += ( oner.generation - avg_result.avg_generations ) * ( oner.generation - avg_result.avg_generations );
+        var_fitness += ( oner.best_result - avg_result.avg_fitness ) * ( oner.best_result - avg_result.avg_fitness );
+    }
+    avg_result.std_generations = std::sqrt(var_generations);
+    avg_result.std_fitness = std::sqrt(var_fitness);
+    
+    return avg_result;
+}
+
+
+using rng_type = std::mt19937;
+
 
 run_ant_result run_ant_gp(
-    size_t const population_size = 8192,
-    size_t const generation_max = 200,
-    double const number_elite = 2,
-    double const mutation_rate = 0.1,
-    double const crossover_rate = 0.6,
-    double const reproduction_rate = 0.3,
-    size_t const min_tree_height = 5,
-    size_t const max_tree_height = 5,
-    size_t const tournament_size = 15
+    size_t const population_size,
+    size_t const generation_max,
+    double const number_elite,
+    double const mutation_rate,
+    double const crossover_rate,
+    double const reproduction_rate,
+    size_t const min_tree_height,
+    size_t const init_max_tree_height,
+    size_t const max_tree_height,
+    size_t const tournament_size,
+    rng_type rng
 )
 {
     using namespace ant_example;
-    using rng_type = std::mt19937;
-    rng_type rng;
     char const newl { '\n' };
     
     board const b{ santa_fe::x_size, santa_fe::y_size };
@@ -81,9 +138,10 @@ run_ant_result run_ant_gp(
 
     population_type population( population_size );
     
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , max_tree_height );
+    auto tree_generator      = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , max_tree_height );
+    auto init_tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , init_max_tree_height );
     for( auto & individum :  population )
-        tree_generator( individum );
+        init_tree_generator( individum );
 
     using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type > ;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
@@ -183,14 +241,26 @@ using arguments_type = std::unordered_map< std::string, frange< double > >;
 
 run_ant_result run_ant_gp_wrapper(
     arguments_type arguments,
-    std::ostream & out
+    std::ostream & out,
+    size_t avarage_over
 )
 {
+    
+    rng_type rng;
+
+    
     out << "i " <<  "\t" 
-        << "gener." << "\t" 
-        << "time" << "\t" 
-        << "has_optimal_fitness" << "\t" 
-        << "best_fitness" << "\t"  
+        << "count" << "\t" 
+        << "avg_time" << "\t" 
+        << "avg_generations" << "\t" 
+        << "min_generations" << "\t"
+        << "max_generations" << "\t"  
+        << "std_generations" << "\t"  
+        << "avg_fitness" << "\t" 
+        << "min_fitness" << "\t"
+        << "max_fitness" << "\t"  
+        << "std_fitness" << "\t"  
+        << "optimal_fitness_count" << "\t" 
         << "population_size" << "\t"
         << "generation_max" << "\t"
         << "number_elite" << "\t"
@@ -198,40 +268,59 @@ run_ant_result run_ant_gp_wrapper(
         << "crossover_rate" << "\t"
         << "reproduction_rate" << "\t"
         << "min_tree_height" << "\t"
+        << "init_max_tree_height" << "\t"
         << "max_tree_height" << "\t"
         << "tournament_size" 
         << std::endl;
     size_t iteration = 0;
+
     bool any_has_next = false;
     do
     {
-        auto population_size =   arguments["population_size"].value();
-        auto generation_max =    arguments["generation_max"].value();
-        auto number_elite =      arguments["number_elite"].value();
-        auto mutation_rate =     arguments["mutation_rate"].value();
-        auto crossover_rate =    arguments["crossover_rate"].value();
-        auto reproduction_rate = arguments["reproduction_rate"].value();
-        auto min_tree_height =   arguments["min_tree_height"].value();
-        auto max_tree_height =   arguments["max_tree_height"].value();
-        auto tournament_size =   arguments["tournament_size"].value();
+        auto population_size =      arguments["population_size"].value();
+        auto generation_max =       arguments["generation_max"].value();
+        auto number_elite =         arguments["number_elite"].value();
+        auto mutation_rate =        arguments["mutation_rate"].value();
+        auto crossover_rate =       arguments["crossover_rate"].value();
+        auto reproduction_rate =    arguments["reproduction_rate"].value();
+        auto min_tree_height =      arguments["min_tree_height"].value();
+        auto init_max_tree_height = arguments["init_max_tree_height"].value();
+        auto max_tree_height =      arguments["max_tree_height"].value();
+        auto tournament_size =      arguments["tournament_size"].value();
     
-        auto res = run_ant_gp(
-            population_size,
-            generation_max,
-            number_elite,
-            mutation_rate,
-            crossover_rate,
-            reproduction_rate,
-            min_tree_height,
-            max_tree_height,
-            tournament_size                   
-        );
+        std::vector<run_ant_result> results;
+        for(int avg_run = 0; avg_run < avarage_over; ++avg_run)
+        {
+            rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+            results.emplace_back(run_ant_gp(
+                population_size,
+                generation_max,
+                number_elite,
+                mutation_rate,
+                crossover_rate,
+                reproduction_rate,
+                min_tree_height,
+                init_max_tree_height,
+                max_tree_height,
+                tournament_size,
+                rng
+            ));
+         }
+        auto stats = make_stat(results);
         out << std::fixed;
         out << iteration <<  "\t" 
-            << res.generation << "\t" 
-            << res.time << "\t" 
-            << res.has_optimal_fitness << "\t" 
-            << res.best_result << "\t"  
+
+            << stats.count << "\t" 
+            << stats.time << "\t" 
+            << stats.avg_generations << "\t" 
+            << stats.min_generations << "\t"
+            << stats.max_generations << "\t"  
+            << stats.std_generations << "\t"  
+            << stats.avg_fitness << "\t" 
+            << stats.min_fitness << "\t"
+            << stats.max_fitness << "\t"  
+            << stats.std_fitness << "\t"  
+            << stats.optimal_fitness_count << "\t" 
             << population_size << "\t"
             << generation_max << "\t"
             << number_elite << "\t"
@@ -239,6 +328,7 @@ run_ant_result run_ant_gp_wrapper(
             << crossover_rate << "\t"
             << reproduction_rate << "\t"
             << min_tree_height << "\t"
+            << init_max_tree_height << "\t"
             << max_tree_height << "\t"
             << tournament_size 
             << std::endl;
@@ -257,40 +347,30 @@ int main( int argc , char *argv[] )
 {
     arguments_type  const default_arguments 
     {
-        { "population_size" ,   frange< double >( 1000 ) },
+        { "population_size" ,   frange< double >( 500 ) },
         { "generation_max" ,    frange< double >( 1000) },
         { "number_elite" ,      frange< double >( 2 ) },
-        { "mutation_rate" ,     frange< double >( 0.1 ) },
-        { "crossover_rate" ,    frange< double >( 0.6 ) },
-        { "reproduction_rate" , frange< double >( 0.3 ) },
+        { "mutation_rate" ,     frange< double >( 0 ) },
+        { "crossover_rate" ,    frange< double >( 0.9 ) },
+        { "reproduction_rate" , frange< double >( 0.1 ) },
         { "min_tree_height" ,   frange< double >( 1 ) },
-        { "max_tree_height" ,   frange< double >( 8 ) },
+        { "inti_max_tree_height" ,   frange< double >( 6 ) },
+        { "max_tree_height" ,   frange< double >( 17 ) },
         { "tournament_size" ,   frange< double >( 15 ) }
     };
-    /*
-    std::unordered_map<std::string, arguments_type > variations 
-    {
-        //{ "population_variation.dat",        { { "population_size", frange< double >( 25, 1000, 25 ) } } },
-        //{ "number_elite_variation.dat",      { { "number_elite",    frange< double >( 1, 100, 5 ) } } },
-        //{ "mutation_rate_variation.dat",     { { "mutation_rate",   frange< double >( 0, 1, 0.05 ) } } },
-        //{ "crossover_rate_variation.dat",    { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
-        //{ "reproduction_rate_variation.dat", { { "crossover_rate",  frange< double >( 0, 1, 0.05 ) } } },
-        //{ "min_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1, 8, 1 ) }, { "max_tree_height", frange< double >( 8 ) } } },
-        //{ "max_tree_height_variation.dat",   { { "min_tree_height", frange< double >( 1  ) }, { "max_tree_height", frange< double >( 1, 8, 1 ) } } },
-        { "tournament_size_variation.dat",   { { "tournament_size", frange< double >( 2, 50, 5 ) } } }
-    };
-    */
-    if(((argc - 2) % 4)  != 0)
+
+    if(((argc - 3) % 4)  != 0 || argc < 3)
     {
         std::cerr << "Usage: " << argv[0] << 
-        " <filename> <argumentname> <range_start> <range_end> <range_step> [[<argumentname> <range_start> <range_end> <range_step>] [...]] " << std::endl;
+        " <filename> <avg_over_n> <argumentname> <range_start> <range_end> <range_step> [[<argumentname> <range_start> <range_end> <range_step>] [...]] " << std::endl;
         return 1;
     }
-    std::string filename {argv[1]};
+    std::string filename { argv[1] };
+    int avg_over_n    = boost::lexical_cast<int>( argv[2] );
     arguments_type arguments;
-    for(int i = 0; i < ((argc - 2) / 4); ++i)
+    for(int i = 0; i < ((argc - 3) / 4); ++i)
     {
-        size_t offset = (i*4)+2;
+        size_t offset = (i*4)+3;
         std::string  argname { argv[offset + 0] };
         double start    = boost::lexical_cast<double>( argv[offset + 1] );
         double end      = boost::lexical_cast<double>( argv[offset + 2] );
@@ -306,6 +386,6 @@ int main( int argc , char *argv[] )
         default_arguments_copy.insert(default_arguments.begin(), default_arguments.end());
     
         std::ofstream outfile{ task.first };
-        run_ant_gp_wrapper(default_arguments_copy, outfile);
+        run_ant_gp_wrapper(default_arguments_copy, outfile, avg_over_n);
     }
 }

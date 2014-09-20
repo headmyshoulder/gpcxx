@@ -25,7 +25,17 @@
 #include <sstream>
 #include <random>
 #include <algorithm>
+#include <unordered_set>
+#include <chrono>
 
+
+template<typename T>
+std::string tree_to_string(T const & t)
+{
+    std::ostringstream  oss;
+    oss <<  gpcxx::simple(t) ;
+    return oss.str();
+}
 
 
 int main( int argc , char *argv[] )
@@ -34,6 +44,9 @@ int main( int argc , char *argv[] )
     using rng_type = std::mt19937;
     rng_type rng;
     char const newl { '\n' };
+
+    
+    rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
     
     //[world_definition 
     board const b{ santa_fe::x_size, santa_fe::y_size };
@@ -65,25 +78,41 @@ int main( int argc , char *argv[] )
     //]
     
     //[envolve_settings
-    size_t const population_size = 8192;
-    size_t const generation_max = 200;
+    size_t const population_size = 500;
+    size_t const generation_max = 510;
     double const number_elite = 2;
-    double const mutation_rate = 0.1;
-    double const crossover_rate = 0.6;
-    double const reproduction_rate = 0.3;
-    size_t const min_tree_height = 5; 
-    size_t const max_tree_height = 5;
-    size_t const tournament_size = 15;
+    double const mutation_rate = 0.0;
+    double const crossover_rate = 0.9;
+    double const reproduction_rate = 0.1;
+    size_t const min_tree_height = 6; 
+    size_t const init_max_tree_height  = 6;
+    size_t const max_tree_height = 17;
+    size_t const tournament_size = 2;
     //]
         
     population_type population( population_size );
     
     //[tree_generator
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , max_tree_height );
+    auto tree_generator      = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , max_tree_height );
+    auto init_tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , init_max_tree_height );
     for( auto & individum :  population )
-        tree_generator( individum );
+        init_tree_generator( individum );
     //]
+    
+   /*
+    auto tree_hasher = [](tree_type const & t){ return std::hash<std::string>{}(tree_to_string(t));};
 
+    
+    std::unordered_set<std::size_t> test ;
+    
+    for(tree_type const t : population)
+    {
+        test.insert(tree_hasher(t));
+        std::cout << tree_hasher(t) << "\t" << tree_to_string(t) << std::endl;
+    }
+    std::cout << test.size() << std::endl;
+    if(true) return 1;
+    */
      //[evolver_definition
     using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type > ;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
@@ -127,7 +156,7 @@ int main( int argc , char *argv[] )
         std::cout << gpcxx::indent( 1 ) << "Evolve time "   << evolve_time << newl;
         std::cout << gpcxx::indent( 1 ) << "Eval time "     << eval_time << newl;
         std::cout << gpcxx::indent( 1 ) << "Best individuals\n" << gpcxx::best_individuals( population , fitness , 2 , 3 , false ) << newl;
-        std::cout << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << newl;
+        std::cout << gpcxx::indent( 1 ) << "Statistics : "      << gpcxx::calc_population_statistics( population ) << newl << std::endl;
         
         //[breakup_conditions
         generation++;
@@ -142,6 +171,7 @@ int main( int argc , char *argv[] )
     auto fittest_individual_position = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
     tree_type const & fittest_individual { population[fittest_individual_position] };
     
+//     std::cout << std::hash<std::string>{}(tree_to_string(fittest_individual)) << std::endl;
     // cat artificial_ant_fittest_individual.dot | dot -Tsvg | display -
     std::ofstream("artificial_ant_fittest_individual.dot") << gpcxx::graphviz( fittest_individual , false );
     
