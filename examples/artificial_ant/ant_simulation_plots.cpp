@@ -168,13 +168,12 @@ run_ant_result run_ant_gp(
         if( generation != 0 )
             evolver.next_generation( population , fitness );
         double evolve_time { iteration_timer.seconds() };
-        
         iteration_timer.restart();
         std::transform( population.begin() , population.end() , fitness.begin() , [&]( tree_type const &t ) { 
             return fitness_f( t , ant_sim_santa_fe ); 
         } );
         double eval_time = iteration_timer.seconds();
-             
+        
         generation++;
         has_optimal_fitness = ( 0 == *std::min_element( fitness.begin(), fitness.end() ) );
     } while( !has_optimal_fitness && generation < generation_max );
@@ -308,8 +307,7 @@ run_ant_result run_ant_gp_wrapper(
          }
         auto stats = make_stat(results);
         out << std::fixed;
-        out << iteration <<  "\t" 
-
+        out << iteration <<  "\t
             << stats.count << "\t" 
             << stats.time << "\t" 
             << stats.avg_generations << "\t" 
@@ -353,8 +351,8 @@ int main( int argc , char *argv[] )
         { "mutation_rate" ,     frange< double >( 0 ) },
         { "crossover_rate" ,    frange< double >( 0.9 ) },
         { "reproduction_rate" , frange< double >( 0.1 ) },
-        { "min_tree_height" ,   frange< double >( 1 ) },
-        { "inti_max_tree_height" ,   frange< double >( 6 ) },
+        { "min_tree_height" ,   frange< double >( 6 ) },
+        { "init_max_tree_height" , frange< double >( 6 ) },
         { "max_tree_height" ,   frange< double >( 17 ) },
         { "tournament_size" ,   frange< double >( 15 ) }
     };
