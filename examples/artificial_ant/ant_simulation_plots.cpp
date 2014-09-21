@@ -307,7 +307,7 @@ run_ant_result run_ant_gp_wrapper(
          }
         auto stats = make_stat(results);
         out << std::fixed;
-        out << iteration <<  "\t
+        out << iteration <<  "\t"
             << stats.count << "\t" 
             << stats.time << "\t" 
             << stats.avg_generations << "\t" 
@@ -346,7 +346,7 @@ int main( int argc , char *argv[] )
     arguments_type  const default_arguments 
     {
         { "population_size" ,   frange< double >( 500 ) },
-        { "generation_max" ,    frange< double >( 1000) },
+        { "generation_max" ,    frange< double >( 1000 ) },
         { "number_elite" ,      frange< double >( 2 ) },
         { "mutation_rate" ,     frange< double >( 0 ) },
         { "crossover_rate" ,    frange< double >( 0.9 ) },
@@ -354,7 +354,7 @@ int main( int argc , char *argv[] )
         { "min_tree_height" ,   frange< double >( 6 ) },
         { "init_max_tree_height" , frange< double >( 6 ) },
         { "max_tree_height" ,   frange< double >( 17 ) },
-        { "tournament_size" ,   frange< double >( 15 ) }
+        { "tournament_size" ,   frange< double >( 2 ) }
     };
 
     if(((argc - 3) % 4)  != 0 || argc < 3)

@@ -84,7 +84,7 @@ int main( int argc , char *argv[] )
     double const mutation_rate = 0.0;
     double const crossover_rate = 0.9;
     double const reproduction_rate = 0.1;
-    size_t const min_tree_height = 6; 
+    size_t const min_tree_height = 6;
     size_t const init_max_tree_height  = 6;
     size_t const max_tree_height = 17;
     size_t const tournament_size = 2;
@@ -169,7 +169,7 @@ int main( int argc , char *argv[] )
     std::cout << "Overall time : " << overall_timer.seconds() << newl;
     
     auto fittest_individual_position = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
-    tree_type const & fittest_individual { population[fittest_individual_position] };
+    tree_type const & fittest_individual = population[fittest_individual_position];
     
 //     std::cout << std::hash<std::string>{}(tree_to_string(fittest_individual)) << std::endl;
     // cat artificial_ant_fittest_individual.dot | dot -Tsvg | display -
