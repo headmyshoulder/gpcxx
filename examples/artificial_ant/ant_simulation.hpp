@@ -16,6 +16,7 @@
 
 #include <unordered_map>
 #include <ostream>
+#include <sstream>
 
 
 namespace ant_example {
@@ -130,7 +131,38 @@ public:
         return m_food_start_count - m_food_eaten;
     }
     
+    std::string get_board_as_str() const
+    {
+        std::ostringstream oss;
+
+        for(int y = 0; y < m_board.get_size_y() ; ++y)
+        {
+            for(int x = 0; x < m_board.get_size_x(); ++x)
+            {
+                int pos_1d = m_board.pos_2d_to_1d({x,y});
+                
+                if( m_ant.pos() == pos_1d)
+                    oss << direction_to_str( m_ant.dir() );
+                else 
+                {
+                    auto found = m_food_trail.find(pos_1d);
+                    if(found != m_food_trail.cend())
+                        if(found->second)
+                            oss << '0';
+                        else
+                            oss << '*';
+                    else
+                        oss << ' ';
+                }
+            }
+            oss << "\n";
+        }
+        return oss.str();
+    }
+    
+    
 private:
+    
     food_trail_type m_food_trail;
     int const       m_food_start_count;
     int             m_food_eaten;

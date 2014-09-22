@@ -44,9 +44,10 @@ public:
             n1 = t1.rank_is( i1 );
             n2 = t2.rank_is( i2 );
 
-            size_t nh1 = n1.level() + n2.height() - 1;
-            size_t nh2 = n2.level() + n1.height() - 1;
+            size_t nh1 = n1.level() + n2.height();
+            size_t nh2 = n2.level() + n1.height();
             good = ( ( nh1 <= m_max_height ) && ( nh2 <= m_max_height ) );
+            ++iter;
         }
         while( ( iter < m_max_iterations ) && ( good == false ) );
 
