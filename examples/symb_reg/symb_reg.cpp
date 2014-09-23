@@ -111,13 +111,33 @@ int main( int argc , char *argv[] )
         { 1.0 , 2 , binary_gen } };
     //]
         
-    //[ define_some_helper_types
+    //[ define_gp_parameters
+    size_t population_size = 812;
+    size_t generation_size = 50;
+    size_t number_elite = 1;
+    double mutation_rate = 0.2;
+    double crossover_rate = 0.6;
+    double reproduction_rate = 0.3;
+    size_t min_tree_height = 4 , max_tree_height = 12;
+    size_t tournament_size = 15;
+    //]
+
+        
+    //[ define_population_and_fitness
     using population_type = std::vector< tree_type >;
     using fitness_type = std::vector< double >;
+    
+    fitness_type fitness( population_size , 0.0 );
+    population_type population( population_size );
+    rng_type rng;
     //]
     
-    //[ define_evolution_and_evaluation
+    //[ define_evolution
     using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type >;
+    evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
+    //]
+
+    //[define_evaluator
     using evaluator = struct {
         using context_type = gpcxx::regression_context< double , 3 >;
         using value_type = double;
@@ -125,23 +145,9 @@ int main( int argc , char *argv[] )
             return t.root()->eval( c );
         } };
     //]
-
-    
-    size_t population_size = 812;
-    size_t number_elite = 1;
-    double mutation_rate = 0.2;
-    double crossover_rate = 0.6;
-    double reproduction_rate = 0.3;
-    size_t min_tree_height = 4 , max_tree_height = 12;
-    size_t tournament_size = 15;
-
-
-    rng_type rng;
+        
+    //[define_genetic_operators
     auto tree_generator = gpcxx::make_ramp( rng , node_generator , min_tree_height , max_tree_height , 0.5 );
-    evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
-    
-    
-
     auto fitness_f = gpcxx::make_regression_fitness( evaluator {} );
     evolver.mutation_function() = gpcxx::make_mutation(
         gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
@@ -150,10 +156,10 @@ int main( int argc , char *argv[] )
         gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
+    //]
 
-    fitness_type fitness( population_size , 0.0 );
-    population_type population( population_size );
 
+    //[init_population
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
@@ -163,8 +169,10 @@ int main( int argc , char *argv[] )
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;
     std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
     std::cout << std::endl << std::endl;
-
-    for( size_t i=0 ; i<10 ; ++i )
+    //]
+    
+    //[main_loop
+    for( size_t i=0 ; i<generation_size ; ++i )
     {
         evolver.next_generation( population , fitness );
         for( size_t i=0 ; i<population.size() ; ++i )
@@ -174,6 +182,7 @@ int main( int argc , char *argv[] )
         std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
         std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
     }
+    //]
 
     return 0;
 }
