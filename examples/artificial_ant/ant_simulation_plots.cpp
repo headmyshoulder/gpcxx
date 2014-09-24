@@ -150,8 +150,8 @@ run_ant_result run_ant_gp(
          gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
          gpcxx::make_tournament_selector( rng , tournament_size ) );
     
-    evolver.crossover_function() = gpcxx::make_crossover( 
-        gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
+    evolver.crossover_function() = gpcxx::make_crossover(
+        gpcxx::make_one_point_crossover_pip_strategy( rng , max_tree_height, 0.9 ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );

@@ -15,7 +15,6 @@
 #include "board.hpp"
 
 #include <unordered_map>
-#include <ostream>
 
 
 namespace ant_example {

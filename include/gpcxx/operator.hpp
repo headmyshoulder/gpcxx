@@ -15,6 +15,7 @@
 #include <gpcxx/operator/crossover.hpp>
 #include <gpcxx/operator/mutation.hpp>
 #include <gpcxx/operator/one_point_crossover_strategy.hpp>
+#include <gpcxx/operator/one_point_crossover_pip_strategy.hpp>
 #include <gpcxx/operator/random_selector.hpp>
 #include <gpcxx/operator/reproduce.hpp>
 #include <gpcxx/operator/simple_mutation_strategy.hpp>
