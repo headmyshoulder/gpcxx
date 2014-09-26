@@ -99,6 +99,7 @@ run_ant_result run_ant_gp(
     double const number_elite,
     double const mutation_rate,
     double const crossover_rate,
+    double const crossover_pip_rate,
     double const reproduction_rate,
     size_t const min_tree_height,
     size_t const init_max_tree_height,
@@ -151,7 +152,7 @@ run_ant_result run_ant_gp(
          gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     evolver.crossover_function() = gpcxx::make_crossover(
-        gpcxx::make_one_point_crossover_pip_strategy( rng , max_tree_height, 0.9 ) ,
+        gpcxx::make_one_point_crossover_pip_strategy( rng , max_tree_height, crossover_pip_rate ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
@@ -179,7 +180,7 @@ run_ant_result run_ant_gp(
     } while( !has_optimal_fitness && generation < generation_max );
     
     auto fittest_individual_position = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
-    tree_type const & fittest_individual { population[fittest_individual_position] };
+    tree_type const & fittest_individual = population[fittest_individual_position];
       
     return { overall_timer.seconds() , generation , has_optimal_fitness, *std::min_element( fitness.begin(), fitness.end() ) };
 }
@@ -265,6 +266,7 @@ run_ant_result run_ant_gp_wrapper(
         << "number_elite" << "\t"
         << "mutation_rate" << "\t"
         << "crossover_rate" << "\t"
+        << "crossover_pip_rate" << "\t"
         << "reproduction_rate" << "\t"
         << "min_tree_height" << "\t"
         << "init_max_tree_height" << "\t"
@@ -281,6 +283,7 @@ run_ant_result run_ant_gp_wrapper(
         auto number_elite =         arguments["number_elite"].value();
         auto mutation_rate =        arguments["mutation_rate"].value();
         auto crossover_rate =       arguments["crossover_rate"].value();
+        auto crossover_pip_rate =   arguments["crossover_pip_rate"].value();
         auto reproduction_rate =    arguments["reproduction_rate"].value();
         auto min_tree_height =      arguments["min_tree_height"].value();
         auto init_max_tree_height = arguments["init_max_tree_height"].value();
@@ -297,6 +300,7 @@ run_ant_result run_ant_gp_wrapper(
                 number_elite,
                 mutation_rate,
                 crossover_rate,
+                crossover_pip_rate,
                 reproduction_rate,
                 min_tree_height,
                 init_max_tree_height,
@@ -324,6 +328,7 @@ run_ant_result run_ant_gp_wrapper(
             << number_elite << "\t"
             << mutation_rate << "\t"
             << crossover_rate << "\t"
+            << crossover_pip_rate << "\t"
             << reproduction_rate << "\t"
             << min_tree_height << "\t"
             << init_max_tree_height << "\t"
@@ -350,6 +355,7 @@ int main( int argc , char *argv[] )
         { "number_elite" ,      frange< double >( 2 ) },
         { "mutation_rate" ,     frange< double >( 0 ) },
         { "crossover_rate" ,    frange< double >( 0.9 ) },
+        { "crossover_pip_rate" ,frange< double >( 0.9 ) },
         { "reproduction_rate" , frange< double >( 0.1 ) },
         { "min_tree_height" ,   frange< double >( 6 ) },
         { "init_max_tree_height" , frange< double >( 6 ) },
