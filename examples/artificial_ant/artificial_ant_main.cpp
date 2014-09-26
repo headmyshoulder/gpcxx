@@ -83,11 +83,12 @@ int main( int argc , char *argv[] )
     double const number_elite = 2;
     double const mutation_rate = 0.0;
     double const crossover_rate = 0.9;
+    double const crossover_internal_point_rate = 0.9;
     double const reproduction_rate = 0.1;
     size_t const min_tree_height = 6;
     size_t const init_max_tree_height  = 6;
     size_t const max_tree_height = 17;
-    size_t const tournament_size = 2;
+    size_t const tournament_size = 7;
     //]
         
     population_type population( population_size );
@@ -122,7 +123,7 @@ int main( int argc , char *argv[] )
          gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     evolver.crossover_function() = gpcxx::make_crossover( 
-        gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
+        gpcxx::make_one_point_crossover_pip_strategy( rng , max_tree_height, crossover_internal_point_rate ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
