@@ -360,7 +360,7 @@ int main( int argc , char *argv[] )
         { "min_tree_height" ,   frange< double >( 6 ) },
         { "init_max_tree_height" , frange< double >( 6 ) },
         { "max_tree_height" ,   frange< double >( 17 ) },
-        { "tournament_size" ,   frange< double >( 2 ) }
+        { "tournament_size" ,   frange< double >( 7 ) }
     };
 
     if(((argc - 3) % 4)  != 0 || argc < 3)
