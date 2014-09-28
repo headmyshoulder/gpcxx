@@ -80,12 +80,42 @@ int main( int argc , char *argv[] )
     size_t const tournament_size = 7;
     //]
         
-    population_type population( population_size );
+    population_type population;
+    population.reserve( population_size );
     
     //[tree_generator
-    auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height_gen , max_tree_height_gen );
-    for( auto & individum :  population )
-        tree_generator( individum );
+    auto tree_generator = gpcxx::make_ramp( rng , node_generator , min_tree_height_gen , max_tree_height_gen , 0.5 );
+    for( size_t i=0 ; i<population_size ; ++i )
+    {
+        size_t count = 0;
+        while( true )
+        {
+            ++count;
+            if( count == 1000 )
+            {
+                std::string msg = "Could not create tree " + std::to_string( i ) ;
+                throw std::runtime_error( msg );
+            }
+            
+            tree_type t;
+            tree_generator( t );
+            bool equal = false;
+            for( size_t j=0 ; j<i ; ++j )
+            {
+                if( population[j] == t )
+                {
+                    std::cout << "EQUAL : " << gpcxx::simple( population[j] ) << " = " << gpcxx::simple( t ) << std::endl;
+                    equal = true;
+                    break;
+                }
+            }
+            if( !equal )
+            {
+                population.push_back( std::move( t ) );
+                break;
+            }
+        }
+    }
     //]
 
      //[evolver_definition
@@ -143,7 +173,7 @@ int main( int argc , char *argv[] )
                      << std::endl;
             }
         }
-        
+/*        
         {
             using namespace std;
             std::vector< size_t > idx;
@@ -157,7 +187,7 @@ int main( int argc , char *argv[] )
                 cout << sim.get_board_as_str() << endl;
                 usleep( 50 * 1000 );
             }
-        }
+        }*/
             
         
         double eval_time = iteration_timer.seconds();
