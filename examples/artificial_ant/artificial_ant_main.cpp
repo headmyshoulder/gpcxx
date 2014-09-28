@@ -173,7 +173,6 @@ int main( int argc , char *argv[] )
         has_optimal_fitness = ( 0 == *std::min_element( fitness.begin(), fitness.end() ) );
     } while( !has_optimal_fitness && generation < generation_max );
     //]
-    //]
     
     
     std::cout << "Overall time : " << overall_timer.seconds() << newl;

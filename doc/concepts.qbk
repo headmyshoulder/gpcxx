@@ -2,6 +2,7 @@
 
 [include concepts/tree.qbk]
 [include concepts/cursor.qbk]
+[include concepts/tree_node.qbk]
 [include concepts/unary_tree_operator.qbk]
 [include concepts/binary_tree_operator.qbk]
 [include concepts/selector.qbk]

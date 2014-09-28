@@ -32,12 +32,70 @@ That is, the node has the following functionality
 * It has a name.
 * It can evaluate the context to the current value of the node.
 
-Next, we need to define the set of terminal nodes and the set of function nodes. We start with the terminals. All nodes
-enter the program only from 
+Next, we need to define the set of terminal nodes and the set of function nodes. We start with the terminals:
 
 [define_terminal_set]
 
+The terminals enter the program in term of a generator class, in this case the `uniform_symbol` class. This class can create
+randomly nodes. It can be used like
+
+``
+rng_type rng;
+node_type n = terminal_gen( rng );
+``
+
+which creates randomly a terminal. In our case we define 12 terminal, nine terminals for the numbers 1 to 9 und 3 terminal for the variables
+`x`, `y`, and `z`. Each line in the definition represents one terminal, where the first argument is the function to be evaluated when evaluating
+the tree and the second argument is a simple name for the terminal.
+
+For the function nodes the definition looks similar:
+
 [define_function_set]
 
+It defines the unary function `sin` and `cos` and the default binary operators `+`, `-`, `*`, and `/`.
+
+The above generators are now collected in a node generator class which can return randomly nodes, either from the set of all terminals and function nodes,
+or only terminals or only function nodes. This class is used in the initial tree generator method and in the methods for mutation and crossover which
+need to create new (sub)-trees:
+
+[define_node_generator]
+
+Next, we define the basic parameters for genetic programming
+
+[define_gp_parameters]
+
+Then, the population and the fitness are created, which are simple vectors:
+
+[define_population_and_fitness]
+
+Then, the genetic evolution class is defined .
+
+[define_evolution]
+
+Here, the class `static_pipeline` defines a genetic algorithm which can apply mutation, crossover, reproduction operators as well as the
+elite mechanism to an arbitrary population.
+
+One also needs to evaluate the trees to obtain the value of the expression of an individual
+
+[define_evaluator]
+
+`evaluator` is a simple helper class which evaluates one tree. Hence, it is a function object taking
+a tree and a context object and calls the `eval` method of the root node. It returns a floating point number - the result of the current evaluation.
+
+Now, we need to define the concrete genetic operators as well as the tree generator method
+
+[define_genetic_operators]
+
+Having defined all these types and variables we are now able to start the actual genetic evolution loop. First we initialize the population and the we run
+the main evolution loop.
+
+[init_population]
+
+[main_loop]
+
+Altough the code looks quite complicated and bloated it shows the main features of _gpcxx and nearly all customization points. In near future, some top level
+classes and structures for simplifiying genetic programming will be introduced.
+
+The full code can be found here:  [github_link examples/symb_reg/symb_reg.cpp symb_reg.cpp]
 
 [endsect]

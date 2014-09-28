@@ -96,6 +96,7 @@ xsltproc(
   CATALOG "${catalog}"
   STYLESHEET "${BOOSTBOOK_XSL_DIR}/docbook.xsl"
   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
+  PARAMETERS chunk.section.depth=2 chunk.first.sections=1 toc.section.depth=1 toc.max.depth=1 generate.section.toc.level=2
   )
 
 xsltproc(
