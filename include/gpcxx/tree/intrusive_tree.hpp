@@ -161,6 +161,11 @@ public:
             return shoot();
         return rank_is_impl< const_cursor >( root() , n );
     }
+    
+    size_t hash( void ) const
+    {
+        
+    }
 
     
     //
@@ -366,6 +371,10 @@ bool operator!=( intrusive_tree< T > const& x , intrusive_tree< T > const& y )
     return !( x == y );
 }
 
+// TODO: Implement comparison operators
+// TODO: Implement hash specialization
+
+
 
 //
 // specialized algorithms:
@@ -390,7 +399,17 @@ void swap_subtrees( intrusive_tree< T >& t1 ,
 } // namespace gpcxx
 
 
-
+// namespace std
+// {
+//     template< typename T >
+//     class hash< intrusive_tree< T > >
+//     {
+//         size_t operator()( intrusive_tree< T > const &t ) const
+//         {
+//             return t.hash();
+//         }
+//     };
+// }
 
 
 

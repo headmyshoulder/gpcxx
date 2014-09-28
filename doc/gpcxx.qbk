@@ -47,7 +47,14 @@
 [def __space '''&#8203;''']
 
 [def __gpcxx gpcxx]
+
 [def __gpcxx_github '''<ulink url="https://github.com/Ambrosys/gpcxx" target="_blank">github.com/Ambrosys/gpcxx</ulink>''']
+
+
+[def __concepts [link gpcxx.concepts Concepts]]
+[def __tree_concept [link gpcxx.concepts.tree Tree]]
+[def __cursor_concept [link gpcxx.concepts.cursor Cursor]]
+[def __tree_node_concept [link gpcxx.concepts.treenode TreeNode]]
 
 
 [template super[x]'''<superscript>'''[x]'''</superscript>''']
