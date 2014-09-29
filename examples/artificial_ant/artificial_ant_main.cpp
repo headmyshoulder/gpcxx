@@ -78,17 +78,17 @@ int main( int argc , char *argv[] )
     //]
     
     //[envolve_settings
-    size_t const population_size = 500;
-    size_t const generation_max = 510;
-    double const number_elite = 2;
-    double const mutation_rate = 0.0;
-    double const crossover_rate = 0.9;
+    size_t const population_size = 5000;
+    size_t const generation_max = 5000;
+    double const number_elite = 4;
+    double const mutation_rate = 0.3;
+    double const crossover_rate = 0.8;
     double const crossover_internal_point_rate = 0.9;
     double const reproduction_rate = 0.1;
-    size_t const min_tree_height = 6;
+    size_t const min_tree_height = 1;
     size_t const init_max_tree_height  = 6;
     size_t const max_tree_height = 17;
-    size_t const tournament_size = 7;
+    size_t const tournament_size = 4;
     //]
         
     population_type population( population_size );
