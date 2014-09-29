@@ -1,7 +1,7 @@
 find_package ( Git )
 
 if ( NOT EXISTS "${CMAKE_SOURCE_DIR}/.git/" )
-  message ( WARN "coud not find .git repository in ${CMAKE_SOURCE_DIR}/.git/" )
+  message ( WARNING "coud not find .git repository in ${CMAKE_SOURCE_DIR}/.git/" )
   return ()
 endif ()
 
