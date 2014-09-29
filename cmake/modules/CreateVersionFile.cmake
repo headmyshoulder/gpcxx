@@ -1,8 +1,11 @@
 find_package ( Git )
 
 if ( NOT EXISTS "${CMAKE_SOURCE_DIR}/.git/" )
+  message ( WARN "coud not find .git repository in ${CMAKE_SOURCE_DIR}/.git/" )
   return ()
 endif ()
+
+
 
 set ( GPCXX_VERSION_FILE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp )
 set ( GPCXX_VERSION_FILE_TEMPLATE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_version.hpp.cmake )
@@ -10,11 +13,13 @@ set ( GPCXX_VERSION_FILE_TEMPLATE ${CMAKE_SOURCE_DIR}/include/gpcxx/config_versi
 execute_process ( COMMAND git describe --abbrev=4 --match v*.* HEAD
                   COMMAND sed -e "s/-/./g"
                   OUTPUT_VARIABLE GPCXX_GIT_VERSION
-                  OUTPUT_STRIP_TRAILING_WHITESPACE )
+                  OUTPUT_STRIP_TRAILING_WHITESPACE
+                  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/" )
                   
 execute_process ( COMMAND git status -uno -s 
                   OUTPUT_VARIABLE GPCXX_GIT_STATUS 
-                  OUTPUT_STRIP_TRAILING_WHITESPACE )
+                  OUTPUT_STRIP_TRAILING_WHITESPACE
+                  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/" )
 
 
 string ( REGEX REPLACE "^v([0-9]+)\\..*" "\\1" GPCXX_VERSION_MAJOR "${GPCXX_GIT_VERSION}" )
