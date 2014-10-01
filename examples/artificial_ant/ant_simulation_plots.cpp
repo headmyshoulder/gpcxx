@@ -351,13 +351,13 @@ int main( int argc , char *argv[] )
     arguments_type  const default_arguments 
     {
         { "population_size" ,   frange< double >( 500 ) },
-        { "generation_max" ,    frange< double >( 1000 ) },
+        { "generation_max" ,    frange< double >( 100 ) },
         { "number_elite" ,      frange< double >( 2 ) },
         { "mutation_rate" ,     frange< double >( 0 ) },
         { "crossover_rate" ,    frange< double >( 0.9 ) },
         { "crossover_pip_rate" ,frange< double >( 0.9 ) },
         { "reproduction_rate" , frange< double >( 0.1 ) },
-        { "min_tree_height" ,   frange< double >( 6 ) },
+        { "min_tree_height" ,   frange< double >( 1 ) },
         { "init_max_tree_height" , frange< double >( 6 ) },
         { "max_tree_height" ,   frange< double >( 17 ) },
         { "tournament_size" ,   frange< double >( 7 ) }
