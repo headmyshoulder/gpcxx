@@ -44,8 +44,8 @@ using run_ant_result_avg = struct
     size_t count;
     double time;
     double avg_generations;
-    double min_generations;
-    double max_generations;
+    size_t min_generations;
+    size_t max_generations;
     double std_generations;
     double avg_fitness;
     double min_fitness;
@@ -56,7 +56,7 @@ using run_ant_result_avg = struct
 
 run_ant_result_avg make_stat(std::vector<run_ant_result> runs)
 {
-    run_ant_result_avg avg_result { runs.size(), 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 ,  0 };
+    run_ant_result_avg avg_result { runs.size(), 0.0 , 0.0 , 0 , 0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 ,  0 };
     if( runs.empty() )
         return avg_result;
     
@@ -64,16 +64,16 @@ run_ant_result_avg make_stat(std::vector<run_ant_result> runs)
     avg_result.max_generations = runs.front().generation;
     avg_result.min_fitness = runs.front().best_result;
     avg_result.max_fitness = runs.front().best_result;
-    for(run_ant_result oner : runs)
+    for(run_ant_result onerun : runs)
     {
-        avg_result.time += oner.time / runs.size();
-        avg_result.avg_generations += (double)oner.generation / runs.size();
-        avg_result.avg_fitness += (double)oner.best_result / runs.size();
-        avg_result.optimal_fitness_count += oner.has_optimal_fitness ? 1 : 0;      
-        avg_result.min_generations = std::min( avg_result.min_generations, (double)oner.generation );
-        avg_result.max_generations = std::max( avg_result.max_generations, (double)oner.generation );
-        avg_result.min_fitness = std::min( avg_result.min_fitness, (double)oner.best_result );
-        avg_result.max_fitness = std::max( avg_result.max_fitness, (double)oner.best_result );
+        avg_result.time += onerun.time / runs.size();
+        avg_result.avg_generations += double( onerun.generation ) / runs.size();
+        avg_result.avg_fitness += double( onerun.best_result ) / runs.size();
+        avg_result.optimal_fitness_count += onerun.has_optimal_fitness ? 1 : 0;
+        avg_result.min_generations = std::min( avg_result.min_generations, onerun.generation );
+        avg_result.max_generations = std::max( avg_result.max_generations, onerun.generation );
+        avg_result.min_fitness = std::min( avg_result.min_fitness, double( onerun.best_result ) );
+        avg_result.max_fitness = std::max( avg_result.max_fitness, double( onerun.best_result ) );
     }
     
     double var_generations = 0;
@@ -150,9 +150,9 @@ run_ant_result run_ant_gp(
     evolver.mutation_function() = gpcxx::make_mutation(
          gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
          gpcxx::make_tournament_selector( rng , tournament_size ) );
-    
+
     evolver.crossover_function() = gpcxx::make_crossover(
-        gpcxx::make_one_point_crossover_pip_strategy( rng , max_tree_height, crossover_pip_rate ) ,
+        gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
@@ -348,7 +348,8 @@ run_ant_result run_ant_gp_wrapper(
 
 int main( int argc , char *argv[] )
 {
-    arguments_type  const default_arguments 
+
+    arguments_type  const argset1
     {
         { "population_size" ,   frange< double >( 500 ) },
         { "generation_max" ,    frange< double >( 100 ) },
@@ -362,6 +363,25 @@ int main( int argc , char *argv[] )
         { "max_tree_height" ,   frange< double >( 17 ) },
         { "tournament_size" ,   frange< double >( 7 ) }
     };
+
+    arguments_type  const argset2
+    {
+        { "population_size" ,   frange< double >( 5000 ) },
+        { "generation_max" ,    frange< double >( 5000 ) },
+        { "number_elite" ,      frange< double >( 4 ) },
+        { "mutation_rate" ,     frange< double >( 0.3 ) },
+        { "crossover_rate" ,    frange< double >( 0.8 ) },
+        { "crossover_pip_rate" ,frange< double >( 0.9 ) },
+        { "reproduction_rate" , frange< double >( 0.1 ) },
+        { "min_tree_height" ,   frange< double >( 1 ) },
+        { "init_max_tree_height" , frange< double >( 6 ) },
+        { "max_tree_height" ,   frange< double >( 17 ) },
+        { "tournament_size" ,   frange< double >( 4 ) }
+    };
+
+
+
+    arguments_type const & default_arguments = argset2;
 
     if(((argc - 3) % 4)  != 0 || argc < 3)
     {
