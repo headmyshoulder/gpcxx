@@ -31,6 +31,10 @@
 #include <tuple>
 #include <cmath>
 
+
+bool print_generations = true;
+size_t giteration = 0;
+
 using run_ant_result = struct 
 {
     double time;
@@ -174,6 +178,15 @@ run_ant_result run_ant_gp(
             return fitness_f( t , ant_sim_santa_fe ); 
         } );
         double eval_time = iteration_timer.seconds();
+
+        if(print_generations)
+        {
+            std::cout << gpcxx::indent(0) << "Generation " << giteration << ":" << generation << newl;
+            std::cout << gpcxx::indent(1) << "Evolve time " << evolve_time << newl;
+            std::cout << gpcxx::indent(1) << "Eval time " << eval_time << newl;
+            std::cout << gpcxx::indent(1) << "Best individuals\n" << gpcxx::best_individuals(population, fitness, 2, 3, false) << newl;
+            std::cout << gpcxx::indent(1) << "Statistics : " << gpcxx::calc_population_statistics(population) << newl << std::endl;
+        }
         
         generation++;
         has_optimal_fitness = ( 0 == *std::min_element( fitness.begin(), fitness.end() ) );
@@ -293,6 +306,7 @@ run_ant_result run_ant_gp_wrapper(
         std::vector<run_ant_result> results;
         for(int avg_run = 0; avg_run < avarage_over; ++avg_run)
         {
+            giteration = avg_run;
             rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
             results.emplace_back(run_ant_gp(
                 population_size,
