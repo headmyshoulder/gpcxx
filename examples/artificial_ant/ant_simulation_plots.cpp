@@ -23,6 +23,13 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/range/numeric.hpp>
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/moment.hpp>
+using namespace boost::accumulators;
+
+
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -31,24 +38,76 @@
 #include <tuple>
 #include <cmath>
 
+using rng_type = std::mt19937;
 
-bool print_generations = false;
-size_t gavg_run = 0;
+template<typename T>
+class frange
+{
+public:
+    frange() = default;
+    frange(frange const &) = default;
 
-using run_ant_result = struct 
+    frange(T start, T end, T step)
+            :m_start(start), m_end(end), m_step(step)
+    {
+    }
+
+    frange(T start, T end)
+            :m_start(start), m_end(end), m_step(1)
+    {
+    }
+
+    frange(T start)
+            :m_start(start), m_end(start), m_step(1)
+    {
+    }
+
+    T value() const
+    {
+        return m_start + (m_step * iteration);
+    }
+
+    bool has_next() const
+    {
+        return iteration < iteration_max();
+    }
+
+    void make_step()
+    {
+        if(iteration < iteration_max())
+            ++iteration;
+    }
+
+private:
+    int iteration_max() const
+    {
+        return static_cast<int>((m_end-m_start)/m_step);
+    }
+
+private:
+    T m_start;
+    T m_end;
+    T m_step;
+    int iteration;
+};
+
+using arguments_type = std::unordered_map< std::string, frange< double > >;
+
+struct ant_result
 {
     double time;
     size_t generation;
     bool has_optimal_fitness;
-    int best_result;
+    int fitness;
 };
-std::ostream & operator<< (std::ostream & os, run_ant_result const & ant_res )
-{
-    return os << ant_res.time << "\t" << ant_res.generation << "\t" << ant_res.has_optimal_fitness << "\t" << ant_res.best_result << std::endl;
-}
 
-using run_ant_result_avg = struct 
+struct ant_result_stats
 {
+    ant_result_stats()
+    : count(0),time(0.0),avg_generations(0.0),min_generations(0),max_generations(0),std_generations(0.0),avg_fitness(0.0),min_fitness(0),max_fitness(0),std_fitness(0.0),optimal_fitness_count(0)
+    {
+    }
+
     size_t count;
     double time;
     double avg_generations;
@@ -59,37 +118,37 @@ using run_ant_result_avg = struct
     double min_fitness;
     double max_fitness;
     double std_fitness;
-    int optimal_fitness_count;
+    size_t optimal_fitness_count;
 };
 
-run_ant_result_avg make_stat(std::vector<run_ant_result> runs)
+ant_result_stats make_stat(std::vector<ant_result> runs)
 {
-    run_ant_result_avg avg_result { runs.size(), 0.0 , 0.0 , 0 , 0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0 ,  0 };
+    ant_result_stats avg_result;
     if( runs.empty() )
         return avg_result;
     
     avg_result.min_generations = runs.front().generation;
     avg_result.max_generations = runs.front().generation;
-    avg_result.min_fitness = runs.front().best_result;
-    avg_result.max_fitness = runs.front().best_result;
-    for(run_ant_result onerun : runs)
+    avg_result.min_fitness = runs.front().fitness;
+    avg_result.max_fitness = runs.front().fitness;
+    for(ant_result onerun : runs)
     {
         avg_result.time += onerun.time / runs.size();
         avg_result.avg_generations += double( onerun.generation ) / runs.size();
-        avg_result.avg_fitness += double( onerun.best_result ) / runs.size();
+        avg_result.avg_fitness     += double( onerun.fitness) / runs.size();
         avg_result.optimal_fitness_count += onerun.has_optimal_fitness ? 1 : 0;
         avg_result.min_generations = std::min( avg_result.min_generations, onerun.generation );
         avg_result.max_generations = std::max( avg_result.max_generations, onerun.generation );
-        avg_result.min_fitness = std::min( avg_result.min_fitness, double( onerun.best_result ) );
-        avg_result.max_fitness = std::max( avg_result.max_fitness, double( onerun.best_result ) );
+        avg_result.min_fitness = std::min( avg_result.min_fitness, double( onerun.fitness) );
+        avg_result.max_fitness = std::max( avg_result.max_fitness, double( onerun.fitness) );
     }
     
     double var_generations = 0;
     double var_fitness = 0;
-    for(run_ant_result oner : runs)
+    for(ant_result onerun : runs)
     {
-        var_generations += ( oner.generation - avg_result.avg_generations ) * ( oner.generation - avg_result.avg_generations );
-        var_fitness += ( oner.best_result - avg_result.avg_fitness ) * ( oner.best_result - avg_result.avg_fitness );
+        var_generations += ( onerun.generation  - avg_result.avg_generations ) * ( onerun.generation  - avg_result.avg_generations );
+        var_fitness     += ( onerun.fitness - avg_result.avg_fitness )     * ( onerun.fitness - avg_result.avg_fitness );
     }
     avg_result.std_generations = std::sqrt(var_generations);
     avg_result.std_fitness = std::sqrt(var_fitness);
@@ -98,9 +157,7 @@ run_ant_result_avg make_stat(std::vector<run_ant_result> runs)
 }
 
 
-using rng_type = std::mt19937;
-
-run_ant_result run_ant_gp(
+ant_result ant_simulation_gp(
     size_t const population_size,
     size_t const generation_max,
     double const number_elite,
@@ -113,7 +170,9 @@ run_ant_result run_ant_gp(
     size_t const init_max_tree_height,
     size_t const max_tree_height,
     size_t const tournament_size,
-    rng_type rng
+    rng_type rng,
+    bool print_generations,
+    size_t current_run
 )
 {
     using namespace ant_example;
@@ -160,17 +219,13 @@ run_ant_result run_ant_gp(
          gpcxx::make_tournament_selector( rng , tournament_size ) );
 
     if(crossover_use_pip)
-    {
         evolver.crossover_function() = gpcxx::make_crossover(
                 gpcxx::make_one_point_crossover_pip_strategy(rng, max_tree_height, crossover_pip_rate ),
                 gpcxx::make_tournament_selector(rng, tournament_size));
-    }
     else
-    {
         evolver.crossover_function() = gpcxx::make_crossover(
                 gpcxx::make_one_point_crossover_strategy(rng, max_tree_height ),
                 gpcxx::make_tournament_selector(rng, tournament_size));
-    }
 
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
     
@@ -194,7 +249,7 @@ run_ant_result run_ant_gp(
 
         if(print_generations)
         {
-            std::cout << gpcxx::indent(0) << "Generation " << gavg_run << ":" << generation << newl;
+            std::cout << gpcxx::indent(0) << "Generation " << current_run << ":" << generation << newl;
             std::cout << gpcxx::indent(1) << "Evolve time " << evolve_time << newl;
             std::cout << gpcxx::indent(1) << "Eval time " << eval_time << newl;
             std::cout << gpcxx::indent(1) << "Best individuals\n" << gpcxx::best_individuals(population, fitness, 2, 3, false) << newl;
@@ -209,64 +264,16 @@ run_ant_result run_ant_gp(
 }
 
 
-template<typename T>
-class frange
-{
-public:
-    frange() = default;
-    frange(frange const &) = default;
-    
-    frange(T start, T end, T step)
-    :m_start(start), m_end(end), m_step(step)
-    { 
-    }
-    
-    frange(T start, T end)
-    :m_start(start), m_end(end), m_step(1)
-    { 
-    }
-    
-    frange(T start)
-    :m_start(start), m_end(start), m_step(1)
-    { 
-    }
-    
-    T value() const 
-    {
-        return m_start + (m_step * iteration);
-    }
-    
-    bool has_next() const
-    {
-        return iteration < iteration_max();
-    }
-    
-    void make_step() 
-    {
-        if(iteration < iteration_max())
-            ++iteration;
-    }
-    
-private:
-    int iteration_max() const
-    {   
-        return static_cast<int>((m_end-m_start)/m_step);
-    }
-    
-private:
-    T m_start;
-    T m_end;
-    T m_step;
-    int iteration;
-};
 
-using arguments_type = std::unordered_map< std::string, frange< double > >;
 
-run_ant_result run_ant_gp_wrapper(
+
+
+ant_result ant_simulation_gp_stats_helper(
     arguments_type arguments,
     std::ostream & out,
-    size_t avarage_over,
-    bool print_header
+    size_t repeat_ntimes,
+    bool print_header,
+    bool print_generations
 )
 {
     rng_type rng;
@@ -316,7 +323,7 @@ run_ant_result run_ant_gp_wrapper(
         auto max_tree_height =      arguments["max_tree_height"].value();
         auto tournament_size =      arguments["tournament_size"].value();
 
-        auto print_row = [&](std::ostream & os, std::vector<run_ant_result> & results)
+        auto print_row = [&](std::ostream & os, std::vector<ant_result> const & results)
         {
             auto stats = make_stat(results);
             os << std::fixed
@@ -347,12 +354,11 @@ run_ant_result run_ant_gp_wrapper(
                 << std::endl;
         };
 
-        std::vector<run_ant_result> results;
-        for(int avg_run = 0; avg_run < avarage_over; ++avg_run)
+        std::vector<ant_result> results;
+        for(int i = 0; i < repeat_ntimes; ++i)
         {
-            gavg_run = avg_run;
             rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-            results.emplace_back(run_ant_gp(
+            results.emplace_back(ant_simulation_gp(
                 population_size,
                 generation_max,
                 number_elite,
@@ -365,16 +371,18 @@ run_ant_result run_ant_gp_wrapper(
                 init_max_tree_height,
                 max_tree_height,
                 tournament_size,
-                rng
+                rng,
+                print_generations,
+                i
             ));
             print_row( std::cout , results );
-         }
+        }
         print_row( out , results );
         ++iteration;
-        any_has_next = std::any_of(arguments.begin(), arguments.end(), [](decltype(arguments)::value_type const & v){ 
+        any_has_next = std::any_of(arguments.begin(), arguments.end(), [](arguments_type::value_type const & v){
             return v.second.has_next(); 
         });
-        for_each(arguments.begin(), arguments.end(), [](decltype(arguments)::value_type & v){ 
+        for_each(arguments.begin(), arguments.end(), [](arguments_type::value_type & v){
             if(v.second.has_next()) v.second.make_step(); 
         });
     }while(any_has_next);
@@ -383,23 +391,19 @@ run_ant_result run_ant_gp_wrapper(
 
 int main( int argc , char *argv[] )
 {
-
-    arguments_type  const argset1
+    size_t mandatory_args_count = 5;
+    size_t range_args_count = 4;
+    if(((argc - mandatory_args_count) % range_args_count)  != 0 || argc < mandatory_args_count)
     {
-        { "population_size" ,   frange< double >( 500 ) },
-        { "generation_max" ,    frange< double >( 100 ) },
-        { "number_elite" ,      frange< double >( 2 ) },
-        { "mutation_rate" ,     frange< double >( 0 ) },
-        { "crossover_rate" ,    frange< double >( 0.9 ) },
-        { "crossover_pip_rate" ,frange< double >( 0.9 ) },
-        { "reproduction_rate" , frange< double >( 0.1 ) },
-        { "min_tree_height" ,   frange< double >( 1 ) },
-        { "init_max_tree_height" , frange< double >( 6 ) },
-        { "max_tree_height" ,   frange< double >( 17 ) },
-        { "tournament_size" ,   frange< double >( 7 ) }
-    };
+        std::cerr << "Usage: " << argv[0] <<
+                " <filename> <avg_over_n> <print_header> <print_generations> "\
+            "[[<argumentname> <range_start> <range_end> <range_step>]"\
+            " [<argumentname> <range_start> <range_end> <range_step>] [...]] "
+                        << std::endl;
+        return 1;
+    }
 
-    arguments_type  const argset2
+    arguments_type  const default_arguments
     {
         { "population_size" ,   frange< double >( 5000 ) },
         { "generation_max" ,    frange< double >( 500 ) },
@@ -415,40 +419,30 @@ int main( int argc , char *argv[] )
         { "tournament_size" ,   frange< double >( 4 ) }
     };
 
-    arguments_type const & default_arguments = argset2;
 
-    size_t mandatory_args_count = 5;
-    size_t range_args_count = 4;
-    if(((argc - mandatory_args_count) % range_args_count)  != 0 || argc < mandatory_args_count)
-    {
-        std::cerr << "Usage: " << argv[0] << 
-        " <filename> <avg_over_n> <print_header> <print_generations> [[<argumentname> <range_start> <range_end> <range_step>] [<argumentname> <range_start> <range_end> <range_step>] [...]] " << std::endl;
-        return 1;
-    }
     std::string filename { argv[1] };
-    size_t avg_over_n    = boost::lexical_cast<size_t>( argv[2] );
+    size_t repeate_ntimes    = boost::lexical_cast<size_t>( argv[2] );
     bool print_header = boost::lexical_cast<bool>( argv[3] );
-    print_generations = boost::lexical_cast<bool>( argv[4] );
+    bool print_generations = boost::lexical_cast<bool>( argv[4] );
     arguments_type arguments;
 
     for(int i = 0; i < ((argc - mandatory_args_count) / range_args_count); ++i)
     {
         size_t offset = (i*range_args_count)+mandatory_args_count;
-        std::string  argname { argv[offset + 0] };
+        std::string  arg_name { argv[offset + 0] };
         double start    = boost::lexical_cast<double>( argv[offset + 1] );
         double end      = boost::lexical_cast<double>( argv[offset + 2] );
         double step     = boost::lexical_cast<double>( argv[offset + 3] );
-        arguments[argname] = frange<double>{ start, end, step };
+        arguments[arg_name] = frange<double>{ start, end, step };
     }
     std::unordered_map<std::string, arguments_type > variations{ { filename, arguments } };
     
     for( auto const & task : variations )
     {
-        std::cout << "task:" << task.first << "\n";
         arguments_type default_arguments_copy{ task.second };
         default_arguments_copy.insert(default_arguments.begin(), default_arguments.end());
     
         std::ofstream outfile{ task.first };
-        run_ant_gp_wrapper(default_arguments_copy, outfile, avg_over_n, print_header);
+        ant_simulation_gp_stats_helper( default_arguments_copy, outfile, repeate_ntimes, print_header, print_generations );
     }
 }
