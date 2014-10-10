@@ -129,6 +129,21 @@ public:
     {
         return m_food_start_count - m_food_eaten;
     }
+
+    int steps_done() const
+    {
+        return m_ant.steps_done();
+    }
+
+    position_2d ant_position() const
+    {
+        return m_board.pos_1d_to_2d( m_ant.pos() );
+    }
+
+    direction ant_direction() const
+    {
+        return m_ant.dir();
+    }
     
 private:
     food_trail_type m_food_trail;

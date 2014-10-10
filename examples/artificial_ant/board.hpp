@@ -13,6 +13,7 @@
 #define GPCXX_EXAMPLES_ARTIFICIAL_ANT_BOARD_HPP_INCLUDED
 
 #include <cstddef>
+#include <iostream>
 
 namespace ant_example {
 
@@ -36,6 +37,15 @@ struct position_2d
     int y;
 };
 
+std::ostream & operator << ( std::ostream & os , position_2d const & pos)
+{
+    return os << "x" << pos.x << "y" << pos.y;
+}
+
+std::ostream & operator << ( std::ostream & os , direction const & dir)
+{
+    return os << direction_to_str(dir);
+}
 
 class board
 {

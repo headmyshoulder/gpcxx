@@ -15,6 +15,8 @@
 #include <gpcxx/io.hpp>
 #include <iostream>
 
+char const newl = '\n';
+
 //[ant_move_test
 bool ant_move_test()
 {
@@ -95,41 +97,57 @@ int main( int argc , char *argv[] )
 
         while (!ant_sim.is_finsh())
         {
+            std::cout << "NEW Run, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
             if(ant_sim.food_in_front())
             {
+                std::cout << "Food in front, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                 ant_sim.move();
+                std::cout << "Moved, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
             }
             else
             {//PROG3
+                std::cout << "NO Food in front, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                 ant_sim.turn_left();
+                std::cout << "Left, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                 {//PROG2
                     if(ant_sim.food_in_front())
                     {
+                        std::cout << "Food in front, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                         ant_sim.move();
+                        std::cout << "Moved, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                     }
                     else
                     {
+                        std::cout << "NO Food in front, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                         ant_sim.turn_right();
+                        std::cout << "Right, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                     }
                     {//PROG2
                         ant_sim.turn_right();
+                        std::cout << "Right, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                         {//PROG2
                             ant_sim.turn_left();
+                            std::cout << "Left, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                             ant_sim.turn_right();
+                            std::cout << "Right, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                         }
                     }
-
                 }
                 {//PROG2
                     if(ant_sim.food_in_front())
                     {
+                        std::cout << "Food in front, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                         ant_sim.move();
+                        std::cout << "Moved, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                     }
                     else
                     {
+                        std::cout << "NO Food in front, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                         ant_sim.turn_left();
+                        std::cout << "Left, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                     }
                     ant_sim.move();
+                    std::cout << "Moved, i have done " << ant_sim.steps_done() << "steps, score " << ant_sim.score() << ", my pos " << ant_sim.ant_position() << ":" << ant_sim.ant_direction() << newl;
                 }
             }
         }
