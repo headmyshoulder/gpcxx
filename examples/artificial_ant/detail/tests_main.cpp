@@ -12,6 +12,8 @@
 #include "simulation.hpp"
 #include "nodes.hpp"
 #include "santa_fe_trail.hpp"
+#include <gpcxx/io.hpp>
+#include <iostream>
 
 //[ant_move_test
 bool ant_move_test()
@@ -35,6 +37,119 @@ bool ant_move_test()
 
 int main( int argc , char *argv[] )
 {
-    ant_move_test();
+    using namespace ant_example;
+   // ant_move_test();
+
+
+
+    tree_type tree;
+    auto root = tree.root();
+    auto a01 = tree.insert_below( root, node_type { if_food_ahead{} , "IF-FOOD-AHEAD" } );
+
+    tree.insert_below( a01,  node_type { ant_move_task_terminal{} , "MOVE" } );
+    auto b02 = tree.insert_below( a01,  node_type { prog3{} , "PROG3" } );
+
+    tree.insert_below( b02,  node_type { ant_turn_left_task_terminal{} , "LEFT" } );
+    auto c02 = tree.insert_below( b02,  node_type { prog2{} , "PROG2" } );
+    auto c03 = tree.insert_below( b02,  node_type { prog2{} , "PROG2" } );
+
+
+    auto d01 = tree.insert_below( c02,  node_type { if_food_ahead{} , "IF-FOOD-AHEAD" } );
+    auto d02 = tree.insert_below( c02,  node_type { prog2{} , "PROG2" } );
+
+
+    tree.insert_below( d01,  node_type { ant_move_task_terminal{} , "MOVE" } );
+    tree.insert_below( d01,  node_type { ant_turn_right_task_terminal{} , "RIGHT" } );
+
+    tree.insert_below( d02,  node_type { ant_turn_right_task_terminal{} , "RIGHT" } );
+    auto e01 = tree.insert_below( d02,  node_type { prog2{} , "PROG2" } );
+
+
+    tree.insert_below( e01,  node_type { ant_turn_left_task_terminal{} , "LEFT" } );
+    tree.insert_below( e01,  node_type { ant_turn_right_task_terminal{} , "RIGHT" } );
+
+    auto d03 = tree.insert_below( c03, node_type { if_food_ahead{} , "IF-FOOD-AHEAD" } );
+
+    tree.insert_below( d03,  node_type { ant_move_task_terminal{} , "MOVE" } );
+    tree.insert_below( d03,  node_type { ant_turn_left_task_terminal{} , "LEFT" } );
+
+    tree.insert_below( c03,  node_type { ant_move_task_terminal{} , "MOVE" } );
+
+    std::ofstream("artificial_ant_fittest_individual.dot") << gpcxx::graphviz( tree , false );
+
+
+    board const b{ santa_fe::x_size, santa_fe::y_size };
+    int const max_steps { 400 };
+
+    {
+        ant_simulation ant_sim{santa_fe::make_santa_fe_trail(b), santa_fe::x_size, santa_fe::y_size, {0, 0}, east, max_steps};
+        while (!ant_sim.is_finsh())
+        {
+            tree.root()->eval(ant_sim);
+        }
+        std::cout << "Tree:" <<  ant_sim.score() << "\n";
+    }
+
+    {
+        ant_simulation ant_sim{santa_fe::make_santa_fe_trail(b), santa_fe::x_size, santa_fe::y_size, {0, 0}, east, max_steps};
+
+        while (!ant_sim.is_finsh())
+        {
+            if(ant_sim.food_in_front())
+            {
+                ant_sim.move();
+            }
+            else
+            {//PROG3
+                ant_sim.turn_left();
+                {//PROG2
+                    if(ant_sim.food_in_front())
+                    {
+                        ant_sim.move();
+                    }
+                    else
+                    {
+                        ant_sim.turn_right();
+                    }
+                    {//PROG2
+                        ant_sim.turn_right();
+                        {//PROG2
+                            ant_sim.turn_left();
+                            ant_sim.turn_right();
+                        }
+                    }
+
+                }
+                {//PROG2
+                    if(ant_sim.food_in_front())
+                    {
+                        ant_sim.move();
+                    }
+                    else
+                    {
+                        ant_sim.turn_left();
+                    }
+                    ant_sim.move();
+                }
+            }
+        }
+
+        std::cout << "Manual:" << ant_sim.score() << "\n";
+    }
+
+
+
+    int count = 0;
+    auto santa_fe_trail = santa_fe::make_santa_fe_trail(b);
+    for(int y = 0; y < santa_fe::y_size; ++y){
+        for(int x = 0; x < santa_fe::x_size; ++x){
+            count += santa_fe_trail[ b.pos_2d_to_1d( { x, y} ) ];
+            std::cout << (santa_fe_trail[ b.pos_2d_to_1d( { x, y} ) ] ? 'X' : ' ');
+        }
+        std::cout << std::endl;
+    }
+    std::cout << count;
+
+
 }
 

@@ -33,7 +33,7 @@ template<typename T>
 std::string tree_to_string(T const & t)
 {
     std::ostringstream  oss;
-    oss <<  gpcxx::simple(t) ;
+    oss << gpcxx::simple(t) ;
     return oss.str();
 }
 
