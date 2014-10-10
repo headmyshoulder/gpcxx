@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include "ant_simulation.hpp"
-#include "ant_simulation_nodes.hpp"
+#include "simulation.hpp"
+#include "nodes.hpp"
 #include "santa_fe_trail.hpp"
 
 #include <gpcxx/app.hpp>

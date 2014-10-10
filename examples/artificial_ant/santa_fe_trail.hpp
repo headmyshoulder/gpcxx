@@ -13,7 +13,7 @@
 #define GPCXX_EXAMPLES_ARTIFICIAL_ANT_SANTA_FE_TRAIL_HPP_INCLUDED
 
 #include "board.hpp"
-#include "ant_simulation.hpp"
+#include "simulation.hpp"
 
 #include <cstddef>
 
