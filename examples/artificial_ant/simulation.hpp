@@ -87,7 +87,8 @@ public:
       m_board{ x_size, y_size }, 
       m_ant{ m_board.pos_2d_to_1d( start_pos ), start_direction }, 
       m_food_start_count( food_trail.size() ), 
-      m_max_steps( max_steps )
+      m_max_steps( max_steps ),
+      m_food_eaten( 0 )
     {
     }
     
