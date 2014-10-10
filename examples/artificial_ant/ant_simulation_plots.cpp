@@ -123,37 +123,37 @@ struct ant_result_stats
 
 ant_result_stats make_stat(std::vector<ant_result> runs)
 {
-    ant_result_stats avg_result;
+    ant_result_stats avg_runs;
     if( runs.empty() )
-        return avg_result;
+        return avg_runs;
     
-    avg_result.min_generations = runs.front().generation;
-    avg_result.max_generations = runs.front().generation;
-    avg_result.min_fitness = runs.front().fitness;
-    avg_result.max_fitness = runs.front().fitness;
-    for(ant_result onerun : runs)
+    avg_runs.min_generations = runs.front().generation;
+    avg_runs.max_generations = runs.front().generation;
+    avg_runs.min_fitness = runs.front().fitness;
+    avg_runs.max_fitness = runs.front().fitness;
+    for(ant_result r : runs)
     {
-        avg_result.time += onerun.time / runs.size();
-        avg_result.avg_generations += double( onerun.generation ) / runs.size();
-        avg_result.avg_fitness     += double( onerun.fitness) / runs.size();
-        avg_result.optimal_fitness_count += onerun.has_optimal_fitness ? 1 : 0;
-        avg_result.min_generations = std::min( avg_result.min_generations, onerun.generation );
-        avg_result.max_generations = std::max( avg_result.max_generations, onerun.generation );
-        avg_result.min_fitness = std::min( avg_result.min_fitness, double( onerun.fitness) );
-        avg_result.max_fitness = std::max( avg_result.max_fitness, double( onerun.fitness) );
+        avg_runs.time += r.time / runs.size();
+        avg_runs.avg_generations += double( r.generation ) / runs.size();
+        avg_runs.avg_fitness     += double( r.fitness) / runs.size();
+        avg_runs.optimal_fitness_count += r.has_optimal_fitness ? 1 : 0;
+        avg_runs.min_generations = std::min( avg_runs.min_generations, r.generation );
+        avg_runs.max_generations = std::max( avg_runs.max_generations, r.generation );
+        avg_runs.min_fitness = std::min( avg_runs.min_fitness, double( r.fitness) );
+        avg_runs.max_fitness = std::max( avg_runs.max_fitness, double( r.fitness) );
     }
     
     double var_generations = 0;
     double var_fitness = 0;
-    for(ant_result onerun : runs)
+    for(ant_result r : runs)
     {
-        var_generations += ( onerun.generation  - avg_result.avg_generations ) * ( onerun.generation  - avg_result.avg_generations );
-        var_fitness     += ( onerun.fitness - avg_result.avg_fitness )     * ( onerun.fitness - avg_result.avg_fitness );
+        var_generations += ( r.generation  - avg_runs.avg_generations ) * ( r.generation  - avg_runs.avg_generations );
+        var_fitness     += ( r.fitness - avg_runs.avg_fitness )     * ( r.fitness - avg_runs.avg_fitness );
     }
-    avg_result.std_generations = std::sqrt(var_generations);
-    avg_result.std_fitness = std::sqrt(var_fitness);
+    avg_runs.std_generations = std::sqrt(var_generations);
+    avg_runs.std_fitness = std::sqrt(var_fitness);
     
-    return avg_result;
+    return avg_runs;
 }
 
 
