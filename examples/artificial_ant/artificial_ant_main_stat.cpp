@@ -78,7 +78,7 @@ int main( int argc , char *argv[] )
     size_t const min_tree_height_gen = 1; 
     size_t const max_tree_height_gen = 6;
     size_t const max_tree_height = 17;
-    size_t const tournament_size = 9;
+    size_t const tournament_size = 5;
     //]
         
     
