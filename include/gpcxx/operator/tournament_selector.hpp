@@ -50,9 +50,8 @@ public:
                 best = &( pop[index] );
                 best_value = fitness[index];
             }
-            return *best;
         }
-        
+        return *best;
     }
     
 private:
