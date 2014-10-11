@@ -44,51 +44,55 @@ template<typename T>
 class frange
 {
 public:
-    frange() = default;
-    frange(frange const &) = default;
-
-    frange(T start, T end, T step)
-            :m_start(start), m_end(end), m_step(step)
+    frange()
+        :frange( 0 , 0 , 1 )
     {
     }
 
-    frange(T start, T end)
-            :m_start(start), m_end(end), m_step(1)
+    frange( frange const & ) = default;
+
+    frange( T start , T end , T step )
+        :m_start( start ) , m_end( end ) , m_step( step ) , m_iteration( 0 )
     {
     }
 
-    frange(T start)
-            :m_start(start), m_end(start), m_step(1)
+    frange( T start , T end )
+        :frange( start , end , 1 )
+    {
+    }
+
+    frange( T start )
+        :frange( start, start, 1 )
     {
     }
 
     T value() const
     {
-        return m_start + (m_step * iteration);
+        return m_start + ( m_step * m_iteration );
     }
 
     bool has_next() const
     {
-        return iteration < iteration_max();
+        return m_iteration < iteration_max();
     }
 
     void make_step()
     {
-        if(iteration < iteration_max())
-            ++iteration;
+        if(m_iteration < iteration_max())
+            ++m_iteration;
     }
 
 private:
     int iteration_max() const
     {
-        return static_cast<int>((m_end-m_start)/m_step);
+        return static_cast< int >( ( m_end - m_start ) / m_step );
     }
 
 private:
     T m_start;
     T m_end;
     T m_step;
-    int iteration;
+    int m_iteration;
 };
 
 using arguments_type = std::unordered_map< std::string, frange< double > >;
@@ -405,18 +409,18 @@ int main( int argc , char *argv[] )
 
     arguments_type  const default_arguments
     {
-        { "population_size" ,   frange< double >( 5000 ) },
+        { "population_size" ,   frange< double >( 500 ) },
         { "generation_max" ,    frange< double >( 500 ) },
-        { "number_elite" ,      frange< double >( 4 ) },
-        { "mutation_rate" ,     frange< double >( 0.3 ) },
-        { "crossover_rate" ,    frange< double >( 0.8 ) },
+        { "number_elite" ,      frange< double >( 0 ) },
+        { "mutation_rate" ,     frange< double >( 0.0 ) },
+        { "crossover_rate" ,    frange< double >( 0.9 ) },
         { "crossover_pip_rate" ,frange< double >( 0.9 ) },
         { "crossover_use_pip" , frange< double >( 1 ) }   ,
-        { "reproduction_rate" , frange< double >( 0.05 ) },
+        { "reproduction_rate" , frange< double >( 0.0 ) },
         { "min_tree_height" ,   frange< double >( 1 ) },
         { "init_max_tree_height" , frange< double >( 6 ) },
         { "max_tree_height" ,   frange< double >( 17 ) },
-        { "tournament_size" ,   frange< double >( 4 ) }
+        { "tournament_size" ,   frange< double >( 7 ) }
     };
 
 
