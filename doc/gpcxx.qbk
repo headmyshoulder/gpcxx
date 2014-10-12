@@ -77,6 +77,10 @@
 
 [endsect]
 
+[section Performance results]
+
+[endsect]
+
 [include concepts.qbk]
 
 [include literature.qbk]
