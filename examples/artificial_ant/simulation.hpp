@@ -15,7 +15,6 @@
 #include "board.hpp"
 
 #include <unordered_map>
-#include <ostream>
 
 
 namespace ant_example {
@@ -88,7 +87,8 @@ public:
       m_board{ x_size, y_size }, 
       m_ant{ m_board.pos_2d_to_1d( start_pos ), start_direction }, 
       m_food_start_count( food_trail.size() ), 
-      m_max_steps( max_steps )
+      m_max_steps( max_steps ),
+      m_food_eaten( 0 )
     {
     }
     
@@ -128,6 +128,21 @@ public:
     int score() const
     {
         return m_food_start_count - m_food_eaten;
+    }
+
+    int steps_done() const
+    {
+        return m_ant.steps_done();
+    }
+
+    position_2d ant_position() const
+    {
+        return m_board.pos_1d_to_2d( m_ant.pos() );
+    }
+
+    direction ant_direction() const
+    {
+        return m_ant.dir();
     }
     
 private:
