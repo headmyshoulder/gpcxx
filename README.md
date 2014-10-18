@@ -16,6 +16,7 @@ Getting gpcxx
 Download gpcxx:
 
 * Latest version - [tar.gz](https://github.com/Ambrosys/gpcxx/tarball/master), [zip](https://github.com/Ambrosys/gpcxx/zipball/master) - unstable
+* v0.2 - [tar.gz](https://github.com/Ambrosys/gpcxx/archive/v0.1.tar.gz), [zip](https://github.com/Ambrosys/gpcxx/archive/v0.1.zip)
 
 Documentation
 =============
