@@ -1,8 +1,8 @@
 [section Artificial ant]
-[import ../examples/artificial_ant/ant_simulation_nodes.hpp]
-[import ../examples/artificial_ant/ant_simulation.hpp]
-[import ../examples/artificial_ant/artificial_ant_main.cpp]
-[import ../examples/artificial_ant/ant_simulation_tests_main.cpp]
+[import ../examples/artificial_ant/nodes.hpp]
+[import ../examples/artificial_ant/simulation.hpp]
+[import ../examples/artificial_ant/main.cpp]
+[import ../examples/artificial_ant/detail/artificial_ant_tests.cpp]
 [import ../examples/artificial_ant/board.hpp]
 [import ../examples/artificial_ant/santa_fe_trail.hpp]
 
@@ -147,14 +147,16 @@ In this part the node_generator is initialized, with a list of `gpcxx::node_gene
 
 [envolve_settings]
 
-* `population_size` how many individual, should be competing. Bigger population increases the resource's usage (run time and memory) but also decreases the time to find a solution.
-* `generation_max` at which generation should gpcxx stop if other break up condition are meet (e.g. an optimal solution was found). 
-* `number_elite` [/ TODO ]
-* `mutation_rate` how often a node should be changed randomly
-* `crossover_rate` [/ TODO ]
-* `reproduction_rate` [/ TODO ]
+* `population_size` how many individual should be competing. Bigger population increases the resource's usage (run time and memory) but also decreases the time to find a solution.
+* `generation_max` at which generation should gpcxx stop. If no other break up condition are meet (e.g. an optimal solution was found). 
+* `number_elite` how many of the top individual should directly cloned to the next generation, without changing.
+* `mutation_rate` how often a node should be changed randomly.
+* `crossover_rate` the rate at which crossover operation should happen
+* `crossover_internal_point_rate` while doing crossover operations, which kind of node should be favored. Internal nodes caring more genetic information, in comparison to terminals.
+* `reproduction_rate` the rate at which a direct clone of an individual should be made (not rank based in difference to number_elite)
 * `min_tree_height` and `max_tree_height` how deep can the tree be, max_tree_height limits the size of the individual. Big individuals are slower to evaluate, but can handle more complex problems. In comparison, `min_tree_height` can be set to 1 up to `max_tree_height`. An individual can stay as small it wants, as long it can compete against other/bigger individuals. 
-* `tournament_size` [/ TODO ]
+* `init_max_tree_height` how big should be the individual at the first generation.
+* `tournament_size` how many random individual should be chosen for the competing. The winner is chosen by rank of the fitness. Small values allows week individual also to reproduce. If the size gets bigger, the chance that a high performance individual is chosen gets higher, this leads in a dominating situation.
 
 These settings have direct influence on how fast a solution is found. In some cases it makes sens to adjust these settings, but mostly it will just cut the run time. While optimizing these setting, the program could find a solution by its self, just with a longer run time.
 The critical settings for memory usage are `population_size` and `max_tree_height`, if these values are to big for the host PC, the operating system will start to move memory to the swapping area and this will dramatic increase the run time of the application.

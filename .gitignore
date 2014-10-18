@@ -6,3 +6,4 @@ build*
 third_party/gmock
 third_party/gtest
 third_party/docbook
+.idea

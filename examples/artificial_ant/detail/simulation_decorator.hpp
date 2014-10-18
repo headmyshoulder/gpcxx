@@ -12,7 +12,7 @@
 #ifndef GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_DECORATOR_HPP_INCLUDED
 #define GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_DECORATOR_HPP_INCLUDED
 
-#include "ant_simulation.hpp"
+#include "../simulation.hpp"
 
 #include <functional>
 #include <sstream>
