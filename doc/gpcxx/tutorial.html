@@ -86,6 +86,7 @@
 </p>
         <pre class="programlisting"><span class="keyword">using</span> <span class="identifier">rng_type</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">mt19937</span><span class="special">;</span>
 <span class="identifier">rng_type</span> <span class="identifier">rng</span><span class="special">;</span>
+
 <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">regression_training_data</span><span class="special">&lt;</span> <span class="keyword">double</span> <span class="special">,</span> <span class="number">3</span> <span class="special">&gt;</span> <span class="identifier">c</span><span class="special">;</span>
 <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">generate_regression_test_data</span><span class="special">(</span> <span class="identifier">c</span> <span class="special">,</span> <span class="number">1024</span> <span class="special">,</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="special">[](</span> <span class="keyword">double</span> <span class="identifier">x1</span> <span class="special">,</span> <span class="keyword">double</span> <span class="identifier">x2</span> <span class="special">,</span> <span class="keyword">double</span> <span class="identifier">x3</span> <span class="special">)</span>
         <span class="special">{</span> <span class="keyword">return</span>  <span class="identifier">x1</span> <span class="special">*</span> <span class="identifier">x1</span> <span class="special">*</span> <span class="identifier">x1</span> <span class="special">+</span> <span class="number">1.0</span> <span class="special">/</span> <span class="number">10.0</span> <span class="special">*</span> <span class="identifier">x2</span> <span class="special">*</span> <span class="identifier">x2</span> <span class="special">-</span> <span class="number">3.0</span> <span class="special">/</span> <span class="number">4.0</span> <span class="special">*</span> <span class="identifier">x3</span> <span class="special">+</span> <span class="number">1.0</span> <span class="special">;</span> <span class="special">}</span> <span class="special">);</span>
@@ -276,7 +277,6 @@
 
 <span class="identifier">fitness_type</span> <span class="identifier">fitness</span><span class="special">(</span> <span class="identifier">population_size</span> <span class="special">,</span> <span class="number">0.0</span> <span class="special">);</span>
 <span class="identifier">population_type</span> <span class="identifier">population</span><span class="special">(</span> <span class="identifier">population_size</span> <span class="special">);</span>
-<span class="identifier">rng_type</span> <span class="identifier">rng</span><span class="special">;</span>
 </pre>
         <p>
       </p>
@@ -482,7 +482,7 @@
         </p>
           <p>
 </p>
-          <pre class="programlisting"><span class="keyword">char</span> <span class="keyword">const</span> <span class="special">*</span> <span class="keyword">const</span> <span class="identifier">board</span><span class="special">[</span><span class="identifier">y_size</span><span class="special">]</span> <span class="special">=</span> <span class="special">{</span>
+          <pre class="programlisting"><span class="keyword">char</span> <span class="keyword">const</span> <span class="special">*</span> <span class="keyword">const</span> <span class="identifier">board1</span><span class="special">[</span><span class="identifier">y_size</span><span class="special">]</span> <span class="special">=</span> <span class="special">{</span>
 <span class="string">" XXX                            "</span><span class="special">,</span>
 <span class="string">"   X                            "</span><span class="special">,</span>
 <span class="string">"   X                    .XXX..  "</span><span class="special">,</span>
@@ -491,22 +491,22 @@
 <span class="string">"   XXXX.XXXXX       .XX..    .  "</span><span class="special">,</span>
 <span class="string">"            X       .        X  "</span><span class="special">,</span>
 <span class="string">"            X       X        .  "</span><span class="special">,</span>
-<span class="string">"            X       X        X  "</span><span class="special">,</span>
 <span class="string">"            X       X        .  "</span><span class="special">,</span>
+<span class="string">"            X       X        X  "</span><span class="special">,</span>
 <span class="string">"            .       X        .  "</span><span class="special">,</span>
-<span class="string">"            X       .        X  "</span><span class="special">,</span>
 <span class="string">"            X       .        .  "</span><span class="special">,</span>
+<span class="string">"            X       .        X  "</span><span class="special">,</span>
+<span class="string">"            X       X        .  "</span><span class="special">,</span>
 <span class="string">"            X       X  ...XXX.  "</span><span class="special">,</span>
-<span class="string">"            X       X  X        "</span><span class="special">,</span>
-<span class="string">"            .   .X...  .        "</span><span class="special">,</span>
+<span class="string">"            .   .X...  X        "</span><span class="special">,</span>
 <span class="string">"            .   .      .        "</span><span class="special">,</span>
-<span class="string">"            X   .      .X...    "</span><span class="special">,</span>
+<span class="string">"            X   .      .        "</span><span class="special">,</span>
+<span class="string">"            X   X      .X...    "</span><span class="special">,</span>
 <span class="string">"            X   X          X    "</span><span class="special">,</span>
 <span class="string">"            X   X          .    "</span><span class="special">,</span>
 <span class="string">"            X   X          .    "</span><span class="special">,</span>
-<span class="string">"            X   X      ...X.    "</span><span class="special">,</span>
+<span class="string">"            X   .      ...X.    "</span><span class="special">,</span>
 <span class="string">"            X   .      X        "</span><span class="special">,</span>
-<span class="string">"            X   .               "</span><span class="special">,</span>
 <span class="string">" ..XX..XXXXX.   X               "</span><span class="special">,</span>
 <span class="string">" X              X               "</span><span class="special">,</span>
 <span class="string">" X              X               "</span><span class="special">,</span>
@@ -742,7 +742,8 @@
       <span class="identifier">m_board</span><span class="special">{</span> <span class="identifier">x_size</span><span class="special">,</span> <span class="identifier">y_size</span> <span class="special">},</span>
       <span class="identifier">m_ant</span><span class="special">{</span> <span class="identifier">m_board</span><span class="special">.</span><span class="identifier">pos_2d_to_1d</span><span class="special">(</span> <span class="identifier">start_pos</span> <span class="special">),</span> <span class="identifier">start_direction</span> <span class="special">},</span>
       <span class="identifier">m_food_start_count</span><span class="special">(</span> <span class="identifier">food_trail</span><span class="special">.</span><span class="identifier">size</span><span class="special">()</span> <span class="special">),</span>
-      <span class="identifier">m_max_steps</span><span class="special">(</span> <span class="identifier">max_steps</span> <span class="special">)</span>
+      <span class="identifier">m_max_steps</span><span class="special">(</span> <span class="identifier">max_steps</span> <span class="special">),</span>
+      <span class="identifier">m_food_eaten</span><span class="special">(</span> <span class="number">0</span> <span class="special">)</span>
     <span class="special">{</span>
     <span class="special">}</span>
 
@@ -782,6 +783,21 @@
     <span class="keyword">int</span> <span class="identifier">score</span><span class="special">()</span> <span class="keyword">const</span>
     <span class="special">{</span>
         <span class="keyword">return</span> <span class="identifier">m_food_start_count</span> <span class="special">-</span> <span class="identifier">m_food_eaten</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">int</span> <span class="identifier">steps_done</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">steps_done</span><span class="special">();</span>
+    <span class="special">}</span>
+
+    <span class="identifier">position_2d</span> <span class="identifier">ant_position</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_board</span><span class="special">.</span><span class="identifier">pos_1d_to_2d</span><span class="special">(</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">pos</span><span class="special">()</span> <span class="special">);</span>
+    <span class="special">}</span>
+
+    <span class="identifier">direction</span> <span class="identifier">ant_direction</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">dir</span><span class="special">();</span>
     <span class="special">}</span>
 
 <span class="keyword">private</span><span class="special">:</span>
@@ -1129,15 +1145,17 @@
               </div>
               <p>
 </p>
-              <pre class="programlisting"><span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">population_size</span> <span class="special">=</span> <span class="number">8192</span><span class="special">;</span>
-<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">generation_max</span> <span class="special">=</span> <span class="number">200</span><span class="special">;</span>
-<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">number_elite</span> <span class="special">=</span> <span class="number">2</span><span class="special">;</span>
-<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">mutation_rate</span> <span class="special">=</span> <span class="number">0.1</span><span class="special">;</span>
-<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">crossover_rate</span> <span class="special">=</span> <span class="number">0.6</span><span class="special">;</span>
-<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">reproduction_rate</span> <span class="special">=</span> <span class="number">0.3</span><span class="special">;</span>
-<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">min_tree_height</span> <span class="special">=</span> <span class="number">5</span><span class="special">;</span>
-<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">max_tree_height</span> <span class="special">=</span> <span class="number">5</span><span class="special">;</span>
-<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">tournament_size</span> <span class="special">=</span> <span class="number">15</span><span class="special">;</span>
+              <pre class="programlisting"><span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">population_size</span> <span class="special">=</span> <span class="number">5000</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">generation_max</span> <span class="special">=</span> <span class="number">5000</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">number_elite</span> <span class="special">=</span> <span class="number">4</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">mutation_rate</span> <span class="special">=</span> <span class="number">0.3</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">crossover_rate</span> <span class="special">=</span> <span class="number">0.8</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">crossover_internal_point_rate</span> <span class="special">=</span> <span class="number">0.9</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">reproduction_rate</span> <span class="special">=</span> <span class="number">0.1</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">min_tree_height</span> <span class="special">=</span> <span class="number">1</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">init_max_tree_height</span>  <span class="special">=</span> <span class="number">6</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">max_tree_height</span> <span class="special">=</span> <span class="number">17</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">tournament_size</span> <span class="special">=</span> <span class="number">4</span><span class="special">;</span>
 </pre>
               <p>
             </p>
@@ -1145,27 +1163,38 @@
                 <ul class="itemizedlist" style="list-style-type: disc; ">
                   <li class="listitem">
                   <code class="computeroutput"><span class="identifier">population_size</span></code>
-                  how many individual, should be competing. Bigger population increases
+                  how many individual should be competing. Bigger population increases
                   the resource's usage (run time and memory) but also decreases the
                   time to find a solution.
                 </li>
                   <li class="listitem">
                   <code class="computeroutput"><span class="identifier">generation_max</span></code>
-                  at which generation should gpcxx stop if other break up condition
+                  at which generation should gpcxx stop. If no other break up condition
                   are meet (e.g. an optimal solution was found).
                 </li>
                   <li class="listitem">
-                  <code class="computeroutput"><span class="identifier">number_elite</span></code>
+                  <code class="computeroutput"><span class="identifier">number_elite</span></code> how
+                  many of the top individual should directly cloned to the next generation,
+                  without changing.
                 </li>
                   <li class="listitem">
                   <code class="computeroutput"><span class="identifier">mutation_rate</span></code> how
-                  often a node should be changed randomly
+                  often a node should be changed randomly.
                 </li>
                   <li class="listitem">
                   <code class="computeroutput"><span class="identifier">crossover_rate</span></code>
+                  the rate at which crossover operation should happen
+                </li>
+                  <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">crossover_internal_point_rate</span></code>
+                  while doing crossover operations, which kind of node should be
+                  favored. Internal nodes caring more genetic information, in comparison
+                  to terminals.
                 </li>
                   <li class="listitem">
                   <code class="computeroutput"><span class="identifier">reproduction_rate</span></code>
+                  the rate at which a direct clone of an individual should be made
+                  (not rank based in difference to number_elite)
                 </li>
                   <li class="listitem">
                   <code class="computeroutput"><span class="identifier">min_tree_height</span></code>
@@ -1178,7 +1207,16 @@
                   against other/bigger individuals.
                 </li>
                   <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">init_max_tree_height</span></code>
+                  how big should be the individual at the first generation.
+                </li>
+                  <li class="listitem">
                   <code class="computeroutput"><span class="identifier">tournament_size</span></code>
+                  how many random individual should be chosen for the competing.
+                  The winner is chosen by rank of the fitness. Small values allows
+                  week individual also to reproduce. If the size gets bigger, the
+                  chance that a high performance individual is chosen gets higher,
+                  this leads in a dominating situation.
                 </li>
                 </ul>
               </div>
@@ -1207,7 +1245,7 @@
      <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_tournament_selector</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">tournament_size</span> <span class="special">)</span> <span class="special">);</span>
 
 <span class="identifier">evolver</span><span class="special">.</span><span class="identifier">crossover_function</span><span class="special">()</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_crossover</span><span class="special">(</span>
-    <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_one_point_crossover_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">max_tree_height</span> <span class="special">)</span> <span class="special">,</span>
+    <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_one_point_crossover_pip_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">max_tree_height</span><span class="special">,</span> <span class="identifier">crossover_internal_point_rate</span> <span class="special">)</span> <span class="special">,</span>
     <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_tournament_selector</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">tournament_size</span> <span class="special">)</span> <span class="special">);</span>
 
 <span class="identifier">evolver</span><span class="special">.</span><span class="identifier">reproduction_function</span><span class="special">()</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_reproduce</span><span class="special">(</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_tournament_selector</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">tournament_size</span> <span class="special">)</span> <span class="special">);</span>
@@ -1217,9 +1255,10 @@
             </div>
             <p>
 </p>
-            <pre class="programlisting"><span class="keyword">auto</span> <span class="identifier">tree_generator</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_basic_generate_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">node_generator</span> <span class="special">,</span> <span class="identifier">min_tree_height</span> <span class="special">,</span> <span class="identifier">max_tree_height</span> <span class="special">);</span>
+            <pre class="programlisting"><span class="keyword">auto</span> <span class="identifier">tree_generator</span>      <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_basic_generate_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">node_generator</span> <span class="special">,</span> <span class="identifier">min_tree_height</span> <span class="special">,</span> <span class="identifier">max_tree_height</span> <span class="special">);</span>
+<span class="keyword">auto</span> <span class="identifier">init_tree_generator</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_basic_generate_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">node_generator</span> <span class="special">,</span> <span class="identifier">min_tree_height</span> <span class="special">,</span> <span class="identifier">init_max_tree_height</span> <span class="special">);</span>
 <span class="keyword">for</span><span class="special">(</span> <span class="keyword">auto</span> <span class="special">&amp;</span> <span class="identifier">individum</span> <span class="special">:</span>  <span class="identifier">population</span> <span class="special">)</span>
-    <span class="identifier">tree_generator</span><span class="special">(</span> <span class="identifier">individum</span> <span class="special">);</span>
+    <span class="identifier">init_tree_generator</span><span class="special">(</span> <span class="identifier">individum</span> <span class="special">);</span>
 </pre>
             <p>
           </p>
@@ -1243,43 +1282,31 @@
               </div>
               <p>
 </p>
-              <pre class="programlisting">    <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">timer</span> <span class="identifier">overall_timer</span><span class="special">;</span>
-    <span class="keyword">bool</span>    <span class="identifier">has_optimal_fitness</span> <span class="special">{</span> <span class="keyword">false</span> <span class="special">};</span>
-    <span class="identifier">size_t</span>  <span class="identifier">generation</span> <span class="special">{</span> <span class="number">0</span> <span class="special">};</span>
-    <span class="keyword">do</span>
-    <span class="special">{</span>
-        <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">timer</span> <span class="identifier">iteration_timer</span><span class="special">;</span>
-        <span class="keyword">if</span><span class="special">(</span> <span class="identifier">generation</span> <span class="special">!=</span> <span class="number">0</span> <span class="special">)</span>
-            <span class="identifier">evolver</span><span class="special">.</span><span class="identifier">next_generation</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">,</span> <span class="identifier">fitness</span> <span class="special">);</span>
-        <span class="keyword">double</span> <span class="identifier">evolve_time</span> <span class="special">{</span> <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">seconds</span><span class="special">()</span> <span class="special">};</span>
+              <pre class="programlisting"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">timer</span> <span class="identifier">overall_timer</span><span class="special">;</span>
+<span class="keyword">bool</span>    <span class="identifier">has_optimal_fitness</span> <span class="special">{</span> <span class="keyword">false</span> <span class="special">};</span>
+<span class="identifier">size_t</span>  <span class="identifier">generation</span> <span class="special">{</span> <span class="number">0</span> <span class="special">};</span>
+<span class="keyword">do</span>
+<span class="special">{</span>
+    <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">timer</span> <span class="identifier">iteration_timer</span><span class="special">;</span>
+    <span class="keyword">if</span><span class="special">(</span> <span class="identifier">generation</span> <span class="special">!=</span> <span class="number">0</span> <span class="special">)</span>
+        <span class="identifier">evolver</span><span class="special">.</span><span class="identifier">next_generation</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">,</span> <span class="identifier">fitness</span> <span class="special">);</span>
+    <span class="keyword">double</span> <span class="identifier">evolve_time</span> <span class="special">{</span> <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">seconds</span><span class="special">()</span> <span class="special">};</span>
 
-        <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">restart</span><span class="special">();</span>
-        <span class="identifier">std</span><span class="special">::</span><span class="identifier">transform</span><span class="special">(</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="special">[&amp;](</span> <span class="identifier">tree_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">t</span> <span class="special">)</span> <span class="special">{</span>
-            <span class="keyword">return</span> <span class="identifier">fitness_f</span><span class="special">(</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">ant_sim_santa_fe</span> <span class="special">);</span>
-        <span class="special">}</span> <span class="special">);</span>
-        <span class="keyword">double</span> <span class="identifier">eval_time</span> <span class="special">=</span> <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">seconds</span><span class="special">();</span>
+    <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">restart</span><span class="special">();</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">transform</span><span class="special">(</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="special">[&amp;](</span> <span class="identifier">tree_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">t</span> <span class="special">)</span> <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">fitness_f</span><span class="special">(</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">ant_sim_santa_fe</span> <span class="special">);</span>
+    <span class="special">}</span> <span class="special">);</span>
+    <span class="keyword">double</span> <span class="identifier">eval_time</span> <span class="special">=</span> <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">seconds</span><span class="special">();</span>
 
-        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">0</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Generation "</span>    <span class="special">&lt;&lt;</span> <span class="identifier">generation</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
-        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Evolve time "</span>   <span class="special">&lt;&lt;</span> <span class="identifier">evolve_time</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
-        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Eval time "</span>     <span class="special">&lt;&lt;</span> <span class="identifier">eval_time</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
-        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Best individuals\n"</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">best_individuals</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">,</span> <span class="identifier">fitness</span> <span class="special">,</span> <span class="number">2</span> <span class="special">,</span> <span class="number">3</span> <span class="special">,</span> <span class="keyword">false</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
-        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Statistics : "</span>      <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">calc_population_statistics</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">0</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Generation "</span>    <span class="special">&lt;&lt;</span> <span class="identifier">generation</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Evolve time "</span>   <span class="special">&lt;&lt;</span> <span class="identifier">evolve_time</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Eval time "</span>     <span class="special">&lt;&lt;</span> <span class="identifier">eval_time</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Best individuals\n"</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">best_individuals</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">,</span> <span class="identifier">fitness</span> <span class="special">,</span> <span class="number">2</span> <span class="special">,</span> <span class="number">3</span> <span class="special">,</span> <span class="keyword">false</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Statistics : "</span>      <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">calc_population_statistics</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
 
-        <span class="identifier">generation</span><span class="special">++;</span>
-        <span class="identifier">has_optimal_fitness</span> <span class="special">=</span> <span class="special">(</span> <span class="number">0</span> <span class="special">==</span> <span class="special">*</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">min_element</span><span class="special">(</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">)</span> <span class="special">);</span>
-    <span class="special">}</span> <span class="keyword">while</span><span class="special">(</span> <span class="special">!</span><span class="identifier">has_optimal_fitness</span> <span class="special">&amp;&amp;</span> <span class="identifier">generation</span> <span class="special">&lt;</span> <span class="identifier">generation_max</span> <span class="special">);</span>
-
-
-    <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Overall time : "</span> <span class="special">&lt;&lt;</span> <span class="identifier">overall_timer</span><span class="special">.</span><span class="identifier">seconds</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
-
-    <span class="keyword">auto</span> <span class="identifier">fittest_individual_position</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">distance</span><span class="special">(</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">min_element</span><span class="special">(</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">)</span> <span class="special">);</span>
-    <span class="identifier">tree_type</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">fittest_individual</span> <span class="special">{</span> <span class="identifier">population</span><span class="special">[</span><span class="identifier">fittest_individual_position</span><span class="special">]</span> <span class="special">};</span>
-
-    <span class="comment">// cat artificial_ant_fittest_individual.dot | dot -Tsvg | display -</span>
-    <span class="identifier">std</span><span class="special">::</span><span class="identifier">ofstream</span><span class="special">(</span><span class="string">"artificial_ant_fittest_individual.dot"</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">graphviz</span><span class="special">(</span> <span class="identifier">fittest_individual</span> <span class="special">,</span> <span class="keyword">false</span> <span class="special">);</span>
-
-    <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span>
-<span class="special">}</span>
+    <span class="identifier">generation</span><span class="special">++;</span>
+    <span class="identifier">has_optimal_fitness</span> <span class="special">=</span> <span class="special">(</span> <span class="number">0</span> <span class="special">==</span> <span class="special">*</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">min_element</span><span class="special">(</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">)</span> <span class="special">);</span>
+<span class="special">}</span> <span class="keyword">while</span><span class="special">(</span> <span class="special">!</span><span class="identifier">has_optimal_fitness</span> <span class="special">&amp;&amp;</span> <span class="identifier">generation</span> <span class="special">&lt;</span> <span class="identifier">generation_max</span> <span class="special">);</span>
 </pre>
               <p>
             </p>
