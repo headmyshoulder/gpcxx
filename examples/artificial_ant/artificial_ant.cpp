@@ -29,13 +29,26 @@
 #include <chrono>
 
 
-template<typename T>
-std::string tree_to_string(T const & t)
+
+
+//[ant_move_test
+bool ant_move_test()
 {
-    std::ostringstream  oss;
-    oss << gpcxx::simple(t) ;
-    return oss.str();
-}
+    size_t const board_size_x { 32 };
+    size_t const board_size_y { 32 };
+    ant_example::board  const the_board { board_size_x , board_size_y };
+    ant_example::ant an_ant { the_board.pos_2d_to_1d( { 0, 0 } ), ant_example::east };
+    
+    
+    an_ant.move(the_board);
+    
+    bool position_is_valid      = an_ant.pos() == the_board.pos_2d_to_1d( { 1, 0 } );
+    bool step_count_is_valid    = an_ant.steps_done() == 1;
+    
+    
+    return position_is_valid && step_count_is_valid ;
+} 
+//]
 
 
 int main( int argc , char *argv[] )
@@ -100,20 +113,6 @@ int main( int argc , char *argv[] )
         init_tree_generator( individum );
     //]
     
-   /*
-    auto tree_hasher = [](tree_type const & t){ return std::hash<std::string>{}(tree_to_string(t));};
-
-    
-    std::unordered_set<std::size_t> test ;
-    
-    for(tree_type const t : population)
-    {
-        test.insert(tree_hasher(t));
-        std::cout << tree_hasher(t) << "\t" << tree_to_string(t) << std::endl;
-    }
-    std::cout << test.size() << std::endl;
-    if(true) return 1;
-    */
      //[evolver_definition
     using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type > ;
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
@@ -171,7 +170,6 @@ int main( int argc , char *argv[] )
     auto fittest_individual_position = std::distance( fitness.begin(), std::min_element( fitness.begin(), fitness.end() ) ); 
     tree_type const & fittest_individual = population[fittest_individual_position];
     
-//     std::cout << std::hash<std::string>{}(tree_to_string(fittest_individual)) << std::endl;
     // cat artificial_ant_fittest_individual.dot | dot -Tsvg | display -
     std::ofstream("artificial_ant_fittest_individual.dot") << gpcxx::graphviz( fittest_individual , false );
     

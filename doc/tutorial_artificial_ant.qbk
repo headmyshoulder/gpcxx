@@ -1,8 +1,7 @@
 [section Artificial ant]
 [import ../examples/artificial_ant/nodes.hpp]
 [import ../examples/artificial_ant/simulation.hpp]
-[import ../examples/artificial_ant/main.cpp]
-[import ../examples/artificial_ant/detail/artificial_ant_tests.cpp]
+[import ../examples/artificial_ant/artificial_ant.cpp]
 [import ../examples/artificial_ant/board.hpp]
 [import ../examples/artificial_ant/santa_fe_trail.hpp]
 
