@@ -3,7 +3,12 @@ Introduction
 
 gpcxx is a modern C++ framework for genetic programming. It is designed for high performance and high flexibility and uses C++11.
 
-gpcxx is in state of heavy development and many features are not yet implemented.
+At the momennt gpcxx is in state of heavy development and many features are not yet implemented.
+
+License
+=======
+
+gpcxx is release under the Boost license.
 
 Getting gpcxx
 =============
