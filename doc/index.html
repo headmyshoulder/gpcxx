@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+    <title>Chapter&#160;1.&#160;gpcxx</title>
+    <link xmlns="" rel="stylesheet" href="boostbook.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.77.1" />
+    <link rel="home" href="index.html" title="Chapter&#160;1.&#160;gpcxx" />
+    <link rel="next" href="gpcxx/tutorial.html" title="Tutorial" />
+  </head>
+  <body>
+    <div xmlns="" class="spirit-nav">
+      <a accesskey="n" href="gpcxx/tutorial.html">
+        <img src="images/next.png" alt="Next" />
+      </a>
+    </div>
+    <div class="chapter">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title"><a id="gpcxx"></a>Chapter&#160;1.&#160;gpcxx</h2>
+          </div>
+          <div>
+            <div class="author">
+              <h3 class="author"><span class="firstname">Karsten</span> <span class="surname">Ahnert</span></h3>
+            </div>
+          </div>
+          <div>
+            <p class="copyright">Copyright &#169; 2013, 2014 Karsten Ahnert</p>
+          </div>
+          <div>
+            <div class="legalnotice">
+              <a id="gpcxx.legal"></a>
+              <p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a xmlns="" href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="toc">
+        <p>
+          <strong>Table of Contents</strong>
+        </p>
+        <dl>
+          <dt>
+            <span class="section">
+              <a href="index.html#gpcxx.getting_started">Getting started</a>
+            </span>
+          </dt>
+          <dd>
+            <dl>
+              <dt>
+                <span class="section">
+                  <a href="index.html#gpcxx.getting_started.overview">Overview</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="index.html#gpcxx.getting_started.installation">Installation</a>
+                </span>
+              </dt>
+            </dl>
+          </dd>
+          <dt>
+            <span class="section">
+              <a href="gpcxx/tutorial.html">Tutorial</a>
+            </span>
+          </dt>
+          <dd>
+            <dl>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/tutorial.html#gpcxx.tutorial.symbolic_regression">Symbolic regression</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/tutorial.html#gpcxx.tutorial.artificial_ant">Artificial ant</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/tutorial.html#gpcxx.tutorial.__gpcxx_in_detail">gpcxx in detail</a>
+                </span>
+              </dt>
+            </dl>
+          </dd>
+          <dt>
+            <span class="section">
+              <a href="gpcxx/genetic_programming_basics.html">Genetic programming basics</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx/gpcxx_in_detail.html">gpcxx in detail</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx/performance_results.html">Performance results</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx/concepts.html">Concepts</a>
+            </span>
+          </dt>
+          <dd>
+            <dl>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/concepts.html#gpcxx.concepts.tree">Tree</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/concepts.html#gpcxx.concepts.cursor">Cursor</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/concepts.html#gpcxx.concepts.treenode">TreeNode</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/concepts.html#gpcxx.concepts.unarytreeoperator">UnaryTreeOperator</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/concepts.html#gpcxx.concepts.binarytreeoperator">BinaryTreeOperator</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/concepts.html#gpcxx.concepts.selector">Selector</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="section">
+                  <a href="gpcxx/concepts.html#gpcxx.concepts.populationoperator">PopulationOperator</a>
+                </span>
+              </dt>
+            </dl>
+          </dd>
+          <dt>
+            <span class="section">
+              <a href="gpcxx/literature.html">Literature</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx/index.html">Index</a>
+            </span>
+          </dt>
+        </dl>
+      </div>
+      <div class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both">
+                <a id="gpcxx.getting_started"></a>
+                <a class="link" href="index.html#gpcxx.getting_started" title="Getting started">Getting started</a>
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="toc">
+          <dl>
+            <dt>
+              <span class="section">
+                <a href="index.html#gpcxx.getting_started.overview">Overview</a>
+              </span>
+            </dt>
+            <dt>
+              <span class="section">
+                <a href="index.html#gpcxx.getting_started.installation">Installation</a>
+              </span>
+            </dt>
+          </dl>
+        </div>
+        <div class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title">
+                  <a id="gpcxx.getting_started.overview"></a>
+                  <a class="link" href="index.html#gpcxx.getting_started.overview" title="Overview">Overview</a>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <p>
+        gpcxx is a library for genetic programming in C++. It is written in modern
+        C++ style using features C++11.
+      </p>
+          <p>
+        gpcxx is distributed under the Boost license and can be obtained from <a xmlns="" href="https://github.com/Ambrosys/gpcxx" target="_top">github.com/Ambrosys/gpcxx</a>
+      </p>
+        </div>
+        <div class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title">
+                  <a id="gpcxx.getting_started.installation"></a>
+                  <a class="link" href="index.html#gpcxx.getting_started.installation" title="Installation">Installation</a>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <p>
+        gpcxx is a header only library. So there is no need to install the library.
+        Simply get the files from <a xmlns="" href="https://github.com/Ambrosys/gpcxx" target="_top">github.com/Ambrosys/gpcxx</a> and set your include path to the include directory
+        in the gpcxx folder. The repository also provides unit test, some performance
+        test and example programs. They can be build by cmake.
+      </p>
+        </div>
+      </div>
+    </div>
+    <table xmlns="" xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%">
+      <tr>
+        <td align="left">
+          <p>
+            <small>Last revised: October 18, 2014 at 20:18:16 GMT</small>
+          </p>
+        </td>
+        <td align="right">
+          <div class="copyright-footer"></div>
+        </td>
+      </tr>
+    </table>
+    <hr xmlns="" />
+    <div xmlns="" class="spirit-nav">
+      <a accesskey="n" href="gpcxx/tutorial.html">
+        <img src="images/next.png" alt="Next" />
+      </a>
+    </div>
+  </body>
+</html>
