@@ -8,7 +8,7 @@ At the momennt gpcxx is in state of heavy development and many features are not 
 License
 =======
 
-gpcxx is release under the Boost license.
+gpcxx is released under the [Boost Software license](http://www.boost.org/users/license.html).
 
 Getting gpcxx
 =============
