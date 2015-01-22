@@ -3,4 +3,4 @@
 
 add_executable ( artificial_ant artificial_ant.cpp )
 
-# add_subdirectory ( detail )
+add_subdirectory ( detail )

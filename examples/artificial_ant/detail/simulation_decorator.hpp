@@ -17,12 +17,12 @@
 #include <functional>
 #include <sstream>
 
-namespace gpcxx {
+namespace ant_example {
 
 class ant_simulation_decorator
 {
 public:
-    ant_simulation_decorator(ant_simulation & ant_sim, std::function< void( ant_simulation_decorator const & ) > on_every_step)
+    ant_simulation_decorator( ant_simulation & ant_sim, std::function< void( ant_simulation_decorator const & ) > on_every_step)
     :m_ant_sim( ant_sim ), m_on_every_step( on_every_step )
     {
     }
@@ -56,33 +56,23 @@ public:
         return m_ant_sim.is_finsh();
     }
     
-    int food_eaten() const 
-    {
-        return m_ant_sim.food_eaten();
-    }
-
     int score() const
     {
         return m_ant_sim.score();
     }
     
-    ant const & get_ant() const
-    {
-        return m_ant_sim.get_ant();
-    }
-    
-    friend std::ostream & operator<<(std::ostream & os, ant_simulation_decorator const & asim)
-    {
-        os << asim.m_ant_sim;
-        return os;
-    }
+   
+//     friend std::ostream & operator<<(std::ostream & os, ant_simulation_decorator const & asim)
+//     {
+//         os << asim.m_ant_sim;
+//         return os;
+//     }
     
     
     
     std::string get_board_as_str() const
     {
         std::ostringstream oss;
-        board b = m_ant_sim.get_board();
 
         for(int y = 0; y < b.get_size_y() ; ++y)
         {
@@ -117,7 +107,7 @@ private:
 
 
 
-} // namespace gpcxx
+} // namespace ant_example
 
 
 #endif // GPCXX_EXAMPLES_ARTIFICIAL_ANT_ANT_SIMULATION_DECORATOR_HPP_INCLUDED

@@ -17,6 +17,18 @@ cursors
 
 [section Tree input output]
 
+For all IO functions the following holds
+
+* `out << XXX( tree , params ) << endl;`
+* 'XXX_printer p( tree , params); out << p << endl;`
+* `write_XXX( out , tree , params );`
+* `write_XXX_cursor( cursor , out , params );`
+* `std::string s = XXX_string( tree , params );`
+* `in >> XXX_in( tree , params );` ?
+* `XXX_reader p( tree , params ); in >> p;`
+* `read_XXX( in , tree , params );`
+* `XXX_from_string( s , params );`
+
 simple 
 
 polish

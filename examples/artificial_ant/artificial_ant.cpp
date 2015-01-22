@@ -29,6 +29,8 @@
 #include <chrono>
 
 
+#include <fstream>
+
 
 
 //[ant_move_test
@@ -55,7 +57,8 @@ int main( int argc , char *argv[] )
 {
     using namespace ant_example;
     using rng_type = std::mt19937;
-    rng_type rng;
+    std::random_device rd;
+    rng_type rng( rd() );
     char const newl { '\n' };
 
     
@@ -64,8 +67,8 @@ int main( int argc , char *argv[] )
     //[world_definition 
     board const b{ santa_fe::x_size, santa_fe::y_size };
     int const max_steps { 400 };
-    ant_simulation::food_trail_type const santa_fe_trail { santa_fe::make_santa_fe_trail( b ) };
-    ant_simulation const                  ant_sim_santa_fe{ santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, max_steps };
+    ant_simulation::food_trail_type santa_fe_trail { santa_fe::make_santa_fe_trail( b ) };
+    ant_simulation                  ant_sim_santa_fe{ santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, max_steps };
     //]
 
     //[node_generate
@@ -104,7 +107,8 @@ int main( int argc , char *argv[] )
     size_t const tournament_size = 4;
     //]
         
-    population_type population( population_size );
+    population_type population;
+    population.reserve( population_size );
     
     //[tree_generator
     auto tree_generator      = gpcxx::make_basic_generate_strategy( rng , node_generator , min_tree_height , max_tree_height );
@@ -150,6 +154,41 @@ int main( int argc , char *argv[] )
             return fitness_f( t , ant_sim_santa_fe ); 
         } );
         //]
+        
+        
+        {
+            std::ofstream fout( std::string(  "pop_" ) + std::to_string( generation ) );
+            std::vector< size_t > indices( population_size );
+            std::iota( indices.begin() , indices.end() , 0 );
+            std::sort( indices.begin() , indices.end() , [&]( size_t i , size_t j ) -> bool {
+                return fitness[i] < fitness[j]; } );
+            
+            for( size_t j=0 ; j<population_size ; ++j )
+            {
+                size_t i = indices[j];
+                fout << j << " " << i << " "
+                     << fitness[i] << " " << population[i].root().height() << " "
+                     << gpcxx::simple( population[i] , false )
+                     << std::endl;
+            }
+        }
+/*        
+        {
+            using namespace std;
+            std::vector< size_t > idx;
+            auto iter = gpcxx::sort_indices( fitness , idx );
+            auto best = population[ idx[0] ];
+            ant_simulation sim { santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, max_steps };
+            for( size_t i=0 ; i<100 ; ++i )
+            {
+                cout << simple( best , false ) << endl << endl;
+                best.root()->eval( sim );
+                cout << sim.get_board_as_str() << endl;
+                usleep( 50 * 1000 );
+            }
+        }*/
+            
+        
         double eval_time = iteration_timer.seconds();
         
         std::cout << gpcxx::indent( 0 ) << "Generation "    << generation << newl;
