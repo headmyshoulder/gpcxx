@@ -99,7 +99,7 @@ struct tree_transformator2 : public boost::static_visitor< void >
     tree_transformator2( tree_type &tree , cursor c ) : tree_( tree ) , c_( c ) { }
     
 
-    void operator()( qi::info::nil ) const {}
+    void operator()( nil ) const {}
     
     void operator()( char n ) const
     {

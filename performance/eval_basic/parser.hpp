@@ -178,7 +178,7 @@ namespace parser
     {
         typedef void result_type;
 
-        void operator()( qi::info::nil ) const {}
+        void operator()( nil ) const {}
         void operator()( char n ) const { std::cout << n; }
 
         void operator()( expression_ast const& ast ) const
@@ -214,7 +214,7 @@ namespace parser
         tree_transformator( tree_type &tree , cursor c ) : tree_( tree ) , c_( c ) { }
         
     
-        void operator()( qi::info::nil ) const {}
+        void operator()( nil ) const {}
         
         void operator()( char n ) const
         {

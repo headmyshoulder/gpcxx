@@ -94,7 +94,7 @@ struct tree_creator : public boost::static_visitor< void >
     
     tree_creator( node_type &node ) : m_node( node ) { }
         
-    void operator()( boost::spirit::qi::info::nil ) const {}
+    void operator()( parser::nil ) const {}
         
     void operator()( char n ) const
     {
