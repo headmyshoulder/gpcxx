@@ -10,6 +10,7 @@ add_executable ( tree_tests
   general_tree.cpp
   intrusive_tree.cpp
   inorder_iterator.cpp
+  preorder_iterator.cpp
   )
 
 target_link_libraries ( tree_tests gtest gtest_main )

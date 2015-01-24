@@ -12,10 +12,58 @@
 #ifndef GPCXX_TREE_ITERATOR_PREORDER_ITERATOR_HPP_INCLUDED
 #define GPCXX_TREE_ITERATOR_PREORDER_ITERATOR_HPP_INCLUDED
 
+#include <gpcxx/tree/iterator/iterator_base.hpp>
+
 
 namespace gpcxx {
 
+    
 
+struct preorder_policy
+{
+    template< typename Cursor >
+    static bool successor( Cursor &c )
+    {
+        
+        return true;
+    }
+    
+    template< typename Cursor >
+    static bool predecessor( Cursor &c )
+    {
+        return true;
+    }
+    
+    template< typename Cursor >
+    static bool first( Cursor &c )
+    {
+        return true;
+    }
+    
+    template< typename Cursor >
+    static bool last( Cursor &c )
+    {
+        return true;
+    }
+};
+
+
+template< typename Cursor >
+using preorder_iterator = iterator_base< Cursor , preorder_policy >;
+
+template< typename Cursor >
+preorder_iterator< Cursor > begin_preorder( Cursor c )
+{
+    preorder_policy::first( c );
+    return preorder_iterator< Cursor > { c };
+}
+
+template< typename Cursor >
+preorder_iterator< Cursor > end_preorder( Cursor c )
+{
+    preorder_policy::last( c );
+    return preorder_iterator< Cursor > { c };
+}
 
 
 } // namespace gpcxx

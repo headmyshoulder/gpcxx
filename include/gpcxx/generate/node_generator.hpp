@@ -17,6 +17,8 @@
 #include <array>
 #include <algorithm>
 #include <cassert>
+#include <functional>
+
 
 namespace gpcxx {
 

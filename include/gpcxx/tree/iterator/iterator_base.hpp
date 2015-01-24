@@ -19,9 +19,9 @@
 namespace gpcxx {
 
 
-template< typename Cursor , typename Order >
+template< typename Cursor , typename OrderPolicy >
 class iterator_base : public boost::iterator_facade< 
-    iterator_base< Cursor , Order > ,
+    iterator_base< Cursor , OrderPolicy > ,
     typename cursor_value< Cursor >::type ,
     boost::bidirectional_traversal_tag >
 {
@@ -29,7 +29,7 @@ class iterator_base : public boost::iterator_facade<
     
     using reference_type = typename cursor_value< Cursor >::type& ;
     using iterator_facade_ = boost::iterator_facade< 
-        iterator_base< Cursor , Order > ,
+        iterator_base< Cursor , OrderPolicy > ,
         typename cursor_value< Cursor >::type ,
         boost::bidirectional_traversal_tag >;
     
@@ -40,7 +40,7 @@ public:
     iterator_base( Cursor c ) : m_cursor { c } {}
     
     template <class OtherCursor>
-    iterator_base( iterator_base< OtherCursor , Order > const& other , typename boost::enable_if<
+    iterator_base( iterator_base< OtherCursor , OrderPolicy > const& other , typename boost::enable_if<
             boost::is_convertible< OtherCursor , Cursor > , enabler >::type = enabler() )
       : m_cursor { other.m_cursor } {}
       
@@ -55,12 +55,12 @@ private:
     
     void increment( void )
     {
-        Order::successor( m_cursor );
+        OrderPolicy::successor( m_cursor );
     }
     
     void decrement( void )
     {
-        Order::predecessor( m_cursor );
+        OrderPolicy::predecessor( m_cursor );
     }
     
     reference_type dereference( void ) const
@@ -69,7 +69,7 @@ private:
     }
     
     template< typename OtherCursor >
-    bool equal( iterator_base< OtherCursor , Order > const& other ) const
+    bool equal( iterator_base< OtherCursor , OrderPolicy > const& other ) const
     {
         return this->m_cursor == other.m_cursor;
     }
@@ -78,50 +78,9 @@ private:
 };
 
 
-struct inorder_policy
-{
-    template< typename Cursor >
-    static void successor( Cursor &c )
-    {
-        
-    }
-    
-    template< typename Cursor >
-    static void predecessor( Cursor &c )
-    {
-    }
-    
-    template< typename Cursor >
-    static void first( Cursor &c )
-    {
-        while( c.size() != 0 )
-        {
-            c = c.children( 0 );
-        }
-    }
-    
-    template< typename Cursor >
-    static void last( Cursor &c )
-    {
-    }
-};
 
-template< typename Cursor >
-using inorder_iterator = iterator_base< Cursor , inorder_policy >;
 
-template< typename Cursor >
-inorder_iterator< Cursor > begin_inorder( Cursor c )
-{
-    inorder_policy::first( c );
-    return inorder_iterator< Cursor > { c };
-}
 
-template< typename Cursor >
-inorder_iterator< Cursor > end_inorder( Cursor c )
-{
-    inorder_policy::last( c );
-    return inorder_iterator< Cursor > { c };
-}
 
 
 
@@ -130,9 +89,3 @@ inorder_iterator< Cursor > end_inorder( Cursor c )
 
 
 #endif // GPCXX_TREE_ITERATOR_ITERATOR_BASE_HPP_INCLUDED
-
-
-template<class T >
-struct C;
-template<class T >
-struct C;

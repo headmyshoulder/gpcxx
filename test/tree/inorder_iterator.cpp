@@ -11,7 +11,7 @@
 
 #include "../common/test_tree.hpp"
 
-#include <gpcxx/tree/iterator/iterator_base.hpp>
+#include <gpcxx/tree/iterator/inorder_iterator.hpp>
 
 #include <sstream>
 #include <gtest/gtest.h>
