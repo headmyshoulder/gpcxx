@@ -9,6 +9,10 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
+#include "../common/test_tree.hpp"
+
+#include <gpcxx/tree/iterator/iterator_base.hpp>
+
 #include <sstream>
 #include <gtest/gtest.h>
 
@@ -18,5 +22,13 @@ using namespace std;
 
 TEST( TESTNAME , TestCase )
 {
+    test_tree< basic_tree_tag > trees;
+    
+    auto first = begin_inorder( trees.data.root() );
+    auto last = end_inorder( trees.data.root() );
+    cout << *first << endl;
+    ++first;
+    cout << *first << endl;
+    
     EXPECT_EQ( true , true );
 }
