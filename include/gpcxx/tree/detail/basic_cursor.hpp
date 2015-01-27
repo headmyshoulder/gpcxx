@@ -20,6 +20,11 @@
 
 #include <type_traits>
 
+
+#include <iostream>
+using namespace std;
+
+
 namespace gpcxx {
 
 template< typename T , size_t MaxArity , typename A > class basic_tree;
@@ -81,6 +86,9 @@ public:
     
     basic_node_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
     : m_node( node ) , m_pos( pos ) { }
+    
+    basic_node_cursor( basic_node_cursor const& ) = default;
+    basic_node_cursor& operator=( basic_node_cursor const& ) = default;
 
 //    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
 //     basic_node_cursor( basic_node_cursor< OtherNode > const& other )
@@ -133,12 +141,16 @@ public:
     
     cursor parent( void )
     {
-        return cursor( m_node->parent() , m_node->child_index( node() ) );
+        assert( ! is_root() );
+        auto parent_node = m_node->parent();
+        return cursor( parent_node , parent_node->child_index( m_node ) );
     }
 
     const_cursor parent( void ) const
     {
-        return const_cursor( m_node->parent() , m_node->child_index( node() ) );
+        assert( ! is_root() );
+        auto parent_node = m_node->parent();
+        return const_cursor( parent_node , parent_node->child_index( m_node ) );
     }
 
 
@@ -181,6 +193,11 @@ public:
         if( m_node->parent() == nullptr ) return 0;
         return 1 + parent().level();
     }
+    
+    bool is_root( void ) const noexcept
+    {
+        return ( ( m_node->parent() == 0 ) && ( m_pos == 0 ) );
+    }
 
     
     
@@ -204,6 +221,12 @@ public:
     const node_base_pointer node( void ) const noexcept
     {
         return m_node->children( m_pos );
+    }
+    
+    /// REMOVE LATER, ONLY FOR DEBUGGING
+    size_type pos( void ) const noexcept
+    {
+        return m_pos;
     }
 
 

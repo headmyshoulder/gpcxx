@@ -15,6 +15,11 @@
 #include <gpcxx/tree/iterator/iterator_base.hpp>
 
 
+#include <map>
+#include <iostream>
+using namespace std;
+
+
 namespace gpcxx {
 
     
@@ -24,8 +29,28 @@ struct preorder_policy
     template< typename Cursor >
     static bool successor( Cursor &c )
     {
-        
-        return true;
+        if( c.size() > 0 )
+        {
+            c = c.children( 0 );
+            return true;
+        }
+        while( true )
+        {
+            if( c.is_root() )
+            {
+                ++c;
+                return true;
+            }
+            
+            Cursor d = c;
+            ++d;
+            if( d != c.parent().end() )
+            {
+                c = d;
+                return true;
+            }
+            c = c.parent();
+        }
     }
     
     template< typename Cursor >
@@ -43,6 +68,7 @@ struct preorder_policy
     template< typename Cursor >
     static bool last( Cursor &c )
     {
+        ++c;
         return true;
     }
 };

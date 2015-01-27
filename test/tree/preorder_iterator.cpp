@@ -26,9 +26,24 @@ TEST( TESTNAME , TestCase )
     
     auto first = begin_preorder( trees.data.root() );
     auto last = end_preorder( trees.data.root() );
-    cout << *first << endl;
-    ++first;
-    cout << *first << endl;
     
-    EXPECT_EQ( true , true );
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "plus" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "sin" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "x" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "minus" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "y" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "2" );
+    ++first;
+    EXPECT_EQ( first , last );
 }
