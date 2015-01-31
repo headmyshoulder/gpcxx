@@ -1,4 +1,5 @@
-git: depth: 200
+git:
+  depth: 200
 
 language: cpp
 
