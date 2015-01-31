@@ -11,14 +11,16 @@ os:
   - osx
 
 env:
+  global:
   - CXXSTD=''
   - CXXSTD='cxxflags="-std=c++11"'
   matrix:
     - BUILD_TYPE=Debug
     - BUILD_TYPE=Release
 
-# For now disable gcc on osx as g++4.8 is not yet available
+
 matrix:
+  # For now disable gcc on osx as g++4.8 is not yet available
   exclude:
     - os: osx
       compiler: gcc
