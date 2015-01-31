@@ -12,6 +12,7 @@
 #ifndef GPCXX_TREE_ITERATOR_ITERATOR_BASE_HPP_INCLUDED
 #define GPCXX_TREE_ITERATOR_ITERATOR_BASE_HPP_INCLUDED
 
+#include <gpcxx/tree/cursor_traits.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/utility/enable_if.hpp>
 

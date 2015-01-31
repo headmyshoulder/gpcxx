@@ -15,9 +15,6 @@
 #include <gpcxx/tree/iterator/iterator_base.hpp>
 
 
-#include <map>
-#include <iostream>
-using namespace std;
 
 
 namespace gpcxx {
