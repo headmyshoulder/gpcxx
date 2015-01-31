@@ -51,12 +51,27 @@ struct preorder_policy
             }
             c = c.parent();
         }
+        return false;
     }
     
     template< typename Cursor >
     static bool predecessor( Cursor &c )
     {
-        return true;
+        if( !c.is_shoot() && ( c.parent().begin() == c ) )
+        {
+            c = c.parent();
+            return true;
+        }
+        
+        --c;
+        while( true )
+        {
+            if( c.size() == 0 )
+            {
+                return true;
+            }
+            c = c.children( c.size() - 1 );
+        }
     }
     
     template< typename Cursor >

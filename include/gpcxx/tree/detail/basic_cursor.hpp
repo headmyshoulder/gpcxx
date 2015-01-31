@@ -198,6 +198,11 @@ public:
     {
         return ( ( m_node->parent() == 0 ) && ( m_pos == 0 ) );
     }
+    
+    bool is_shoot( void ) const noexcept
+    {
+        return ( ( m_node->parent() == 0 ) && ( m_pos == 1 ) );
+    }
 
     
     
