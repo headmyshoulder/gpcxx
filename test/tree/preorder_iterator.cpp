@@ -49,6 +49,35 @@ TEST( TESTNAME , iterate_forward )
     EXPECT_EQ( first , last );
 }
 
+TEST( TESTNAME , iterate_forward2 )
+{
+    test_tree< intrusive_tree_tag > trees;
+    
+//     auto first = begin_preorder( trees.data.root() );
+//     auto last = end_preorder( trees.data.root() );
+    
+//     EXPECT_NE( first , last );
+//     EXPECT_EQ( *first , "plus" );
+//     ++first;
+//     EXPECT_NE( first , last );
+//     EXPECT_EQ( *first , "sin" );
+//     ++first;
+//     EXPECT_NE( first , last );
+//     EXPECT_EQ( *first , "x" );
+//     ++first;
+//     EXPECT_NE( first , last );
+//     EXPECT_EQ( *first , "minus" );
+//     ++first;
+//     EXPECT_NE( first , last );
+//     EXPECT_EQ( *first , "y" );
+//     ++first;
+//     EXPECT_NE( first , last );
+//     EXPECT_EQ( *first , "2" );
+//     ++first;
+//     EXPECT_EQ( first , last );
+}
+
+
 TEST( TESTNAME , iterate_backward )
 {
     test_tree< basic_tree_tag > trees;
