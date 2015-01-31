@@ -28,31 +28,34 @@ matrix:
       compiler: gcc
 
 before_install:
- # install
- - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
- - sudo apt-get update -qq
- - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-${GCC_VERSION}; fi
- - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+  # install g++
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -qq
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-${GCC_VERSION}; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
  
- - wget http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.bz2/download -O /tmp/boost.tar.bz2
- - wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip -O /tmp/gmock.zip
- - tar jxf /tmp/boost.tar.bz2
- - unzip /tmp/gmock.zip
- - mv boost_1_57_0 $PWD/third_party/boost
- - mv gmock-1.7.0 $PWD/third_party/gmock
- - export BOOST_ROOT="$PWD/third_party/boost"
- - cd $BOOST_ROOT
- - ./bootstrap.sh
- - ./b2 --with-thread --with-system -d0
+  # install thirdparty dependencies
+  - wget http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.bz2/download -O /tmp/boost.tar.bz2
+  - wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip -O /tmp/gmock.zip
+  - tar jxf /tmp/boost.tar.bz2
+  - unzip /tmp/gmock.zip
+  - mv boost_1_57_0 $PWD/third_party/boost
+  - mv gmock-1.7.0 $PWD/third_party/gmock
+  - export BOOST_ROOT="$PWD/third_party/boost"
+  - cd $BOOST_ROOT
+  - ./bootstrap.sh
+  - ./b2 --with-thread --with-system -d0
 
- - cd $TRAVIS_BUILD_DIR
- - ls
- - if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$CC" = "gcc" ]; then export CC=gcc-4.8; fi
- - mkdir build
+install:
+  # create build directory
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir build
+  - export CXX_FLAGS=""
+  - export CXX_LINKER_FLAGS=""
 
 script:
- - cd build
- - cmake .. -DGPCXX_BUILD_DOCS=OFF
- - make 
- - make test
+  - cd build
+  - cmake .. -DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" -DCMAKE_EXE_LINKER_FLAGS="${CXX_LINKER_FLAGS}"
+  - make 
+  - make test
 
