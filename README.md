@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Ambrosys/gpcxx.svg)](https://travis-ci.org/Ambrosys/gpcxx)
+
 Introduction
 ============
 
