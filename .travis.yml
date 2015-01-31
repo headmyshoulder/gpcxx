@@ -38,6 +38,8 @@ before_install:
  - export BOOST_ROOT="$PWD/boost"
 
  - cd $TRAVIS_BUILD_DIR
+ - ls
+ - ls ..
  - if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$CC" = "gcc" ]; then export CC=gcc-4.8; fi
  - $CC --version
  - mkdir build
