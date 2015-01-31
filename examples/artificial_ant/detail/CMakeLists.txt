@@ -3,6 +3,5 @@
 
 add_executable ( artificial_ant_tests   artificial_ant_tests.cpp )
 add_executable ( artificial_ant_plots   artificial_ant_plots.cpp )
-add_executable ( artificial_ant_stat    artificial_ant_stat.cpp )
 
 include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/.." )
