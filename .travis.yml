@@ -4,7 +4,7 @@ script: cmake
 
 compiler:
   - gcc
-  - clang
+  # - clang
 
 os: 
   - linux
@@ -16,7 +16,7 @@ env:
   - CXXSTD='cxxflags="-std=c++11"'
   matrix:
     - BUILD_TYPE=Debug
-    - BUILD_TYPE=Release
+    # - BUILD_TYPE=Release
 
 
 matrix:
