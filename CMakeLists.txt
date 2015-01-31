@@ -6,8 +6,9 @@ cmake_minimum_required ( VERSION 2.8 )
 
 ADD_DEFINITIONS ( -std=c++11 )
 
-
 set ( THIRDPARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party" )
+
+option ( GPCXX_BUILD_DOCS "Enable to build the docs" ON )
 
 # Add path for custom modules
 set ( CMAKE_MODULE_PATH
@@ -32,7 +33,10 @@ include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 add_subdirectory ( examples )
 add_subdirectory ( performance )
-add_subdirectory ( doc )
+
+if ( ${GPCXX_BUILD_DOCS} )
+  add_subdirectory ( doc )
+endif ()
 
 set( GMOCK_ROOT "${THIRDPARTY_ROOT}/gmock" )
 set( GTEST_ROOT "${THIRDPARTY_ROOT}/gmock/gtest" )
