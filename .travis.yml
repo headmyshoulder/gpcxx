@@ -26,7 +26,7 @@ matrix:
       compiler: gcc
 
 before_install:
-  export GPCXX_ROOT='pwd'
+  - export GPCXX_ROOT='pwd'
   
   # install g++
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
