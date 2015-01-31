@@ -195,11 +195,11 @@ public:
             node_type *new_node = new node_type( n );
             new_node->clear_children();
             c.node()->attach_child( new_node );
-            new_node->attach_parent( c.node() );
+            new_node->set_parent_node( c.node() );
             ret = cursor( new_node );
         }
         for( size_t i=0 ; i<n.size() ; ++i )
-            insert_below( ret , *( n.child_node( i ) ) );
+            insert_below( ret , static_cast< node_type const& >( *( n.child_node( i ) ) ) );
         return ret;
     }
     
@@ -288,28 +288,28 @@ private:
     static void swap_subtree_impl1( intrusive_tree &t1 , intrusive_tree &t2 , node_pointer n2 )
     {
         t1.m_root = n2;
-        node_pointer p2 = n2->parent();
+        node_pointer p2 = static_cast< node_pointer >( n2->parent_node() );
         if( p2 != nullptr )
         {
-            n2->parent()->remove_child( n2 );
+            n2->parent_node()->remove_child( n2 );
         }
         else
         {
             t2.m_root = nullptr;
         }
-        n2->attach_parent( nullptr );
+        n2->set_parent_node( nullptr );
     }
     
     static void swap_subtree_impl2( intrusive_tree &t1 , node_pointer n1 , intrusive_tree &t2 , node_pointer n2 )
     {
-        node_pointer p1 = n1->parent();
-        node_pointer p2 = n2->parent();
+        node_pointer p1 = static_cast< node_pointer >( n1->parent_node() );
+        node_pointer p2 = static_cast< node_pointer >( n2->parent_node() );
         
         auto swap1 = []( intrusive_tree &t1 , node_pointer n1 , node_pointer n2 , node_pointer p2 ) -> void {
             t1.m_root = n2;
             ( * ( p2->find_child( n2 ) ) ) = n1 ;
-            n2->attach_parent( nullptr );
-            n1->attach_parent( p2 );
+            n2->set_parent_node( nullptr );
+            n1->set_parent_node( p2 );
         };
         
         if( ( p1 == nullptr ) && ( p2 == nullptr ) )
@@ -329,8 +329,8 @@ private:
         {
             * ( p1->find_child( n1 ) ) = n2;
             * ( p2->find_child( n2 ) ) = n1;
-            n2->attach_parent( p1 );
-            n1->attach_parent( p2 );
+            n2->set_parent_node( p1 );
+            n1->set_parent_node( p2 );
         }
     }
 

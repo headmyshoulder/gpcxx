@@ -34,7 +34,7 @@ struct NAME                                                                     
     template< typename Context , typename Node >                                                      \
     inline typename Node::result_type operator()( Context const& c , Node const& node ) const         \
     {                                                                                                 \
-        return FUNC( node.children( 0 ).eval( c ) );                                                 \
+        return FUNC( node.child( 0 ).eval( c ) );                                                     \
     }                                                                                                 \
 }
 
@@ -44,7 +44,7 @@ struct NAME                                                                     
     template< typename Context , typename Node >                                                      \
     inline typename Node::result_type operator()( Context const& c , Node const& node ) const         \
     {                                                                                                 \
-        return node.children( 0 ).eval( c ) OP node.children( 1 ).eval( c );                        \
+        return node.child( 0 ).eval( c ) OP node.child( 1 ).eval( c );                                \
     }                                                                                                 \
 }
 

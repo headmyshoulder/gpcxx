@@ -201,7 +201,7 @@ TEST_F( TESTNAME , read_intrusive_tree1 )
     
     auto tree = get_tree_type< intrusive_tree_tag >::type {};
     string str( "minus|cos|y|x" );
-    read_polish( str , tree , m_intrusive_mapper , "|" );
+    gpcxx::read_polish( str , tree , m_intrusive_mapper , "|" );
     
     EXPECT_EQ( tree.size() , 4 );
     test_cursor( tree.root() , "minus" , 2 , 3 , 0 );
@@ -220,7 +220,7 @@ TEST_F( TESTNAME , read_intrusive_tree2 )
     
     auto tree = get_tree_type< intrusive_tree_tag >::type {};
     string str( "plus|sin|x|minus|y|2" );
-    read_polish( str , tree , m_intrusive_mapper , "|" );
+    gpcxx::read_polish( str , tree , m_intrusive_mapper , "|" );
     
     EXPECT_EQ( tree.size() , 6 );
     test_cursor( tree.root() , "plus" , 2 , 3 , 0 );

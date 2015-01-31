@@ -178,12 +178,12 @@ public:
 
     node_pointer parent_node( void ) noexcept
     {
-        return m_node->parent();
+        return static_cast< node_pointer >( m_node->parent_node() );
     }
 
     const_node_pointer parent_node( void ) const noexcept
     {
-        return m_node->parent();
+        return static_cast< const_node_pointer >( m_node->parent_node() );
     }
 
     node_pointer node( void ) noexcept
@@ -198,12 +198,12 @@ public:
     
     node_pointer child_node( size_t i ) noexcept
     {
-        return m_node->child_node( i );
+        return static_cast< node_pointer >( m_node->child_node( i ) );
     }
     
     const_node_pointer child_node( size_t i ) const noexcept
     {
-        return m_node->child_node( i );
+        return static_cast< const_node_pointer >( m_node->child_node( i ) );
     }
 
 
