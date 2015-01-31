@@ -1,5 +1,5 @@
 /*
-  gpcxx/tree/detail/basic_node_inspect.hpp
+  gpcxx/tree/detail/inspect_node_base.hpp
 
   Copyright 2013 Karsten Ahnert
 
@@ -9,10 +9,10 @@
 */
 
 
-#ifndef GPCXX_TREE_DETAIL_BASIC_NODE_INSPECT_HPP_DEFINED
-#define GPCXX_TREE_DETAIL_BASIC_NODE_INSPECT_HPP_DEFINED
+#ifndef GPCXX_TREE_DETAIL_INSPECT_NODE_BASE_HPP_DEFINED
+#define GPCXX_TREE_DETAIL_INSPECT_NODE_BASE_HPP_DEFINED
 
-#include <gpcxx/tree/detail/basic_node.hpp>
+#include <gpcxx/tree/detail/node_base.hpp>
 #include <gpcxx/util/indent.hpp>
 
 namespace gpcxx {
@@ -22,13 +22,13 @@ namespace detail {
 
 
 template< size_t MaxArity >
-void inspect_basic_node( std::ostream &out , basic_node_base< MaxArity > *ptr , size_t ind )
+void inspect_node_base( std::ostream &out , node_base< MaxArity > *ptr , size_t ind )
 {
     out << indent( ind , "  " ) << "+-" << ptr << "\n";
     if( ptr != nullptr )
     {
         for( size_t i=0 ; i<MaxArity ; ++i )
-            inspect_basic_node( out , ptr->children( i ) , ind + 1 );
+            inspect_node_base( out , ptr->children( i ) , ind + 1 );
     }
 }
 
@@ -37,4 +37,4 @@ void inspect_basic_node( std::ostream &out , basic_node_base< MaxArity > *ptr , 
 } // namespace gpcxx
 
 
-#endif // GPCXX_TREE_DETAIL_BASIC_NODE_INSPECT_HPP_DEFINED
+#endif // GPCXX_TREE_DETAIL_INSPECT_NODE_BASE_HPP_DEFINED
