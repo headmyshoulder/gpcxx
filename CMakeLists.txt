@@ -24,9 +24,6 @@ message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
 
 
 find_package ( Boost REQUIRED COMPONENTS thread system )
-find_package ( Doxygen )
-find_package ( XSLTPROC )
-find_package ( QuickBook )
 
 include_directories ( ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )

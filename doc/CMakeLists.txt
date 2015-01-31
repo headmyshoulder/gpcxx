@@ -1,4 +1,6 @@
-
+find_package ( Doxygen )
+find_package ( XSLTPROC )
+find_package ( QuickBook )
 
 if ( ${DOXYGEN_FOUND} AND ${XSLTPROC_FOUND} AND ${QuickBook_FOUND} )
 

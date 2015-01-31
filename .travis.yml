@@ -35,7 +35,7 @@ before_install:
  - export BOOST_ROOT="$PWD/boost"
  - cd $PWD/boost
  - ./bootstrap.sh
- - ./b2 --with-thread --with-system
+ - ./b2 --with-thread --with-system -d0
 
  - cd $TRAVIS_BUILD_DIR
  - ls
@@ -47,6 +47,7 @@ script:
  - cd third_party
  - ln -s $PWD/gmock .
  - ls
+ - ls gmock
  - pwd
  - cd ../build
  - cmake .. -DGPCXX_BUILD_DOCS=OFF
