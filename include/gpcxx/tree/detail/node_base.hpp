@@ -115,13 +115,29 @@ public:
     size_t count_nodes( void ) const
     {
         size_t count = 1;
-        typename children_type::const_iterator iter = m_children.begin();
-        typename children_type::const_iterator end = m_children.begin() + size();
-        for( ; iter != end ; ++iter )
+        auto iter = m_children.begin();
+        auto last = m_children.begin() + size();
+        for( ; iter != last ; )
         {
-            count += ( (*iter)->count_nodes() );
+            count += ( (*iter++)->count_nodes() );
         }
         return count;
+    }
+    
+    size_t height( void ) const noexcept
+    {
+        size_t h = 0;
+        auto iter = m_children.begin();
+        auto last = m_children.begin() + size();
+        for( ; iter != last ; )
+            h = std::max( h , (*iter++)->height() );
+        return 1 + h;
+    }
+    
+    size_t level( void ) const noexcept
+    {
+        if( m_parent == nullptr ) return 0;
+        return 1 + parent_node()->level();
     }
 
     

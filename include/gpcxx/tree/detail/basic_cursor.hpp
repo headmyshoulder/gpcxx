@@ -178,18 +178,12 @@ public:
     
     size_type height( void ) const noexcept
     {
-        size_type h = 0;
-        for( const_cursor s = begin() ; s != end() ; ++s )
-            h = std::max( h , s.height() );
-        return 1 + h;
-
+        return node()->height();
     }
 
     size_type level( void ) const noexcept
     {
-        if( m_node == nullptr ) return 0;
-        if( m_node->parent_node() == nullptr ) return 0;
-        return 1 + parent().level();
+        return parent_node()->level();   // level is shifted, because the root is not the very first node.
     }
     
     bool is_root( void ) const noexcept
