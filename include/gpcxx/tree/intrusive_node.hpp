@@ -66,9 +66,19 @@ public:
         return *this;
     }
 
-    cursor children( size_t i ) noexcept;
+//     cursor children( size_t i ) noexcept;
+//     
+//     const_cursor children( size_t i ) const  noexcept;
+
+    node_type& children( size_t i ) noexcept
+    {
+        return *m_children[i];
+    }
     
-    const_cursor children( size_t i ) const  noexcept;
+    node_type const& children( size_t i ) const noexcept
+    {
+        return *m_children[i];
+    }
 
     
     size_t max_size( void ) const noexcept
@@ -201,22 +211,21 @@ protected:
 
 } // namespace gpcxx
 
-#include <gpcxx/tree/detail/intrusive_cursor.hpp>
 
 
 namespace gpcxx {
 
-template< typename Node , size_t Arity >
-typename intrusive_node< Node , Arity >::cursor intrusive_node< Node , Arity >::children( size_t i ) noexcept
-{
-    return cursor( m_children[ i ] );
-}
-    
-template< typename Node , size_t Arity >
-typename intrusive_node< Node , Arity >::const_cursor intrusive_node< Node , Arity >::children( size_t i ) const noexcept
-{
-    return const_cursor( m_children[i] );
-}
+// template< typename Node , size_t Arity >
+// typename intrusive_node< Node , Arity >::cursor intrusive_node< Node , Arity >::children( size_t i ) noexcept
+// {
+//     return cursor( m_children[ i ] );
+// }
+//     
+// template< typename Node , size_t Arity >
+// typename intrusive_node< Node , Arity >::const_cursor intrusive_node< Node , Arity >::children( size_t i ) const noexcept
+// {
+//     return const_cursor( m_children[i] );
+// }
 
 
 

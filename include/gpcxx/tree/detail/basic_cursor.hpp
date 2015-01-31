@@ -111,7 +111,7 @@ public:
     
     cursor begin( void )
     {
-        return cursor( m_node->children( m_pos ) , 0 );
+        return cursor( m_node->child_node( m_pos ) , 0 );
     }
     
     const_cursor begin( void ) const
@@ -121,12 +121,12 @@ public:
     
     const_cursor cbegin( void ) const
     {
-        return const_cursor( m_node->children( m_pos ) , 0 );
+        return const_cursor( m_node->child_node( m_pos ) , 0 );
     }
     
     cursor end( void )
     {
-        return cursor( m_node->children( m_pos ) , this->size() );
+        return cursor( m_node->child_node( m_pos ) , this->size() );
     }
     
     const_cursor end( void ) const
@@ -136,39 +136,39 @@ public:
     
     const_cursor cend( void ) const
     {
-        return const_cursor( m_node->children( m_pos ) , this->size() );
+        return const_cursor( m_node->child_node( m_pos ) , this->size() );
     }
     
     cursor parent( void )
     {
         assert( ! is_root() );
-        auto parent_node = m_node->parent();
+        auto parent_node = m_node->parent_node();
         return cursor( parent_node , parent_node->child_index( m_node ) );
     }
 
     const_cursor parent( void ) const
     {
         assert( ! is_root() );
-        auto parent_node = m_node->parent();
+        auto parent_node = m_node->parent_node();
         return const_cursor( parent_node , parent_node->child_index( m_node ) );
     }
 
 
     cursor children( size_type i )
     {
-        return cursor( m_node->children( m_pos ) , i );
+        return cursor( m_node->child_node( m_pos ) , i );
     }
     
     const_cursor children( size_type i ) const
     {
-        return const_cursor( m_node->children( m_pos ) , i );
+        return const_cursor( m_node->child_node( m_pos ) , i );
     }
     
     
     
     size_type size( void ) const noexcept
     {
-        return m_node->children( m_pos )->size();
+        return m_node->child_node( m_pos )->size();
     }
     
     size_type max_size( void ) const noexcept
@@ -178,8 +178,6 @@ public:
     
     size_type height( void ) const noexcept
     {
-        // if( node() == nullptr ) return 0;
-        
         size_type h = 0;
         for( const_cursor s = begin() ; s != end() ; ++s )
             h = std::max( h , s.height() );
@@ -190,18 +188,18 @@ public:
     size_type level( void ) const noexcept
     {
         if( m_node == nullptr ) return 0;
-        if( m_node->parent() == nullptr ) return 0;
+        if( m_node->parent_node() == nullptr ) return 0;
         return 1 + parent().level();
     }
     
     bool is_root( void ) const noexcept
     {
-        return ( ( m_node->parent() == 0 ) && ( m_pos == 0 ) );
+        return ( ( m_node->parent_node() == 0 ) && ( m_pos == 0 ) );
     }
     
     bool is_shoot( void ) const noexcept
     {
-        return ( ( m_node->parent() == 0 ) && ( m_pos == 1 ) );
+        return ( ( m_node->parent_node() == 0 ) && ( m_pos == 1 ) );
     }
 
     
@@ -220,12 +218,12 @@ public:
 
     node_base_pointer node( void ) noexcept
     {
-        return m_node->children( m_pos );
+        return m_node->child_node( m_pos );
     }
 
     const node_base_pointer node( void ) const noexcept
     {
-        return m_node->children( m_pos );
+        return m_node->child_node( m_pos );
     }
     
     /// REMOVE LATER, ONLY FOR DEBUGGING
@@ -264,7 +262,7 @@ private:
 
     typename base_type::reference dereference() const
     {
-        return **static_cast< node_pointer >( m_node->children( m_pos ) );
+        return **static_cast< node_pointer >( m_node->child_node( m_pos ) );
     }
     
     

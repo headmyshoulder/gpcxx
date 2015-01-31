@@ -13,6 +13,7 @@
 #define GPCXX_TREE_INTRUSIVE_TREE_HPP_DEFINED
 
 #include <gpcxx/tree/intrusive_node.hpp>
+#include <gpcxx/tree/detail/intrusive_cursor.hpp>
 
 #include <functional>
 #include <array>

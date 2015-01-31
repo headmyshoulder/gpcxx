@@ -283,18 +283,18 @@ public:
         size_type i1 = parent1->child_index( n1 );
         size_type i2 = parent2->child_index( n2 );
         
-        parent1->set_children( i1 , n2 );
-        parent2->set_children( i2 , n1 );
+        parent1->set_child_node( i1 , n2 );
+        parent2->set_child_node( i2 , n1 );
         
         long num_nodes1 = 0 , num_nodes2 = 0;
         if( n1 != nullptr )
         {
-            n1->attach_parent( parent2 );
+            n1->set_parent_node( parent2 );
             num_nodes1 = n1->count_nodes();
         }
         if( n2 != nullptr )
         {
-            n2->attach_parent( parent1 );
+            n2->set_parent_node( parent1 );
             num_nodes2 = n2->count_nodes();
         }
         m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
@@ -357,7 +357,7 @@ private:
         {
             assert( position.parent_node()->size() == 0 );
             
-            new_node->attach_parent( position.parent_node() );
+            new_node->set_parent_node( position.parent_node() );
             size_type index = position.parent_node()->attach_child( new_node );
             assert( index == 0 );
             return cursor( position.parent_node() , index );
@@ -366,7 +366,7 @@ private:
         {
             assert( position.size() < position.max_size() );
 
-            new_node->attach_parent( position.node() );
+            new_node->set_parent_node( position.node() );
             size_type index = position.node()->attach_child( new_node );
             return cursor( position.node() , index );
         }
@@ -376,13 +376,13 @@ private:
     {
         if( !tree.empty() )
         {
-            node_base_pointer n = tree.m_header.children( 0 );
-            n->attach_parent( &m_header );
+            node_base_pointer n = tree.m_header.child_node( 0 );
+            n->set_parent_node( &m_header );
             m_header.attach_child( n );
             m_size = tree.m_size;
             
             tree.m_size = 0;
-            tree.m_header.set_children( 0 , nullptr );
+            tree.m_header.set_child_node( 0 , nullptr );
         }
     }
     

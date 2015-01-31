@@ -52,8 +52,8 @@ struct prog2
 {                                                                                                     
     void operator()( context_type& ant_sim , node_type const& node ) const         
     {
-        node.children( 0 )->eval( ant_sim );
-        node.children( 1 )->eval( ant_sim );             
+        node.children( 0 ).eval( ant_sim );
+        node.children( 1 ).eval( ant_sim );             
     }                                                                                                 
 };
 
@@ -61,9 +61,9 @@ struct prog3
 {                                                                                                     
     void operator()( context_type& ant_sim , node_type const& node ) const         
     {
-        node.children( 0 )->eval( ant_sim );
-        node.children( 1 )->eval( ant_sim );
-        node.children( 2 )->eval( ant_sim );            
+        node.children( 0 ).eval( ant_sim );
+        node.children( 1 ).eval( ant_sim );
+        node.children( 2 ).eval( ant_sim );            
     }                                                                                                 
 };
 
@@ -73,11 +73,11 @@ struct if_food_ahead
     {
         if(ant_sim.food_in_front())
         {
-            node.children( 0 )->eval( ant_sim );
+            node.children( 0 ).eval( ant_sim );
         }
         else
         {
-            node.children( 1 )->eval( ant_sim );
+            node.children( 1 ).eval( ant_sim );
         }                     
     }                                                                                                 
 };

@@ -129,8 +129,8 @@ public:
         if( node() == nullptr ) return 0;
         
         size_type h = 0;
-        for( size_t i=0 ; i<node()->size() ; ++i )
-            h = std::max( h , node()->children(i).height() );
+        for( size_t i=0 ; i<size() ; ++i )
+            h = std::max( h , children(i).height() );
         return 1 + h;
 
     }

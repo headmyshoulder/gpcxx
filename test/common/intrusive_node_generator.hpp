@@ -23,7 +23,7 @@ struct plus3_func
     template< typename Context , typename Node >
     inline typename Node::result_type operator()( Context const& c , Node const& node ) const
     {
-        return node.children( 0 )->eval( c ) + node.children( 1 )->eval( c ) + node.children( 2 )->eval( c );
+        return node.children( 0 ).eval( c ) + node.children( 1 ).eval( c ) + node.children( 2 ).eval( c );
     }
 };
 

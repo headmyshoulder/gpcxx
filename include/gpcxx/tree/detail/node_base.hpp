@@ -39,33 +39,39 @@ public:
     }
     
     
-    node_base_type* children( size_t i ) noexcept
+    node_base_type* child_node( size_t i ) noexcept
     {
         return m_children[i];
     }
     
     
-    node_base_type const* children( size_t i ) const noexcept
+    node_base_type const* child_node( size_t i ) const noexcept
     {
         return m_children[i];
     }
     
-    void set_children( size_t i , node_base_type* n )
+    void set_child_node( size_t i , node_base_type* n ) noexcept
     {
         m_children[i] = n;
     }
     
     
-    node_base_type* parent( void ) noexcept
+    node_base_type* parent_node( void ) noexcept
     {
         return m_parent;
     }
     
     
-    node_base_type const* parent( void ) const noexcept
+    node_base_type const* parent_node( void ) const noexcept
     {
         return m_parent;
     }
+    
+    void set_parent_node( node_base_type *parent ) noexcept
+    {
+        m_parent = parent;
+    }
+
 
     size_t child_index( node_base_type const* child ) const
     {
@@ -94,11 +100,6 @@ public:
         return std::distance( m_children.begin() , iter );
     }
     
-    
-    void attach_parent( node_base_type *parent )
-    {
-        m_parent = parent;
-    }
     
     void remove_child( node_base_type *child )
     {
