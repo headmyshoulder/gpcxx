@@ -1,0 +1,44 @@
+language: cpp
+os: 
+  - linux
+  - osx
+compiler:
+  - gcc
+  - clang
+
+env:
+  - CXXSTD=''
+  - CXXSTD='cxxflags="-std=c++11"'
+
+# For now disable gcc on osx as g++4.8 is not yet available
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+
+before_install:
+ - wget http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.bz2/download -O /tmp/boost.tar.bz2
+ - wget https://googletest.googlecode.com/files/gtest-1.7.0.zip -O /tmp/gtest.zip
+ - wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip -O /tmp/gmock.zip
+ - tar jxf /tmp/boost.tar.bz2
+ - mv boost_1_57_0 $PWD/boost
+ - unzip /tmp/gtest.zip
+ - unzip /tmp/gmock.zip
+ - mv gtest-1.7.0 $PWD/gtest
+ - mv gmock-1.7.0 $PWD/gmock
+ - export BOOST_ROOT="$PWD/boost"
+
+ - cd $TRAVIS_BUILD_DIR
+ - if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$CC" = "gcc" ]; then export CC=gcc-4.8; fi
+ - $CC --version
+ - mkdir build
+
+script:
+ - cd third_party
+ - ln -s $PWD/gtest 
+ - ln -s $PWD/gmock
+ - cd ../build
+ - cmake ..
+ - make 
+ - make test
+
