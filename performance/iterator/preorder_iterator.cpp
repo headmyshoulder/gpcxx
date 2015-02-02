@@ -37,6 +37,27 @@ void write_tree_iterator( std::ostream& out , Tree& t , std::string const& sep =
     }
 }
 
+template< typename Tree >
+void write_tree_stack( std::ostream& out , Tree &t , std::string const& sep = "|" )
+{
+    if( t.empty() ) return;
+
+    using cursor = typename Tree::cursor;
+    
+    out << *( t.root() );
+    std::stack< cursor > s;
+    for( int i=t.root().size() - 1 ; i>=0 ; --i )
+        s.push( t.root().children(i) );
+    while( ! s.empty() )
+    {
+        cursor current = s.top();
+        out << sep << *current;
+        s.pop();
+        for( int i=current.size() - 1 ; i >= 0 ; --i )
+            s.push( current.children(i) );
+    }
+}
+
 int main( int argc , char **argv )
 {
     using value_type = std::string;
@@ -53,6 +74,9 @@ int main( int argc , char **argv )
         { 2.0 * double( terminals.num_symbols() ) , 0 , terminals } ,
         { double( unaries.num_symbols() ) , 1 , unaries } ,
         { double( binaries.num_symbols() ) , 2 , binaries } };
+
+    // size_t max_tree_height = 15;
+    // size_t population_size = 512 * 256;
 
     size_t max_tree_height = 15;
     size_t population_size = 512 * 256;
@@ -83,7 +107,20 @@ int main( int argc , char **argv )
         stream2 << gpcxx::polish( tree , "|" ) << std::endl;
     }
     std::cout << "Finished cursor based polish output in " << timer.seconds() << " seconds. Wrote " << stream2.str().size() << " bytes." << std::endl;
-    std::cout << "Output of both version is equal: " << ( ( stream1.str() == stream2.str() ) ? "yes" : "no" ) << std::endl;
+
+
+    std::cout << "Starting cursor and stack based polish output." << std::endl;
+    timer.restart();
+    std::ostringstream stream3;
+    for( auto& tree : population )
+    {
+        write_tree_stack( stream3 , tree , "|" );
+        stream3 << std::endl;
+    }
+    std::cout << "Finished cursor and stack based polish output in " << timer.seconds() << " seconds. Wrote " << stream2.str().size() << " bytes." << std::endl;
+
+    bool equal = ( ( stream1.str() == stream2.str() ) && ( stream2.str() == stream3.str() ) );
+    std::cout << "Output of all version is equal: " << ( equal ? "yes" : "no" ) << std::endl;
 
     
 
