@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/Ambrosys/gpcxx.svg)](https://travis-ci.org/Ambrosys/gpcxx)
 
+[![Coverity](https://scan.coverity.com/projects/4209/badge.svg)](https://scan.coverity.com/projects/4209)
+
 Introduction
 ============
 
