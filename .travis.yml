@@ -17,6 +17,7 @@ env:
   matrix:
     - BUILD_TYPE=Debug
     - BUILD_TYPE=Release
+    - BUILD_TYPE=Coverage
 
 
 matrix:
@@ -27,7 +28,7 @@ matrix:
 
 before_install:
   - export GPCXX_ROOT=`pwd`
-
+  
   # install g++
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -qq
@@ -60,4 +61,3 @@ script:
   - cmake .. -DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" -DCMAKE_EXE_LINKER_FLAGS="${CXX_LINKER_FLAGS}"
   - make 
   - make test
-
