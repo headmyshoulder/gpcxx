@@ -27,7 +27,7 @@ void test_cursor( Cursor n , std::string const& value , size_t arity , size_t he
 template< typename T >
 void test_cursor( gpcxx::detail::intrusive_cursor< T > n , std::string const& value , size_t arity , size_t height , size_t level )
 {
-    EXPECT_EQ( n.node()->name() , value );
+    // EXPECT_EQ( n.node()->name() , value );
     EXPECT_EQ( n.size() , arity );
     EXPECT_EQ( n.height() , height );
     EXPECT_EQ( n.level() , level );

@@ -14,6 +14,7 @@
 
 #include <gpcxx/tree/intrusive_node.hpp>
 #include <gpcxx/tree/detail/intrusive_cursor.hpp>
+#include <gpcxx/tree/cursor_traits.hpp>
 
 #include <functional>
 #include <array>
@@ -21,6 +22,7 @@
 #include <cassert>
 #include <algorithm>
 #include <queue>
+
 
 
 namespace gpcxx {
@@ -31,21 +33,36 @@ template< typename Node >
 class intrusive_tree
 {
     typedef intrusive_tree< Node > self_type;
+
+    template< typename OtherCursor >
+    struct same_value_type
+    {
+        typedef typename std::is_convertible< typename cursor_value< OtherCursor >::type , Node >::type type;
+    };
+
+    template< typename OtherCursor >
+    struct other_cursor_enabler :
+        std::enable_if< boost::mpl::and_< is_cursor< OtherCursor > , same_value_type< OtherCursor > >::value >
+    {
+    };
+
     
 public:
     
-    typedef Node node_type;
-    typedef node_type* node_pointer;
-    typedef detail::intrusive_cursor< node_type > cursor;
-    typedef detail::intrusive_cursor< node_type const > const_cursor;
-    typedef size_t size_type;
-    typedef node_type value_type;
+    using node_type = Node;
+    using node_pointer = node_type* ;
+    using cursor = detail::intrusive_cursor< node_type >;
+    using const_cursor = detail::intrusive_cursor< node_type const >;
+    using node_base_type = typename node_type::node_base_type;
+    using node_base_pointer = node_base_type*;
+    using size_type = size_t;
+    using value_type = node_type;
     
     //
     // construct:
     //
     intrusive_tree( void )
-    : m_root( nullptr ) , m_size( 0 ) { }
+    : m_header{} , m_size{ 0 } { }
     
     template< typename InputCursor >
     intrusive_tree( InputCursor subtree )
@@ -117,34 +134,34 @@ public:
         return ( size() == 0 );
     }
     
-    cursor root( void )
+    cursor root() noexcept
     {
-        return cursor( m_root );
+        return cursor( &m_header , 0 );
     }
     
-    const_cursor root( void ) const
+    const_cursor root() const noexcept
     {
-        return const_cursor( m_root );
+        return const_cursor( &m_header , 0 );
     }
     
-    const_cursor croot( void ) const
+    const_cursor croot() const noexcept
     {
-        return root();
+        return const_cursor( &m_header , 0 );
     }
-    
-    cursor shoot( void )
+
+    cursor shoot() noexcept
     {
-        return cursor( nullptr );
+        return cursor( &m_header , 1 );
     }
-    
-    const_cursor shoot( void ) const
+
+    const_cursor shoot() const noexcept
     {
-        return const_cursor( nullptr );
+        return const_cursor( &m_header , 1 );
     }
-    
-    const_cursor cshoot( void ) const
+
+    const_cursor cshoot() const noexcept
     {
-        return shoot();
+        return const_cursor( &m_header , 1 );
     }
 
 
@@ -163,10 +180,6 @@ public:
         return rank_is_impl< const_cursor >( root() , n );
     }
     
-    size_t hash( void ) const
-    {
-        
-    }
 
     
     //
@@ -180,47 +193,42 @@ public:
     }
 
     
-    cursor insert_below( cursor c , node_type const& n )
+    cursor insert_below( cursor position , node_type const& n )
     {
-        ++m_size;
-        cursor ret;
-        if( c.node() == nullptr )
-        {
-            m_root = new node_type( n );
-            m_root->clear_children();
-            ret = cursor( m_root );
-        }
-        else
-        {
-            node_type *new_node = new node_type( n );
-            new_node->clear_children();
-            c.node()->attach_child( new_node );
-            new_node->set_parent_node( c.node() );
-            ret = cursor( new_node );
-        }
-        for( size_t i=0 ; i<n.size() ; ++i )
-            insert_below( ret , static_cast< node_type const& >( *( n.child_node( i ) ) ) );
-        return ret;
+        node_pointer new_node = new node_type { n };
+        new_node->clear_children(); // put into copy ctor
+        return insert_below_impl( position , new_node );
     }
     
-    template< typename InputCursor >
-    cursor insert_below( cursor c , InputCursor other )
+    template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
+    cursor insert_below( cursor position , InputCursor subtree )
     {
-        insert_below( c , *( other.node() ) );
+        cursor p = insert_below( position , *subtree );
+        for( InputCursor c = subtree.begin() ; c != subtree.end() ; ++c )
+        {
+            insert_below( p , c );
+        }
+        return p;        
     }
     
     void erase( cursor position ) noexcept
     {
+        --m_size;
         if( position.node() == nullptr ) return;
-        node_pointer parent = position.parent_node();
-        if( parent != nullptr ) parent->remove_child( position.node() );
-        erase_impl( position );
+        
+        for( cursor c = position.begin() ; c != position.end() ; ++c )
+        {
+            erase_impl( c );
+        }
+        node_pointer ptr = static_cast< node_pointer >( position.node() );
+        position.parent_node()->remove_child( ptr );        
+        delete ptr;
     }
+
     
     void clear( void )
     {
-        erase( m_root );
-        m_root = nullptr;
+        erase( root() );
     }
     
     void swap( intrusive_tree& other )
@@ -232,32 +240,30 @@ public:
     
     void swap_subtrees( cursor c1 , intrusive_tree& other , cursor c2 )
     {
-        node_pointer n1 = c1.node();
-        node_pointer n2 = c2.node();
+        node_base_pointer parent1 = c1.parent_node();
+        node_base_pointer parent2 = c2.parent_node();
+        node_base_pointer n1 = c1.node();
+        node_base_pointer n2 = c2.node();
+        
+        size_type i1 = parent1->child_index( n1 );
+        size_type i2 = parent2->child_index( n2 );
+        
+        parent1->set_child_node( i1 , n2 );
+        parent2->set_child_node( i2 , n1 );
         
         long num_nodes1 = 0 , num_nodes2 = 0;
-        if( ( n1 == nullptr ) && ( n2 == nullptr ) )
+        if( n1 != nullptr )
         {
-            return;
-        }
-        else if( n1 == nullptr )
-        {
-            num_nodes2 = n2->count_nodes();
-            swap_subtree_impl1( *this , other , n2 );
-        }
-        else if( n2 == nullptr )
-        {
+            n1->set_parent_node( parent2 );
             num_nodes1 = n1->count_nodes();
-            swap_subtree_impl1( other , *this , n1 );
         }
-        else
+        if( n2 != nullptr )
         {
-            num_nodes1 = n1->count_nodes();
+            n2->set_parent_node( parent1 );
             num_nodes2 = n2->count_nodes();
-            swap_subtree_impl2( *this , n1 , other , n2 );
         }
-        m_size = m_size - ( num_nodes1 - num_nodes2 );
-        other.m_size = other.m_size - ( num_nodes2 - num_nodes1 );
+        m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
+        other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
     }
 
 
@@ -268,72 +274,50 @@ private:
     void erase_impl( cursor position ) noexcept
     {
         --m_size;
-        for( size_t i=0 ; i<position.size() ; ++i )
-            erase_impl( position.children(i) );
-        node_pointer ptr = position.node();
+        for( cursor c = position.begin() ; c != position.end() ; ++c )
+        {
+            erase_impl( c );
+        }
+        node_pointer ptr = static_cast< node_pointer >( position.node() );
         delete ptr;
+    }
+    
+    cursor insert_below_impl( cursor position , node_pointer new_node )
+    {
+        ++m_size;
+        if( position.node() == nullptr )
+        {
+            assert( position.parent_node()->size() == 0 );
+            
+            new_node->set_parent_node( position.parent_node() );
+            size_type index = position.parent_node()->attach_child( new_node );
+            assert( index == 0 );
+            return cursor( position.parent_node() , index );
+        }
+        else
+        {
+            assert( position.size() < position.max_size() );
+
+            new_node->set_parent_node( position.node() );
+            size_type index = position.node()->attach_child( new_node );
+            return cursor( position.node() , index );
+        }
     }
     
     void move_impl( intrusive_tree &&tree )
     {
         if( !tree.empty() )
         {
-            m_root = tree.m_root;
+            node_base_pointer n = tree.m_header.child_node( 0 );
+            n->set_parent_node( &m_header );
+            m_header.attach_child( n );
             m_size = tree.m_size;
-            tree.m_root = nullptr;
+            
             tree.m_size = 0;
+            tree.m_header.set_child_node( 0 , nullptr );
         }
     }
     
-    static void swap_subtree_impl1( intrusive_tree &t1 , intrusive_tree &t2 , node_pointer n2 )
-    {
-        t1.m_root = n2;
-        node_pointer p2 = static_cast< node_pointer >( n2->parent_node() );
-        if( p2 != nullptr )
-        {
-            n2->parent_node()->remove_child( n2 );
-        }
-        else
-        {
-            t2.m_root = nullptr;
-        }
-        n2->set_parent_node( nullptr );
-    }
-    
-    static void swap_subtree_impl2( intrusive_tree &t1 , node_pointer n1 , intrusive_tree &t2 , node_pointer n2 )
-    {
-        node_pointer p1 = static_cast< node_pointer >( n1->parent_node() );
-        node_pointer p2 = static_cast< node_pointer >( n2->parent_node() );
-        
-        auto swap1 = []( intrusive_tree &t1 , node_pointer n1 , node_pointer n2 , node_pointer p2 ) -> void {
-            t1.m_root = n2;
-            ( * ( p2->find_child( n2 ) ) ) = n1 ;
-            n2->set_parent_node( nullptr );
-            n1->set_parent_node( p2 );
-        };
-        
-        if( ( p1 == nullptr ) && ( p2 == nullptr ) )
-        {
-            t1.m_root = n2;
-            t2.m_root = n1;
-        }
-        else if( p1 == nullptr )
-        {
-            swap1( t1 , n1 , n2 , p2 );
-        }
-        else if( p2 == nullptr )
-        {
-            swap1( t2 , n2 , n1 , p1 );
-        }
-        else
-        {
-            * ( p1->find_child( n1 ) ) = n2;
-            * ( p2->find_child( n2 ) ) = n1;
-            n2->set_parent_node( p1 );
-            n1->set_parent_node( p2 );
-        }
-    }
-
     
     template< typename Cursor >
     Cursor rank_is_impl( Cursor c , size_type remaining ) const
@@ -352,7 +336,8 @@ private:
         return cursor_queue.front();
     }
 
-    node_pointer m_root;
+    // node_pointer m_root;
+    node_base_type m_header;
     size_type m_size;
 };
 

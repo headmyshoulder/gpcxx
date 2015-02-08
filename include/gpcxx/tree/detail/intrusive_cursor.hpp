@@ -15,13 +15,43 @@
 #include <gpcxx/tree/detail/node_helpers.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 
+#include <boost/iterator/iterator_facade.hpp>
+#include <boost/iterator/iterator_concepts.hpp>
+
+
 
 namespace gpcxx {
 namespace detail {
 
 template< class Node >
-class intrusive_cursor 
+class intrusive_cursor : public boost::iterator_facade<
+    intrusive_cursor< Node > ,                           // Derived-Iterator
+    Node ,            // Value
+    boost::random_access_traversal_tag // ,               // Category
+    // boost::use_default ,                               // Reference
+    // boost::use_default 
+    >
 {
+    friend class boost::iterator_core_access;
+    
+    typedef typename node_base_getter< Node >::type node_base;
+    typedef node_base* node_base_pointer;
+//     typedef typename std::remove_const< node_base >::type real_node_base;
+//     typedef real_node_base* real_node_base_pointer;
+//     typedef real_node_base const* const_real_node_base_pointer;
+
+    
+    typedef boost::iterator_facade<
+        intrusive_cursor< Node > ,                        // Derived-Iterator
+        Node ,         // Value
+        boost::random_access_traversal_tag > base_type;
+    
+//     template< typename OtherNode >
+//     struct other_node_enabler : public std::enable_if< std::is_convertible< typename OtherNode::value_type* , typename base_type::value_type* >::value >
+//     {
+//     };
+
+    
 public:
     
     typedef Node node_type;
@@ -33,10 +63,14 @@ public:
     typedef node_type const& const_node_reference;
     typedef size_t size_type;
     typedef node_type value_type;
+    
 
+    intrusive_cursor( node_base_pointer node = nullptr , size_type pos = 0 ) noexcept
+    : m_node( node ) , m_pos( pos ) { }
 
-    intrusive_cursor( node_pointer node = nullptr ) noexcept
-    : m_node( node ) { }
+    intrusive_cursor( intrusive_cursor const& ) = default;
+    intrusive_cursor& operator=( intrusive_cursor const& ) = default;
+
 
 //    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
 //     basic_node_cursor( basic_node_cursor< OtherNode > const& other )
@@ -59,64 +93,66 @@ public:
     
     
     
-//     cursor begin( void )
-//     {
-//         return cursor( child_node( 0 ) );
-//     }
-// 
-//     const_cursor begin( void ) const
-//     {
-//         return cbegin();
-//     }
-//     
-//     const_cursor cbegin( void ) const
-//     {
-//         return const_cursor( child_node( 0 ) );
-//     }
-//     
-//     cursor end( void )
-//     {
-//         return cursor( child_node( node()->size() ) );
-//     }
-//     
-//     const_cursor end( void ) const
-//     {
-//         return cend();
-//     }
-//     
-//     const_cursor cend( void ) const
-//     {
-//         return const_cursor( child_node( node()->size() ) );
-//     }
+    cursor begin( void )
+    {
+        return cursor( m_node->child_node( m_pos ) , 0 );
+    }
     
+    const_cursor begin( void ) const
+    {
+        return cbegin();
+    }
     
+    const_cursor cbegin( void ) const
+    {
+        return const_cursor( m_node->child_node( m_pos ) , 0 );
+    }
+    
+    cursor end( void )
+    {
+        return cursor( m_node->child_node( m_pos ) , this->size() );
+    }
+    
+    const_cursor end( void ) const
+    {
+        return cend();
+    }
+    
+    const_cursor cend( void ) const
+    {
+        return const_cursor( m_node->child_node( m_pos ) , this->size() );
+    }
     
     cursor parent( void )
     {
-        return cursor( parent_node() );
+        assert( ! is_root() );
+        auto parent_node = m_node->parent_node();
+        return cursor( parent_node , parent_node->child_index( m_node ) );
     }
 
     const_cursor parent( void ) const
     {
-        return const_cursor( parent_node() );
+        assert( ! is_root() );
+        auto parent_node = m_node->parent_node();
+        return const_cursor( parent_node , parent_node->child_index( m_node ) );
     }
 
 
     cursor children( size_type i )
     {
-        return cursor( child_node( i ) );
+        return cursor( m_node->child_node( m_pos ) , i );
     }
     
     const_cursor children( size_type i ) const
     {
-        return const_cursor( child_node( i ) );
+        return const_cursor( m_node->child_node( m_pos ) , i );
     }
     
     
     
     size_type size( void ) const noexcept
     {
-        return m_node->size();
+        return m_node->child_node( m_pos )->size();
     }
     
     size_type max_size( void ) const noexcept
@@ -126,120 +162,89 @@ public:
     
     size_type height( void ) const noexcept
     {
-        if( node() == nullptr ) return 0;
-        
-        size_type h = 0;
-        for( size_t i=0 ; i<size() ; ++i )
-            h = std::max( h , children(i).height() );
-        return 1 + h;
-
+        return node()->height();
     }
 
     size_type level( void ) const noexcept
     {
-        if( node() == nullptr ) return 0;
-        if( parent_node() == nullptr ) return 0;
-        return 1 + parent().level();
-    }
-
-    node_reference operator*( void )
-    {
-        return *m_node;
+        return parent_node()->level();   // level is shifted, because the root is not the very first node.
     }
     
-    const_node_reference operator*( void ) const
+    bool is_root( void ) const noexcept
     {
-        return *m_node;
+        return ( ( m_node->parent_node() == 0 ) && ( m_pos == 0 ) );
     }
     
-    node_pointer operator->( void )
+    bool is_shoot( void ) const noexcept
     {
-        return m_node;
-    }
-    
-    const_node_pointer operator->( void ) const
-    {
-        return m_node;
-    }
-    
-    bool operator==( intrusive_cursor c ) const
-    {
-        return c.m_node == m_node;
-    }
-    
-    bool operator!=( intrusive_cursor c ) const
-    {
-        return !( *this == c );
+        return ( ( m_node->parent_node() == 0 ) && ( m_pos == 1 ) );
     }
 
     
-
+    
 public:
 
-    node_pointer parent_node( void ) noexcept
-    {
-        return static_cast< node_pointer >( m_node->parent_node() );
-    }
-
-    const_node_pointer parent_node( void ) const noexcept
-    {
-        return static_cast< const_node_pointer >( m_node->parent_node() );
-    }
-
-    node_pointer node( void ) noexcept
+    node_base_pointer parent_node( void ) noexcept
     {
         return m_node;
     }
 
-    const_node_pointer node( void ) const noexcept
+    const node_base_pointer parent_node( void ) const noexcept
     {
         return m_node;
     }
-    
-    node_pointer child_node( size_t i ) noexcept
+
+    node_base_pointer node( void ) noexcept
     {
-        return static_cast< node_pointer >( m_node->child_node( i ) );
+        return m_node->child_node( m_pos );
+    }
+
+    const node_base_pointer node( void ) const noexcept
+    {
+        return m_node->child_node( m_pos );
     }
     
-    const_node_pointer child_node( size_t i ) const noexcept
+    /// REMOVE LATER, ONLY FOR DEBUGGING
+    size_type pos( void ) const noexcept
     {
-        return static_cast< const_node_pointer >( m_node->child_node( i ) );
+        return m_pos;
     }
 
 
 private:
 
-//     void increment( void )
-//     {
-//         ++m_pos;
-//     }
-//     
-//     void decrement( void )
-//     {
-//         --m_pos;
-//     }
-//     
-//     void advance( typename base_type::difference_type n )
-//     {
-//         m_pos += n;
-//     }
-//     
-//     typename base_type::difference_type distance_to( basic_node_cursor const& other ) const
-//     {
-//         // TODO: implement
-//     }
-// 
-//     bool equal( basic_node_cursor const& other) const
-//     {
-//         return ( other.m_node == m_node ) && ( other.m_pos == m_pos );
-//     }
-// 
-//     typename base_type::reference dereference() const
-//     {
-//         return **static_cast< node_pointer >( m_node->children( m_pos ) );
-//     }
+    void increment( void )
+    {
+        ++m_pos;
+    }
     
-    node_pointer m_node;
+    void decrement( void )
+    {
+        --m_pos;
+    }
+    
+    void advance( typename base_type::difference_type n )
+    {
+        m_pos += n;
+    }
+    
+    typename base_type::difference_type distance_to( intrusive_cursor const& other ) const
+    {
+        // TODO: implement
+    }
+
+    bool equal( intrusive_cursor const& other) const
+    {
+        return ( other.m_node == m_node ) && ( other.m_pos == m_pos );
+    }
+
+    node_type& dereference() const
+    {
+        return *static_cast< node_pointer >( m_node->child_node( m_pos ) );
+    }
+    
+    node_base_pointer m_node;
+    size_type m_pos;
 };
 
 template< typename Node1 , typename Node2 >
