@@ -11,8 +11,7 @@
 
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
-#include <gpcxx/tree/basic_intrusive_node.hpp>
-#include <gpcxx/tree/basic_named_intrusive_node.hpp>
+#include <gpcxx/tree/intrusive_named_func_node.hpp>
 #include <gpcxx/util/identity.hpp>
 
 #include <string>
@@ -33,7 +32,7 @@ template<> struct get_tree_type< basic_tree_tag >
 
 template<> struct get_tree_type< intrusive_tree_tag >
 {
-    typedef gpcxx::intrusive_tree< gpcxx::basic_named_intrusive_node< double , context_type const , 3 > > type;
+    typedef gpcxx::intrusive_tree< gpcxx::intrusive_named_func_node< double , context_type const , 3 > > type;
 };
 
 

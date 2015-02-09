@@ -7,8 +7,7 @@
 #define FUSION_MAX_VECTOR_SIZE 20
 
 #include <gpcxx/tree/intrusive_tree.hpp>
-#include <gpcxx/tree/basic_intrusive_node.hpp>
-#include <gpcxx/tree/basic_named_intrusive_node.hpp>
+#include <gpcxx/tree/intrusive_named_func_node.hpp>
 #include <gpcxx/tree/intrusive_func.hpp>
 
 #include <gpcxx/generate/uniform_symbol.hpp>
@@ -48,7 +47,7 @@ typedef gpcxx::regression_training_data< value_type , 3 > trainings_data_type;
 typedef std::mt19937 rng_type ;
 typedef std::array< value_type , 3 > eval_context_type;
 typedef std::vector< value_type > fitness_type;
-typedef gpcxx::basic_named_intrusive_node< double , eval_context_type const > node_type;
+typedef gpcxx::intrusive_named_func_node< double , eval_context_type const > node_type;
 typedef gpcxx::intrusive_tree< node_type > tree_type;
 typedef std::vector< tree_type > population_type;
 

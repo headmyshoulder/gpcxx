@@ -68,7 +68,7 @@ int main( int argc , char *argv[] )
     
     //[ define_tree_types
     using context_type = gpcxx::regression_context< double , 3 >;
-    using node_type = gpcxx::basic_named_intrusive_node< double , const context_type > ;
+    using node_type = gpcxx::intrusive_named_func_node< double , const context_type > ;
     using tree_type = gpcxx::intrusive_tree< node_type >;
     //]
     
