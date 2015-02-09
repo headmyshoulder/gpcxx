@@ -20,17 +20,19 @@ namespace gpcxx {
 namespace detail {
 
 template< typename Iter , typename Tree , typename Cursor , typename Mapper >
-Iter read_polish( Iter first , Tree &tree , Cursor cursor , Mapper const& mapper )
+Iter read_polish_impl( Iter first , Tree &tree , Cursor cursor , Mapper const& mapper )
 {
     if( first == Iter {} ) return first;
     
-    std::string elem { boost::begin( *first ) , boost::end( *first ) };
+    auto b1 = boost::begin( *first );
+    auto b2 = boost::end( *first );
+    std::string elem { b1 , b2 };
     
     auto const& generator = mapper( elem );
     auto current = tree.insert_below( cursor , generator.second() );
 
     for( size_t i=0 ; i<generator.first ; ++i )
-        first = read_polish( ++first , tree , current , mapper );
+        first = read_polish_impl( ++first , tree , current , mapper );
     return first;
 }
 
