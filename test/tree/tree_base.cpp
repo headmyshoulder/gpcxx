@@ -21,5 +21,5 @@ using namespace gpcxx;
 
 TEST( TESTNAME , TestCase )
 {
-    tree_base< std::string > t;
+    detail::tree_base< std::string > t;
 }
