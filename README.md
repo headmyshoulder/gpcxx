@@ -24,3 +24,7 @@ Documentation
 =============
 
 Browse the [documentation](http://ambrosys.github.io/gpcxx/doc/).
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Ambrosys/gpcxx/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
