@@ -12,49 +12,47 @@
 #ifndef GPCXX_TREE_INTRUSIVE_NODE_HPP_INCLUDED
 #define GPCXX_TREE_INTRUSIVE_NODE_HPP_INCLUDED
 
+#include <gpcxx/tree/detail/node_base.hpp>
+
 #include <array>
 #include <algorithm>
 #include <cassert>
 
     
 namespace gpcxx {
+    
+namespace detail {
 
-namespace detail
-{
-    template< typename Node >
-    struct intrusive_cursor;
+template< typename Node > class tree_base_cursor;
+
 }
 
-template< typename Node >
-class intrusive_tree;
+
 
 template< typename Node , size_t MaxArity = 2 >
-class intrusive_node
+class intrusive_node : public detail::node_base< MaxArity >
 {
-    template< typename T >
-    friend class intrusive_tree;
-    
-    template< typename T >
-    friend class detail::intrusive_cursor;
-    
+    template< typename N > friend class detail::tree_base_cursor;
+   
 public:
     
-    static const size_t max_arity = MaxArity;
     using node_type = Node;
+    using node_base_type = detail::node_base< MaxArity >;
     using node_pointer = node_type*;
     using const_node_pointer = node_type const*;
-    using cursor = detail::intrusive_cursor< node_type >;
-    using const_cursor = detail::intrusive_cursor< node_type const >;
-    using children_type = std::array< node_pointer , max_arity >;
+    using value_type = node_type;
+    using reference = value_type&;
+    using const_reference = value_type const&;
     
     intrusive_node( node_type *parent = nullptr ) noexcept
-    : m_parent( parent ) , m_children()
+    : node_base_type( parent )
     {
-        clear_children();
     }
     
-    intrusive_node( intrusive_node const& ) = default;
-    intrusive_node( intrusive_node && ) = default;
+    intrusive_node( intrusive_node const& )
+    : node_base_type() {}
+    intrusive_node( intrusive_node && )
+    : node_base_type() {}
     
     intrusive_node& operator=( intrusive_node const& )
     {
@@ -66,161 +64,35 @@ public:
         return *this;
     }
 
-    cursor children( size_t i ) noexcept;
-    
-    const_cursor children( size_t i ) const  noexcept;
-
-    
-    size_t max_size( void ) const noexcept
+    node_type& child( size_t i ) noexcept
     {
-        return max_arity;
+        return static_cast< node_type& >( *( this->child_node(i) ) );
     }
     
-    
-    size_t size( void ) const noexcept
+    node_type const& child( size_t i ) const noexcept
     {
-        typename children_type::const_iterator end = std::find( m_children.begin() , m_children.end() , nullptr );
-        return std::distance( m_children.begin() , end );
-    }
-
-    size_t count_nodes( void ) const noexcept
-    {
-        size_t count = 1;
-        typename children_type::const_iterator iter = m_children.begin();
-        typename children_type::const_iterator end = m_children.begin() + size();
-        for( ; iter != end ; ++iter )
-        {
-            count += ( (*iter)->count_nodes() );
-        }
-        return count;
-    }
-
-protected:
-    
-    void clear_children( void ) noexcept
-    {
-        std::fill( m_children.begin() , m_children.end() , nullptr );
-    }
-
-    
-    node_pointer child_node( size_t i ) noexcept
-    {
-        return m_children[i];
+        return static_cast< node_type const& >( *( this->child_node(i) ) );
     }
     
-    
-    const_node_pointer child_node( size_t i ) const noexcept
+    void clear_children( void )
     {
-        return m_children[i];
+        std::fill( this->m_children.begin() , this->m_children.end() , nullptr );
     }
     
+private:
     
-    void set_children( size_t i , node_pointer n ) noexcept
-    {
-        m_children[i] = n;
-    }
+    reference get( void ) noexcept { return *static_cast< Node* >( this ); }
     
-    
-    node_pointer parent( void ) noexcept
-    {
-        return m_parent;
-    }
+    const_reference get( void ) const noexcept { return *static_cast< Node const* >( this ); }
     
     
-    const_node_pointer parent( void ) const noexcept
-    {
-        return m_parent;
-    }
-
-    size_t child_index( const_node_pointer child ) const
-    {
-        return std::distance( m_children.begin() , find_child( child ) );
-    }
-    
-    
-    size_t attach_child( node_pointer child ) noexcept
-    {
-        typename children_type::iterator iter = find_free_child_entry();
-        assert( iter != m_children.end() );
-        *iter = child;
-        return std::distance( m_children.begin() , iter );
-    }
-    
-    
-    void attach_parent( node_pointer parent ) noexcept
-    {
-        m_parent = parent;
-    }
-    
-    void remove_child( node_pointer child ) noexcept
-    {
-        typename children_type::iterator iter = find_child( child );
-        typename children_type::iterator end = m_children.begin() + size();
-        
-        assert( iter != m_children.end() );
-        
-        std::copy( iter + 1 , end-- , iter );
-        *end = nullptr;
-    }
-    
-    void replace_child( node_pointer old_child , node_pointer new_child ) noexcept
-    {
-        typename children_type::iterator iter = find_child( old_child );
-        assert( iter != m_children.end() );
-        *iter = new_child;
-    }
-    
-  
-    
-protected:
-    
-    typename children_type::iterator find_free_child_entry( void ) noexcept
-    {
-        return std::find_if( m_children.begin() , m_children.end() , []( const_node_pointer ptr ) { return ptr == nullptr; } );
-    }
-    
-    typename children_type::const_iterator find_free_child_entry( void ) const noexcept
-    {
-        return std::find_if( m_children.begin() , m_children.end() , []( const_node_pointer ptr ) { return ptr == nullptr; } );
-    }
-    
-    typename children_type::iterator find_child( const_node_pointer child ) noexcept
-    {
-        return std::find( m_children.begin() , m_children.end() , child );
-    }
-    
-    typename children_type::const_iterator find_child( const_node_pointer child ) const noexcept
-    {
-        return std::find( m_children.begin() , m_children.end() , child );
-    }
-    
-    node_pointer m_parent;
-    children_type m_children;
 };
 
 
 } // namespace gpcxx
 
-#include <gpcxx/tree/detail/intrusive_cursor.hpp>
 
 
-namespace gpcxx {
-
-template< typename Node , size_t Arity >
-typename intrusive_node< Node , Arity >::cursor intrusive_node< Node , Arity >::children( size_t i ) noexcept
-{
-    return cursor( m_children[ i ] );
-}
-    
-template< typename Node , size_t Arity >
-typename intrusive_node< Node , Arity >::const_cursor intrusive_node< Node , Arity >::children( size_t i ) const noexcept
-{
-    return const_cursor( m_children[i] );
-}
-
-
-
-} // namespace gpcxx
 
 
 #endif // GPCXX_TREE_INTRUSIVE_NODE_HPP_INCLUDED

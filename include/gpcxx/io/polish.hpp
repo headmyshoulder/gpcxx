@@ -82,14 +82,14 @@ std::ostream& operator<<( std::ostream& out , polish_printer< T , SymbolMapper >
 template< typename Tree , typename NodeMapper >
 void read_polish( std::string str , Tree &tree , NodeMapper const& mapper , std::string const& sep = "|" , std::string const &opening = "" , std::string const& closing = "" )
 {
-    using iterator = boost::split_iterator< std::string::const_iterator >;
+    using iterator_t = boost::split_iterator< std::string::const_iterator >;
     
     if( opening != "" ) boost::algorithm::erase_all( str , opening );
     if( closing != "" ) boost::algorithm::erase_all( str , closing );
     
-    iterator first = iterator { str , boost::first_finder( sep , boost::is_iequal() ) };
+    iterator_t first = iterator_t( str , boost::first_finder( sep , boost::is_iequal() ) );
     
-    detail::read_polish( first , tree , tree.root() , mapper );
+    detail::read_polish_impl( first , tree , tree.root() , mapper );
 }
     
 

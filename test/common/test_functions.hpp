@@ -12,26 +12,34 @@
 #ifndef GPCXX_TEST_COMMON_TEST_FUNCTIONS_HPP_INCLUDED
 #define GPCXX_TEST_COMMON_TEST_FUNCTIONS_HPP_INCLUDED
 
-#include <gpcxx/tree/detail/intrusive_cursor.hpp>
+#include <gpcxx/tree/intrusive_named_func_node.hpp>
 #include <gtest/gtest.h>
+
+template< typename T >
+void test_value( T const& t , std::string const& value )
+{
+    EXPECT_EQ( t , value );
+}
+
+template< typename Res , typename Context, size_t Arity >
+void test_value( gpcxx::intrusive_named_func_node< Res , Context , Arity > const& t , std::string const& value )
+{
+    EXPECT_EQ( t.name() , value );
+}
+
 
 template< typename Cursor >
 void test_cursor( Cursor n , std::string const& value , size_t arity , size_t height , size_t level )
 {
-    EXPECT_EQ( *n , value );
     EXPECT_EQ( n.size() , arity );
     EXPECT_EQ( n.height() , height );
     EXPECT_EQ( n.level() , level );
+    test_value( *n , value );
 }
 
-template< typename T >
-void test_cursor( gpcxx::detail::intrusive_cursor< T > n , std::string const& value , size_t arity , size_t height , size_t level )
-{
-    EXPECT_EQ( n.node()->name() , value );
-    EXPECT_EQ( n.size() , arity );
-    EXPECT_EQ( n.height() , height );
-    EXPECT_EQ( n.level() , level );
-}
+
+
+
 
 
 #endif // GPCXX_TEST_COMMON_TEST_FUNCTIONS_HPP_INCLUDED

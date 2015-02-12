@@ -11,7 +11,7 @@
 
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
-#include <gpcxx/tree/basic_intrusive_node.hpp>
+#include <gpcxx/tree/intrusive_func_node.hpp>
 #include <gpcxx/tree/intrusive_func.hpp>
 #include <gpcxx/app/timer.hpp>
 
@@ -35,7 +35,7 @@ using vector_type = std::vector< value_type >;
 using rng_type = std::mt19937;
 
 using context_type = std::array< double , 3 >;
-using node_type = gpcxx::basic_intrusive_node< double , context_type >;
+using node_type = gpcxx::intrusive_func_node< double , context_type >;
 
 using terminal_x = gpcxx::array_terminal< 0 >;
 using terminal_y = gpcxx::array_terminal< 1 >;

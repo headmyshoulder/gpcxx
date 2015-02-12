@@ -10,11 +10,13 @@
  */
 
 #include <gpcxx/tree/intrusive_tree.hpp>
+#include <gpcxx/tree/intrusive_node.hpp>
 
 #include <gtest/gtest.h>
 
 #include <sstream>
 #include <array>
+#include <functional>
 
 #define TESTNAME intrusive_tree_tests
 
@@ -46,7 +48,7 @@ struct NAME : public intrusive_node< NAME >                                     
 {                                                                                                     \
     double operator()( context_type const& c , my_node const& node ) const                            \
     {                                                                                                 \
-        return FUNC( node.children( 0 )->eval( c ) );                                                 \
+        return FUNC( node.child( 0 ).eval( c ) );                                                     \
     }                                                                                                 \
 }
 
@@ -55,7 +57,7 @@ struct NAME : public intrusive_node< NAME >                                     
 {                                                                                                     \
     double operator()( context_type const& c , my_node const& node ) const                            \
     {                                                                                                 \
-        return node.children( 0 )->eval( c ) FUNC + node.children( 1 )->eval( c );                    \
+        return node.child( 0 ).eval( c ) FUNC + node.child( 1 ).eval( c );                            \
     }                                                                                                 \
 }
 

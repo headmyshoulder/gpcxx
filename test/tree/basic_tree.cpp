@@ -9,7 +9,7 @@
  */
 
 #include <gpcxx/tree/basic_tree.hpp>
-#include <gpcxx/tree/detail/basic_node_inspect.hpp>
+#include <gpcxx/tree/detail/inspect_node_base.hpp>
 
 #include "../common/test_tree.hpp"
 

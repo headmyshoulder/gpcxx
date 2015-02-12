@@ -1,5 +1,5 @@
 /*
- * gpcxx/tree/basic_named_intrusive_node.hpp
+ * gpcxx/tree/intrusive_named_func_node.hpp
  * Date: 2013-10-15
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,11 +9,12 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_TREE_BASIC_NAMED_INTRUSIVE_NODE_HPP_INCLUDED
-#define GPCXX_TREE_BASIC_NAMED_INTRUSIVE_NODE_HPP_INCLUDED
+#ifndef GPCXX_TREE_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED
+#define GPCXX_TREE_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED
 
 #include <gpcxx/tree/intrusive_node.hpp>
 
+#include <functional>
 
 
 
@@ -21,17 +22,17 @@ namespace gpcxx {
 
 
 template< typename Res , typename Context, size_t Arity = 2 >
-class basic_named_intrusive_node : public gpcxx::intrusive_node< basic_named_intrusive_node< Res , Context , Arity > , Arity >
+class intrusive_named_func_node : public gpcxx::intrusive_node< intrusive_named_func_node< Res , Context , Arity > , Arity >
 {
 public:
     
     using result_type = Res;
     using context_type = Context;
-    using node_type = basic_named_intrusive_node< result_type , context_type , Arity >;
+    using node_type = intrusive_named_func_node< result_type , context_type , Arity >;
     
     typedef std::function< result_type( context_type& , node_type const& ) > func_type;
     
-    basic_named_intrusive_node( func_type f , std::string name )
+    intrusive_named_func_node( func_type f , std::string name )
     : m_func( std::move( f ) ) , m_name( std::move( name ) ) { }
     
     result_type eval( context_type & context ) const
@@ -44,12 +45,12 @@ public:
         return m_name;
     }
     
-    bool operator==( basic_named_intrusive_node const &other ) const
+    bool operator==( intrusive_named_func_node const &other ) const
     {
         return m_name == other.m_name;
     }
     
-    bool operator!=( basic_named_intrusive_node const& other ) const
+    bool operator!=( intrusive_named_func_node const& other ) const
     {
         return ! ( *this == other );
     }
@@ -62,15 +63,14 @@ private:
 
 
 template< typename Res , typename Context , size_t Arity >
-std::ostream& operator<<( std::ostream &out , basic_named_intrusive_node < Res , Context , Arity > const& node )
+std::ostream& operator<<( std::ostream &out , intrusive_named_func_node< Res , Context , Arity > const& node )
 {
     out << node.name();
     return out;
 }
 
 
-
 } // namespace gpcxx
 
 
-#endif // GPCXX_TREE_BASIC_NAMED_INTRUSIVE_NODE_HPP_INCLUDED
+#endif // GPCXX_TREE_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED

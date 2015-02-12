@@ -27,7 +27,7 @@ namespace ant_example {
 size_t const max_children = 3;
 using context_type = ant_simulation;
 using node_return_type = void;
-using node_type = gpcxx::basic_named_intrusive_node< node_return_type , context_type, max_children > ;
+using node_type = gpcxx::intrusive_named_func_node< node_return_type , context_type, max_children > ;
 using tree_type = gpcxx::intrusive_tree< node_type >;
 using population_type = std::vector< tree_type >;
 using fitness_type = std::vector< int >;
@@ -52,8 +52,8 @@ struct prog2
 {                                                                                                     
     void operator()( context_type& ant_sim , node_type const& node ) const         
     {
-        node.children( 0 )->eval( ant_sim );
-        node.children( 1 )->eval( ant_sim );             
+        node.child( 0 ).eval( ant_sim );
+        node.child( 1 ).eval( ant_sim );             
     }                                                                                                 
 };
 
@@ -61,9 +61,9 @@ struct prog3
 {                                                                                                     
     void operator()( context_type& ant_sim , node_type const& node ) const         
     {
-        node.children( 0 )->eval( ant_sim );
-        node.children( 1 )->eval( ant_sim );
-        node.children( 2 )->eval( ant_sim );            
+        node.child( 0 ).eval( ant_sim );
+        node.child( 1 ).eval( ant_sim );
+        node.child( 2 ).eval( ant_sim );            
     }                                                                                                 
 };
 
@@ -73,11 +73,11 @@ struct if_food_ahead
     {
         if(ant_sim.food_in_front())
         {
-            node.children( 0 )->eval( ant_sim );
+            node.child( 0 ).eval( ant_sim );
         }
         else
         {
-            node.children( 1 )->eval( ant_sim );
+            node.child( 1 ).eval( ant_sim );
         }                     
     }                                                                                                 
 };
