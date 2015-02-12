@@ -19,6 +19,7 @@
 #include <boost/iterator/iterator_concepts.hpp>
 
 #include <type_traits>
+#include <cassert>
 
 
 
@@ -26,8 +27,6 @@ namespace gpcxx {
 namespace detail {
 
     
-template< typename T , size_t MaxArity , typename A > class tree_base;
-
 
 
 template< typename Node >
@@ -42,10 +41,6 @@ class tree_base_cursor : public boost::iterator_facade<
     
     friend class boost::iterator_core_access;
     
-    // template< typename U > friend class tree_base_cursor;
-    // template< typename T , size_t MaxArity , typename A > friend class tree_base;
-    
-
     //
     // private types:
     // 
@@ -275,7 +270,7 @@ private:
     
     typename base_type::reference dereference() const
     {
-        return **static_cast< node_pointer >( m_node->child_node( m_pos ) );
+        return static_cast< node_pointer >( m_node->child_node( m_pos ) )->get();
     }
     
     

@@ -18,21 +18,27 @@ namespace gpcxx {
 namespace detail {
 
 
+template< typename Node > class tree_base_cursor;
+
+
 
 template< typename T , size_t MaxArity >
 class basic_node : public node_base< MaxArity >
 {
+    template< typename N > friend class tree_base_cursor;
+    
 public:
     
-    typedef T value_type;
-    typedef basic_node< value_type , MaxArity > node_type;
-    typedef node_base< MaxArity > node_base_type;
-    typedef node_type* node_pointer;
-    typedef node_type& node_reference;
+    using value_type = T;
+    using reference = value_type&;
+    using const_reference = value_type const&;
     
-    typedef value_type& reference;
-    typedef value_type const& const_reference;
-    typedef value_type* pointer;
+    using node_type = basic_node< value_type , MaxArity >;
+    using node_base_type = node_base< MaxArity >;
+    using node_pointer = node_type*;
+    using node_reference = node_type&;
+    
+
 
     reference operator*() { return m_data; } 
 
@@ -43,6 +49,10 @@ public:
     
  
 private:
+    
+    reference get( void ) noexcept { return m_data; }
+    
+    const_reference get( void ) const noexcept { return m_data; }
 
     value_type m_data;
 };

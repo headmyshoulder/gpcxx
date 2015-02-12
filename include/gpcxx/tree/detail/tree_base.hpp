@@ -12,7 +12,7 @@
 #ifndef GPCXX_TREE_DETAIL_TREE_BASE_HPP_INCLUDED
 #define GPCXX_TREE_DETAIL_TREE_BASE_HPP_INCLUDED
 
-#include <gpcxx/tree/detail/basic_node.hpp>
+// 
 #include <gpcxx/tree/detail/tree_base_cursor.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 
@@ -20,13 +20,14 @@
 
 #include <type_traits>
 #include <queue>
+#include <cassert>
 
 namespace gpcxx {
 namespace detail {
 
     
     
-template< typename T , size_t MaxArity = 2 , typename Allocator = std::allocator< T > >
+template< typename Node , typename Allocator >
 class tree_base
 {
 private:
@@ -35,12 +36,13 @@ private:
     // private types:
     //
     
-    using self_type = tree_base< T , MaxArity , Allocator >;
+    using self_type = tree_base< Node , Allocator >;
 
-    static const size_t max_arity = MaxArity;
-    
-    using node_type = detail::basic_node< T , max_arity >;
+public:
+    using node_type = Node;
     using node_pointer = node_type*;
+    
+private:
     
     using node_base_type = typename node_type::node_base_type;
     using node_base_pointer = node_base_type*;
@@ -54,29 +56,16 @@ private:
 //     using other_cursor_enabler = std::enable_if< is_cursor< OtherCursor >::value && same_value_type< OtherCursor >::value >;
 
 
-    template< typename OtherCursor >
-    struct same_value_type
-    {
-        typedef typename std::is_convertible< typename cursor_value< OtherCursor >::type , T >::type type;
-    };
-    
-    template< typename OtherCursor >
-    struct other_cursor_enabler :
-        std::enable_if< boost::mpl::and_< is_cursor< OtherCursor > , same_value_type< OtherCursor > >::value >
-    {
-    };
-    
-    
 public:
     
     //
     // types:
     //
     
-    using value_type = T;
+    using value_type = typename node_type::value_type;
+    using reference = typename node_type::reference;
+    using const_reference = typename node_type::const_reference;
     using allocator_type = Allocator;
-    using reference = value_type&;
-    using const_reference = value_type const&;
     using cursor = tree_base_cursor< node_type >;
     using const_cursor = tree_base_cursor< node_type const >;
     using size_type = std::size_t;
@@ -84,10 +73,24 @@ public:
     using pointer = typename std::allocator_traits< allocator_type >::pointer;
     using const_pointer = typename std::allocator_traits< allocator_type >::const_pointer;
 
-    template< typename U , size_t M > struct rebind
+    template< typename N >
+    struct rebind
     {
-        typedef tree_base< U, M , typename Allocator::template rebind<U>::other > other;
+        typedef tree_base< N , typename Allocator::template rebind< typename N::value_type >::other > other;
     };
+    
+    template< typename OtherCursor >
+    struct same_value_type
+    {
+        typedef typename std::is_convertible< typename cursor_value< OtherCursor >::type , value_type >::type type;
+    };
+    
+    template< typename OtherCursor >
+    struct other_cursor_enabler :
+        std::enable_if< boost::mpl::and_< is_cursor< OtherCursor > , same_value_type< OtherCursor > >::value >
+    {
+    };
+
 
     
     
@@ -435,15 +438,15 @@ private:
 //
 // compare algorithms:
 //
-template< typename T , size_t MaxArity , typename Allocator >
-bool operator==( tree_base< T , MaxArity , Allocator > const& x , tree_base< T , MaxArity , Allocator > const& y )
+template< typename Node , typename Allocator >
+bool operator==( tree_base< Node , Allocator > const& x , tree_base< Node , Allocator > const& y )
 {
     if( x.size() != y.size() ) return false;
     return detail::cursor_comp( x.root() , y.root() );
 }
 
-template< typename T, size_t MaxArity , typename Allocator >
-bool operator!=( tree_base< T , MaxArity , Allocator > const& x , tree_base< T , MaxArity , Allocator > const& y )
+template< typename Node , typename Allocator >
+bool operator!=( tree_base< Node , Allocator > const& x , tree_base< Node , Allocator > const& y )
 {
     return !( x == y );
 }
@@ -452,17 +455,17 @@ bool operator!=( tree_base< T , MaxArity , Allocator > const& x , tree_base< T ,
 //
 // specialized algorithms:
 //
-template< typename T , size_t MaxArity , typename Allocator >
-void swap( tree_base< T , MaxArity , Allocator >& x , tree_base< T , MaxArity , Allocator >& y )
+template< typename Node , typename Allocator >
+void swap( tree_base< Node , Allocator >& x , tree_base< Node , Allocator >& y )
 {
     x.swap( y );
 }
 
-template< typename T , size_t MaxArity , typename Allocator >
-void swap_subtrees( tree_base< T , MaxArity , Allocator >& t1 ,
-                    typename tree_base< T , MaxArity , Allocator >::cursor c1 ,
-                    tree_base< T , MaxArity , Allocator >& t2 ,
-                    typename tree_base< T , MaxArity , Allocator >::cursor c2 )
+template< typename Node , typename Allocator >
+void swap_subtrees( tree_base< Node , Allocator >& t1 ,
+                    typename tree_base< Node , Allocator >::cursor c1 ,
+                    tree_base< Node , Allocator >& t2 ,
+                    typename tree_base< Node , Allocator >::cursor c2 )
 {
     t1.swap_subtrees( c1 , t2 , c2 );
 }

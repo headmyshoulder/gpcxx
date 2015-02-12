@@ -10,11 +10,13 @@
  */
 
 #include <gpcxx/tree/intrusive_tree.hpp>
+#include <gpcxx/tree/intrusive_node.hpp>
 
 #include <gtest/gtest.h>
 
 #include <sstream>
 #include <array>
+#include <functional>
 
 #define TESTNAME intrusive_tree_tests
 

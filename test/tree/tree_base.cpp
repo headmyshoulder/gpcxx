@@ -10,6 +10,7 @@
  */
 
 #include <gpcxx/tree/detail/tree_base.hpp>
+#include <gpcxx/tree/detail/basic_node.hpp>
 
 #include <sstream>
 #include <gtest/gtest.h>
@@ -19,7 +20,7 @@
 using namespace std;
 using namespace gpcxx;
 
-TEST( TESTNAME , TestCase )
+TEST( TESTNAME , default_construct )
 {
-    detail::tree_base< std::string > t;
+    detail::tree_base< detail::basic_node< std::string , 2 > , std::allocator< std::string > > t;
 }

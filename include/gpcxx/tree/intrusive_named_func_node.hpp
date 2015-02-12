@@ -14,6 +14,7 @@
 
 #include <gpcxx/tree/intrusive_node.hpp>
 
+#include <functional>
 
 
 
@@ -67,7 +68,6 @@ std::ostream& operator<<( std::ostream &out , intrusive_named_func_node< Res , C
     out << node.name();
     return out;
 }
-
 
 
 } // namespace gpcxx
