@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/Ambrosys/gpcxx.svg)](https://travis-ci.org/Ambrosys/gpcxx)
+[![Build Status](https://travis-ci.org/Ambrosys/gpcxx.svg)](https://travis-ci.org/Ambrosys/gpcxx) [![Coverity](https://scan.coverity.com/projects/4209/badge.svg)](https://scan.coverity.com/projects/4209)
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Ambrosys/gpcxx/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 Introduction
 ============
@@ -24,3 +25,7 @@ Documentation
 =============
 
 Browse the [documentation](http://ambrosys.github.io/gpcxx/doc/).
+
+
+
+
