@@ -20,17 +20,19 @@
 
     
 namespace gpcxx {
+    
+namespace detail {
 
-template< typename Node >
-class intrusive_tree;
+template< typename Node > class tree_base_cursor;
+
+}
 
 
 
 template< typename Node , size_t MaxArity = 2 >
 class intrusive_node : public detail::node_base< MaxArity >
 {
-    template< typename T >
-    friend class intrusive_tree;
+    template< typename N > friend class detail::tree_base_cursor;
    
 public:
     
@@ -38,14 +40,19 @@ public:
     using node_base_type = detail::node_base< MaxArity >;
     using node_pointer = node_type*;
     using const_node_pointer = node_type const*;
+    using value_type = node_type;
+    using reference = value_type&;
+    using const_reference = value_type const&;
     
     intrusive_node( node_type *parent = nullptr ) noexcept
     : node_base_type( parent )
     {
     }
     
-    intrusive_node( intrusive_node const& ) = default;
-    intrusive_node( intrusive_node && ) = default;
+    intrusive_node( intrusive_node const& )
+    : node_base_type() {}
+    intrusive_node( intrusive_node && )
+    : node_base_type() {}
     
     intrusive_node& operator=( intrusive_node const& )
     {
@@ -71,6 +78,14 @@ public:
     {
         std::fill( this->m_children.begin() , this->m_children.end() , nullptr );
     }
+    
+private:
+    
+    reference get( void ) noexcept { return *static_cast< Node* >( this ); }
+    
+    const_reference get( void ) const noexcept { return *static_cast< Node const* >( this ); }
+    
+    
 };
 
 
