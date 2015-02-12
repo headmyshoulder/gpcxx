@@ -18,7 +18,7 @@ env:
   matrix:
     - BUILD_TYPE=Debug
     - BUILD_TYPE=Release
-    - BUILD_TYPE=Coverage
+    # - BUILD_TYPE=Coverage
 
 
 matrix:
