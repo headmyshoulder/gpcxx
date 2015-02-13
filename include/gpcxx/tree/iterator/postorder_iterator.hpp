@@ -50,21 +50,17 @@ struct postorder_policy
     template< typename Cursor >
     static bool predecessor( Cursor &c )
     {
-//         if( !c.is_shoot() && ( c.parent().begin() == c ) )
-//         {
-//             c = c.parent();
-//             return true;
-//         }
-//         
-//         --c;
-//         while( true )
-//         {
-//             if( c.size() == 0 )
-//             {
-//                 return true;
-//             }
-//             c = c.children( c.size() - 1 );
-//         }
+        if( c.is_shoot() )
+        {
+            --c;
+            return true;
+        }
+        if( !c.empty() )
+        {
+            c = c.children( c.size() - 1 );
+            return true;
+        }
+        
     }
     
     template< typename Cursor >
