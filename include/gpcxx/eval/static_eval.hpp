@@ -13,6 +13,7 @@
 #define GPCXX_EVAL_STATIC_EVAL_HPP_DEFINED
 
 #include <gpcxx/util/iterate_until.hpp>
+#include <gpcxx/util/exception.hpp>
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/generate/node_generator.hpp>
 
@@ -23,7 +24,6 @@
 #include <boost/fusion/include/make_vector.hpp>
 #include <boost/concept_check.hpp>
 
-#include <stdexcept>
 #include <vector>
 #include <array>
 
@@ -211,9 +211,9 @@ private:
         else if( cursor.size() == 2 ) 
             found &= gpcxx::iterate_until( m_binaries , binary_evaluator< Cursor >( *this , result , context , cursor ) );
         else
-            throw std::runtime_error( "basic_eval::eval_cursor : Node with arity higher then two node supported!" );
+            throw gpcxx_exception( "basic_eval::eval_cursor : Node with arity higher then two node supported!" );
         
-        if( !found ) throw std::runtime_error( "basic_eval::eval_cursor : No rule found!" );
+        if( !found ) throw gpcxx_exception( "basic_eval::eval_cursor : No rule found!" );
         
         return result;
     }

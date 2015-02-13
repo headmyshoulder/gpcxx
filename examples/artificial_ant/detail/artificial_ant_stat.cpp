@@ -19,6 +19,7 @@
 #include <gpcxx/io.hpp>
 #include <gpcxx/operator.hpp>
 #include <gpcxx/stat.hpp>
+#include <gpcxx/util.hpp>
 
 #include <string>
 #include <iostream>
@@ -101,7 +102,7 @@ int main( int argc , char *argv[] )
                 if( count == 1000 )
                 {
                     std::string msg = "Could not create tree " + std::to_string( i ) ;
-                    throw std::runtime_error( msg );
+                    throw gpcxx::gpcxx_exception( msg );
                 }
                 
                 tree_type t;

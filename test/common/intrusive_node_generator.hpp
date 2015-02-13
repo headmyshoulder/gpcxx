@@ -13,8 +13,7 @@
 #define GPCXX_TEST_COMMON_INTRUSIVE_NODE_GENERATOR_HPP_INCLUDED
 
 #include <gpcxx/tree/intrusive_func.hpp>
-
-#include <stdexcept>
+#include <gpcxx/util/exception.hpp>
 
 using namespace gpcxx;
 
@@ -79,7 +78,7 @@ struct intrusive_node_generator
         }
         
         
-        throw std::runtime_error( std::string( "No node for " ) + s + " found!" );
+        throw gpcxx::gpcxx_exception( std::string( "No node for " ) + s + " found!" );
     }
 };
 

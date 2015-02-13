@@ -5,7 +5,7 @@ include_directories ( ${gtest_SOURCE_DIR}/include )
 include_directories ( ${gtest_SOURCE_DIR} )
 
 
-add_executable ( util_tests create_random_indices.cpp sort_indices.cpp version.cpp iterate_until.cpp array_unpack.cpp )
+add_executable ( util_tests create_random_indices.cpp sort_indices.cpp version.cpp iterate_until.cpp array_unpack.cpp exception.cpp )
 
 
 target_link_libraries ( util_tests gtest gtest_main )
