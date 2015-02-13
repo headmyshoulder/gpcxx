@@ -35,7 +35,7 @@ inline void check_cursors_tree1( Cursor first , Cursor last )
     test_value( *first , "y" );
     ++first;
     EXPECT_NE( first , last );
-    test_value( *first , "z" );
+    test_value( *first , "2" );
     ++first;
     EXPECT_NE( first , last );
     test_value( *first , "minus" );
@@ -46,7 +46,7 @@ inline void check_cursors_tree1( Cursor first , Cursor last )
     EXPECT_EQ( first , last );
 }
 
-TEST( TESTNAME , TestCase )
+TEST( TESTNAME , iterate_forward )
 {
     test_tree< basic_tree_tag > trees;
     
@@ -55,3 +55,31 @@ TEST( TESTNAME , TestCase )
     
     check_cursors_tree1( first , last );
 }
+
+// TEST( TESTNAME , iterate_backward )
+// {
+//     test_tree< basic_tree_tag > trees;
+//     
+//     auto first = begin_postorder( trees.data.root() );
+//     auto last = end_postorder( trees.data.root() );
+//     
+//     EXPECT_NE( first , last );
+//     --last;
+//     EXPECT_EQ( *last , "plus" );
+//     EXPECT_NE( first , last );
+//     --last;
+//     EXPECT_EQ( *last , "minus" );    
+//     EXPECT_NE( first , last );
+//     --last;
+//     EXPECT_EQ( *last , "2" );    
+//     EXPECT_NE( first , last );
+//     --last;
+//     EXPECT_EQ( *last , "y" );    
+//     EXPECT_NE( first , last );
+//     --last;
+//     EXPECT_EQ( *last , "sin" );    
+//     EXPECT_NE( first , last );
+//     --last;
+//     EXPECT_EQ( *last , "x" );
+//     EXPECT_EQ( first , last );
+// }

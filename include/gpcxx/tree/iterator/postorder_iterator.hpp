@@ -25,29 +25,26 @@ struct postorder_policy
     template< typename Cursor >
     static bool successor( Cursor &c )
     {
-//         if( c.size() > 0 )
-//         {
-//             c = c.children( 0 );
-//             return true;
-//         }
-//         while( true )
-//         {
-//             if( c.is_root() )
-//             {
-//                 ++c;
-//                 return true;
-//             }
-//             
-//             Cursor d = c;
-//             ++d;
-//             if( d != c.parent().end() )
-//             {
-//                 c = d;
-//                 return true;
-//             }
-//             c = c.parent();
-//         }
-        return false;
+        if( c.is_root() )
+        {
+            ++c;
+            return true;
+        }
+        else
+        {
+            Cursor d = c;
+            ++d;
+            if( c.parent().end() != d )
+            {
+                c = d;
+                return first( c );
+            }
+            else
+            {
+                c = c.parent();
+                return true;
+            }
+        }
     }
     
     template< typename Cursor >
