@@ -67,7 +67,7 @@ class tree_base_cursor : public boost::iterator_facade<
 //     };
     
 public:
-    
+
 
     //
     // types:

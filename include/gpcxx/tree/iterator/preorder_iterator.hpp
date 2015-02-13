@@ -13,7 +13,9 @@
 #define GPCXX_TREE_ITERATOR_PREORDER_ITERATOR_HPP_INCLUDED
 
 #include <gpcxx/tree/iterator/iterator_base.hpp>
+#include <gpcxx/tree/cursor_traits.hpp>
 
+#include <type_traits>
 
 
 
@@ -85,23 +87,61 @@ struct preorder_policy
     }
 };
 
-
+//
+// preorder iterator type
+//
 template< typename Cursor >
 using preorder_iterator = iterator_base< Cursor , preorder_policy >;
 
-template< typename Cursor >
-preorder_iterator< Cursor > begin_preorder( Cursor c )
+
+//
+// iterator from cursor
+//
+template< typename Cursor , typename Enable = typename std::enable_if< is_cursor< Cursor >::value >::type >
+auto begin_preorder( Cursor c )
 {
     preorder_policy::first( c );
     return preorder_iterator< Cursor > { c };
 }
 
-template< typename Cursor >
-preorder_iterator< Cursor > end_preorder( Cursor c )
+template< typename Cursor , typename Enable = typename std::enable_if< is_cursor< Cursor >::value >::type >
+auto end_preorder( Cursor c )
 {
     preorder_policy::last( c );
     return preorder_iterator< Cursor > { c };
 }
+
+
+
+//
+// iterator from tree
+//
+template< typename Tree >
+auto begin_preorder( Tree& t )
+{
+    return begin_preorder( t.root() );
+}
+
+template< typename Tree >
+auto end_preorder( Tree& t )
+{
+    return end_preorder( t.root() );
+}
+
+template< typename Tree >
+auto cbegin_preorder( Tree const& t )
+{
+    return begin_preorder( t.croot() );
+}
+
+template< typename Tree >
+auto cend_preorder( Tree const& t )
+{
+    return end_preorder( t.croot() );
+}
+
+
+
 
 
 } // namespace gpcxx

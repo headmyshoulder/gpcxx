@@ -24,11 +24,12 @@ template< typename Cursor , typename OrderPolicy >
 class iterator_base : public boost::iterator_facade< 
     iterator_base< Cursor , OrderPolicy > ,
     typename cursor_value< Cursor >::type ,
-    boost::bidirectional_traversal_tag >
+    boost::bidirectional_traversal_tag ,
+    typename cursor_reference< Cursor >::type >
 {
     struct enabler {};
     
-    using reference_type = typename cursor_value< Cursor >::type& ;
+    using reference_type = typename cursor_reference< Cursor >::type;
     using iterator_facade_ = boost::iterator_facade< 
         iterator_base< Cursor , OrderPolicy > ,
         typename cursor_value< Cursor >::type ,
