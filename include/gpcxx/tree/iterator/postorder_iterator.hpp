@@ -60,6 +60,21 @@ struct postorder_policy
             c = c.children( c.size() - 1 );
             return true;
         }
+        else
+        {
+            while( true )
+            {
+                if( c.parent().begin() == c )
+                {
+                    c = c.parent();
+                }
+                else
+                {
+                    --c;
+                    return true;
+                }
+            }
+        }
         
     }
     
