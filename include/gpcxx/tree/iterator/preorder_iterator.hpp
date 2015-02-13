@@ -30,14 +30,8 @@ struct preorder_policy
     {
         if( c.empty() )
         {
-            while( true )
+            while( !c.is_root() )
             {
-                if( c.is_root() )
-                {
-                    ++c;
-                    return true;
-                }
-            
                 Cursor d = c;
                 ++d;
                 if( d != c.parent().end() )
@@ -47,7 +41,8 @@ struct preorder_policy
                 }
                 c = c.parent();
             }
-            return false;
+            ++c;
+            return true;
         }
         else
         {
