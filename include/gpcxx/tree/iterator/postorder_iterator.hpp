@@ -55,27 +55,23 @@ struct postorder_policy
             --c;
             return true;
         }
-        if( !c.empty() )
-        {
-            c = c.children( c.size() - 1 );
-            return true;
-        }
         else
         {
-            while( true )
+            if( c.empty() )
             {
-                if( c.parent().begin() == c )
+                while( c.parent().begin() == c )
                 {
                     c = c.parent();
                 }
-                else
-                {
-                    --c;
-                    return true;
-                }
+                --c;
+                return true;
+            }
+            else
+            {
+                c = c.children( c.size() - 1 );
+                return true;
             }
         }
-        
     }
     
     template< typename Cursor >

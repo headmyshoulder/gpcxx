@@ -28,29 +28,32 @@ struct preorder_policy
     template< typename Cursor >
     static bool successor( Cursor &c )
     {
-        if( c.size() > 0 )
+        if( c.empty() )
+        {
+            while( true )
+            {
+                if( c.is_root() )
+                {
+                    ++c;
+                    return true;
+                }
+            
+                Cursor d = c;
+                ++d;
+                if( d != c.parent().end() )
+                {
+                    c = d;
+                    return true;
+                }
+                c = c.parent();
+            }
+            return false;
+        }
+        else
         {
             c = c.children( 0 );
             return true;
         }
-        while( true )
-        {
-            if( c.is_root() )
-            {
-                ++c;
-                return true;
-            }
-            
-            Cursor d = c;
-            ++d;
-            if( d != c.parent().end() )
-            {
-                c = d;
-                return true;
-            }
-            c = c.parent();
-        }
-        return false;
     }
     
     template< typename Cursor >
@@ -61,15 +64,14 @@ struct preorder_policy
             c = c.parent();
             return true;
         }
-        
-        --c;
-        while( true )
+        else
         {
-            if( c.size() == 0 )
+            --c;
+            while( !c.empty() )
             {
-                return true;
+                c = c.children( c.size() - 1 );
             }
-            c = c.children( c.size() - 1 );
+            return true;
         }
     }
     

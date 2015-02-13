@@ -83,3 +83,33 @@ TEST( TESTNAME , iterate_backward )
     EXPECT_EQ( *last , "x" );
     EXPECT_EQ( first , last );
 }
+
+TEST( TESTNAME , reverse_iterator )
+{
+    test_tree< basic_tree_tag > trees;
+    
+    using riterator = reverse_iterator< decltype( begin_postorder( trees.data.root() ) ) >;
+    
+    auto first = riterator( end_postorder( trees.data.root() ) );
+    auto last = riterator( begin_postorder( trees.data.root() ) );
+    
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "plus" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "minus" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "2" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "y" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "sin" );
+    ++first;
+    EXPECT_NE( first , last );
+    EXPECT_EQ( *first , "x" );
+    ++first;
+    EXPECT_EQ( first , last );
+}
