@@ -17,9 +17,15 @@
 #include <gpcxx/io/polish.hpp>
 #include <gpcxx/app/timer.hpp>
 
+// #include <range/v3/range_facade.hpp>
+// #include <range/v3/algorithm/for_each.hpp>
+// #include <stack>
+
 #include <iostream>
 #include <sstream>
 #include <random>
+#include <fstream>
+
 
 template< typename Tree >
 void write_tree_iterator( std::ostream& out , Tree& t , std::string const& sep = "|" )
@@ -58,6 +64,73 @@ void write_tree_stack( std::ostream& out , Tree &t , std::string const& sep = "|
     }
 }
 
+
+// template< typename Tree >
+// class forward_range : public ranges::range_facade< forward_range< Tree > >
+// {
+//     friend ranges::range_access;
+// 
+// public:
+// 
+//     forward_range( Tree const& t  )
+//     : m_tree( t ) , m_stack()
+//     {
+//         if( !m_tree.empty() )
+//             m_stack.push( m_tree.root() );
+//     }
+// 
+// 
+// private:
+// 
+// 
+//     
+//     struct cursor
+//     {
+//         forward_range* m_rng;
+//         
+//         cursor( void ) = default;
+//         
+//         explicit cursor( forward_range& rng )
+//         : m_rng( &rng )
+//         {}
+//         
+//         // decltype( auto ) current( void ) const
+//         typename Tree::const_reference current( void ) const
+//         {
+//             return * ( m_rng->m_stack.top() );
+//         }
+//     
+//         bool done( void ) const
+//         {
+//             return m_rng->m_stack.empty();
+//         }
+//   
+//         void next( void )
+//         {
+//             auto current = m_rng->m_stack.top();
+//             m_rng->m_stack.pop();
+//             for( int i=current.size() - 1 ; i >= 0 ; --i )
+//                 m_rng->m_stack.push( current.children( i ) );
+//         }
+//     };
+//     
+//     cursor begin_cursor()
+//     {
+//         return cursor { *this };
+//     }
+// 
+//     Tree const& m_tree;
+//     std::stack< typename Tree::const_cursor > m_stack;
+// };
+
+
+// template< typename Tree >
+// forward_range< Tree > make_forward_range( Tree& t )
+// {
+//     return forward_range< Tree >( t );
+// }
+
+
 int main( int argc , char **argv )
 {
     using value_type = std::string;
@@ -75,55 +148,83 @@ int main( int argc , char **argv )
         { double( unaries.num_symbols() ) , 1 , unaries } ,
         { double( binaries.num_symbols() ) , 2 , binaries } };
 
-    // size_t max_tree_height = 15;
-    // size_t population_size = 512 * 256;
-
-    size_t max_tree_height = 15;
-    size_t population_size = 512 * 256;
+    std::vector< size_t > tree_heights = { 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 , 11 , 12 , 13 , 14 , 15 , 16 };
+    size_t population_size = 16384 * 8;
     
-    auto tree_generator = gpcxx::make_ramp( rng , node_generator , max_tree_height , max_tree_height , 0.5 );
-    auto population = population_type( population_size );
-    
-    for( size_t i=0 ; i<population.size() ; ++i )
+    std::ofstream fout( "result.dat" );
+    for( auto height : tree_heights )
     {
-        tree_generator( population[i] );
+        std::cout << "Starting run with height " << height << " and population size " << population_size << "\n";
+        
+        auto tree_generator = gpcxx::make_ramp( rng , node_generator , height , height , 0.5 );
+        auto population = population_type( population_size );
+        
+        std::cout << "\tGenerating data." << std::endl;
+        for( size_t i=0 ; i<population.size() ; ++i )
+        {
+            tree_generator( population[i] );
+        }
+        std::cout << "\tFinished." << std::endl;
+        
+        std::cout << "\tStarting iterator based polish output." << std::endl;
+        auto timer = gpcxx::timer{};
+        std::ostringstream stream1;
+        for( auto& tree : population )
+        {
+            write_tree_iterator( stream1 , tree , "|" );
+            stream1 << std::endl;
+        }
+        double t1 = timer.seconds();
+        std::cout << "\tFinished iterator based polish output in " << t1 << " seconds. Wrote " << stream1.str().size() << " bytes." << std::endl;
+        
+        std::cout << "\tStarting cursor based polish output." << std::endl;
+        timer.restart();
+        std::ostringstream stream2;
+        for( auto& tree : population )
+        {
+            stream2 << gpcxx::polish( tree , "|" ) << std::endl;
+        }
+        double t2 = timer.seconds();
+        std::cout << "\tFinished cursor based polish output in " << t2 << " seconds. Wrote " << stream2.str().size() << " bytes." << std::endl;
+
+
+        std::cout << "\tStarting cursor and stack based polish output." << std::endl;
+        timer.restart();
+        std::ostringstream stream3;
+        for( auto& tree : population )
+        {
+            write_tree_stack( stream3 , tree , "|" );
+            stream3 << std::endl;
+        }
+        double t3 = timer.seconds();
+        std::cout << "\tFinished cursor and stack based polish output in " << t3 << " seconds. Wrote " << stream2.str().size() << " bytes." << std::endl;
+
+
+//         std::cout << "\tStarting stack based range polish output." << std::endl;
+//         timer.restart();
+//         std::ostringstream stream4;
+//         for( auto& tree : population )
+//         {
+//             auto rng = make_forward_range( tree );
+//             auto first = rng.begin();
+//             auto last = rng.end();
+//             if( first != last )
+//                 stream4 << *first++;
+//             for( ; first != last ; )
+//             {
+//                 stream4 << "|" << *first++;
+//             }
+//             stream4 << std::endl;
+//         }
+//         double t4 = timer.seconds();
+//         std::cout << "\tFinished stack based range polish output in " << t4 << " seconds. Wrote " << stream4.str().size() << " bytes." << std::endl;
+
+
+        bool equal = ( ( stream1.str() == stream2.str() ) && ( stream2.str() == stream3.str() ) /* && ( stream3.str() == stream4.str() ) */ );
+        std::cout << "\tOutput of all versions is equal: " << ( equal ? "yes" : "no" ) << std::endl;
+        
+        fout << height << " " << population_size << " " << t1 << " " << t2 << " " << t3 << /* " " << t4 << */ std::endl;
     }
-    
-    std::cout << "Starting iterator based polish output." << std::endl;
-    auto timer = gpcxx::timer{};
-    std::ostringstream stream1;
-    for( auto& tree : population )
-    {
-        write_tree_iterator( stream1 , tree , "|" );
-        stream1 << std::endl;
-    }
-    std::cout << "Finished iterator based polish output in " << timer.seconds() << " seconds. Wrote " << stream1.str().size() << " bytes." << std::endl;
-    
-    std::cout << "Starting cursor based polish output." << std::endl;
-    timer.restart();
-    std::ostringstream stream2;
-    for( auto& tree : population )
-    {
-        stream2 << gpcxx::polish( tree , "|" ) << std::endl;
-    }
-    std::cout << "Finished cursor based polish output in " << timer.seconds() << " seconds. Wrote " << stream2.str().size() << " bytes." << std::endl;
-
-
-    std::cout << "Starting cursor and stack based polish output." << std::endl;
-    timer.restart();
-    std::ostringstream stream3;
-    for( auto& tree : population )
-    {
-        write_tree_stack( stream3 , tree , "|" );
-        stream3 << std::endl;
-    }
-    std::cout << "Finished cursor and stack based polish output in " << timer.seconds() << " seconds. Wrote " << stream2.str().size() << " bytes." << std::endl;
-
-    bool equal = ( ( stream1.str() == stream2.str() ) && ( stream2.str() == stream3.str() ) );
-    std::cout << "Output of all version is equal: " << ( equal ? "yes" : "no" ) << std::endl;
-
-    
-
 
     return 0;
 }

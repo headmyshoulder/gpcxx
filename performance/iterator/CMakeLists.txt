@@ -7,4 +7,6 @@
 # copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 
+# include_directories ( /home/karsten/boost/range-v3/include/ )
+
 add_executable ( preorder_iterator preorder_iterator.cpp )
