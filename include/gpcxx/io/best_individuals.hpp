@@ -30,6 +30,8 @@ void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f
     }
 }
 
+namespace detail {
+    
 template< typename Pop , typename Fitness , typename SymbolMapper >
 struct best_individuals_writer
 {
@@ -55,10 +57,12 @@ std::ostream& operator<<( std::ostream &out , best_individuals_writer< Pop , Fit
     return b( out );
 }
 
+} // namespace detail
+
 template< typename Pop , typename Fitness , typename SymbolMapper = gpcxx::identity >
-best_individuals_writer< Pop , Fitness , SymbolMapper > best_individuals( Pop const& pop , Fitness const& fitness , size_t indent = 0 , size_t num_individuals = 10 , bool write_infix = true , SymbolMapper const &mapper = SymbolMapper() )
+detail::best_individuals_writer< Pop , Fitness , SymbolMapper > best_individuals( Pop const& pop , Fitness const& fitness , size_t indent = 0 , size_t num_individuals = 10 , bool write_infix = true , SymbolMapper const &mapper = SymbolMapper() )
 {
-    return best_individuals_writer< Pop , Fitness , SymbolMapper >( pop , fitness , indent , num_individuals , write_infix , mapper );
+    return detail::best_individuals_writer< Pop , Fitness , SymbolMapper >( pop , fitness , indent , num_individuals , write_infix , mapper );
 }
 
 } // namespace gpcxx
