@@ -157,3 +157,27 @@ TEST( TESTNAME , insert_and_erase )
     test_cursor( tree.root().children(0).children(0) , "13" , 0 , 1 , 2 );
     test_cursor( tree.root().children(0).children(1) , "14" , 0 , 1 , 2 );
 }
+
+TEST( TESTNAME , assign_value )
+{
+    tree_type tree;
+    tree.insert_below( tree.root() , my_node( plus_func() , "+" ) );
+    auto n1 = tree.insert_below( tree.root() , my_node( minus_func() , "-" ) );
+    auto n2 = tree.insert_below( tree.root() , my_node( multiplies_func() , "*" ) );
+    auto n3 = tree.insert_below( n1 , my_node( terminal_x() , "13" ) );
+    auto n4 = tree.insert_below( n1 , my_node( terminal_y() , "14" ) );
+    auto n5 = tree.insert_below( n2 , my_node( terminal_z() , "15" ) );
+    auto n6 = tree.insert_below( n2 , my_node( terminal_x() , "16" ) );
+    
+    *tree.root().children(0) = my_node( plus_func() , "++" );
+    
+    EXPECT_EQ( tree.size() , 7 );
+    EXPECT_FALSE( tree.empty() );
+    test_cursor( tree.root() , "+" , 2 , 3 , 0 );
+    test_cursor( tree.root().children(0) , "++" , 2 , 2 , 1 );
+    test_cursor( tree.root().children(0).children(0) , "13" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(0).children(1) , "14" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1) , "*" , 2 , 2 , 1 );
+    test_cursor( tree.root().children(1).children(0) , "15" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1).children(1) , "16" , 0 , 1 , 2 );
+}

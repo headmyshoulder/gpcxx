@@ -50,9 +50,14 @@ public:
     }
     
     intrusive_node( intrusive_node const& )
-    : node_base_type() {}
+    : node_base_type()
+    {
+    }
+    
     intrusive_node( intrusive_node && )
-    : node_base_type() {}
+    : node_base_type()
+    {
+    }
     
     intrusive_node& operator=( intrusive_node const& )
     {
