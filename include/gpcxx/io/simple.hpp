@@ -4,8 +4,8 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef GPCXX_UTIL_SIMPLE_HPP_INCLUDED
-#define GPCXX_UTIL_SIMPLE_HPP_INCLUDED
+#ifndef GPCXX_IO_SIMPLE_HPP_INCLUDED
+#define GPCXX_IO_SIMPLE_HPP_INCLUDED
 
 
 #include <gpcxx/util/identity.hpp>
@@ -92,4 +92,4 @@ std::ostream& operator<<( std::ostream& out , simple_printer< T , SymbolMapper >
 
 } // namespace gpcxx
 
-#endif // GPCXX_UTIL_SIMPLE_HPP_INCLUDED
+#endif // GPCXX_IO_SIMPLE_HPP_INCLUDED

@@ -4,8 +4,8 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef POLISH_HPP_INCLUDED
-#define POLISH_HPP_INCLUDED
+#ifndef GPCXX_IO_POLISH_HPP_INCLUDED
+#define GPCXX_IO_POLISH_HPP_INCLUDED
 
 #include <gpcxx/util/identity.hpp>
 #include <gpcxx/io/detail/read_polish.hpp>
@@ -96,4 +96,4 @@ void read_polish( std::string str , Tree &tree , NodeMapper const& mapper , std:
 }
 
 
-#endif // POLISH_HPP_INCLUDED
+#endif // GPCXX_IO_POLISH_HPP_INCLUDED

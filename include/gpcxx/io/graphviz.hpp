@@ -4,8 +4,8 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef GRAPHVIZ_HPP_INCLUDED
-#define GRAPHVIZ_HPP_INCLUDED
+#ifndef GPCXX_IO_GRAPHVIZ_HPP_INCLUDED
+#define GPCXX_IO_GRAPHVIZ_HPP_INCLUDED
 
 #include <gpcxx/util/identity.hpp>
 
@@ -105,4 +105,4 @@ void generate_graphviz_pdf( const Tree &t , const std::string &filename , Symbol
 
 } // namespace gpcxx
 
-#endif // GRAPHVIZ_HPP_INCLUDED
+#endif // GPCXX_IO_GRAPHVIZ_HPP_INCLUDED

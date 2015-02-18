@@ -4,9 +4,9 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef LATEX_HPP_INCLUDED
-#define LATEX_HPP_INCLUDED
+#ifndef GPCXX_IO_LATEX_HPP_INCLUDED
+#define GPCXX_IO_LATEX_HPP_INCLUDED
 
 
 
-#endif // LATEX_HPP_INCLUDED
+#endif // GPCXX_IO_LATEX_HPP_INCLUDED

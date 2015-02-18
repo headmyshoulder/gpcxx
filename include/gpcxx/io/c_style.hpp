@@ -4,9 +4,9 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef C_STYLE_HPP_INCLUDED
-#define C_STYLE_HPP_INCLUDED
+#ifndef GPCXX_IO_SIMPLE_HPP_INCLUDED
+#define GPCXX_IO_SIMPLE_HPP_INCLUDED
 
 
 
-#endif // C_STYLE_HPP_INCLUDED
+#endif // GPCXX_IO_SIMPLE_HPP_INCLUDED
