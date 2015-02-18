@@ -15,29 +15,50 @@ cursors
 
 [endsect]
 
-[section Tree input output]
+[section Tree output]
 
-For all IO functions the following holds
+For all tree output functions the following holds
 
-* `out << XXX( tree , params ) << endl;`
-* 'XXX_printer p( tree , params); out << p << endl;`
-* `write_XXX( out , tree , params );`
-* `write_XXX_cursor( cursor , out , params );`
-* `std::string s = XXX_string( tree , params );`
-* `in >> XXX_in( tree , params );` ?
-* `XXX_reader p( tree , params ); in >> p;`
-* `read_XXX( in , tree , params );`
-* `XXX_from_string( s , params );`
+* `out << xxx( tree , params ) << endl;`
+* `write_xxx( out , tree , params );`
+* `write_xxx_cursor( cursor , out , params );`
+* `std::string s = xxx_string( tree , params );`
 
-simple 
+xxx here stands for any of the following output format `simple`, `polish`, `inverse_polish`, 
+`latex`, `graphviz`, and `c_style`.
 
-polish
+[section Simple output]
 
-inverse polish
+An examples for simple output is
 
-graphviz - pictures
+
 
 [endsect]
+
+[section Polish output]
+
+[endsect]
+
+[section Inverse polish output]
+
+[endsect]
+
+[section LaTeX output]
+
+[endsect]
+
+[section Graphviz output]
+
+[endsect]
+
+[section C-style output]
+
+[endsect]
+
+[endsect]
+
+
+
 
 [section Genetic operations on trees]
 
