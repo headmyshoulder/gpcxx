@@ -42,7 +42,6 @@ before_install:
 
   # Install libc++
   # Taken from range-v3
-  - if [ "$CXX" == "clang++" ]; 
   - if [ "$CXX" == "clang++" ]; then svn co --quiet http://llvm.org/svn/llvm-project/libcxx/trunk libcxx; fi
   - if [ "$CXX" == "clang++" ]; then cd libcxx/lib && bash buildit; fi
   - if [ "$CXX" == "clang++" ]; then sudo cp ./libc++.so.1.0 /usr/lib/; fi
