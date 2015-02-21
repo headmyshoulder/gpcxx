@@ -35,6 +35,9 @@ before_install:
   - sudo apt-get update -qq
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-${GCC_VERSION}; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+
+  # install valgrind
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get -qq install valgrind; fi
  
   # install third party dependencies
   - wget http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.bz2/download -O /tmp/boost.tar.bz2
@@ -58,6 +61,12 @@ install:
 script:
   - cd $GPCXX_ROOT
   - .ci/build_and_test.sh
+
+after_success:
+  - cd $GPCXX_ROOT
+  - run_valgrind.sh
+
+
 
 
 
