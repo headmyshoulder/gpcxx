@@ -56,7 +56,7 @@ install:
 
 
 script:
-  - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then cd build && cmake .. -DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE && make && make test ; fi
+  - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then $GPCXX_ROOT/.ci/build_and_test.sh fi
 
 
 addons:
