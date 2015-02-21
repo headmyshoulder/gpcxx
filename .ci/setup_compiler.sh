@@ -7,7 +7,6 @@ sudo apt-get update -qq
 if [ "$CXX" == "g++" ];
 then
     sudo apt-get install -qq g++-${GCC_VERSION}
-    export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"
 fi
 
 if [ "$CXX" == "clang++" ];

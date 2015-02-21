@@ -36,7 +36,9 @@ before_install:
   - cd $GPCXX_ROOT
   - .ci/setup_compiler.sh
   - .ci/init_thirdparty.sh
+  # some variables need to be set here
   - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
+  - if [ "$CXX" == "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
 
 install:
   - cd $GPCXX_ROOT
