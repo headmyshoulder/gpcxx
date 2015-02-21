@@ -21,6 +21,9 @@
 #include <type_traits>
 #include <queue>
 #include <cassert>
+#include <memory>
+
+
 
 namespace gpcxx {
 namespace detail {
