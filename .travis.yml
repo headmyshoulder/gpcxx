@@ -33,13 +33,12 @@ matrix:
     
 before_install:
   - export GPCXX_ROOT=`pwd`
-  
   - cd $GPCXX_ROOT
   - .ci/setup_compiler.sh
   - .ci/init_thirdparty.sh
+  - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
 
 install:
-  # create build directory
   - cd $GPCXX_ROOT
   - mkdir build
 
