@@ -15,6 +15,7 @@
 #include <gpcxx/tree/intrusive_node.hpp>
 
 #include <functional>
+#include <string>
 
 
 

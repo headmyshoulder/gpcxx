@@ -17,6 +17,7 @@
 #include <sstream>
 #include <array>
 #include <functional>
+#include <cmath>
 
 #define TESTNAME intrusive_tree_tests
 

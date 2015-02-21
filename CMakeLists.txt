@@ -4,8 +4,6 @@
 project ( gpcxx )
 cmake_minimum_required ( VERSION 2.8 )
 
-ADD_DEFINITIONS ( -std=c++1y )
-
 set ( THIRDPARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party" )
 
 option ( GPCXX_BUILD_DOCS "Enable to build the docs" ON )
@@ -19,6 +17,14 @@ set ( CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
   )
+
+set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall" )
+
+if ( "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" )
+  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++" )
+endif ()
+# elseif (CMAKE_COMPILER_IS_GNUCXX )
+# endif ()
 
 include ( CreateVersionFile )
 include ( BuildTypes )

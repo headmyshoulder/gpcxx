@@ -15,6 +15,8 @@
 #include <boost/range/begin.hpp>
 #include <boost/range/end.hpp>
 
+#include <string>
+
 
 namespace gpcxx {
 namespace detail {
