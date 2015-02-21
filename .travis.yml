@@ -56,7 +56,9 @@ install:
 
 
 script:
-  - if [ ${COVERITY_SCAN_BRANCH} != 1 ]; then $GPCXX_ROOT/.ci/build_and_test.sh fi
+  - cd $GPCXX_ROOT
+  - .ci/build_and_test.sh
+
 
 
 addons:
