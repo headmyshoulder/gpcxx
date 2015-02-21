@@ -21,8 +21,8 @@ struct one_point_crossover_strategy_tests : public test_template< T > { };
 
 using testing::Types;
 
-typedef Types< intrusive_tree_tag > Implementations;
-// typedef Types< basic_tree_tag , intrusive_tree_tag > Implementations;
+// typedef Types< intrusive_tree_tag > Implementations;
+typedef Types< basic_tree_tag , intrusive_tree_tag > Implementations;
 
 TYPED_TEST_CASE( one_point_crossover_strategy_tests , Implementations );
 
