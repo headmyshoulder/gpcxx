@@ -3,7 +3,7 @@ then
   exit 0;
 fi
 
-VALGRIND_CMD="valgrind --leak-check=full --show-reachable=yes "
+VALGRIND_CMD="valgrind --leak-check=full --show-reachable=yes --error-exitcode=1 "
 
 cd build
 $VALGRIND_CMD test/util/util_tests || exit $?
