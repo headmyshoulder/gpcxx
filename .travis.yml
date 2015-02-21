@@ -5,7 +5,7 @@ language: cpp
 
 compiler:
   - gcc
-  # - clang
+  - clang
 
 os: 
   - linux
@@ -64,7 +64,7 @@ script:
 
 after_success:
   - cd $GPCXX_ROOT
-  - run_valgrind.sh
+  - .ci/run_valgrind.sh
 
 
 
