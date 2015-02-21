@@ -11,6 +11,7 @@
 #include <gpcxx/util/identity.hpp>
 
 #include <ostream>
+#include <sstream>
 
 
 namespace gpcxx {
@@ -56,6 +57,14 @@ template< typename Tree , typename SymbolMapper >
 void write_simple( std::ostream &out , Tree const& t , bool write_infix , SymbolMapper const& mapper )
 {
     write_simple_cursor( out , t.root() , write_infix , mapper );
+}
+
+template< typename Tree , typename SymbolMapper >
+std::string simple_string( Tree const& t , bool write_infix , SymbolMapper const& mapper )
+{
+    std::ostringstream str;
+    write_simple( str , t , write_infix , mapper );
+    return str.str();
 }
 
 

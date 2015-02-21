@@ -17,6 +17,9 @@ cursors
 
 [section Tree output]
 
+[import ../examples/io/tree_io.cpp]
+
+
 For all tree output functions the following holds
 
 * `out << xxx( tree , params ) << endl;`
@@ -27,33 +30,128 @@ For all tree output functions the following holds
 xxx here stands for any of the following output format `simple`, `polish`, `inverse_polish`, 
 `latex`, `graphviz`, and `c_style`.
 
-[section Simple output]
+[section Examples]
 
 An examples for simple output is
 
+[tree_simple_io_1]
 
-
-[endsect]
-
-[section Polish output]
+The output of this little piece of code is `( y - 5 ) + x`
 
 [endsect]
 
-[section Inverse polish output]
+
+[table Output facilities
+  [
+    [Name] [Methods] [Parameters] [Examples]
+  ]
+  [
+    [[*simple]]
+    [
+``
+template< typename Tree, typename Mapper >
+undefined simple( Tree const& tree ,
+    bool write_infix ,
+    Mapper const& mapper );
+``
+
+``
+template< typename Tree , typename Mapper >
+void write_simple( std::ostream& out , Tree const& tree ,
+    bool write_infix ,
+    Mapper const& mapper );
+
+``
+
+``
+template< typename Cursor , typename Mapper >
+void write_simple_cursor( std::ostream& out , Cursor cursor ,
+    bool write_infix ,
+    Mapper const& mapper );
+
+``
+
+``
+template< typename Tree , typename Mapper >
+std::string simple_string( Tree const& tree ,
+    bool write_infix ,
+    Mapper const& mapper );
+
+``
+    ]
+    [
+* `write_infix` - This bool indicated whether binary should we written in infix notation or prefix notation. The default value is `true`.
+
+* `mapper` - Maps the values of tree to printable values. The default type is the identity.
+    ]
+    [
+[example_tree_mapper]
+
+[tree_simple_io]
+    ]
+  ]
+  
+  [
+    [[*polish]]
+    [
+``
+template< typename Tree, typename Mapper >
+undefined polish( Tree const& tree ,
+    std::string const& sep ,
+    std::string const& opening ,
+    std::string const& closing ,
+    Mapper const& mapper );
+``
+
+``
+template< typename Tree , typename Mapper >
+void write_simple( std::ostream& out , Tree const& tree ,
+    std::string const& sep ,
+    std::string const& opening ,
+    std::string const& closing ,
+    Mapper const& mapper );
+
+``
+
+``
+template< typename Cursor , typename Mapper >
+void write_simple_cursor( std::ostream& out , Cursor cursor ,
+    std::string const& sep ,
+    std::string const& opening ,
+    std::string const& closing ,
+    Mapper const& mapper );
+
+``
+
+``
+template< typename Tree , typename Mapper >
+std::string simple_string( Tree const& tree ,
+    std::string const& sep ,
+    std::string const& opening ,
+    std::string const& closing ,
+    Mapper const& mapper );
+
+``
+    ]
+    [
+* `sep` - The separator string between individual terms.
+
+* `opening` - An opening string for each term of arity larger then one.
+
+* `closing` - An opening string for each term of arity larger then one.
+    ]
+    [
+[example_tree_mapper]
+
+[tree_polish_io]
+    ]
+  ]
+
+]
 
 [endsect]
 
-[section LaTeX output]
-
-[endsect]
-
-[section Graphviz output]
-
-[endsect]
-
-[section C-style output]
-
-[endsect]
+[section Tree input]
 
 [endsect]
 

@@ -48,9 +48,11 @@ file(WRITE "${doxyfile}"
 #   PARAMETERS "boost.doxygen.header.prefix=gpcxx"
 #   )
 
-file( GLOB_RECURSE QBK_FILES *.qbk )
+file ( GLOB_RECURSE QBK_FILES *.qbk )
+file ( GLOB_RECURSE EXAMPLE_FILES "../examples/*.cpp" )
 
 message ( STATUS "Qbk files for doc: ${QBK_FILES}" )
+message ( STATUS "Cpp files for doc: ${EXAMPLE_FILES}" )
 
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   COMMAND
@@ -59,6 +61,7 @@ add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
     "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   DEPENDS
     ${QBK_FILES}
+    ${EXAMPLE_FILES}
   )
 
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"

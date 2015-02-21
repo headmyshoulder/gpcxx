@@ -15,6 +15,7 @@
 #include <boost/algorithm/string/finder.hpp>
 
 #include <ostream>
+#include <sstream>
 
 
 namespace gpcxx {
@@ -43,6 +44,14 @@ template< typename Tree , typename SymbolMapper >
 void write_polish( std::ostream &out , Tree const& t , std::string const& sep , std::string const &opening , std::string const& closing , SymbolMapper const& mapper )
 {
     write_polish_cursor( out , t.root() , sep , opening , closing , mapper );
+}
+
+template< typename Tree , typename SymbolMapper >
+std::string polish_string( Tree const& t , std::string const& sep , std::string const &opening , std::string const& closing , SymbolMapper const& mapper )
+{
+    std::ostringstream str;
+    write_polish( str , t , sep , opening , closing , mapper );
+    return str.str();
 }
 
 
