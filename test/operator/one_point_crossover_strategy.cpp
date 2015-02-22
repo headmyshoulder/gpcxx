@@ -28,6 +28,7 @@ TYPED_TEST_CASE( one_point_crossover_strategy_tests , Implementations );
 
 TYPED_TEST( one_point_crossover_strategy_tests , instanciation )
 {
+    ASSERT_NO_THROW( 
     for( size_t i=0 ; i<10 ; ++i )
     {
         auto c = gpcxx::make_one_point_crossover_strategy( this->m_gen.rng , 10 );
@@ -41,10 +42,12 @@ TYPED_TEST( one_point_crossover_strategy_tests , instanciation )
         EXPECT_NE( this->m_test_trees.data , this->m_test_trees.data2 );
         EXPECT_EQ( l1 , this->m_test_trees.data.size() + this->m_test_trees.data2.size() );
     }
+    );
 }
 
 TYPED_TEST( one_point_crossover_strategy_tests , heights )
 {
+    ASSERT_NO_THROW(
     for( size_t i=0 ; i<10 ; ++i )
     {
         auto c = gpcxx::make_one_point_crossover_strategy( this->m_gen.rng , 5 );
@@ -58,5 +61,6 @@ TYPED_TEST( one_point_crossover_strategy_tests , heights )
         EXPECT_LE( this->m_test_trees.data.root().height() , 5 );
         EXPECT_LE( this->m_test_trees.data2.root().height() , 5 );
     }
+    );
 }
 
