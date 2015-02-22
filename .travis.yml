@@ -47,7 +47,6 @@ install:
 script:
   - cd $GPCXX_ROOT
   - .ci/build_and_test.sh
-  - .ci/run_valgrind.sh
   
 after_success:
   - cd $GPCXX_ROOT
