@@ -10,9 +10,14 @@ then
 fi
 
 if [ "$CXX" == "clang++" ];
-then 
+then
+    # export LIBCXX_REPO="http://llvm.org/svn/llvm-project/libcxx/trunk"
+    export LIBCXX_REPO="http://llvm.org/svn/llvm-project/libcxx/tags/RELEASE_342/final"
+    export LIBCXXABI_REPO="http://llvm.org/svn/llvm-project/libcxxabi/trunk"
+    # export LIBCXXABI_REPO="http://llvm.org/svn/llvm-project/libcxxabi/tags/RELEASE_351/final"
+
     # Install libc++
-    svn co --quiet http://llvm.org/svn/llvm-project/libcxx/trunk libcxx
+    svn co --quiet $LIBCXX_REPO libcxx
     cd libcxx/lib && bash buildit
     sudo cp ./libc++.so.1.0 /usr/lib/
     sudo mkdir /usr/include/c++/v1
@@ -21,7 +26,7 @@ then
     sudo ln -sf libc++.so.1.0 libc++.so.1 && cd $cwd
   
     # Install libc++abi
-    svn co --quiet http://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi
+    svn co --quiet $LIBCXXABI_REPO libcxxabi
     cd libcxxabi/lib && bash buildit
     sudo cp ./libc++abi.so.1.0 /usr/lib/
     cd .. && sudo cp -r include/* /usr/include/c++/v1/
