@@ -12,7 +12,7 @@ fi
 if [ "$CXX" == "clang++" ];
 then
     # export LIBCXX_REPO="http://llvm.org/svn/llvm-project/libcxx/trunk"
-    export LIBCXX_REPO="http://llvm.org/svn/llvm-project/libcxx/tags/RELEASE_342/final"
+    export LIBCXX_REPO="http://llvm.org/svn/llvm-project/libcxx/tags/RELEASE_33/final"
     export LIBCXXABI_REPO="http://llvm.org/svn/llvm-project/libcxxabi/trunk"
     # export LIBCXXABI_REPO="http://llvm.org/svn/llvm-project/libcxxabi/tags/RELEASE_351/final"
 
