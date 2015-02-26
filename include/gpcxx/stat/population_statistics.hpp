@@ -48,7 +48,7 @@ population_statistics calc_population_statistics( Pop const& pop )
     stat.number_nodes = nodes_mean;
     stat.nodes_stddev = std::sqrt( double( nodes_sq_mean ) / double( n ) - stat.nodes_mean * stat.nodes_mean );
     return stat;
-};
+}
 
     
 

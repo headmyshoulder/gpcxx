@@ -57,6 +57,11 @@ public:
         return m_position;
     }
     
+    void set_pos( position_1d position )
+    {
+        m_position = position;
+    }
+    
     direction dir() const
     {
         return m_direction;
@@ -89,10 +94,11 @@ public:
     : m_food_trail{ food_trail }, 
       m_food_start_count( food_trail.size() ), 
       m_food_eaten( 0 ),
-      m_ant{ m_board.pos_2d_to_1d( start_pos ), start_direction }, 
+      m_ant{ 0 , start_direction }, 
       m_board{ x_size, y_size },
       m_max_steps( max_steps )
     {
+        m_ant.set_pos( m_board.pos_2d_to_1d( start_pos ) );
     }
     
     bool food_in_front() const

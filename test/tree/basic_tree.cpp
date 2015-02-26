@@ -35,7 +35,7 @@ using namespace gpcxx;
 TEST( TESTNAME , default_construct )
 {
     basic_tree< int > tree;
-    auto root = tree.root();
+    /* auto root = */ tree.root();
     EXPECT_EQ( tree.size() , 0 );
     EXPECT_TRUE( tree.empty() );
 }
@@ -67,10 +67,10 @@ TEST( TESTNAME , insert_and_erase )
     tree.insert_below( tree.root() , "+" );
     auto n1 = tree.insert_below( tree.root() , "-" );
     auto n2 = tree.insert_below( tree.root() , "*" );
-    auto n3 = tree.insert_below( n1 , "13" );
-    auto n4 = tree.insert_below( n1 , "14" );
-    auto n5 = tree.insert_below( n2 , "15" );
-    auto n6 = tree.insert_below( n2 , "16" );
+    /* auto n3 = */ tree.insert_below( n1 , "13" );
+    /* auto n4 = */ tree.insert_below( n1 , "14" );
+    /* auto n5 = */ tree.insert_below( n2 , "15" );
+    /* auto n6 = */ tree.insert_below( n2 , "16" );
     
     EXPECT_EQ( tree.size() , 7 );
     EXPECT_FALSE( tree.empty() );

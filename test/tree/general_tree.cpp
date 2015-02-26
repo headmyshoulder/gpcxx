@@ -39,7 +39,7 @@ TYPED_TEST_CASE( general_tree_tests , Implementations );
 
 TYPED_TEST( general_tree_tests , default_construct )
 {
-    auto root = this->m_tree.root();
+    /* auto root = */ this->m_tree.root();
     EXPECT_EQ( this->m_tree.size() , 0 );
     EXPECT_TRUE( this->m_tree.empty() );
 }
@@ -72,10 +72,10 @@ TYPED_TEST( general_tree_tests , insert_and_erase )
     this->m_tree.insert_below( this->m_tree.root() , this->m_factory( "+" ) );
     auto n1 = this->m_tree.insert_below( this->m_tree.root() , this->m_factory( "-" ) );
     auto n2 = this->m_tree.insert_below( this->m_tree.root() , this->m_factory( "*" ) );
-    auto n3 = this->m_tree.insert_below( n1 , this->m_factory( "13" ) );
-    auto n4 = this->m_tree.insert_below( n1 , this->m_factory( "14" ) );
-    auto n5 = this->m_tree.insert_below( n2 , this->m_factory( "15" ) );
-    auto n6 = this->m_tree.insert_below( n2 , this->m_factory( "16" ) );
+    /* auto n3 = */ this->m_tree.insert_below( n1 , this->m_factory( "13" ) );
+    /* auto n4 = */ this->m_tree.insert_below( n1 , this->m_factory( "14" ) );
+    /* auto n5 = */ this->m_tree.insert_below( n2 , this->m_factory( "15" ) );
+    /* auto n6 = */ this->m_tree.insert_below( n2 , this->m_factory( "16" ) );
     
     EXPECT_EQ( this->m_tree.size() , 7 );
     EXPECT_FALSE( this->m_tree.empty() );

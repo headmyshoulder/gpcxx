@@ -84,10 +84,10 @@ TEST( TESTNAME , TestCase )
     tree_type tree;
     auto c1 = tree.insert_below( tree.root() , "plus" );
     auto c2 = tree.insert_below( c1 , "sin" );
-    auto c3 = tree.insert_below( c2 , "x" );
+    /* auto c3 = */ tree.insert_below( c2 , "x" );
     auto c4 = tree.insert_below( c1 , "minus" );
-    auto c5 = tree.insert_below( c4 , 12.2 );
-    auto c6 = tree.insert_below( c4 , "y" );
+    /* auto c5 = */ tree.insert_below( c4 , 12.2 );
+    /* auto c6 = */ tree.insert_below( c4 , "y" );
     
     context_type context = {{ 0.5 * boost::math::double_constants::pi , 2.0  }};
     value_type val1 = eval( tree , context );

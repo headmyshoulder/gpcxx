@@ -16,11 +16,9 @@
 #include <iostream>
 #include <utility>
 
-char const newl = '\n';
 
 
-
-void  paper_tree()
+void paper_tree()
 {
     using namespace ant_example;
     typedef typename tree_type::node_type intrusive_node_type;

@@ -67,7 +67,7 @@ node_statistics calc_node_statistics( Pop const& pop )
         stat.num_binaries += tmp.num_binaries;
     }
     return stat;
-};
+}
 
 
 

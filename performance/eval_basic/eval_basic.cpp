@@ -57,7 +57,7 @@ struct my_div
 double objective_function( double x1 , double x2 , double x3 )
 {
     return  1.0 / ( 1.0 + pow( x1 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x2 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x3 , -4.0 ) );
-};
+}
 
 struct eval_cursor1
 {
