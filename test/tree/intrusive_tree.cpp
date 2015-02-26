@@ -101,7 +101,7 @@ void test_cursor( Cursor n , Value value , size_t artiy , size_t height , size_t
 TEST( TESTNAME , default_construct )
 {
     tree_type tree;
-    EXPECT_EQ( tree.size() , 0 );
+    EXPECT_EQ( tree.size() , size_t( 0 ) );
     EXPECT_TRUE( tree.empty() );
 }
 
@@ -112,7 +112,7 @@ TEST( TESTNAME , insert_value )
     auto root = tree.root();
     auto n1 = tree.insert_below( root , my_node( plus_func() , "+" ) );
     
-    EXPECT_EQ( tree.size() , 1 );
+    EXPECT_EQ( tree.size() , size_t( 1 ) );
     EXPECT_FALSE( tree.empty() );
     test_cursor( n1 , "+" , 0 , 1 , 0 );
     test_cursor( tree.root() , "+" , 0 , 1 , 0 );
@@ -120,7 +120,7 @@ TEST( TESTNAME , insert_value )
     auto n2 = tree.insert_below( n1 , my_node( terminal_x() , "l1" ) );
     auto n3 = tree.insert_below( n1 , my_node( terminal_y() , "l2" ) );
     EXPECT_FALSE( tree.empty() );
-    EXPECT_EQ( tree.size() , 3 );
+    EXPECT_EQ( tree.size() , size_t( 3 ) );
     test_cursor( tree.root() , "+" , 2 , 2 , 0 );
     test_cursor( tree.root().children(0) , "l1" , 0 , 1 , 1 );
     test_cursor( tree.root().children(1) , "l2" , 0 , 1 , 1 );
@@ -134,12 +134,12 @@ TEST( TESTNAME , insert_and_erase )
     tree.insert_below( tree.root() , my_node( plus_func() , "+" ) );
     auto n1 = tree.insert_below( tree.root() , my_node( minus_func() , "-" ) );
     auto n2 = tree.insert_below( tree.root() , my_node( multiplies_func() , "*" ) );
-    auto n3 = tree.insert_below( n1 , my_node( terminal_x() , "13" ) );
-    auto n4 = tree.insert_below( n1 , my_node( terminal_y() , "14" ) );
-    auto n5 = tree.insert_below( n2 , my_node( terminal_z() , "15" ) );
-    auto n6 = tree.insert_below( n2 , my_node( terminal_x() , "16" ) );
+    /* auto n3 = */ tree.insert_below( n1 , my_node( terminal_x() , "13" ) );
+    /* auto n4 = */ tree.insert_below( n1 , my_node( terminal_y() , "14" ) );
+    /* auto n5 = */ tree.insert_below( n2 , my_node( terminal_z() , "15" ) );
+    /* auto n6 = */ tree.insert_below( n2 , my_node( terminal_x() , "16" ) );
     
-    EXPECT_EQ( tree.size() , 7 );
+    EXPECT_EQ( tree.size() , size_t( 7 ) );
     EXPECT_FALSE( tree.empty() );
     test_cursor( tree.root() , "+" , 2 , 3 , 0 );
     test_cursor( tree.root().children(0) , "-" , 2 , 2 , 1 );
@@ -151,7 +151,7 @@ TEST( TESTNAME , insert_and_erase )
     
     tree.erase( n2 );
     
-    EXPECT_EQ( tree.size() , 4 );
+    EXPECT_EQ( tree.size() , size_t( 4 ) );
     EXPECT_FALSE( tree.empty() );
     test_cursor( tree.root() , "+" , 1 , 3 , 0 );
     test_cursor( tree.root().children(0) , "-" , 2 , 2 , 1 );
@@ -165,14 +165,14 @@ TEST( TESTNAME , assign_value )
     tree.insert_below( tree.root() , my_node( plus_func() , "+" ) );
     auto n1 = tree.insert_below( tree.root() , my_node( minus_func() , "-" ) );
     auto n2 = tree.insert_below( tree.root() , my_node( multiplies_func() , "*" ) );
-    auto n3 = tree.insert_below( n1 , my_node( terminal_x() , "13" ) );
-    auto n4 = tree.insert_below( n1 , my_node( terminal_y() , "14" ) );
-    auto n5 = tree.insert_below( n2 , my_node( terminal_z() , "15" ) );
-    auto n6 = tree.insert_below( n2 , my_node( terminal_x() , "16" ) );
+    /* auto n3 = */ tree.insert_below( n1 , my_node( terminal_x() , "13" ) );
+    /* auto n4 = */ tree.insert_below( n1 , my_node( terminal_y() , "14" ) );
+    /* auto n5 = */ tree.insert_below( n2 , my_node( terminal_z() , "15" ) );
+    /* auto n6 = */ tree.insert_below( n2 , my_node( terminal_x() , "16" ) );
     
     *tree.root().children(0) = my_node( plus_func() , "++" );
     
-    EXPECT_EQ( tree.size() , 7 );
+    EXPECT_EQ( tree.size() , size_t( 7 ) );
     EXPECT_FALSE( tree.empty() );
     test_cursor( tree.root() , "+" , 2 , 3 , 0 );
     test_cursor( tree.root().children(0) , "++" , 2 , 2 , 1 );

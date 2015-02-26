@@ -22,9 +22,9 @@ auto create_tree( void )
     basic_tree< string > tree;
     auto root = tree.insert_below( tree.root() , "+" );
     auto l = tree.insert_below( root , "-" );
-    auto r = tree.insert_below( root , "x" );
-    auto y1 = tree.insert_below( l , "y" );
-    auto y2 = tree.insert_below( l , "5" );
+    /* auto r = */ tree.insert_below( root , "x" );
+    /* auto y1 = */ tree.insert_below( l , "y" );
+    /* auto y2 = */ tree.insert_below( l , "5" );
     return tree;
 }
 

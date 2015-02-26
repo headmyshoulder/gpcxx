@@ -29,12 +29,12 @@ char const * const direction_to_str( direction dir )
 }
 
 
-using position_1d = int;
+using position_1d = size_t ;
 
 struct position_2d
 {
-    int x;
-    int y;
+    size_t x;
+    size_t y;
 };
 
 std::ostream & operator << ( std::ostream & os , position_2d const & pos)
@@ -63,8 +63,8 @@ public:
     
     position_2d pos_1d_to_2d( position_1d pos1d ) const
     {
-        int x_pos = pos1d % m_size_x;
-        int y_pos = pos1d / m_size_x;
+        position_1d x_pos = pos1d % m_size_x;
+        position_1d y_pos = pos1d / m_size_x;
         return {x_pos, y_pos};
     }   
     

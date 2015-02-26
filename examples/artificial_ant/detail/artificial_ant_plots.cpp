@@ -359,7 +359,7 @@ ant_result ant_simulation_gp_stats_helper(
         };
 
         std::vector<ant_result> results;
-        for(int i = 0; i < repeat_ntimes; ++i)
+        for( size_t i = 0; i < repeat_ntimes; ++i)
         {
             rng.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
             results.emplace_back(ant_simulation_gp(
@@ -389,18 +389,20 @@ ant_result ant_simulation_gp_stats_helper(
         for_each(arguments.begin(), arguments.end(), [](arguments_type::value_type & v){
             if(v.second.has_next()) v.second.make_step(); 
         });
-    }while(any_has_next);
+    } while( any_has_next );
+    
+    return ant_result {};
 }
 
 
 int main( int argc , char *argv[] )
 {
-    size_t mandatory_args_count = 5;
-    size_t range_args_count = 4;
+    int mandatory_args_count = 5;
+    int range_args_count = 4;
     if(((argc - mandatory_args_count) % range_args_count)  != 0 || argc < mandatory_args_count)
     {
         std::cerr << "Usage: " << argv[0] <<
-                " <filename> <avg_over_n> <print_header> <print_generations> "\
+            " <filename> <avg_over_n> <print_header> <print_generations> "\
             "[[<argumentname> <range_start> <range_end> <range_step>]"\
             " [<argumentname> <range_start> <range_end> <range_step>] [...]] "
                         << std::endl;

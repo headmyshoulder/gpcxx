@@ -64,8 +64,8 @@ char const * const board1[y_size] = {
 ant_simulation::food_trail_type make_santa_fe_trail( ant_example::board b )
 {
     ant_simulation::food_trail_type santa_fe_trail;
-    for( int x = 0; x < santa_fe::x_size; ++x )
-        for( int y = 0; y < santa_fe::y_size; ++y )
+    for( size_t x = 0; x < santa_fe::x_size; ++x )
+        for( size_t y = 0; y < santa_fe::y_size; ++y )
             if( santa_fe::board1[ y ][ x ] == 'X' )
                 santa_fe_trail[ b.pos_2d_to_1d( { x, y } ) ] = true;
     return santa_fe_trail;

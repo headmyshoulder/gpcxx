@@ -172,10 +172,10 @@ int main( int argc , char *argv[] )
     paper_tree();
 
 
-    int count = 0;
+    size_t count = 0;
     auto santa_fe_trail = santa_fe::make_santa_fe_trail(b);
-    for(int y = 0; y < santa_fe::y_size; ++y){
-        for(int x = 0; x < santa_fe::x_size; ++x){
+    for( size_t y = 0; y < santa_fe::y_size; ++y){
+        for( size_t x = 0; x < santa_fe::x_size; ++x){
             count += santa_fe_trail[ b.pos_2d_to_1d( { x, y} ) ];
             std::cout << (santa_fe_trail[ b.pos_2d_to_1d( { x, y} ) ] ? 'X' : ' ');
         }

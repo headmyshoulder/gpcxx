@@ -36,7 +36,7 @@ namespace gpcxx {
             if( c.size() > 1 )
             {
                 internal.emplace_back( c );
-                for( int i = 0 ; i < c.size() ; ++i )
+                for( size_t i = 0 ; i < c.size() ; ++i )
                     seperate_nodes( c.children( i ) , internal , terminal );
             }
             else
@@ -56,7 +56,7 @@ namespace gpcxx {
             std::uniform_real_distribution< double > internal_node_favor_dist( 0.0 , 1.0 );
             std::vector< cursor > selectable_nodes[ n_trees ];
             std::uniform_int_distribution< size_t > dist[ n_trees ];
-            for( int i = 0 ; i < n_trees; ++i )
+            for( size_t i = 0 ; i < n_trees; ++i )
             {
                 std::vector< cursor > internel_nodes , terminal_nodes;
 
@@ -77,13 +77,13 @@ namespace gpcxx {
             cursor cur[ n_trees ];
             do
             {
-                for( int i = 0 ; i < n_trees; ++i )
+                for( size_t i = 0 ; i < n_trees; ++i )
                     cur[ i ] = selectable_nodes[ i ][ dist[ i ]( m_rng ) ];
 
                 size_t new_height[] = {  cur[ 0 ].level() + cur[ 1 ].height() - 1 , cur[ 1 ].level() + cur[ 0 ].height() - 1 };
 
                 good = true;
-                for( int i = 0 ; i < n_trees; ++i )
+                for( size_t i = 0 ; i < n_trees; ++i )
                     good = good && ( new_height[i] <= m_max_height );
             }
             while( not good and ( iteration < m_max_iterations ) );

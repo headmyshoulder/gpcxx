@@ -51,7 +51,6 @@ TYPED_TEST( one_point_crossover_strategy_tests , heights )
     for( size_t i=0 ; i<10 ; ++i )
     {
         auto c = gpcxx::make_one_point_crossover_strategy( this->m_gen.rng , 5 );
-        size_t l1 = this->m_test_trees.data.size() + this->m_test_trees.data2.size();
         cerr << this->m_test_trees.data.size() << " " << simple( this->m_test_trees.data ) << "\n";
         cerr << this->m_test_trees.data2.size() << " " << simple( this->m_test_trees.data2 ) << "\n\n";
         c( this->m_test_trees.data , this->m_test_trees.data2 );

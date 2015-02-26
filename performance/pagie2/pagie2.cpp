@@ -118,7 +118,7 @@ int main( int argc , char *argv[] )
     double mutation_rate = 0.0;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
-    size_t min_tree_height = 1 , max_tree_height = 8;
+    size_t min_tree_height = 8 , max_tree_height = 8;
     size_t tournament_size = 15;
 
 
@@ -131,7 +131,7 @@ int main( int argc , char *argv[] )
         { double( unary_gen.num_symbols() ) , 1 , unary_gen } ,
         { double( binary_gen.num_symbols() ) , 2 , binary_gen } };
 
-    auto tree_generator = gpcxx::make_ramp( rng , node_generator , max_tree_height , max_tree_height , 0.5 );
+    auto tree_generator = gpcxx::make_ramp( rng , node_generator , min_tree_height , max_tree_height , 0.5 );
     
 
     evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );

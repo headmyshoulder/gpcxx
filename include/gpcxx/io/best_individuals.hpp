@@ -21,7 +21,7 @@ template< typename Pop , typename Fitness , typename SymbolMapper >
 void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f , size_t ind , size_t num_individuals , bool write_infix , SymbolMapper const& mapper )
 {
     std::vector< size_t > idx;
-    auto iter = gpcxx::sort_indices( f , idx );
+    gpcxx::sort_indices( f , idx );
     bool first = true;
     for( size_t i=0 ; i<num_individuals ; ++i )
     {

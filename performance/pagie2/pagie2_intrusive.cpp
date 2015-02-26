@@ -173,19 +173,13 @@ int main( int argc , char *argv[] )
     double mutation_rate = 0.0;
     double crossover_rate = 0.6;
     double reproduction_rate = 0.3;
-    size_t min_tree_height = 1 , max_tree_height = 8;
+    size_t max_tree_height = 8;
     size_t tournament_size = 15;
-
-
-    std::array< double , 3 > weights = {{ double( terminal_gen.num_symbols() ) ,
-                                          double( unary_gen.num_symbols() ) ,
-                                          double( binary_gen.num_symbols() ) }};
-    
     
 
     auto tree_generator = gpcxx::make_basic_generate_strategy( rng , node_generator , max_tree_height , max_tree_height );
-    auto new_tree_generator = gpcxx::make_ramp( rng , node_generator ,
-        min_tree_height , max_tree_height , 0.5 );
+    // size_t min_tree_height = 1
+    // auto new_tree_generator = gpcxx::make_ramp( rng , node_generator , min_tree_height , max_tree_height , 0.5 );
 
 
     typedef gpcxx::static_pipeline< population_type , fitness_type , rng_type > evolver_type;

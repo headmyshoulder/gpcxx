@@ -257,7 +257,6 @@ namespace parser
         std::string::const_iterator iter = str.begin();
         std::string::const_iterator end = str.end();
         expression_ast ast;
-        ast_print printer;
         bool r = phrase_parse( iter , end , g , space , ast );
         
         if (r && iter == end)

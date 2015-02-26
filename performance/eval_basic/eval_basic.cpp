@@ -78,6 +78,7 @@ struct eval_cursor1
             case '*' : return eval_cursor( c.children(0) , context ) * eval_cursor( c.children(1) , context ); break;
             case '/' : return my_div()( eval_cursor( c.children(0) , context ) , eval_cursor( c.children(1) , context ) ); break;
         }
+        return value_type( 0.0 );
     }
     
     template< typename Tree >

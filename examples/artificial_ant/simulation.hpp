@@ -28,7 +28,7 @@ class ant
 public:
     
     ant( position_1d position, direction direction )
-    : m_position( position ), m_direction( direction ), m_steps_done( 0 )
+    : m_steps_done( 0 ) , m_position( position ),   m_direction( direction )
     {
     }
     
@@ -87,11 +87,11 @@ public:
     
     ant_simulation( food_trail_type food_trail, size_t x_size, size_t y_size, position_2d start_pos, direction start_direction, int max_steps )
     : m_food_trail{ food_trail }, 
-      m_board{ x_size, y_size }, 
-      m_ant{ m_board.pos_2d_to_1d( start_pos ), start_direction }, 
       m_food_start_count( food_trail.size() ), 
-      m_max_steps( max_steps ),
-      m_food_eaten( 0 )
+      m_food_eaten( 0 ),
+      m_ant{ m_board.pos_2d_to_1d( start_pos ), start_direction }, 
+      m_board{ x_size, y_size },
+      m_max_steps( max_steps )
     {
     }
     
@@ -152,11 +152,11 @@ public:
     {
         std::ostringstream oss;
 
-        for(int y = 0; y < m_board.get_size_y() ; ++y)
+        for( size_t y = 0; y < m_board.get_size_y() ; ++y)
         {
-            for(int x = 0; x < m_board.get_size_x(); ++x)
+            for( size_t x = 0; x < m_board.get_size_x(); ++x)
             {
-                int pos_1d = m_board.pos_2d_to_1d({x,y});
+                position_1d pos_1d = m_board.pos_2d_to_1d({x,y});
                 
                 if( m_ant.pos() == pos_1d)
                     oss << direction_to_str( m_ant.dir() );
