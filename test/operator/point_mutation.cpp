@@ -37,6 +37,6 @@ TYPED_TEST( point_mutation_tests , instanciation )
         typename TestFixture::tree_type tree;
         generator( tree );
         strategy( tree );
-        EXPECT_LE( tree.root().height() , 5 );
+        EXPECT_LE( tree.root().height() , size_t( 5 ) );
     }
 }

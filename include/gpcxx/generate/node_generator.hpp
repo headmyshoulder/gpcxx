@@ -185,7 +185,7 @@ private:
         auto t_iter = std::copy_if( m_generators.begin() , m_generators.end() , m_non_terminal_generators.begin() ,
                       []( weighted_generator_type const& w ) -> bool { return w.arity != 0; } );
         std::ptrdiff_t len = std::distance( m_non_terminal_generators.begin() , t_iter );
-        assert( ( len >= 0 ) && ( len <= dim ) );
+        assert( ( len >= 0 ) && ( len <= std::ptrdiff_t( dim ) ) );
         std::transform( m_non_terminal_generators.begin() , t_iter , weight.begin() ,
                         []( weighted_generator_type const& w ) { return w.weight; } );
         m_non_terminal_dist = std::discrete_distribution<>( weight.begin() , weight.begin() + len );

@@ -16,13 +16,13 @@ TEST( TESTNAME , create1 )
 {
     std::vector< size_t >  ind;
     gpcxx::create_random_indices( ind , 10 , 5 );
-    EXPECT_EQ( ind.size() , 5 );
+    EXPECT_EQ( ind.size() , size_t( 5 ) );
 }
 
 TEST( TESTNAME , create2 )
 {
     std::vector< size_t >  ind;
     gpcxx::create_random_indices( ind , 10 , 10 );
-    EXPECT_EQ( ind.size() , 10 );
+    EXPECT_EQ( ind.size() , size_t( 10 ) );
 }
 

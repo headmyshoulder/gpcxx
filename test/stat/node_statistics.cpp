@@ -27,10 +27,10 @@ TEST( TESTNAME , test1 )
     test_tree< basic_tree_tag > trees;
     node_statistics stat = calc_node_statistics_tree( trees.data );
     
-    EXPECT_EQ( stat.num_nodes , 6 );
-    EXPECT_EQ( stat.num_terminals , 3 );
-    EXPECT_EQ( stat.num_unaries , 1 );
-    EXPECT_EQ( stat.num_binaries , 2 );
+    EXPECT_EQ( stat.num_nodes , size_t( 6 ) );
+    EXPECT_EQ( stat.num_terminals , size_t( 3 ) );
+    EXPECT_EQ( stat.num_unaries , size_t( 1 ) );
+    EXPECT_EQ( stat.num_binaries , size_t( 2 ) );
 }
 
 TEST( TESTNAME , test2 )
@@ -38,8 +38,8 @@ TEST( TESTNAME , test2 )
     test_tree< basic_tree_tag > trees;
     node_statistics stat = calc_node_statistics_tree( trees.data2 );
 
-    EXPECT_EQ( stat.num_nodes , 4 );
-    EXPECT_EQ( stat.num_terminals , 2 );
-    EXPECT_EQ( stat.num_unaries , 1 );
-    EXPECT_EQ( stat.num_binaries , 1 );
+    EXPECT_EQ( stat.num_nodes , size_t( 4 ) );
+    EXPECT_EQ( stat.num_terminals , size_t( 2 ) );
+    EXPECT_EQ( stat.num_unaries , size_t( 1 ) );
+    EXPECT_EQ( stat.num_binaries , size_t( 1 ) );
 }

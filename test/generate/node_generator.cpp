@@ -145,7 +145,7 @@ TEST_F( TESTNAME , test_prob_non_terminal_node1 )
     size_t num_unaries = std::count_if( nodes.begin() , nodes.end() , m_is_unary_symbol );
     size_t num_binaries = std::count_if( nodes.begin() , nodes.end() , m_is_binary_symbol );
     
-    EXPECT_EQ( num_terminals , 0 );
+    EXPECT_EQ( num_terminals , size_t( 0 ) );
     check_occurency( num_unaries , m_num_trials / 2 );
     check_occurency( num_binaries , m_num_trials / 2 );
 }
@@ -165,7 +165,7 @@ TEST_F( TESTNAME , test_prob_non_terminal_node2 )
     size_t num_unaries = std::count_if( nodes.begin() , nodes.end() , m_is_unary_symbol );
     size_t num_binaries = std::count_if( nodes.begin() , nodes.end() , m_is_binary_symbol );
     
-    EXPECT_EQ( num_terminals , 0 );
+    EXPECT_EQ( num_terminals , size_t( 0 ) );
     check_occurency( num_unaries , 2 * m_num_trials / 3 );
     check_occurency( num_binaries , m_num_trials / 3 );
 }
@@ -222,8 +222,8 @@ TEST_F( TESTNAME , test_get_terminal )
     size_t num_binaries = std::count_if( nodes.begin() , nodes.end() , m_is_binary_symbol );
     
     EXPECT_EQ( m_num_trials , num_terminals);
-    EXPECT_EQ( 0 , num_unaries );
-    EXPECT_EQ( 0 , num_binaries );
+    EXPECT_EQ( size_t( 0 ) , num_unaries );
+    EXPECT_EQ( size_t( 0 ) , num_binaries );
 
 }
 
