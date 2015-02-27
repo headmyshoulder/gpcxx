@@ -106,7 +106,7 @@ template< typename Tree , typename SymbolMapper = gpcxx::identity >
 void generate_graphviz_pdf( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
 {
     std::ofstream fout( "__tmp__.dot" );
-    write_graphviz( t , fout , mapper );
+    write_graphviz( fout , t , false , mapper );
     fout.close();
 
     system ( "dot -Tps2 __tmp__.dot > __tmp__.ps" );

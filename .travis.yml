@@ -50,8 +50,9 @@ install:
 
 script:
   - cd $GPCXX_ROOT
-  - if [ -z "$COVERITY_PUSH" ] .ci/build_and_test.sh
-  - if [ -n "$COVERITY_PUSH" ] .ci/commit_coverity_scan.sh
+  - if [ -z "$COVERITY_PUSH" ]; then .ci/build_and_test.sh; fi
+  - cd $GPCXX_ROOT
+  - if [ -n "$COVERITY_PUSH" ]; then .ci/commit_coverity_scan.sh; fi
   
 after_success:
   - cd $GPCXX_ROOT
