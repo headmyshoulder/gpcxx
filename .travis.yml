@@ -26,6 +26,9 @@ matrix:
     - os: osx
       compiler: gcc
   include:
+    - os: linux
+      compiler: gcc
+      env: COVERITY_PUSH=1
     # COVERITY
     # COVERALL
     # DOCS
@@ -47,7 +50,8 @@ install:
 
 script:
   - cd $GPCXX_ROOT
-  - .ci/build_and_test.sh
+  - if [ -z "$COVERITY_PUSH" ] .ci/build_and_test.sh
+  - if [ -n "$COVERITY_PUSH" ] .ci/commit_coverity_scan.sh
   
 after_success:
   - cd $GPCXX_ROOT
