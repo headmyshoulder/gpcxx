@@ -115,7 +115,16 @@ void generate_graphviz_pdf( const std::string &filename , const Tree &t , Symbol
     system ( "rm __tmp__.ps" );
 }
 
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
+void generate_graphviz_svg( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
+{
+    std::ofstream fout( "__tmp__.dot" );
+    write_graphviz( fout , t , false , mapper );
+    fout.close();
 
+    system ( ( std::string( "dot -Tsvg __tmp__.dot -o" ) + filename ).c_str() );
+    system ( "rm __tmp__.dot" );
+}
 
 
 } // namespace gpcxx
