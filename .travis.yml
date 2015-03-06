@@ -21,9 +21,8 @@ env:
     - BUILD_TYPE=Release
 
 matrix:
-  # For now disable gcc on osx as g++4.8 is not yet available
   exclude:
-    - os: osx
+    - os: osx   # For now disable gcc on osx as g++4.8 is not yet available
       compiler: gcc
   include:
     - os: linux

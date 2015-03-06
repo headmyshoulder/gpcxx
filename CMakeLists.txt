@@ -35,7 +35,7 @@ message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
 
 find_package ( Boost REQUIRED COMPONENTS thread system )
 
-include_directories ( ${Boost_INCLUDE_DIRS} )
+include_directories ( SYSTEM ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 
@@ -59,7 +59,7 @@ if ( ${GPCXX_BUILD_TESTS} )
 
   if ( IS_DIRECTORY ${GMOCK_ROOT}  AND IS_DIRECTORY ${GTEST_ROOT} )
   
-    include_directories ( ${GTEST_ROOT} ${GTEST_ROOT}/include ${GMOCK_ROOT} ${GMOCK_ROOT}/include )
+    include_directories ( SYSTEM ${GTEST_ROOT} ${GTEST_ROOT}/include ${GMOCK_ROOT} ${GMOCK_ROOT}/include )
   
     add_library ( gtest ${GTEST_ROOT}/src/gtest-all.cc )
     target_link_libraries ( gtest pthread )
