@@ -11,9 +11,6 @@
 #include "../common/test_template.hpp"
 #include "../common/test_functions.hpp"
 
-
-// #include <gpcxx/util/indent.hpp>
-
 #include <gtest/gtest.h>
 
 #include <sstream>
@@ -39,7 +36,8 @@ TYPED_TEST_CASE( general_tree_tests , Implementations );
 
 TYPED_TEST( general_tree_tests , default_construct )
 {
-    /* auto root = */ this->m_tree.root();
+    auto root = this->m_tree.root();
+    EXPECT_EQ( root.node() , nullptr );
     EXPECT_EQ( this->m_tree.size() , size_t( 0 ) );
     EXPECT_TRUE( this->m_tree.empty() );
 }

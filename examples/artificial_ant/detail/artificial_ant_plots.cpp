@@ -174,7 +174,7 @@ ant_result ant_simulation_gp(
     size_t const init_max_tree_height,
     size_t const max_tree_height,
     size_t const tournament_size,
-    rng_type rng,
+    rng_type &rng,
     bool print_generations,
     size_t current_run
 )

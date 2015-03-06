@@ -327,17 +327,18 @@ public:
     
     void erase( cursor position ) noexcept
     {
-        --m_size;
         if( position.node() == nullptr ) return;
+        
+        --m_size;
         
         for( cursor c = position.begin() ; c != position.end() ; ++c )
         {
             erase_impl( c );
         }
         node_pointer ptr = static_cast< node_pointer >( position.node() );
+        position.parent_node()->remove_child( ptr );        
         m_node_allocator.destroy( ptr );
         m_node_allocator.deallocate( ptr , 1 );
-        position.parent_node()->remove_child( ptr );
     }
     
     void clear( void ) noexcept

@@ -35,7 +35,8 @@ using namespace gpcxx;
 TEST( TESTNAME , default_construct )
 {
     basic_tree< int > tree;
-    /* auto root = */ tree.root();
+    auto root = tree.root();
+    EXPECT_EQ( root.node() , nullptr );
     EXPECT_EQ( tree.size() , size_t( 0 ) );
     EXPECT_TRUE( tree.empty() );
 }
