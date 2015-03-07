@@ -24,25 +24,19 @@ matrix:
   exclude:
     - os: osx   # For now disable gcc on osx as g++4.8 is not yet available
       compiler: gcc
-  include:
-    - os: linux
-      compiler: gcc
-      env: COVERITY_PUSH=1
-    # COVERITY
-    # COVERALL
-    # DOCS
 
     
     
 before_install:
   - export GPCXX_ROOT=`pwd`
   - cd $GPCXX_ROOT
-  - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ]; then export MASTER_BUILD=1; fi
+  - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ]; && [ "$TRAVIS_BRANCH" == "master" ]; then export MASTER_BUILD=1; fi
   - .ci/setup_compiler.sh
   - .ci/init_thirdparty.sh
   # some variables need to be set here
   - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
   - if [ "$CXX" == "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+
 
 install:
   - cd $GPCXX_ROOT
@@ -51,15 +45,16 @@ install:
 script:
   - cd $GPCXX_ROOT
   - if [ -z "$COVERITY_PUSH" ]; then .ci/build_and_test.sh; fi
-  # - cd $GPCXX_ROOT
-  # - if [ -n "$COVERITY_PUSH" ]; then .ci/commit_coverity_scan.sh; fi
   
 after_success:
   - cd $GPCXX_ROOT
   - if [ -n "$MASTER_BUILD" ]; then echo "Master build"; fi
-  # - if in master: build docs and push to gh-page
-  # - if in master: push to coverity branch
-  # coveralls
+  - cd $GPCXX_ROOT
+  - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coverity_scan.sh; fi
+  # - cd $GPCXX_ROOT
+  # - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
+  # - cd $GPCXX_ROOT
+  #- if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi
 
 
 
