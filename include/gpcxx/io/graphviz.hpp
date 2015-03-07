@@ -102,29 +102,66 @@ detail::graphviz_writer< T , SymbolMapper > graphviz( T const& t , bool print_no
 
 
 
+// template< typename Tree , typename SymbolMapper = gpcxx::identity >
+// void generate_graphviz_pdf( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
+// {
+//     std::ofstream fout( "__tmp__.dot" );
+//     write_graphviz( fout , t , false , mapper );
+//     fout.close();
+// 
+//     system ( "dot -Tps2 __tmp__.dot > __tmp__.ps" );
+//     system ( ( std::string( "ps2pdf __tmp__.ps " ) + filename ).c_str() );
+//     system ( "rm __tmp__.dot" );
+//     system ( "rm __tmp__.ps" );
+// }
+
+namespace detail {
+    
 template< typename Tree , typename SymbolMapper = gpcxx::identity >
-void generate_graphviz_pdf( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
+void generate_graphviz_output( const std::string& filename , const Tree& t , std::string const& format_string , SymbolMapper const& mapper = SymbolMapper() )
 {
     std::ofstream fout( "__tmp__.dot" );
     write_graphviz( fout , t , false , mapper );
     fout.close();
 
-    system ( "dot -Tps2 __tmp__.dot > __tmp__.ps" );
-    system ( ( std::string( "ps2pdf __tmp__.ps " ) + filename ).c_str() );
+    system ( ( std::string( "dot -T" ) + format_string + " __tmp__.dot -o" + filename ).c_str() );
     system ( "rm __tmp__.dot" );
-    system ( "rm __tmp__.ps" );
+}
+
 }
 
 template< typename Tree , typename SymbolMapper = gpcxx::identity >
 void generate_graphviz_svg( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
 {
-    std::ofstream fout( "__tmp__.dot" );
-    write_graphviz( fout , t , false , mapper );
-    fout.close();
-
-    system ( ( std::string( "dot -Tsvg __tmp__.dot -o" ) + filename ).c_str() );
-    system ( "rm __tmp__.dot" );
+    detail::generate_graphviz_output( filename , t , "svg" , mapper );
 }
+
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
+void generate_graphviz_png( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
+{
+    detail::generate_graphviz_output( filename , t , "png" , mapper );
+}
+
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
+void generate_graphviz_jpg( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
+{
+    detail::generate_graphviz_output( filename , t , "jpg" , mapper );
+}
+
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
+void generate_graphviz_pdf( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
+{
+    detail::generate_graphviz_output( filename , t , "pdf" , mapper );
+}
+
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
+void generate_graphviz_ps( const std::string &filename , const Tree &t , SymbolMapper const& mapper = SymbolMapper() )
+{
+    detail::generate_graphviz_output( filename , t , "ps" , mapper );
+}
+
+
+
 
 
 } // namespace gpcxx

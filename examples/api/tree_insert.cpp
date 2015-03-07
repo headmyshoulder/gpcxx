@@ -25,22 +25,19 @@ void insert_below_examples( void )
     tree.insert_below( tree.root() , "A" );
     //]
     
-    ofstream fout1( "insert_below_1.dot" );
-    fout1 << graphviz( tree );
+    generate_graphviz_png( "insert_below_1.png" , tree );
     
     //[ insert_below_2]
     tree.insert_below( tree.root() , "B" );
     //]
     
-    ofstream fout2( "insert_below_2.dot" );
-    fout2 << graphviz( tree );
+    generate_graphviz_png( "insert_below_2.png" , tree );
     
     //[ insert_below_3]
     tree.insert_below( tree.root() , "C" );
     //]
     
-    ofstream fout3( "insert_below_3.dot" );
-    fout3 << graphviz( tree );
+    generate_graphviz_png( "insert_below_3.png" , tree );
 }
 
 int main( int argc , char **argv )

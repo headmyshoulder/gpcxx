@@ -5,8 +5,7 @@ language: cpp
 
 compiler:
   - gcc
-  # disabling clang, because libcxx yields errors
-  # - clang
+  - clang
 
 os: 
   - linux
