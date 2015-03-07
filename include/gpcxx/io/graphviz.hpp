@@ -8,9 +8,10 @@
 #define GPCXX_IO_GRAPHVIZ_HPP_INCLUDED
 
 #include <gpcxx/util/identity.hpp>
+#include <gpcxx/util/exception.hpp>
 
 #include <fstream>
-
+#include <cstdio>
 
 
 namespace gpcxx {
@@ -120,12 +121,17 @@ namespace detail {
 template< typename Tree , typename SymbolMapper = gpcxx::identity >
 void generate_graphviz_output( const std::string& filename , const Tree& t , std::string const& format_string , SymbolMapper const& mapper = SymbolMapper() )
 {
+    using namespace std::string_literals;
+    
     std::ofstream fout( "__tmp__.dot" );
     write_graphviz( fout , t , false , mapper );
     fout.close();
 
-    system ( ( std::string( "dot -T" ) + format_string + " __tmp__.dot -o" + filename ).c_str() );
-    system ( "rm __tmp__.dot" );
+    std::string cmd = "dot -T"s + format_string + " __tmp__.dot -o"s + filename;
+    if( std::system ( cmd.c_str() ) != 0 )
+        throw gpcxx_exception( "Could not create graphviz output. Command is "s  + cmd );
+    if( std::system ( "rm __tmp__.dot" ) != 0 )
+        throw gpcxx_exception( "Could not remove temporary dot file. Command is rm __tmp__.dot" );
 }
 
 }
