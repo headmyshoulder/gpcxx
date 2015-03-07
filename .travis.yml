@@ -51,10 +51,10 @@ after_success:
   - if [ -n "$MASTER_BUILD" ]; then echo "Master build"; fi
   - cd $GPCXX_ROOT
   - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coverity_scan.sh; fi
-  # - cd $GPCXX_ROOT
-  # - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
-  # - cd $GPCXX_ROOT
-  #- if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi
+  - cd $GPCXX_ROOT
+  - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
+  - cd $GPCXX_ROOT
+   if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi
 
 
 
