@@ -31,6 +31,8 @@ before_install:
   - export GPCXX_ROOT=`pwd`
   - cd $GPCXX_ROOT
   - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ] && [ "$TRAVIS_BRANCH" == "master" ]; then export MASTER_BUILD=1; fi
+  - if [ -n "$MASTER_BUILD" ]; then echo "Master build"; fi
+  - echo $TRAVIS_BRANCH
   - .ci/setup_compiler.sh
   - .ci/init_thirdparty.sh
   # some variables need to be set here
@@ -48,13 +50,11 @@ script:
   
 after_success:
   - cd $GPCXX_ROOT
-  - if [ -n "$MASTER_BUILD" ]; then echo "Master build"; fi
-  - cd $GPCXX_ROOT
   - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coverity_scan.sh; fi
   - cd $GPCXX_ROOT
   - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
   - cd $GPCXX_ROOT
-   if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi
+  - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi
 
 
 
