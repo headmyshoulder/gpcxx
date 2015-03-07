@@ -30,7 +30,7 @@ matrix:
 before_install:
   - export GPCXX_ROOT=`pwd`
   - cd $GPCXX_ROOT
-  - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ]; && [ "$TRAVIS_BRANCH" == "master" ]; then export MASTER_BUILD=1; fi
+  - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ] && [ "$TRAVIS_BRANCH" == "master" ]; then export MASTER_BUILD=1; fi
   - .ci/setup_compiler.sh
   - .ci/init_thirdparty.sh
   # some variables need to be set here
