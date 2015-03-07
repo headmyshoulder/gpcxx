@@ -4,7 +4,23 @@
 
 construction
 
+[import ../examples/api/tree_insert.cpp]
+
+insert_below:
+
+[insert_below_1]
+
+[insert_below_2]
+
+[insert_below_3]
+
+[$images/insert_below_1.png] [$images/insert_below_2.png] [$images/insert_below_3.png]
+
+
+
 insert nodes - pictures
+
+
 
 accessor, size, height, ...
 
@@ -17,7 +33,7 @@ cursors
 
 [section Tree output]
 
-[import ../examples/io/tree_io.cpp]
+[import ../examples/api/tree_io.cpp]
 
 
 For all tree output functions the following holds

@@ -8,3 +8,4 @@
 #
 
 add_executable ( tree_io tree_io.cpp )
+add_executable ( tree_insert tree_insert.cpp )
