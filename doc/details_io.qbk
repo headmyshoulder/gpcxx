@@ -1,36 +1,3 @@
-[section __gpcxx in detail]
-
-[section Operations on tree]
-
-construction
-
-[import ../examples/api/tree_insert.cpp]
-
-insert_below:
-
-[insert_below_1]
-
-[insert_below_2]
-
-[insert_below_3]
-
-[$images/insert_below_1.png] [$images/insert_below_2.png] [$images/insert_below_3.png]
-
-
-
-insert nodes - pictures
-
-
-
-accessor, size, height, ...
-
-swap nodes - pictures
-
-cursors
-
-
-[endsect]
-
 [section Tree output]
 
 [import ../examples/api/tree_io.cpp]
@@ -168,26 +135,5 @@ std::string simple_string( Tree const& tree ,
 [endsect]
 
 [section Tree input]
-
-[endsect]
-
-
-
-
-[section Genetic operations on trees]
-
-mutation - pictures
-
-crossover - pictures
-
-tree generation - pictures
-
-[endsect]
-
-[section Evaluation of trees]
-
-später
-
-[endsect]
 
 [endsect]

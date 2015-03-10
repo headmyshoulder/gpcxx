@@ -73,9 +73,7 @@
 
 [endsect]
 
-[section gpcxx in detail]
-
-[endsect]
+[include details.qbk]
 
 [section Performance results]
 

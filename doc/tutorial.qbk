@@ -4,7 +4,6 @@ In this tutorial we will explore the basic features of __gpcxx and go step by st
 
 [include tutorial_symbolic_regression.qbk]
 [include tutorial_artificial_ant.qbk]
-[include tutorial_gpcxx_in_detail.qbk]
 
 
 

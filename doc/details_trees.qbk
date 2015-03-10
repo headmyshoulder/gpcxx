@@ -1,0 +1,30 @@
+[section Operations on tree]
+
+construction
+
+[import ../examples/api/tree_insert.cpp]
+
+insert_below:
+
+[insert_below_1]
+
+[insert_below_2]
+
+[insert_below_3]
+
+[$images/insert_below_1.png] [$images/insert_below_2.png] [$images/insert_below_3.png]
+
+
+
+insert nodes - pictures
+
+
+
+accessor, size, height, ...
+
+swap nodes - pictures
+
+cursors
+
+
+[endsect]

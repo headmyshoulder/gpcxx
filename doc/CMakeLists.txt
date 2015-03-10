@@ -101,7 +101,6 @@ xsltproc(
   CATALOG "${catalog}"
   STYLESHEET "${BOOSTBOOK_XSL_DIR}/docbook.xsl"
   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
-  PARAMETERS chunk.section.depth=2 chunk.first.sections=1 toc.section.depth=1 toc.max.depth=1 generate.section.toc.level=2
   )
 
 xsltproc(
@@ -109,6 +108,7 @@ xsltproc(
   OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
   CATALOG "${catalog}"
   STYLESHEET "${BOOSTBOOK_XSL_DIR}/xhtml.xsl"
+  PARAMETERS chunk.section.depth="2" chunk.first.sections="0" toc.section.depth="2" toc.max.depth="2" generate.section.toc.level="3"
   )
 
 add_custom_target ( documentation
