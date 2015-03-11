@@ -59,12 +59,10 @@ class tree_base_cursor : public boost::iterator_facade<
         boost::random_access_traversal_tag >;
     
     template< typename OtherNode >
-    using other_node_enabler = std::enable_if< std::is_convertible< typename OtherNode::value_type* , typename base_type::value_type* >::value >;
+    using other_node_enabler = std::enable_if< std::is_convertible< OtherNode* , node_pointer >::value >;
         
-//     template< typename OtherNode >
-//     struct other_node_enabler : public std::enable_if< std::is_convertible< typename OtherNode::value_type* , typename base_type::value_type* >::value >
-//     {
-//     };
+    
+
     
 public:
 
@@ -83,6 +81,10 @@ public:
     //
     tree_base_cursor( node_base_pointer node = nullptr , size_type pos = 0 )
     : m_node( node ) , m_pos( pos ) { }
+    
+    template< typename OtherNode , typename Enabler = typename other_node_enabler< OtherNode >::type >
+    tree_base_cursor( tree_base_cursor< OtherNode > const& other )
+    : m_node( other.parent_node() ) , m_pos( other.pos() ) { }
     
     tree_base_cursor( tree_base_cursor const& ) = default;
     tree_base_cursor( tree_base_cursor&& ) = default;

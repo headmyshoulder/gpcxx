@@ -44,6 +44,7 @@ private:
 public:
     using node_type = Node;
     using node_pointer = node_type*;
+    using const_node_pointer = node_type const*;
     
 private:
     
@@ -265,7 +266,7 @@ public:
         insert_below( root() , subtree );
     }
     
-    cursor insert_below( cursor position , const value_type& val )
+    cursor insert_below( const_cursor position , const value_type& val )
     {
         node_pointer new_node = m_node_allocator.allocate( 1 );
         m_node_allocator.construct( new_node , val );
@@ -275,12 +276,12 @@ public:
     cursor insert_below( const_cursor position , value_type &&val )
     {
         node_pointer new_node = m_node_allocator.allocate( 1 );
-        *new_node = std::move( val );
+        m_node_allocator.construct( new_node , std::move( val ) );
         return insert_below_impl( position , new_node );
     }
     
     template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
-    cursor insert_below( cursor position , InputCursor subtree )
+    cursor insert_below( const_cursor position , InputCursor subtree )
     {
         cursor p = insert_below( position , *subtree );
         for( InputCursor c = subtree.begin() ; c != subtree.end() ; ++c )
@@ -352,18 +353,18 @@ public:
     
     
     
-    void erase( cursor position ) noexcept
+    void erase( const_cursor position ) noexcept
     {
         if( position.node() == nullptr ) return;
         
         --m_size;
         
-        for( cursor c = position.begin() ; c != position.end() ; ++c )
+        for( const_cursor c = position.begin() ; c != position.end() ; ++c )
         {
             erase_impl( c );
         }
-        node_pointer ptr = static_cast< node_pointer >( position.node() );
-        position.parent_node()->remove_child( ptr );        
+        node_pointer ptr = const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
+        const_cast< node_pointer >( static_cast< const_node_pointer >( position.parent_node() ) )->remove_child( ptr );        
         m_node_allocator.destroy( ptr );
         m_node_allocator.deallocate( ptr , 1 );
     }
@@ -388,37 +389,39 @@ public:
     
 private:
     
-    void erase_impl( cursor position ) noexcept
+    void erase_impl( const_cursor position ) noexcept
     {
         --m_size;
-        for( cursor c = position.begin() ; c != position.end() ; ++c )
+        for( const_cursor c = position.begin() ; c != position.end() ; ++c )
         {
             erase_impl( c );
         }
-        node_pointer ptr = static_cast< node_pointer >( position.node() );
+        node_pointer ptr = const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
         m_node_allocator.destroy( ptr );
         m_node_allocator.deallocate( ptr , 1 );
     }
     
-    cursor insert_below_impl( cursor position , node_pointer new_node )
+    cursor insert_below_impl( const_cursor position , node_pointer new_node )
     {
         ++m_size;
         if( position.node() == nullptr )
         {
-            assert( position.parent_node()->size() == 0 );
+            node_base_pointer parent = const_cast< node_base_pointer >( position.parent_node() );
+            assert( parent->size() == 0 );
             
-            new_node->set_parent_node( position.parent_node() );
-            size_type index = position.parent_node()->attach_child( new_node );
+            new_node->set_parent_node( parent );
+            size_type index = parent->attach_child( new_node );
             assert( index == 0 );
-            return cursor( position.parent_node() , index );
+            return cursor( parent , index );
         }
         else
         {
             assert( position.size() < position.max_size() );
             
-            new_node->set_parent_node( position.node() );
-            size_type index = position.node()->attach_child( new_node );
-            return cursor( position.node() , index );
+            node_base_pointer node = const_cast< node_base_pointer >( position.node() );
+            new_node->set_parent_node( node );
+            size_type index = node->attach_child( new_node );
+            return cursor( node , index );
         }
     }
     
