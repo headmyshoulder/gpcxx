@@ -288,6 +288,33 @@ public:
         return p;
     }
     
+    cursor insert( const_cursor position , value_type const& val )
+    {
+        return cursor {};
+    }
+    
+    cursor insert( const_cursor position , value_type&& val )
+    {
+        return cursor {};
+    }
+    
+    template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
+    cursor insert( const_cursor position , InputCursor subtree )
+    {
+        return cursor {};
+    }
+
+    cursor insert_above( const_cursor position , value_type const& val )
+    {
+        return cursor {};
+    }
+    
+    cursor insert_above( const_cursor position , value_type&& val )
+    {
+        return cursor {};
+    }
+
+    
     void swap( tree_base& other )
     {
         self_type tmp = std::move( other );
