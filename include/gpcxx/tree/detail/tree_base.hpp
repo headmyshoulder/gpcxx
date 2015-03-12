@@ -15,6 +15,7 @@
 // 
 #include <gpcxx/tree/detail/tree_base_cursor.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
+#include <gpcxx/util/exception.hpp>
 
 #include <boost/mpl/and.hpp>
 
@@ -291,18 +292,25 @@ public:
     
     cursor insert( const_cursor position , value_type const& val )
     {
-        return cursor {};
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , val );
+        return insert_impl( position , new_node );
     }
     
     cursor insert( const_cursor position , value_type&& val )
     {
-        return cursor {};
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , std::move( val ) );
+        return insert_impl( position , new_node );
     }
     
     template< typename InputCursor , typename Enabler = typename other_cursor_enabler< InputCursor >::type >
     cursor insert( const_cursor position , InputCursor subtree )
     {
-        return cursor {};
+        cursor p = insert( position , *subtree );
+        for( InputCursor c = subtree.begin() ; c != subtree.end() ; ++c )
+            insert_below( p , c );
+        return p;
     }
 
     cursor insert_above( const_cursor position , value_type const& val )
@@ -416,13 +424,28 @@ private:
         }
         else
         {
-            assert( position.size() < position.max_size() );
+            if( position.size() >= position.max_size() )
+                throw tree_exception( "Max size of node reached." );
             
             node_base_pointer node = const_cast< node_base_pointer >( position.node() );
             new_node->set_parent_node( node );
             size_type index = node->attach_child( new_node );
             return cursor( node , index );
         }
+    }
+    
+    cursor insert_impl( const_cursor position , node_pointer new_node )
+    {
+        ++m_size;
+        if( position.node() == nullptr )
+        {
+        }
+        else
+        {
+            if( position.parent().size() >= position.parent().max_size() )
+                throw tree_exception( "Max size of node reached." );
+        }
+        return cursor {};
     }
     
     void move_impl( tree_base&& tree )

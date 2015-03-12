@@ -39,6 +39,13 @@ private:
     std::string m_msg;
 };
 
+class tree_exception : public gpcxx_exception
+{
+public:
+    
+    using gpcxx_exception::gpcxx_exception;
+};
+
 
 } // namespace gpcxx
 
