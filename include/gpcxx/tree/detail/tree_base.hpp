@@ -289,6 +289,14 @@ public:
         return p;
     }
     
+    template< typename ... Args >
+    cursor emplace_below( const_cursor position , Args&& ... args )
+    {
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , std::forward< Args >( args ) ... );
+        return insert_below_impl( position , new_node );
+    }
+    
     cursor insert( const_cursor position , value_type const& val )
     {
         node_pointer new_node = m_node_allocator.allocate( 1 );
@@ -310,6 +318,14 @@ public:
         for( InputCursor c = subtree.begin() ; c != subtree.end() ; ++c )
             insert_below( p , c );
         return p;
+    }
+    
+    template< typename ... Args >
+    cursor emplace( const_cursor position , Args&& ... args )
+    {
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , std::forward< Args >( args ) ... );
+        return insert_impl( position , new_node );
     }
 
     cursor insert_above( const_cursor position , value_type const& val )
