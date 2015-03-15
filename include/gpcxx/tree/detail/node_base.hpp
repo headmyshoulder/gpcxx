@@ -101,7 +101,7 @@ public:
     
     void insert_child( size_t i , node_base_type *child )
     {
-        assert( size() + 1 < max_size() );
+        assert( size() < max_size() );
         auto end = m_children.begin() + size() + 1;
         std::rotate( m_children.begin() + i , end - 1 , end );
         m_children[i] = child;
