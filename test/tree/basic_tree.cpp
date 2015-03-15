@@ -41,7 +41,7 @@ TEST( TESTNAME , default_construct )
     EXPECT_TRUE( tree.empty() );
 }
 
-TEST( TESTNAME , insert_value )
+TEST( TESTNAME , insert_below_rvalue )
 {
     basic_tree< std::string > tree;
     auto root = tree.root();
@@ -55,6 +55,96 @@ TEST( TESTNAME , insert_value )
     tree.insert_below( n1 , "11" );
     tree.insert_below( n1 , "12" );
 
+    EXPECT_FALSE( tree.empty() );
+    EXPECT_EQ( tree.size() , size_t( 3 ) );
+    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
+    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+}
+
+TEST( TESTNAME , insert_value )
+{
+    std::string plus { "+" } , child1 { "11" } , child2 { "12" };
+    basic_tree< std::string > tree;
+    auto root = tree.root();
+
+    auto n1 = tree.insert( root , plus );
+    EXPECT_EQ( tree.size() , size_t( 1 ) );
+    EXPECT_FALSE( tree.empty() );
+    TEST_NODE( n1 , "+" , 0 , 1 , 0 );
+    TEST_NODE( tree.root() , "+" , 0 , 1 , 0 );
+    
+    auto n2 = tree.insert_below( n1 , child2 );
+    /* auto n3 = */ tree.insert( n2 , child1 );
+    
+    EXPECT_FALSE( tree.empty() );
+    EXPECT_EQ( tree.size() , size_t( 3 ) );
+    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
+    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+}
+
+
+TEST( TESTNAME , insert_rvalue )
+{
+    std::string plus { "+" } , child1 { "11" } , child2 { "12" };
+    basic_tree< std::string > tree;
+    auto root = tree.root();
+
+    auto n1 = tree.insert( root , std::move( plus ) );
+    EXPECT_EQ( tree.size() , size_t( 1 ) );
+    EXPECT_FALSE( tree.empty() );
+    TEST_NODE( n1 , "+" , 0 , 1 , 0 );
+    TEST_NODE( tree.root() , "+" , 0 , 1 , 0 );
+    
+    auto n2 = tree.insert_below( n1 , std::move( child2 ) );
+    /* auto n3 = */ tree.insert( n2 , std::move( child1 ) );
+    
+    EXPECT_FALSE( tree.empty() );
+    EXPECT_EQ( tree.size() , size_t( 3 ) );
+    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
+    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+}
+
+TEST( TESTNAME , insert_above_value )
+{
+    std::string plus { "+" } , child1 { "11" } , child2 { "12" };
+    basic_tree< std::string > tree;
+    auto root = tree.root();
+
+    auto n1 = tree.insert_above( root , child1 );
+    EXPECT_EQ( tree.size() , size_t( 1 ) );
+    EXPECT_FALSE( tree.empty() );
+    TEST_NODE( n1 , "11" , 0 , 1 , 0 );
+    TEST_NODE( tree.root() , "11" , 0 , 1 , 0 );
+    
+    auto n2 = tree.insert_above( n1 , plus );
+    /* auto n3 = */ tree.insert_below( n2 , child2 );
+    
+    EXPECT_FALSE( tree.empty() );
+    EXPECT_EQ( tree.size() , size_t( 3 ) );
+    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
+    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+}
+
+
+TEST( TESTNAME , insert_above_rv )
+{
+    std::string plus { "+" } , child1 { "11" } , child2 { "12" };
+    basic_tree< std::string > tree;
+    auto root = tree.root();
+
+    auto n1 = tree.insert_above( root , std::move( child1 ) );
+    EXPECT_EQ( tree.size() , size_t( 1 ) );
+    EXPECT_FALSE( tree.empty() );
+    TEST_NODE( n1 , "11" , 0 , 1 , 0 );
+    TEST_NODE( tree.root() , "11" , 0 , 1 , 0 );
+    
+    auto n2 = tree.insert_above( n1 , std::move( plus ) );
+    /* auto n3 = */ tree.insert_below( n2 , std::move( child2 ) );
+    
     EXPECT_FALSE( tree.empty() );
     EXPECT_EQ( tree.size() , size_t( 3 ) );
     TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );

@@ -25,7 +25,6 @@
 #include <memory>
 
 
-
 namespace gpcxx {
 namespace detail {
 
@@ -315,12 +314,16 @@ public:
 
     cursor insert_above( const_cursor position , value_type const& val )
     {
-        return cursor {};
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , val );
+        return insert_above_impl( position , new_node );
     }
     
     cursor insert_above( const_cursor position , value_type&& val )
     {
-        return cursor {};
+        node_pointer new_node = m_node_allocator.allocate( 1 );
+        m_node_allocator.construct( new_node , val );
+        return insert_above_impl( position , new_node );
     }
 
     
@@ -414,13 +417,7 @@ private:
         ++m_size;
         if( position.node() == nullptr )
         {
-            node_base_pointer parent = const_cast< node_base_pointer >( position.parent_node() );
-            assert( parent->size() == 0 );
-            
-            new_node->set_parent_node( parent );
-            size_type index = parent->attach_child( new_node );
-            assert( index == 0 );
-            return cursor( parent , index );
+            return insert_into_empty_node( position , new_node );
         }
         else
         {
@@ -439,13 +436,50 @@ private:
         ++m_size;
         if( position.node() == nullptr )
         {
+            return insert_into_empty_node( position , new_node );
         }
         else
         {
             if( position.parent().size() >= position.parent().max_size() )
                 throw tree_exception( "Max size of node reached." );
+            if( position.is_root() )
+                throw tree_exception( "Could not insert node in front of the root node." );
+
+            node_base_pointer parent_node = const_cast< node_base_pointer >( position.parent_node() );
+            new_node->set_parent_node( parent_node );
+            parent_node->insert_child( position.pos() , new_node );
+            return cursor( parent_node , position.pos() );
         }
-        return cursor {};
+    }
+    
+    cursor insert_above_impl( const_cursor position , node_pointer new_node )
+    {
+        ++m_size;
+        if( position.node() == nullptr )
+        {
+            return insert_into_empty_node( position , new_node );
+        }
+        else
+        {
+            node_base_pointer node = const_cast< node_base_pointer >( position.node() );
+            node_base_pointer parent_node = const_cast< node_base_pointer >( position.parent_node() );
+            node->set_parent_node( new_node );
+            new_node->set_parent_node( parent_node );
+            parent_node->set_child_node( position.pos() , new_node );
+            new_node->attach_child( node );
+            return cursor { parent_node , position.pos() };
+        }
+    }
+    
+    cursor insert_into_empty_node( const_cursor position , node_pointer new_node )
+    {
+            node_base_pointer parent = const_cast< node_base_pointer >( position.parent_node() );
+            assert( parent->size() == 0 );
+            
+            new_node->set_parent_node( parent );
+            size_type index = parent->attach_child( new_node );
+            assert( index == 0 );
+            return cursor( parent , index );
     }
     
     void move_impl( tree_base&& tree )

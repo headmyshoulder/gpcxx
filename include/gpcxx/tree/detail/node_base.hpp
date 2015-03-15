@@ -17,7 +17,6 @@
 #include <cassert>
 
 
-
 namespace gpcxx {
 namespace detail {
     
@@ -85,7 +84,7 @@ public:
     }
     
     
-    size_t size( void ) const noexcept
+    size_t size( void ) const
     {
         typename children_type::const_iterator end = std::find( m_children.begin() , m_children.end() , nullptr );
         return std::distance( m_children.begin() , end );
@@ -100,6 +99,14 @@ public:
         return std::distance( m_children.begin() , iter );
     }
     
+    void insert_child( size_t i , node_base_type *child )
+    {
+        assert( size() + 1 < max_size() );
+        auto end = m_children.begin() + size() + 1;
+        std::rotate( m_children.begin() + i , end - 1 , end );
+        m_children[i] = child;
+    }
+    
     
     void remove_child( node_base_type *child )
     {
@@ -112,7 +119,7 @@ public:
         *end = nullptr;
     }
     
-    size_t count_nodes( void ) const
+    size_t count_nodes( void ) const noexcept
     {
         size_t count = 1;
         auto iter = m_children.begin();
