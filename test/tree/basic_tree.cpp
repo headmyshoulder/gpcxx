@@ -12,6 +12,7 @@
 #include <gpcxx/tree/detail/inspect_node_base.hpp>
 
 #include "../common/test_tree.hpp"
+#include "../common/test_functions.hpp"
 
 #include <gtest/gtest.h>
 
@@ -25,11 +26,6 @@ using namespace gpcxx;
 
 #define TESTNAME basic_tree_tests
 
-#define TEST_NODE( n , VALUE , ARITY , HEIGHT , LEVEL )                   \
-    EXPECT_EQ( *(n) , VALUE );                                            \
-    EXPECT_EQ( (n).size() , size_t( ARITY ) );                            \
-    EXPECT_EQ( (n).height() , size_t( HEIGHT ) );                         \
-    EXPECT_EQ( (n).level() , size_t( LEVEL ) )
 
 
 TEST( TESTNAME , default_construct )
@@ -49,18 +45,42 @@ TEST( TESTNAME , insert_below_rvalue )
     
     EXPECT_EQ( tree.size() , size_t( 1 ) );
     EXPECT_FALSE( tree.empty() );
-    TEST_NODE( n1 , "+" , 0 , 1 , 0 );
-    TEST_NODE( tree.root() , "+" , 0 , 1 , 0 );
+    test_cursor( n1 , "+" , 0 , 1 , 0 );
+    test_cursor( tree.root() , "+" , 0 , 1 , 0 );
 
     tree.insert_below( n1 , "11" );
     tree.insert_below( n1 , "12" );
 
     EXPECT_FALSE( tree.empty() );
     EXPECT_EQ( tree.size() , size_t( 3 ) );
-    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
-    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
-    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+    test_cursor( tree.root() , "+" , 2 , 2 , 0 );
+    test_cursor( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(1) , "12" , 0 , 1 , 1 );
 }
+
+TEST( TESTNAME , emplace_below_rvalue )
+{
+    basic_tree< std::string > tree;
+    auto root = tree.root();
+    basic_tree< std::string >::cursor n1 = tree.emplace_below( root , "+" );
+    
+    EXPECT_EQ( tree.size() , size_t( 1 ) );
+    EXPECT_FALSE( tree.empty() );
+    test_cursor( n1 , "+" , 0 , 1 , 0 );
+    test_cursor( tree.root() , "+" , 0 , 1 , 0 );
+
+    auto n2 = tree.emplace_below( n1 , "11" );
+    auto n3 = tree.emplace_below( n1 , "12" );
+
+    EXPECT_FALSE( tree.empty() );
+    EXPECT_EQ( tree.size() , size_t( 3 ) );
+    test_cursor( tree.root() , "+" , 2 , 2 , 0 );
+    test_cursor( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(1) , "12" , 0 , 1 , 1 );
+    test_cursor( n2 , "11" , 0 , 1 , 1 );
+    test_cursor( n3 , "12" , 0 , 1 , 1 );
+}
+
 
 TEST( TESTNAME , insert_value )
 {
@@ -71,17 +91,17 @@ TEST( TESTNAME , insert_value )
     auto n1 = tree.insert( root , plus );
     EXPECT_EQ( tree.size() , size_t( 1 ) );
     EXPECT_FALSE( tree.empty() );
-    TEST_NODE( n1 , "+" , 0 , 1 , 0 );
-    TEST_NODE( tree.root() , "+" , 0 , 1 , 0 );
+    test_cursor( n1 , "+" , 0 , 1 , 0 );
+    test_cursor( tree.root() , "+" , 0 , 1 , 0 );
     
     auto n2 = tree.insert_below( n1 , child2 );
     /* auto n3 = */ tree.insert( n2 , child1 );
     
     EXPECT_FALSE( tree.empty() );
     EXPECT_EQ( tree.size() , size_t( 3 ) );
-    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
-    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
-    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+    test_cursor( tree.root() , "+" , 2 , 2 , 0 );
+    test_cursor( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(1) , "12" , 0 , 1 , 1 );
 }
 
 
@@ -94,17 +114,17 @@ TEST( TESTNAME , insert_rvalue )
     auto n1 = tree.insert( root , std::move( plus ) );
     EXPECT_EQ( tree.size() , size_t( 1 ) );
     EXPECT_FALSE( tree.empty() );
-    TEST_NODE( n1 , "+" , 0 , 1 , 0 );
-    TEST_NODE( tree.root() , "+" , 0 , 1 , 0 );
+    test_cursor( n1 , "+" , 0 , 1 , 0 );
+    test_cursor( tree.root() , "+" , 0 , 1 , 0 );
     
     auto n2 = tree.insert_below( n1 , std::move( child2 ) );
     /* auto n3 = */ tree.insert( n2 , std::move( child1 ) );
     
     EXPECT_FALSE( tree.empty() );
     EXPECT_EQ( tree.size() , size_t( 3 ) );
-    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
-    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
-    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+    test_cursor( tree.root() , "+" , 2 , 2 , 0 );
+    test_cursor( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(1) , "12" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , insert_above_value )
@@ -116,17 +136,17 @@ TEST( TESTNAME , insert_above_value )
     auto n1 = tree.insert_above( root , child1 );
     EXPECT_EQ( tree.size() , size_t( 1 ) );
     EXPECT_FALSE( tree.empty() );
-    TEST_NODE( n1 , "11" , 0 , 1 , 0 );
-    TEST_NODE( tree.root() , "11" , 0 , 1 , 0 );
+    test_cursor( n1 , "11" , 0 , 1 , 0 );
+    test_cursor( tree.root() , "11" , 0 , 1 , 0 );
     
     auto n2 = tree.insert_above( n1 , plus );
     /* auto n3 = */ tree.insert_below( n2 , child2 );
     
     EXPECT_FALSE( tree.empty() );
     EXPECT_EQ( tree.size() , size_t( 3 ) );
-    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
-    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
-    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+    test_cursor( tree.root() , "+" , 2 , 2 , 0 );
+    test_cursor( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(1) , "12" , 0 , 1 , 1 );
 }
 
 
@@ -139,17 +159,17 @@ TEST( TESTNAME , insert_above_rv )
     auto n1 = tree.insert_above( root , std::move( child1 ) );
     EXPECT_EQ( tree.size() , size_t( 1 ) );
     EXPECT_FALSE( tree.empty() );
-    TEST_NODE( n1 , "11" , 0 , 1 , 0 );
-    TEST_NODE( tree.root() , "11" , 0 , 1 , 0 );
+    test_cursor( n1 , "11" , 0 , 1 , 0 );
+    test_cursor( tree.root() , "11" , 0 , 1 , 0 );
     
     auto n2 = tree.insert_above( n1 , std::move( plus ) );
     /* auto n3 = */ tree.insert_below( n2 , std::move( child2 ) );
     
     EXPECT_FALSE( tree.empty() );
     EXPECT_EQ( tree.size() , size_t( 3 ) );
-    TEST_NODE( tree.root() , "+" , 2 , 2 , 0 );
-    TEST_NODE( tree.root().children(0) , "11" , 0 , 1 , 1 );
-    TEST_NODE( tree.root().children(1) , "12" , 0 , 1 , 1 );
+    test_cursor( tree.root() , "+" , 2 , 2 , 0 );
+    test_cursor( tree.root().children(0) , "11" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(1) , "12" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , insert_and_erase )
@@ -165,22 +185,22 @@ TEST( TESTNAME , insert_and_erase )
     
     EXPECT_EQ( tree.size() , size_t( 7 ) );
     EXPECT_FALSE( tree.empty() );
-    TEST_NODE( tree.root() , "+" , 2 , 3 , 0 );
-    TEST_NODE( tree.root().children(0) , "-" , 2 , 2 , 1 );
-    TEST_NODE( tree.root().children(0).children(0) , "13" , 0 , 1 , 2 );
-    TEST_NODE( tree.root().children(0).children(1) , "14" , 0 , 1 , 2 );
-    TEST_NODE( tree.root().children(1) , "*" , 2 , 2 , 1 );
-    TEST_NODE( tree.root().children(1).children(0) , "15" , 0 , 1 , 2 );
-    TEST_NODE( tree.root().children(1).children(1) , "16" , 0 , 1 , 2 );
+    test_cursor( tree.root() , "+" , 2 , 3 , 0 );
+    test_cursor( tree.root().children(0) , "-" , 2 , 2 , 1 );
+    test_cursor( tree.root().children(0).children(0) , "13" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(0).children(1) , "14" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1) , "*" , 2 , 2 , 1 );
+    test_cursor( tree.root().children(1).children(0) , "15" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1).children(1) , "16" , 0 , 1 , 2 );
     
     tree.erase( n2 );
     
     EXPECT_EQ( tree.size() , size_t( 4 ) );
     EXPECT_FALSE( tree.empty() );
-    TEST_NODE( tree.root() , "+" , 1 , 3 , 0 );
-    TEST_NODE( tree.root().children(0) , "-" , 2 , 2 , 1 );
-    TEST_NODE( tree.root().children(0).children(0) , "13" , 0 , 1 , 2 );
-    TEST_NODE( tree.root().children(0).children(1) , "14" , 0 , 1 , 2 );
+    test_cursor( tree.root() , "+" , 1 , 3 , 0 );
+    test_cursor( tree.root().children(0) , "-" , 2 , 2 , 1 );
+    test_cursor( tree.root().children(0).children(0) , "13" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(0).children(1) , "14" , 0 , 1 , 2 );
 }
 
 TEST( TESTNAME , cursor_parents )
@@ -204,15 +224,15 @@ TEST( TESTNAME , insert_cursor )
     EXPECT_EQ( trees.data2.size() , size_t( 4 ) );
     EXPECT_FALSE( trees.data2.empty() );
     
-    TEST_NODE( trees.data.root() , "plus" , 2 , 5 , 0 );
-    TEST_NODE( trees.data.root().children(0) , "sin" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1) , "minus" , 2 , 4 , 1 );
-    TEST_NODE( trees.data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1).children(1) , "minus" , 2 , 3 , 2 );
-    TEST_NODE( trees.data.root().children(1).children(1).children(0) , "cos" , 1 , 2 , 3 );
-    TEST_NODE( trees.data.root().children(1).children(1).children(0).children(0) , "y" , 0 , 1 , 4 );
-    TEST_NODE( trees.data.root().children(1).children(1).children(1) , "x" , 0 , 1 , 3 );
+    test_cursor( trees.data.root() , "plus" , 2 , 5 , 0 );
+    test_cursor( trees.data.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1) , "minus" , 2 , 4 , 1 );
+    test_cursor( trees.data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1).children(1) , "minus" , 2 , 3 , 2 );
+    test_cursor( trees.data.root().children(1).children(1).children(0) , "cos" , 1 , 2 , 3 );
+    test_cursor( trees.data.root().children(1).children(1).children(0).children(0) , "y" , 0 , 1 , 4 );
+    test_cursor( trees.data.root().children(1).children(1).children(1) , "x" , 0 , 1 , 3 );
 }
 
 
@@ -223,10 +243,10 @@ TEST( TESTNAME , assign )
     
     EXPECT_EQ( trees.data.size() , size_t( 4 ) );
     EXPECT_FALSE( trees.data.empty() );
-    TEST_NODE( trees.data.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( trees.data.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , clear )
@@ -245,10 +265,10 @@ TEST( TESTNAME , iterator_construct )
     
     EXPECT_EQ( t.size() , size_t( 4 ) );
     EXPECT_FALSE( t.empty() );
-    TEST_NODE( t.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( t.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( t.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( t.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( t.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( t.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( t.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( t.root().children(1) , "x" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , copy_construct )
@@ -260,10 +280,10 @@ TEST( TESTNAME , copy_construct )
     EXPECT_FALSE( trees.data2.empty() );
     EXPECT_EQ( t.size() , size_t( 4 ) );
     EXPECT_FALSE( t.empty() );
-    TEST_NODE( t.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( t.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( t.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( t.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( t.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( t.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( t.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( t.root().children(1) , "x" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , move_construct )
@@ -276,10 +296,10 @@ TEST( TESTNAME , move_construct )
     
     EXPECT_EQ( t.size() , size_t( 4 ) );
     EXPECT_FALSE( t.empty() );
-    TEST_NODE( t.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( t.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( t.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( t.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( t.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( t.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( t.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( t.root().children(1) , "x" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , copy_assign )
@@ -292,10 +312,10 @@ TEST( TESTNAME , copy_assign )
     
     EXPECT_EQ( trees.data.size() , size_t( 4 ) );
     EXPECT_FALSE( trees.data.empty() );
-    TEST_NODE( trees.data.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( trees.data.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , move_assign )
@@ -308,10 +328,10 @@ TEST( TESTNAME , move_assign )
     
     EXPECT_EQ( trees.data.size() , size_t( 4 ) );
     EXPECT_FALSE( trees.data.empty() );
-    TEST_NODE( trees.data.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( trees.data.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
 }
 
 
@@ -322,19 +342,19 @@ TEST( TESTNAME , swap_method )
     
     EXPECT_EQ( trees.data.size() , size_t( 4 ) );
     EXPECT_FALSE( trees.data.empty() );
-    TEST_NODE( trees.data.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( trees.data.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
 
     EXPECT_EQ( trees.data2.size() , size_t( 6 ) );
     EXPECT_FALSE( trees.data2.empty() );
-    TEST_NODE( trees.data2.root() , "plus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data2.root().children(0) , "sin" , 1 , 2 , 1 );
-    TEST_NODE( trees.data2.root().children(0).children(0) , "x" , 0 , 1 , 2 );
-    TEST_NODE( trees.data2.root().children(1) , "minus" , 2 , 2 , 1 );
-    TEST_NODE( trees.data2.root().children(1).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data2.root().children(1).children(1) , "2" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root() , "plus" , 2 , 3 , 0 );
+    test_cursor( trees.data2.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( trees.data2.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root().children(1) , "minus" , 2 , 2 , 1 );
+    test_cursor( trees.data2.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root().children(1).children(1) , "2" , 0 , 1 , 2 );
 }
 
 TEST( TESTNAME , swap_function )
@@ -344,19 +364,19 @@ TEST( TESTNAME , swap_function )
     
     EXPECT_EQ( trees.data.size() , size_t( 4 ) );
     EXPECT_FALSE( trees.data.empty() );
-    TEST_NODE( trees.data.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( trees.data.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1) , "x" , 0 , 1 , 1 );
 
     EXPECT_EQ( trees.data2.size() , size_t( 6 ) );
     EXPECT_FALSE( trees.data2.empty() );
-    TEST_NODE( trees.data2.root() , "plus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data2.root().children(0) , "sin" , 1 , 2 , 1 );
-    TEST_NODE( trees.data2.root().children(0).children(0) , "x" , 0 , 1 , 2 );
-    TEST_NODE( trees.data2.root().children(1) , "minus" , 2 , 2 , 1 );
-    TEST_NODE( trees.data2.root().children(1).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data2.root().children(1).children(1) , "2" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root() , "plus" , 2 , 3 , 0 );
+    test_cursor( trees.data2.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( trees.data2.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root().children(1) , "minus" , 2 , 2 , 1 );
+    test_cursor( trees.data2.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root().children(1).children(1) , "2" , 0 , 1 , 2 );
 }
 
 TEST( TESTNAME , equal_compare )
@@ -417,8 +437,8 @@ TEST( TESTNAME , swap_subtrees3 )
     EXPECT_FALSE( t2.empty() );
     EXPECT_EQ( t1.size() , size_t( 0 ) );
     EXPECT_EQ( t2.size() , size_t( 2 ) );
-    TEST_NODE( t2.root() , "+" , 1 , 2 , 0 );
-    TEST_NODE( t2.root().children(0) , "-" , 0 , 1 , 1 );
+    test_cursor( t2.root() , "+" , 1 , 2 , 0 );
+    test_cursor( t2.root().children(0) , "-" , 0 , 1 , 1 );
 }
 
 TEST( TESTNAME , swap_subtrees4 )
@@ -431,8 +451,8 @@ TEST( TESTNAME , swap_subtrees4 )
     EXPECT_FALSE( t2.empty() );
     EXPECT_EQ( t1.size() , size_t( 1 ) );
     EXPECT_EQ( t2.size() , size_t( 1 ) );
-    TEST_NODE( t1.root() , "+" , 0 , 1 , 0 );
-    TEST_NODE( t2.root() , "-" , 0 , 1 , 0 );
+    test_cursor( t1.root() , "+" , 0 , 1 , 0 );
+    test_cursor( t2.root() , "-" , 0 , 1 , 0 );
 }
 
 TEST( TESTNAME , swap_subtrees5 )
@@ -444,15 +464,15 @@ TEST( TESTNAME , swap_subtrees5 )
     EXPECT_FALSE( trees.data2.empty() );
     EXPECT_EQ( trees.data.size() , size_t( 5 ) );
     EXPECT_EQ( trees.data2.size() , size_t( 5 ) );
-    TEST_NODE( trees.data.root() , "plus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data.root().children(0) , "sin" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
-    TEST_NODE( trees.data.root().children(1) , "cos" , 1 , 2 , 1 );
-    TEST_NODE( trees.data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root() , "plus" , 2 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(1) , "cos" , 1 , 2 , 1 );
+    test_cursor( trees.data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
     
-    TEST_NODE( trees.data2.root() , "minus" , 2 , 3 , 0 );
-    TEST_NODE( trees.data2.root().children(0) , "minus" , 2 , 2 , 1 );
-    TEST_NODE( trees.data2.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    TEST_NODE( trees.data2.root().children(0).children(1) , "2" , 0 , 1 , 2 );
-    TEST_NODE( trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
+    test_cursor( trees.data2.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( trees.data2.root().children(0) , "minus" , 2 , 2 , 1 );
+    test_cursor( trees.data2.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root().children(0).children(1) , "2" , 0 , 1 , 2 );
+    test_cursor( trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
 }
