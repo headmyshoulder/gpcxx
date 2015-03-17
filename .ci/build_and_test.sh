@@ -7,7 +7,12 @@ then
 fi
 
 cd build
-cmake .. -DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+export CMAKE_OPTIONS="-DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
+if [ -n "$MASTER_BUILD" ];
+then
+    export CMAKE_OPTIONS="$CMAKE_OPTIONS -DGPCXX_TEST_COVERAGE"
+fi
+cmake .. $CMAKE_OPTIONS
 make
 
 # clang is broken

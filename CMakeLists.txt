@@ -10,6 +10,7 @@ option ( GPCXX_BUILD_DOCS "Enable to build the docs" ON )
 option ( GPCXX_BUILD_PERFORMANCE_TESTS "Enable to build the performance tests" ON )
 option ( GPCXX_BUILD_EXAMPLES "Enable to build the examples" ON )
 option ( GPCXX_BUILD_TESTS "Enable to build the tests" ON )
+option ( GPCXX_TEST_COVERAGE "Analyze test coverage with gcov/lcov" OFF )
 
 # Add path for custom modules
 set ( CMAKE_MODULE_PATH
@@ -25,6 +26,11 @@ if ( "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" )
 endif ()
 # elseif (CMAKE_COMPILER_IS_GNUCXX )
 # endif ()
+
+if ( ${GPCXX_TEST_COVERAGE} )
+  message ( STATUS "Build with test coverage support." )
+  set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage" )
+endif ()
 
 include ( CreateVersionFile )
 include ( BuildTypes )

@@ -34,6 +34,13 @@ then
     sudo ln -sf libc++abi.so.1.0 libc++abi.so.1 && cd $cwd
 fi
 
+if [ -n "$MASTER_BUILD" ];
+then
+    sudo apt-get install -qq python-yaml lcov
+    gem install coveralls-lcov
+fi
+
+
 # install valgrind
 if [ "$TRAVIS_OS_NAME" = "linux" ];
 then
