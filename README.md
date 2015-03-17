@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/Ambrosys/gpcxx.svg)](https://travis-ci.org/Ambrosys/gpcxx) [![Coverity](https://scan.coverity.com/projects/4209/badge.svg)](https://scan.coverity.com/projects/4209)
+[![Build Status](https://travis-ci.org/Ambrosys/gpcxx.svg)](https://travis-ci.org/Ambrosys/gpcxx)
+[![Coverage Status](https://coveralls.io/repos/Ambrosys/gpcxx/badge.svg?branch=master)](https://coveralls.io/r/Ambrosys/gpcxx?branch=master)
+[![Coverity](https://scan.coverity.com/projects/4209/badge.svg)](https://scan.coverity.com/projects/4209)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Ambrosys/gpcxx/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 Introduction
