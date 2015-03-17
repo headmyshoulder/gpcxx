@@ -33,7 +33,6 @@ if ( ${GPCXX_TEST_COVERAGE} )
 endif ()
 
 include ( CreateVersionFile )
-include ( BuildTypes )
 
 message ( STATUS "Building project ${CMAKE_PROJECT_NAME}" )
 message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
