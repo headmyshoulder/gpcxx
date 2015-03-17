@@ -36,7 +36,16 @@ fi
 
 if [ -n "$MASTER_BUILD" ];
 then
-    sudo apt-get install -qq python-yaml lcov
+    wget -O lcov.tar.gz http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
+    mkdir lcov
+    xzf lcov.tar.gz -C ./lcov --strip-components=1
+    cd lcov
+    sudo make install
+    cd ..
+    rm -Rf lcov lcov.tar.gz
+    # sudo apt-get install -qq lcov
+
+    sudo apt-get install -qq python-yaml
     gem install coveralls-lcov
 fi
 
