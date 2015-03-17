@@ -38,7 +38,7 @@ if [ -n "$MASTER_BUILD" ];
 then
     wget -O lcov.tar.gz http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
     mkdir lcov
-    xzf lcov.tar.gz -C ./lcov --strip-components=1
+    tar xzf lcov.tar.gz -C ./lcov --strip-components=1
     cd lcov
     sudo make install
     cd ..
