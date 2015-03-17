@@ -7,6 +7,10 @@ sudo apt-get update -qq
 if [ "$CXX" == "g++" ];
 then
     sudo apt-get install -qq g++-${GCC_VERSION}
+
+    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
+    sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
+    sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
 fi
 
 if [ "$CXX" == "clang++" ];
