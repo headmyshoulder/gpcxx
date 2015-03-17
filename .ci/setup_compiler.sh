@@ -36,6 +36,7 @@ fi
 
 if [ -n "$MASTER_BUILD" ];
 then
+    # gcc 4.9 does not work with lcov 1.10, we need to install lcov 1.11
     wget -O lcov.tar.gz http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
     mkdir lcov
     tar xzf lcov.tar.gz -C ./lcov --strip-components=1
