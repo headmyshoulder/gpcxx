@@ -14,7 +14,6 @@ os:
 env:
   global:
     - GCC_VERSION="4.9"
-    - secure: "O6wBD6n4jqULZr92bdctOqXausjRbebOo2MNXODYYlQdzrmjwef3EzNOdObhQe8t8ivbVYph0RO1cl+Pjwhh1F/6qWQcRNS957ZsFmL3+0CVX9g1zZRa2Sz+FDoxQFi5MEpTkcjgZeGpX9VW7zjheIAtRRatTBj9pyxVptqne5o="
   matrix:
     - BUILD_TYPE=Debug
     - BUILD_TYPE=Release
@@ -52,7 +51,7 @@ after_success:
   - cd $GPCXX_ROOT
   - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
   - cd $GPCXX_ROOT
-  - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi
+  - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi 
 
 
 
