@@ -29,12 +29,14 @@ before_install:
   - export GPCXX_ROOT=`pwd`
   - cd $GPCXX_ROOT
   - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ] && [ "$TRAVIS_BRANCH" == "master" ]; then export MASTER_BUILD=1; fi
+  - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ]; then export COVERALLS_BUILD=1; fi
   - if [ -n "$MASTER_BUILD" ]; then echo "This is the Master build"; fi
+  - if [ -n "$COVERALLS_BUILD" ]; then echo "This is the coverall build"; fi
   - .ci/setup_compiler.sh
   - .ci/init_thirdparty.sh
   # some variables need to be set here
   - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
-  # - if [ "$CXX" == "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+
 
 
 install:
@@ -51,7 +53,7 @@ after_success:
   - cd $GPCXX_ROOT
   - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
   - cd $GPCXX_ROOT
-  - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coveralls.sh; fi 
+  - if [ -n "$COVERALLS_BUILD" ]; then .ci/commit_coveralls.sh; fi 
 
 
 

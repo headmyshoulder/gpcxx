@@ -38,7 +38,7 @@ then
     sudo ln -sf libc++abi.so.1.0 libc++abi.so.1 && cd $cwd
 fi
 
-if [ -n "$MASTER_BUILD" ];
+if [ -n "$COVERALLS_BUILD" ];
 then
     # gcc 4.9 does not work with lcov 1.10, we need to install lcov 1.11
     wget -O lcov.tar.gz http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
