@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+    <title>gpcxx in detail</title>
+    <link xmlns="" rel="stylesheet" href="../boostbook.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.77.1" />
+    <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;gpcxx" />
+    <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;gpcxx" />
+    <link rel="prev" href="genetic_programming_basics.html" title="Genetic programming basics" />
+    <link rel="next" href="gpcxx_in_detail/tree_output.html" title="Tree output" />
+  </head>
+  <body>
+    <div xmlns="" class="spirit-nav">
+      <a accesskey="p" href="genetic_programming_basics.html">
+        <img src="../images/prev.png" alt="Prev" />
+      </a>
+      <a accesskey="u" href="../index.html">
+        <img src="../images/up.png" alt="Up" />
+      </a>
+      <a accesskey="h" href="../index.html">
+        <img src="../images/home.png" alt="Home" />
+      </a>
+      <a accesskey="n" href="gpcxx_in_detail/tree_output.html">
+        <img src="../images/next.png" alt="Next" />
+      </a>
+    </div>
+    <div class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title" style="clear: both">
+              <a id="gpcxx.gpcxx_in_detail"></a>
+              <a class="link" href="gpcxx_in_detail.html" title="gpcxx in detail">gpcxx in detail</a>
+            </h2>
+          </div>
+        </div>
+      </div>
+      <div class="toc">
+        <dl>
+          <dt>
+            <span class="section">
+              <a href="gpcxx_in_detail.html#gpcxx.gpcxx_in_detail.operations_on_tree">Operations
+      on tree</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx_in_detail/tree_output.html">Tree output</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx_in_detail/tree_input.html">Tree input</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx_in_detail/genetic_operations_on_trees.html">Genetic
+      operations on trees</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="gpcxx_in_detail/evaluation_of_trees.html">Evaluation
+      of trees</a>
+            </span>
+          </dt>
+        </dl>
+      </div>
+      <div class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title">
+                <a id="gpcxx.gpcxx_in_detail.operations_on_tree"></a>
+                <a class="link" href="gpcxx_in_detail.html#gpcxx.gpcxx_in_detail.operations_on_tree" title="Operations on tree">Operations
+      on tree</a>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <p>
+        construction
+      </p>
+        <p>
+        insert_below:
+      </p>
+        <p>
+</p>
+        <pre class="programlisting"><span class="identifier">basic_tree</span><span class="special">&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="special">&gt;</span> <span class="identifier">tree</span><span class="special">;</span>
+<span class="identifier">tree</span><span class="special">.</span><span class="identifier">insert_below</span><span class="special">(</span> <span class="identifier">tree</span><span class="special">.</span><span class="identifier">root</span><span class="special">()</span> <span class="special">,</span> <span class="string">"A"</span> <span class="special">);</span>
+</pre>
+        <p>
+      </p>
+        <p>
+</p>
+        <pre class="programlisting"><span class="identifier">tree</span><span class="special">.</span><span class="identifier">insert_below</span><span class="special">(</span> <span class="identifier">tree</span><span class="special">.</span><span class="identifier">root</span><span class="special">()</span> <span class="special">,</span> <span class="string">"B"</span> <span class="special">);</span>
+</pre>
+        <p>
+      </p>
+        <p>
+</p>
+        <pre class="programlisting"><span class="identifier">tree</span><span class="special">.</span><span class="identifier">insert_below</span><span class="special">(</span> <span class="identifier">tree</span><span class="special">.</span><span class="identifier">root</span><span class="special">()</span> <span class="special">,</span> <span class="string">"C"</span> <span class="special">);</span>
+</pre>
+        <p>
+      </p>
+        <p>
+        <span class="inlinemediaobject"><img src="../images/insert_below_1.png" alt="insert_below_1" /></span> <span class="inlinemediaobject"><img src="../images/insert_below_2.png" alt="insert_below_2" /></span> <span class="inlinemediaobject"><img src="../images/insert_below_3.png" alt="insert_below_3" /></span>
+      </p>
+        <p>
+        insert nodes - pictures
+      </p>
+        <p>
+        accessor, size, height, ...
+      </p>
+        <p>
+        swap nodes - pictures
+      </p>
+        <p>
+        cursors
+      </p>
+      </div>
+    </div>
+    <table xmlns="" xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%">
+      <tr>
+        <td align="left"></td>
+        <td align="right">
+          <div class="copyright-footer">Copyright &#169; 2013, 2014 Karsten Ahnert<p xmlns="http://www.w3.org/1999/xhtml">
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a xmlns="" href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p></div>
+        </td>
+      </tr>
+    </table>
+    <hr xmlns="" />
+    <div xmlns="" class="spirit-nav">
+      <a accesskey="p" href="genetic_programming_basics.html">
+        <img src="../images/prev.png" alt="Prev" />
+      </a>
+      <a accesskey="u" href="../index.html">
+        <img src="../images/up.png" alt="Up" />
+      </a>
+      <a accesskey="h" href="../index.html">
+        <img src="../images/home.png" alt="Home" />
+      </a>
+      <a accesskey="n" href="gpcxx_in_detail/tree_output.html">
+        <img src="../images/next.png" alt="Next" />
+      </a>
+    </div>
+  </body>
+</html>

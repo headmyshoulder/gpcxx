@@ -2,11 +2,11 @@ index.html
 gpcxx/tutorial.html
 gpcxx/tutorial/artificial_ant.html
 gpcxx/genetic_programming_basics.html
-gpcxx/__gpcxx_in_detail.html
-gpcxx/__gpcxx_in_detail/tree_output.html
-gpcxx/__gpcxx_in_detail/tree_input.html
-gpcxx/__gpcxx_in_detail/genetic_operations_on_trees.html
-gpcxx/__gpcxx_in_detail/evaluation_of_trees.html
+gpcxx/gpcxx_in_detail.html
+gpcxx/gpcxx_in_detail/tree_output.html
+gpcxx/gpcxx_in_detail/tree_input.html
+gpcxx/gpcxx_in_detail/genetic_operations_on_trees.html
+gpcxx/gpcxx_in_detail/evaluation_of_trees.html
 gpcxx/performance_results.html
 gpcxx/concepts.html
 gpcxx/concepts/cursor.html
