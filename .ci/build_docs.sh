@@ -13,8 +13,8 @@ sudo apt-get install -qq xsltproc
 mkdir $DOCBOOK_ROOT
 cd $DOCBOOK_ROOT
 
-mkdir docbook-xml
-cd docbook-xml
+mkdir docbook-dtd
+cd docbook-dtd
 wget http://www.oasis-open.org/docbook/xml/4.2/docbook-xml-4.2.zip
 unzip -q docbook-xml-4.2.zip
 rm docbook-xml-4.2.zip
