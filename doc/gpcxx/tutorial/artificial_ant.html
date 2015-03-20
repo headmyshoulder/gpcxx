@@ -1,0 +1,1159 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+    <title>Artificial ant</title>
+    <link xmlns="" rel="stylesheet" href="../../boostbook.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.77.1" />
+    <link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;gpcxx" />
+    <link rel="up" href="../tutorial.html" title="Tutorial" />
+    <link rel="prev" href="../tutorial.html" title="Tutorial" />
+    <link rel="next" href="../genetic_programming_basics.html" title="Genetic programming basics" />
+  </head>
+  <body>
+    <div xmlns="" class="spirit-nav">
+      <a accesskey="p" href="../tutorial.html">
+        <img src="../../images/prev.png" alt="Prev" />
+      </a>
+      <a accesskey="u" href="../tutorial.html">
+        <img src="../../images/up.png" alt="Up" />
+      </a>
+      <a accesskey="h" href="../../index.html">
+        <img src="../../images/home.png" alt="Home" />
+      </a>
+      <a accesskey="n" href="../genetic_programming_basics.html">
+        <img src="../../images/next.png" alt="Next" />
+      </a>
+    </div>
+    <div class="section">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h3 class="title">
+              <a id="gpcxx.tutorial.artificial_ant"></a>
+              <a class="link" href="artificial_ant.html" title="Artificial ant">Artificial ant</a>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="toc">
+        <dl>
+          <dt>
+            <span class="section">
+              <a href="artificial_ant.html#gpcxx.tutorial.artificial_ant.introduction">Introduction</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="section">
+              <a href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation">Simulation</a>
+            </span>
+          </dt>
+        </dl>
+      </div>
+      <div class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h4 class="title">
+                <a id="gpcxx.tutorial.artificial_ant.introduction"></a>
+                <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.introduction" title="Introduction">Introduction</a>
+              </h4>
+            </div>
+          </div>
+        </div>
+        <p>
+          The artificial ant simulates an ant searching for food, it consists of
+          an ant, a wold grid and food placed on the grid. We set the goal for the
+          ant, to efficiently find the food which is laid on a trail. The ant has
+          some limited abilities:
+        </p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc; ">
+            <li class="listitem">
+              Sensing food if it's in front of the ant
+            </li>
+            <li class="listitem">
+              Moving forward (also eating, if the ant moved over food)
+            </li>
+            <li class="listitem">
+              Turing right and left
+            </li>
+          </ul>
+        </div>
+        <p>
+          Within the constrains of the simulation.
+        </p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc; ">
+            <li class="listitem">
+              If the ant steps out of the grid, it is beamed to the other side of
+              the grid.
+            </li>
+            <li class="listitem">
+              a food cell is empty after it was vised by the ant
+            </li>
+          </ul>
+        </div>
+        <p>
+          A trivial solution would be to random walk the grid. To avoid this solution
+          we introduce second rules.
+        </p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc; ">
+            <li class="listitem">
+              The ant can only make a max number of actions
+            </li>
+            <li class="listitem">
+              every move or turn reduces the amount of available actions
+            </li>
+            <li class="listitem">
+              the food is places in a trail
+              <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+                    the trail has gaps
+                  </li><li class="listitem">
+                    the trail has corners
+                  </li></ul></div>
+            </li>
+          </ul>
+        </div>
+        <p>
+          For comparability to other genetic programming frameworks the Santa-Fe-Trail
+          was chosen. As seen in <a class="link" href="../literature.html#koza1">[1] </a> (page 152) or
+          <a xmlns="" href="http://en.wikipedia.org/wiki/Santa_Fe_Trail_problem" target="_top">Wikipedia:
+          Santa Fe Trail problem</a>.
+        </p>
+        <p>
+          For simplicity of the example the Santa-Fe-Trail is defined as a global
+          variable. Reading test data from a separate file is preferable as it allows
+          changing the task for the ant without recompiling.
+        </p>
+        <p>
+</p>
+        <pre class="programlisting"><span class="keyword">char</span> <span class="keyword">const</span> <span class="special">*</span> <span class="keyword">const</span> <span class="identifier">board1</span><span class="special">[</span><span class="identifier">y_size</span><span class="special">]</span> <span class="special">=</span> <span class="special">{</span>
+<span class="string">" XXX                            "</span><span class="special">,</span>
+<span class="string">"   X                            "</span><span class="special">,</span>
+<span class="string">"   X                    .XXX..  "</span><span class="special">,</span>
+<span class="string">"   X                    X    X  "</span><span class="special">,</span>
+<span class="string">"   X                    X    X  "</span><span class="special">,</span>
+<span class="string">"   XXXX.XXXXX       .XX..    .  "</span><span class="special">,</span>
+<span class="string">"            X       .        X  "</span><span class="special">,</span>
+<span class="string">"            X       X        .  "</span><span class="special">,</span>
+<span class="string">"            X       X        .  "</span><span class="special">,</span>
+<span class="string">"            X       X        X  "</span><span class="special">,</span>
+<span class="string">"            .       X        .  "</span><span class="special">,</span>
+<span class="string">"            X       .        .  "</span><span class="special">,</span>
+<span class="string">"            X       .        X  "</span><span class="special">,</span>
+<span class="string">"            X       X        .  "</span><span class="special">,</span>
+<span class="string">"            X       X  ...XXX.  "</span><span class="special">,</span>
+<span class="string">"            .   .X...  X        "</span><span class="special">,</span>
+<span class="string">"            .   .      .        "</span><span class="special">,</span>
+<span class="string">"            X   .      .        "</span><span class="special">,</span>
+<span class="string">"            X   X      .X...    "</span><span class="special">,</span>
+<span class="string">"            X   X          X    "</span><span class="special">,</span>
+<span class="string">"            X   X          .    "</span><span class="special">,</span>
+<span class="string">"            X   X          .    "</span><span class="special">,</span>
+<span class="string">"            X   .      ...X.    "</span><span class="special">,</span>
+<span class="string">"            X   .      X        "</span><span class="special">,</span>
+<span class="string">" ..XX..XXXXX.   X               "</span><span class="special">,</span>
+<span class="string">" X              X               "</span><span class="special">,</span>
+<span class="string">" X              X               "</span><span class="special">,</span>
+<span class="string">" X     .XXXXXXX..               "</span><span class="special">,</span>
+<span class="string">" X     X                        "</span><span class="special">,</span>
+<span class="string">" .     X                        "</span><span class="special">,</span>
+<span class="string">" .XXXX..                        "</span><span class="special">,</span>
+<span class="string">"                                "</span>
+<span class="special">};</span>
+</pre>
+        <p>
+        </p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc; ">
+            <li class="listitem">
+              Cells with an X have food
+            </li>
+            <li class="listitem">
+              Cells with a dot are on the virtual track. In the simulation the dot
+              cells are ignored, the only reason for the dot cells is to visualize
+              the track for human reader.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="section">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h4 class="title">
+                <a id="gpcxx.tutorial.artificial_ant.simulation"></a>
+                <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation" title="Simulation">Simulation</a>
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div class="toc">
+          <dl>
+            <dt>
+              <span class="section">
+                <a href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.design_decisions">Design
+          decisions</a>
+              </span>
+            </dt>
+            <dt>
+              <span class="section">
+                <a href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.main_application">Main
+          application</a>
+              </span>
+            </dt>
+          </dl>
+        </div>
+        <div class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h5 class="title">
+                  <a id="gpcxx.tutorial.artificial_ant.simulation.design_decisions"></a>
+                  <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.design_decisions" title="Design decisions">Design
+          decisions</a>
+                </h5>
+              </div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h6 class="title">
+                    <a id="gpcxx.tutorial.artificial_ant.simulation.design_decisions.board_dimensions"></a>
+                    <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.design_decisions.board_dimensions" title="Board dimensions">Board
+            dimensions</a>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <p>
+              In this example we choose to map 2 dimension position to 1 dimension.
+              This decision is not based on a limitation of gpcxx, the mapping allows
+              easier change to N-dimension problems, moreover it trades CPU load
+              against memory saving. The class <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">board</span></code>
+              holds the board size information and helps to convert between the 2
+              dimension and 1 dimension representation. Furthermore, <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">board</span></code> holds the logic for movement
+              and handling of the boarder.
+            </p>
+          </div>
+          <div class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h6 class="title">
+                    <a id="gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order"></a>
+                    <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order" title="Design order">Design
+            order</a>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <p>
+              The nature of this example makes it necessary to implement a complex
+              simulation. This simulation is necessary for keeping track of eaten
+              food and scoring of the solution/tree. It is a recommended practice
+              to make this simulation without dependencies to gpcxx. This allows
+              manual verification of the system as seen below.
+            </p>
+            <p>
+</p>
+            <pre class="programlisting"><span class="keyword">bool</span> <span class="identifier">ant_move_test</span><span class="special">()</span>
+<span class="special">{</span>
+    <span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">board_size_x</span> <span class="special">{</span> <span class="number">32</span> <span class="special">};</span>
+    <span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">board_size_y</span> <span class="special">{</span> <span class="number">32</span> <span class="special">};</span>
+    <span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">board</span>  <span class="keyword">const</span> <span class="identifier">the_board</span> <span class="special">{</span> <span class="identifier">board_size_x</span> <span class="special">,</span> <span class="identifier">board_size_y</span> <span class="special">};</span>
+    <span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant</span> <span class="identifier">an_ant</span> <span class="special">{</span> <span class="identifier">the_board</span><span class="special">.</span><span class="identifier">pos_2d_to_1d</span><span class="special">(</span> <span class="special">{</span> <span class="number">0</span><span class="special">,</span> <span class="number">0</span> <span class="special">}</span> <span class="special">),</span> <span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">east</span> <span class="special">};</span>
+
+
+    <span class="identifier">an_ant</span><span class="special">.</span><span class="identifier">move</span><span class="special">(</span><span class="identifier">the_board</span><span class="special">);</span>
+
+    <span class="keyword">bool</span> <span class="identifier">position_is_valid</span>      <span class="special">=</span> <span class="identifier">an_ant</span><span class="special">.</span><span class="identifier">pos</span><span class="special">()</span> <span class="special">==</span> <span class="identifier">the_board</span><span class="special">.</span><span class="identifier">pos_2d_to_1d</span><span class="special">(</span> <span class="special">{</span> <span class="number">1</span><span class="special">,</span> <span class="number">0</span> <span class="special">}</span> <span class="special">);</span>
+    <span class="keyword">bool</span> <span class="identifier">step_count_is_valid</span>    <span class="special">=</span> <span class="identifier">an_ant</span><span class="special">.</span><span class="identifier">steps_done</span><span class="special">()</span> <span class="special">==</span> <span class="number">1</span><span class="special">;</span>
+
+
+    <span class="keyword">return</span> <span class="identifier">position_is_valid</span> <span class="special">&amp;&amp;</span> <span class="identifier">step_count_is_valid</span> <span class="special">;</span>
+<span class="special">}</span>
+</pre>
+            <p>
+            </p>
+            <p>
+              The simulation consist of an ant class:
+            </p>
+            <p>
+</p>
+            <pre class="programlisting"><span class="keyword">class</span> <span class="identifier">ant</span>
+<span class="special">{</span>
+<span class="keyword">public</span><span class="special">:</span>
+
+    <span class="identifier">ant</span><span class="special">(</span> <span class="identifier">position_1d</span> <span class="identifier">position</span><span class="special">,</span> <span class="identifier">direction</span> <span class="identifier">direction</span> <span class="special">)</span>
+    <span class="special">:</span> <span class="identifier">m_steps_done</span><span class="special">(</span> <span class="number">0</span> <span class="special">)</span> <span class="special">,</span> <span class="identifier">m_position</span><span class="special">(</span> <span class="identifier">position</span> <span class="special">),</span>   <span class="identifier">m_direction</span><span class="special">(</span> <span class="identifier">direction</span> <span class="special">)</span>
+    <span class="special">{</span>
+    <span class="special">}</span>
+
+    <span class="keyword">void</span> <span class="identifier">turn_left</span><span class="special">()</span>
+    <span class="special">{</span>
+        <span class="identifier">direction</span> <span class="keyword">const</span> <span class="identifier">lut_directions</span><span class="special">[]</span>  <span class="special">=</span> <span class="special">{</span> <span class="identifier">west</span><span class="special">,</span> <span class="identifier">north</span><span class="special">,</span> <span class="identifier">east</span><span class="special">,</span> <span class="identifier">south</span> <span class="special">};</span>
+        <span class="identifier">m_direction</span> <span class="special">=</span> <span class="identifier">lut_directions</span><span class="special">[</span> <span class="identifier">m_direction</span> <span class="special">];</span>
+        <span class="identifier">m_steps_done</span><span class="special">++;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">void</span> <span class="identifier">turn_right</span><span class="special">()</span>
+    <span class="special">{</span>
+        <span class="identifier">direction</span> <span class="keyword">const</span> <span class="identifier">lut_directions</span><span class="special">[]</span> <span class="special">=</span> <span class="special">{</span> <span class="identifier">east</span><span class="special">,</span> <span class="identifier">south</span><span class="special">,</span> <span class="identifier">west</span><span class="special">,</span> <span class="identifier">north</span> <span class="special">};</span>
+        <span class="identifier">m_direction</span> <span class="special">=</span> <span class="identifier">lut_directions</span><span class="special">[</span> <span class="identifier">m_direction</span> <span class="special">];</span>
+        <span class="identifier">m_steps_done</span><span class="special">++;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">void</span> <span class="identifier">move</span><span class="special">(</span> <span class="identifier">board</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">b</span> <span class="special">)</span>
+    <span class="special">{</span>
+        <span class="identifier">m_position</span> <span class="special">=</span> <span class="identifier">b</span><span class="special">.</span><span class="identifier">move_pos</span><span class="special">(</span> <span class="identifier">m_position</span><span class="special">,</span> <span class="identifier">m_direction</span> <span class="special">);</span>
+        <span class="identifier">m_steps_done</span><span class="special">++;</span>
+    <span class="special">}</span>
+
+    <span class="identifier">position_1d</span> <span class="identifier">pos</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_position</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">void</span> <span class="identifier">set_pos</span><span class="special">(</span> <span class="identifier">position_1d</span> <span class="identifier">position</span> <span class="special">)</span>
+    <span class="special">{</span>
+        <span class="identifier">m_position</span> <span class="special">=</span> <span class="identifier">position</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="identifier">direction</span> <span class="identifier">dir</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_direction</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="identifier">position_1d</span> <span class="identifier">front_pos</span><span class="special">(</span> <span class="identifier">board</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">b</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">b</span><span class="special">.</span><span class="identifier">move_pos</span><span class="special">(</span> <span class="identifier">m_position</span><span class="special">,</span> <span class="identifier">m_direction</span> <span class="special">);</span>
+    <span class="special">}</span>
+
+    <span class="keyword">int</span> <span class="identifier">steps_done</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_steps_done</span><span class="special">;</span>
+    <span class="special">}</span>
+
+<span class="keyword">private</span><span class="special">:</span>
+    <span class="keyword">int</span>         <span class="identifier">m_steps_done</span><span class="special">;</span>
+    <span class="identifier">position_1d</span> <span class="identifier">m_position</span><span class="special">;</span>
+    <span class="identifier">direction</span>   <span class="identifier">m_direction</span><span class="special">;</span>
+<span class="special">};</span>
+</pre>
+            <p>
+            </p>
+            <p>
+              The ant has 3 basic actions move, turn_left and turn_right. In every
+              action the step counter is incremented. The ant stores its direction
+              and position. It is questionable if a real ant would knows it positions/direction
+              on the grid or if the ant in this simulation knows it's position. The
+              design can be made in different ways, this is one of it.
+            </p>
+            <p>
+              The <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_simulation</span></code> class bundles the
+              ant, the board and the food trail. <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_simulation</span></code>
+              will become later the context on which the nodes/tree will be working.
+              The public interface needs all the methods to allow the nodes to work
+              on, beside this, it need methods to score and decide if its finished.
+              The context is the data which is
+            </p>
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style="list-style-type: disc; ">
+                <li class="listitem">
+                  transferred between the nodes
+                </li>
+                <li class="listitem">
+                  modified in the nodes
+                </li>
+              </ul>
+            </div>
+            <p>
+              The solution we use in this example makes use of context modification.
+              In other genetic programming examples like symbolic regression, the
+              context is constant. Nodes can only use the value to generate new values
+              and pass them to the children nodes. A constant context reduces the
+              side effects, in trade of the cost of copying the context. For simpler
+              types it may be negligibly. The <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_simulation</span></code>
+              has many states (ant position, direction, food eaten on which position,
+              ...) so its costly to make a copy.
+            </p>
+            <p>
+</p>
+            <pre class="programlisting"><span class="keyword">class</span> <span class="identifier">ant_simulation</span>
+<span class="special">{</span>
+<span class="keyword">public</span><span class="special">:</span>
+    <span class="keyword">using</span> <span class="identifier">food_trail_type</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">unordered_map</span><span class="special">&lt;</span> <span class="identifier">position_1d</span><span class="special">,</span> <span class="keyword">bool</span> <span class="special">&gt;;</span>
+
+    <span class="identifier">ant_simulation</span><span class="special">(</span> <span class="identifier">food_trail_type</span> <span class="identifier">food_trail</span><span class="special">,</span> <span class="identifier">size_t</span> <span class="identifier">x_size</span><span class="special">,</span> <span class="identifier">size_t</span> <span class="identifier">y_size</span><span class="special">,</span> <span class="identifier">position_2d</span> <span class="identifier">start_pos</span><span class="special">,</span> <span class="identifier">direction</span> <span class="identifier">start_direction</span><span class="special">,</span> <span class="keyword">int</span> <span class="identifier">max_steps</span> <span class="special">)</span>
+    <span class="special">:</span> <span class="identifier">m_food_trail</span><span class="special">{</span> <span class="identifier">food_trail</span> <span class="special">},</span>
+      <span class="identifier">m_food_start_count</span><span class="special">(</span> <span class="identifier">food_trail</span><span class="special">.</span><span class="identifier">size</span><span class="special">()</span> <span class="special">),</span>
+      <span class="identifier">m_food_eaten</span><span class="special">(</span> <span class="number">0</span> <span class="special">),</span>
+      <span class="identifier">m_ant</span><span class="special">{</span> <span class="number">0</span> <span class="special">,</span> <span class="identifier">start_direction</span> <span class="special">},</span>
+      <span class="identifier">m_board</span><span class="special">{</span> <span class="identifier">x_size</span><span class="special">,</span> <span class="identifier">y_size</span> <span class="special">},</span>
+      <span class="identifier">m_max_steps</span><span class="special">(</span> <span class="identifier">max_steps</span> <span class="special">)</span>
+    <span class="special">{</span>
+        <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">set_pos</span><span class="special">(</span> <span class="identifier">m_board</span><span class="special">.</span><span class="identifier">pos_2d_to_1d</span><span class="special">(</span> <span class="identifier">start_pos</span> <span class="special">)</span> <span class="special">);</span>
+    <span class="special">}</span>
+
+    <span class="keyword">bool</span> <span class="identifier">food_in_front</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="identifier">position_1d</span> <span class="identifier">front_pos</span> <span class="special">=</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">front_pos</span><span class="special">(</span> <span class="identifier">m_board</span> <span class="special">);</span>
+        <span class="keyword">auto</span> <span class="identifier">found</span> <span class="special">=</span> <span class="identifier">m_food_trail</span><span class="special">.</span><span class="identifier">find</span><span class="special">(</span> <span class="identifier">front_pos</span> <span class="special">);</span>
+        <span class="keyword">return</span> <span class="identifier">found</span> <span class="special">!=</span> <span class="identifier">m_food_trail</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">&amp;&amp;</span> <span class="identifier">found</span><span class="special">-&gt;</span><span class="identifier">second</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">void</span> <span class="identifier">turn_left</span><span class="special">()</span>
+    <span class="special">{</span>
+        <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">turn_left</span><span class="special">();</span>
+    <span class="special">}</span>
+
+    <span class="keyword">void</span> <span class="identifier">turn_right</span><span class="special">()</span>
+    <span class="special">{</span>
+        <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">turn_right</span><span class="special">();</span>
+    <span class="special">}</span>
+
+    <span class="keyword">void</span> <span class="identifier">move</span><span class="special">()</span>
+    <span class="special">{</span>
+        <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">move</span><span class="special">(</span> <span class="identifier">m_board</span> <span class="special">);</span>
+        <span class="keyword">auto</span> <span class="identifier">on_food</span> <span class="special">=</span> <span class="identifier">m_food_trail</span><span class="special">.</span><span class="identifier">find</span><span class="special">(</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">pos</span><span class="special">()</span> <span class="special">);</span>
+        <span class="keyword">if</span><span class="special">(</span><span class="identifier">on_food</span> <span class="special">!=</span> <span class="identifier">m_food_trail</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">&amp;&amp;</span> <span class="identifier">on_food</span><span class="special">-&gt;</span><span class="identifier">second</span><span class="special">)</span>
+        <span class="special">{</span>
+            <span class="identifier">m_food_eaten</span><span class="special">++;</span>
+            <span class="identifier">on_food</span><span class="special">-&gt;</span><span class="identifier">second</span> <span class="special">=</span> <span class="keyword">false</span><span class="special">;</span>
+        <span class="special">}</span>
+    <span class="special">}</span>
+
+    <span class="keyword">bool</span> <span class="identifier">is_finsh</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_food_eaten</span> <span class="special">==</span> <span class="identifier">m_food_start_count</span> <span class="special">||</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">steps_done</span><span class="special">()</span> <span class="special">&gt;=</span> <span class="identifier">m_max_steps</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">int</span> <span class="identifier">score</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_food_start_count</span> <span class="special">-</span> <span class="identifier">m_food_eaten</span><span class="special">;</span>
+    <span class="special">}</span>
+
+    <span class="keyword">int</span> <span class="identifier">steps_done</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">steps_done</span><span class="special">();</span>
+    <span class="special">}</span>
+
+    <span class="identifier">position_2d</span> <span class="identifier">ant_position</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_board</span><span class="special">.</span><span class="identifier">pos_1d_to_2d</span><span class="special">(</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">pos</span><span class="special">()</span> <span class="special">);</span>
+    <span class="special">}</span>
+
+    <span class="identifier">direction</span> <span class="identifier">ant_direction</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">return</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">dir</span><span class="special">();</span>
+    <span class="special">}</span>
+
+    <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">get_board_as_str</span><span class="special">()</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">ostringstream</span> <span class="identifier">oss</span><span class="special">;</span>
+
+        <span class="keyword">for</span><span class="special">(</span> <span class="identifier">size_t</span> <span class="identifier">y</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">y</span> <span class="special">&lt;</span> <span class="identifier">m_board</span><span class="special">.</span><span class="identifier">get_size_y</span><span class="special">()</span> <span class="special">;</span> <span class="special">++</span><span class="identifier">y</span><span class="special">)</span>
+        <span class="special">{</span>
+            <span class="keyword">for</span><span class="special">(</span> <span class="identifier">size_t</span> <span class="identifier">x</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span> <span class="identifier">x</span> <span class="special">&lt;</span> <span class="identifier">m_board</span><span class="special">.</span><span class="identifier">get_size_x</span><span class="special">();</span> <span class="special">++</span><span class="identifier">x</span><span class="special">)</span>
+            <span class="special">{</span>
+                <span class="identifier">position_1d</span> <span class="identifier">pos_1d</span> <span class="special">=</span> <span class="identifier">m_board</span><span class="special">.</span><span class="identifier">pos_2d_to_1d</span><span class="special">({</span><span class="identifier">x</span><span class="special">,</span><span class="identifier">y</span><span class="special">});</span>
+
+                <span class="keyword">if</span><span class="special">(</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">pos</span><span class="special">()</span> <span class="special">==</span> <span class="identifier">pos_1d</span><span class="special">)</span>
+                    <span class="identifier">oss</span> <span class="special">&lt;&lt;</span> <span class="identifier">direction_to_str</span><span class="special">(</span> <span class="identifier">m_ant</span><span class="special">.</span><span class="identifier">dir</span><span class="special">()</span> <span class="special">);</span>
+                <span class="keyword">else</span>
+                <span class="special">{</span>
+                    <span class="keyword">auto</span> <span class="identifier">found</span> <span class="special">=</span> <span class="identifier">m_food_trail</span><span class="special">.</span><span class="identifier">find</span><span class="special">(</span><span class="identifier">pos_1d</span><span class="special">);</span>
+                    <span class="keyword">if</span><span class="special">(</span><span class="identifier">found</span> <span class="special">!=</span> <span class="identifier">m_food_trail</span><span class="special">.</span><span class="identifier">cend</span><span class="special">())</span>
+                        <span class="keyword">if</span><span class="special">(</span><span class="identifier">found</span><span class="special">-&gt;</span><span class="identifier">second</span><span class="special">)</span>
+                            <span class="identifier">oss</span> <span class="special">&lt;&lt;</span> <span class="char">'0'</span><span class="special">;</span>
+                        <span class="keyword">else</span>
+                            <span class="identifier">oss</span> <span class="special">&lt;&lt;</span> <span class="char">'*'</span><span class="special">;</span>
+                    <span class="keyword">else</span>
+                        <span class="identifier">oss</span> <span class="special">&lt;&lt;</span> <span class="char">' '</span><span class="special">;</span>
+                <span class="special">}</span>
+            <span class="special">}</span>
+            <span class="identifier">oss</span> <span class="special">&lt;&lt;</span> <span class="string">"\n"</span><span class="special">;</span>
+        <span class="special">}</span>
+        <span class="keyword">return</span> <span class="identifier">oss</span><span class="special">.</span><span class="identifier">str</span><span class="special">();</span>
+    <span class="special">}</span>
+
+
+<span class="keyword">private</span><span class="special">:</span>
+
+    <span class="identifier">food_trail_type</span> <span class="identifier">m_food_trail</span><span class="special">;</span>
+    <span class="keyword">int</span> <span class="keyword">const</span>       <span class="identifier">m_food_start_count</span><span class="special">;</span>
+    <span class="keyword">int</span>             <span class="identifier">m_food_eaten</span><span class="special">;</span>
+    <span class="identifier">ant</span>             <span class="identifier">m_ant</span><span class="special">;</span>
+    <span class="identifier">board</span> <span class="keyword">const</span>     <span class="identifier">m_board</span><span class="special">;</span>
+    <span class="keyword">int</span> <span class="keyword">const</span>       <span class="identifier">m_max_steps</span><span class="special">;</span>
+<span class="special">};</span>
+</pre>
+            <p>
+            </p>
+            <div class="section">
+              <div class="titlepage">
+                <div>
+                  <div>
+                    <h6 class="title">
+                      <a id="gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order.individual"></a>
+                      <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order.individual" title="Individual">Individual</a>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+              <p>
+                An individual is a configuration of nodes, represented as a tree.
+                Every node gets the context as argument makes a distinctive task
+                with it and passes it forwards to its children nodes. Nodes which
+                have no child nodes are terminals. In this <code class="computeroutput"><span class="identifier">ant_example</span></code>
+                the terminals are the nodes which commands the <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_simulation</span></code>
+                to do the tasks, they are intended to.
+              </p>
+              <p>
+</p>
+              <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">ant_move_task_terminal</span>
+<span class="special">{</span>
+    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span> <span class="identifier">context_type</span> <span class="special">&amp;</span> <span class="identifier">ant_sim</span> <span class="special">,</span> <span class="identifier">node_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">node</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="identifier">ant_sim</span><span class="special">.</span><span class="identifier">move</span><span class="special">();</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+
+<span class="keyword">struct</span> <span class="identifier">ant_turn_left_task_terminal</span>
+<span class="special">{</span>
+    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span> <span class="identifier">context_type</span> <span class="special">&amp;</span> <span class="identifier">ant_sim</span> <span class="special">,</span> <span class="identifier">node_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">node</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="identifier">ant_sim</span><span class="special">.</span><span class="identifier">turn_left</span><span class="special">();</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+
+<span class="keyword">struct</span> <span class="identifier">ant_turn_right_task_terminal</span>
+<span class="special">{</span>
+    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span> <span class="identifier">context_type</span> <span class="special">&amp;</span> <span class="identifier">ant_sim</span> <span class="special">,</span> <span class="identifier">node_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">node</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="identifier">ant_sim</span><span class="special">.</span><span class="identifier">turn_right</span><span class="special">();</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+</pre>
+              <p>
+              </p>
+              <p>
+                The nodes which have no childs nodes attach are terminals, terminals
+                can be uses as a data source. Beside the terminal-nodes there are
+                also branching nodes, these nodes selectively making a task on its
+                children. They nodes are configured as a tree structure.
+              </p>
+              <p>
+</p>
+              <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">prog2</span>
+<span class="special">{</span>
+    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span> <span class="identifier">context_type</span><span class="special">&amp;</span> <span class="identifier">ant_sim</span> <span class="special">,</span> <span class="identifier">node_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">node</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="identifier">node</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span> <span class="number">0</span> <span class="special">).</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">ant_sim</span> <span class="special">);</span>
+        <span class="identifier">node</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span> <span class="number">1</span> <span class="special">).</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">ant_sim</span> <span class="special">);</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+
+<span class="keyword">struct</span> <span class="identifier">prog3</span>
+<span class="special">{</span>
+    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span> <span class="identifier">context_type</span><span class="special">&amp;</span> <span class="identifier">ant_sim</span> <span class="special">,</span> <span class="identifier">node_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">node</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="identifier">node</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span> <span class="number">0</span> <span class="special">).</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">ant_sim</span> <span class="special">);</span>
+        <span class="identifier">node</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span> <span class="number">1</span> <span class="special">).</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">ant_sim</span> <span class="special">);</span>
+        <span class="identifier">node</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span> <span class="number">2</span> <span class="special">).</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">ant_sim</span> <span class="special">);</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+
+<span class="keyword">struct</span> <span class="identifier">if_food_ahead</span>
+<span class="special">{</span>
+    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span> <span class="identifier">context_type</span><span class="special">&amp;</span> <span class="identifier">ant_sim</span> <span class="special">,</span> <span class="identifier">node_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">node</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">if</span><span class="special">(</span><span class="identifier">ant_sim</span><span class="special">.</span><span class="identifier">food_in_front</span><span class="special">())</span>
+        <span class="special">{</span>
+            <span class="identifier">node</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span> <span class="number">0</span> <span class="special">).</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">ant_sim</span> <span class="special">);</span>
+        <span class="special">}</span>
+        <span class="keyword">else</span>
+        <span class="special">{</span>
+            <span class="identifier">node</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span> <span class="number">1</span> <span class="special">).</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">ant_sim</span> <span class="special">);</span>
+        <span class="special">}</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+</pre>
+              <p>
+              </p>
+              <div class="itemizedlist">
+                <ul class="itemizedlist" style="list-style-type: disc; ">
+                  <li class="listitem">
+                    <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">if_food_ahead</span><span class="special">-</span><span class="identifier">node</span></code> ask the context if the
+                    ant is in front of food, if yes the first child node is evaluated,
+                    if not the second.
+                  </li>
+                  <li class="listitem">
+                    <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">prog2</span></code> evaluates first child
+                    node and then the second child node
+                  </li>
+                  <li class="listitem">
+                    <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">prog3</span></code> the same as <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">prog2</span></code> just with 3 child nodes
+                  </li>
+                </ul>
+              </div>
+              <div class="section">
+                <div class="titlepage">
+                  <div>
+                    <div>
+                      <h6 class="title">
+                        <a id="gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order.individual.node_signature_and_type_configuration"></a>
+                        <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order.individual.node_signature_and_type_configuration" title="Node signature and Type configuration">Node
+                signature and Type configuration</a>
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+                <p>
+</p>
+                <pre class="programlisting"><span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">max_children</span> <span class="special">=</span> <span class="number">3</span><span class="special">;</span>
+<span class="keyword">using</span> <span class="identifier">context_type</span> <span class="special">=</span> <span class="identifier">ant_simulation</span><span class="special">;</span>
+<span class="keyword">using</span> <span class="identifier">node_return_type</span> <span class="special">=</span> <span class="keyword">void</span><span class="special">;</span>
+<span class="keyword">using</span> <span class="identifier">node_type</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">intrusive_named_func_node</span><span class="special">&lt;</span> <span class="identifier">node_return_type</span> <span class="special">,</span> <span class="identifier">context_type</span><span class="special">,</span> <span class="identifier">max_children</span> <span class="special">&gt;</span> <span class="special">;</span>
+<span class="keyword">using</span> <span class="identifier">tree_type</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">intrusive_tree</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">&gt;;</span>
+<span class="keyword">using</span> <span class="identifier">population_type</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="identifier">tree_type</span> <span class="special">&gt;;</span>
+<span class="keyword">using</span> <span class="identifier">fitness_type</span> <span class="special">=</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="keyword">int</span> <span class="special">&gt;;</span>
+</pre>
+                <p>
+                </p>
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc; ">
+                    <li class="listitem">
+                      <code class="computeroutput"><span class="identifier">max_children</span></code>
+                      is the parameter which describes how many child nodes, a node
+                      can have. In this example it is set to 3 used by <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">prog3</span></code>
+                    </li>
+                    <li class="listitem">
+                      <code class="computeroutput"><span class="identifier">context_type</span></code>
+                      is the type which is pass from node to node, in this example
+                      it is <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_simulation</span></code>
+                    </li>
+                    <li class="listitem">
+                      <code class="computeroutput"><span class="identifier">node_return_type</span></code>
+                      what is calculated by the nodes and returned
+                    </li>
+                    <li class="listitem">
+                      <code class="computeroutput"><span class="identifier">node_type</span></code> is
+                      the class which will hold our application specific nodes (<code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">if_food_ahead</span></code>, <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">prog2</span></code>, <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_move_task_terminal</span></code>)
+                    </li>
+                  </ul>
+                </div>
+                <p>
+                  <code class="computeroutput"><span class="identifier">node_type</span></code> as <code class="computeroutput"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">basic_named_intrusive_node</span><span class="special">&lt;...&gt;</span></code>
+                  is a decorating class to <code class="computeroutput"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">basic_intrusive_node</span></code>,
+                  it adds the ability to give the node a name, which is use later
+                  used for printing. The classes <code class="computeroutput"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">basic_intrusive_node</span></code>
+                  and <code class="computeroutput"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">intrusive_node</span></code> (Superclasses
+                  of basic_named_intrusive_node) with the class <code class="computeroutput"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">intrusive_tree</span></code>
+                  provides the tree structure for the application specific nodes.
+                </p>
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc; ">
+                    <li class="listitem">
+                      <code class="computeroutput"><span class="identifier">tree_type</span></code> is
+                      the type of the individual
+                    </li>
+                    <li class="listitem">
+                      <code class="computeroutput"><span class="identifier">population_type</span></code>
+                      is a type which can holds a number of individuals
+                    </li>
+                    <li class="listitem">
+                      <code class="computeroutput"><span class="identifier">fitness_type</span></code>
+                      is the array which will stores all fitness values for the individuals,
+                      this is internally used to evaluate the best individuals for
+                      the next generation
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="section">
+                <div class="titlepage">
+                  <div>
+                    <div>
+                      <h6 class="title">
+                        <a id="gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order.individual.fitness_evaluator"></a>
+                        <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.design_decisions.design_order.individual.fitness_evaluator" title="Fitness evaluator">Fitness
+                evaluator</a>
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+                <p>
+</p>
+                <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">evaluator</span>
+<span class="special">{</span>
+    <span class="keyword">int</span> <span class="keyword">operator</span><span class="special">()(</span> <span class="identifier">tree_type</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">context_type</span> <span class="identifier">c</span> <span class="special">)</span> <span class="keyword">const</span>
+    <span class="special">{</span>
+        <span class="keyword">while</span><span class="special">(</span> <span class="special">!</span><span class="identifier">c</span><span class="special">.</span><span class="identifier">is_finsh</span><span class="special">()</span> <span class="special">)</span>
+        <span class="special">{</span>
+            <span class="identifier">t</span><span class="special">.</span><span class="identifier">root</span><span class="special">()-&gt;</span><span class="identifier">eval</span><span class="special">(</span> <span class="identifier">c</span> <span class="special">);</span>
+        <span class="special">}</span>
+        <span class="keyword">return</span> <span class="identifier">c</span><span class="special">.</span><span class="identifier">score</span><span class="special">();</span>
+    <span class="special">}</span>
+<span class="special">};</span>
+</pre>
+                <p>
+                </p>
+                <p>
+                  In this evaluator most calculation are made by the <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_simulation</span></code>, but this could
+                  also be done in this evaluator. It would allow to be more specific
+                  about the fitness goals. The fitness is driving the evolution of
+                  the population, so the evaluator is vital for the end goal.
+                </p>
+                <p>
+                  Normally an individual could be scored by one evaluation of the
+                  nodes (as seen in symbolic regression). This example is different
+                  in a way that is repeats the evaluation of the individual on the
+                  context, as long as not all food is eaten and the max allowed steps
+                  are reached, the same individual is rerun on the board.
+                </p>
+                <p>
+                  Without the repeating, it would be necessary for an individual
+                  to have enough nodes to make a run trough the grid. And this individual
+                  would mostly specialize for a trail. Every traversing/evaluation
+                  of the nodes
+                </p>
+                <p>
+                  To reduce the complexity of the example, only the amount of eaten
+                  food is scored (in max allowed steps). Possible options for more
+                  advanced evaluatores would be:
+                </p>
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc; ">
+                    <li class="listitem">
+                      efficiency, how many steps where used to find the food
+                    </li>
+                    <li class="listitem">
+                      versatilely, how good is the individual on a different track
+                    </li>
+                    <li class="listitem">
+                      node usage, how big is the individual, how many nodes are used
+                      and or how fast it can be evaluated
+                    </li>
+                  </ul>
+                </div>
+                <p>
+                  If evaluator is chosen to making the calculation of the fitness,
+                  it is necessary to normalize the fitness so <code class="computeroutput"><span class="number">0</span></code>
+                  is the best possible solution. In this example thw calculation
+                  is done by the <code class="computeroutput"><span class="identifier">ant_example</span><span class="special">::</span><span class="identifier">ant_simulation</span><span class="special">::</span><span class="identifier">score</span><span class="special">()</span></code> method.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h5 class="title">
+                  <a id="gpcxx.tutorial.artificial_ant.simulation.main_application"></a>
+                  <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.main_application" title="Main application">Main
+          application</a>
+                </h5>
+              </div>
+            </div>
+          </div>
+          <p>
+            For this example we use the same Santa Fe Trail as in <a class="link" href="../literature.html#koza1">[1]
+            </a> (page 152).
+          </p>
+          <p>
+</p>
+          <pre class="programlisting"><span class="identifier">board</span> <span class="keyword">const</span> <span class="identifier">b</span><span class="special">{</span> <span class="identifier">santa_fe</span><span class="special">::</span><span class="identifier">x_size</span><span class="special">,</span> <span class="identifier">santa_fe</span><span class="special">::</span><span class="identifier">y_size</span> <span class="special">};</span>
+<span class="keyword">int</span> <span class="keyword">const</span> <span class="identifier">max_steps</span> <span class="special">{</span> <span class="number">400</span> <span class="special">};</span>
+<span class="identifier">ant_simulation</span><span class="special">::</span><span class="identifier">food_trail_type</span> <span class="identifier">santa_fe_trail</span> <span class="special">{</span> <span class="identifier">santa_fe</span><span class="special">::</span><span class="identifier">make_santa_fe_trail</span><span class="special">(</span> <span class="identifier">b</span> <span class="special">)</span> <span class="special">};</span>
+<span class="identifier">ant_simulation</span>                  <span class="identifier">ant_sim_santa_fe</span><span class="special">{</span> <span class="identifier">santa_fe_trail</span><span class="special">,</span> <span class="identifier">b</span><span class="special">.</span><span class="identifier">get_size_x</span><span class="special">(),</span> <span class="identifier">b</span><span class="special">.</span><span class="identifier">get_size_y</span><span class="special">(),</span> <span class="special">{</span> <span class="number">0</span><span class="special">,</span> <span class="number">0</span> <span class="special">},</span> <span class="identifier">east</span><span class="special">,</span> <span class="identifier">max_steps</span> <span class="special">};</span>
+</pre>
+          <p>
+          </p>
+          <p>
+            The instance <code class="computeroutput"><span class="identifier">ant_sim_santa_fe</span></code>
+            is defined constant, later on this object will be used as a blueprint
+            for copies (every individual needs his own simulation and in every generation
+            the food trail has to be reset). The const helps to avoid unintended
+            changes to blueprint, so every individual gets a fresh, unused copy of
+            the trail.
+          </p>
+          <p>
+</p>
+          <pre class="programlisting"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">uniform_symbol</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">&gt;</span> <span class="identifier">terminal_gen</span> <span class="special">{</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">&gt;{</span>
+    <span class="identifier">node_type</span> <span class="special">{</span> <span class="identifier">ant_move_task_terminal</span><span class="special">{}</span> <span class="special">,</span>          <span class="string">"m"</span> <span class="special">}</span> <span class="special">,</span>
+    <span class="identifier">node_type</span> <span class="special">{</span> <span class="identifier">ant_turn_left_task_terminal</span><span class="special">{}</span> <span class="special">,</span>     <span class="string">"l"</span> <span class="special">}</span> <span class="special">,</span>
+    <span class="identifier">node_type</span> <span class="special">{</span> <span class="identifier">ant_turn_right_task_terminal</span><span class="special">{}</span> <span class="special">,</span>    <span class="string">"r"</span> <span class="special">}</span>
+<span class="special">}</span> <span class="special">};</span>
+
+<span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">uniform_symbol</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">&gt;</span> <span class="identifier">binary_gen</span> <span class="special">{</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">&gt;</span> <span class="special">{</span>
+    <span class="identifier">node_type</span> <span class="special">{</span> <span class="identifier">prog2</span><span class="special">{}</span> <span class="special">,</span> <span class="string">"p2"</span> <span class="special">}</span> <span class="special">,</span>
+    <span class="identifier">node_type</span> <span class="special">{</span> <span class="identifier">if_food_ahead</span><span class="special">{}</span> <span class="special">,</span> <span class="string">"if"</span> <span class="special">}</span>
+<span class="special">}</span> <span class="special">};</span>
+
+<span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">uniform_symbol</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">&gt;</span> <span class="identifier">ternary_gen</span> <span class="special">{</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">&gt;</span> <span class="special">{</span>
+    <span class="identifier">node_type</span> <span class="special">{</span> <span class="identifier">prog3</span><span class="special">{}</span> <span class="special">,</span> <span class="string">"p3"</span> <span class="special">}</span>
+<span class="special">}</span> <span class="special">};</span>
+
+<span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">node_generator</span><span class="special">&lt;</span> <span class="identifier">node_type</span> <span class="special">,</span> <span class="identifier">rng_type</span> <span class="special">,</span> <span class="number">3</span> <span class="special">&gt;</span> <span class="identifier">node_generator</span> <span class="special">{</span>
+    <span class="special">{</span> <span class="keyword">double</span><span class="special">(</span> <span class="identifier">terminal_gen</span><span class="special">.</span><span class="identifier">num_symbols</span><span class="special">()</span> <span class="special">)</span> <span class="special">,</span> <span class="number">0</span> <span class="special">,</span> <span class="identifier">terminal_gen</span> <span class="special">}</span> <span class="special">,</span>
+    <span class="special">{</span> <span class="keyword">double</span><span class="special">(</span> <span class="identifier">binary_gen</span><span class="special">.</span><span class="identifier">num_symbols</span><span class="special">()</span> <span class="special">)</span> <span class="special">,</span> <span class="number">2</span> <span class="special">,</span> <span class="identifier">binary_gen</span> <span class="special">}</span> <span class="special">,</span>
+    <span class="special">{</span> <span class="keyword">double</span><span class="special">(</span> <span class="identifier">ternary_gen</span><span class="special">.</span><span class="identifier">num_symbols</span><span class="special">()</span> <span class="special">)</span> <span class="special">,</span> <span class="number">3</span> <span class="special">,</span> <span class="identifier">ternary_gen</span> <span class="special">}</span> <span class="special">};</span>
+</pre>
+          <p>
+          </p>
+          <p>
+            In this part the node_generator is initialized, with a list of <code class="computeroutput"><span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">node_generator</span><span class="special">&lt;&gt;::</span><span class="identifier">weighted_generator_type</span></code>-structs, *
+            1st value, the weight, how often should these nodes be used in the generation
+            of the population. * 2nd value, the arity of the nodes, how many children
+            needs be connected to these nodes * 3rd value, the generator
+          </p>
+          <div class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h6 class="title">
+                    <a id="gpcxx.tutorial.artificial_ant.simulation.main_application.envolve_settings"></a>
+                    <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.main_application.envolve_settings" title="Envolve settings">Envolve
+            settings</a>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <p>
+</p>
+            <pre class="programlisting"><span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">population_size</span> <span class="special">=</span> <span class="number">5000</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">generation_max</span> <span class="special">=</span> <span class="number">5000</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">number_elite</span> <span class="special">=</span> <span class="number">4</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">mutation_rate</span> <span class="special">=</span> <span class="number">0.3</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">crossover_rate</span> <span class="special">=</span> <span class="number">0.8</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">crossover_internal_point_rate</span> <span class="special">=</span> <span class="number">0.9</span><span class="special">;</span>
+<span class="keyword">double</span> <span class="keyword">const</span> <span class="identifier">reproduction_rate</span> <span class="special">=</span> <span class="number">0.1</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">min_tree_height</span> <span class="special">=</span> <span class="number">1</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">init_max_tree_height</span>  <span class="special">=</span> <span class="number">6</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">max_tree_height</span> <span class="special">=</span> <span class="number">17</span><span class="special">;</span>
+<span class="identifier">size_t</span> <span class="keyword">const</span> <span class="identifier">tournament_size</span> <span class="special">=</span> <span class="number">4</span><span class="special">;</span>
+</pre>
+            <p>
+            </p>
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style="list-style-type: disc; ">
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">population_size</span></code>
+                  how many individual should be competing. Bigger population increases
+                  the resource's usage (run time and memory) but also decreases the
+                  time to find a solution.
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">generation_max</span></code>
+                  at which generation should gpcxx stop. If no other break up condition
+                  are meet (e.g. an optimal solution was found).
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">number_elite</span></code> how
+                  many of the top individual should directly cloned to the next generation,
+                  without changing.
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">mutation_rate</span></code> how
+                  often a node should be changed randomly.
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">crossover_rate</span></code>
+                  the rate at which crossover operation should happen
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">crossover_internal_point_rate</span></code>
+                  while doing crossover operations, which kind of node should be
+                  favored. Internal nodes caring more genetic information, in comparison
+                  to terminals.
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">reproduction_rate</span></code>
+                  the rate at which a direct clone of an individual should be made
+                  (not rank based in difference to number_elite)
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">min_tree_height</span></code>
+                  and <code class="computeroutput"><span class="identifier">max_tree_height</span></code>
+                  how deep can the tree be, max_tree_height limits the size of the
+                  individual. Big individuals are slower to evaluate, but can handle
+                  more complex problems. In comparison, <code class="computeroutput"><span class="identifier">min_tree_height</span></code>
+                  can be set to 1 up to <code class="computeroutput"><span class="identifier">max_tree_height</span></code>.
+                  An individual can stay as small it wants, as long it can compete
+                  against other/bigger individuals.
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">init_max_tree_height</span></code>
+                  how big should be the individual at the first generation.
+                </li>
+                <li class="listitem">
+                  <code class="computeroutput"><span class="identifier">tournament_size</span></code>
+                  how many random individual should be chosen for the competing.
+                  The winner is chosen by rank of the fitness. Small values allows
+                  week individual also to reproduce. If the size gets bigger, the
+                  chance that a high performance individual is chosen gets higher,
+                  this leads in a dominating situation.
+                </li>
+              </ul>
+            </div>
+            <p>
+              These settings have direct influence on how fast a solution is found.
+              In some cases it makes sens to adjust these settings, but mostly it
+              will just cut the run time. While optimizing these setting, the program
+              could find a solution by its self, just with a longer run time. The
+              critical settings for memory usage are <code class="computeroutput"><span class="identifier">population_size</span></code>
+              and <code class="computeroutput"><span class="identifier">max_tree_height</span></code>,
+              if these values are to big for the host PC, the operating system will
+              start to move memory to the swapping area and this will dramatic increase
+              the run time of the application.
+            </p>
+            <p>
+              gpcxx is in highly way configurable, these are the customization points
+              where the evolving strategies can be changed.
+            </p>
+            <p>
+</p>
+            <pre class="programlisting"><span class="keyword">using</span> <span class="identifier">evolver_type</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">static_pipeline</span><span class="special">&lt;</span> <span class="identifier">population_type</span> <span class="special">,</span> <span class="identifier">fitness_type</span> <span class="special">,</span> <span class="identifier">rng_type</span> <span class="special">&gt;</span> <span class="special">;</span>
+<span class="identifier">evolver_type</span> <span class="identifier">evolver</span><span class="special">(</span> <span class="identifier">number_elite</span> <span class="special">,</span> <span class="identifier">mutation_rate</span> <span class="special">,</span> <span class="identifier">crossover_rate</span> <span class="special">,</span> <span class="identifier">reproduction_rate</span> <span class="special">,</span> <span class="identifier">rng</span> <span class="special">);</span>
+
+<span class="identifier">evolver</span><span class="special">.</span><span class="identifier">mutation_function</span><span class="special">()</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_mutation</span><span class="special">(</span>
+     <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_point_mutation</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">tree_generator</span> <span class="special">,</span> <span class="identifier">max_tree_height</span> <span class="special">,</span> <span class="number">20</span> <span class="special">)</span> <span class="special">,</span>
+     <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_tournament_selector</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">tournament_size</span> <span class="special">)</span> <span class="special">);</span>
+
+<span class="identifier">evolver</span><span class="special">.</span><span class="identifier">crossover_function</span><span class="special">()</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_crossover</span><span class="special">(</span>
+    <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_one_point_crossover_pip_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">max_tree_height</span><span class="special">,</span> <span class="identifier">crossover_internal_point_rate</span> <span class="special">)</span> <span class="special">,</span>
+    <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_tournament_selector</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">tournament_size</span> <span class="special">)</span> <span class="special">);</span>
+
+<span class="identifier">evolver</span><span class="special">.</span><span class="identifier">reproduction_function</span><span class="special">()</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_reproduce</span><span class="special">(</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_tournament_selector</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">tournament_size</span> <span class="special">)</span> <span class="special">);</span>
+</pre>
+            <p>
+            </p>
+          </div>
+          <p>
+</p>
+          <pre class="programlisting"><span class="keyword">auto</span> <span class="identifier">tree_generator</span>      <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_basic_generate_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">node_generator</span> <span class="special">,</span> <span class="identifier">min_tree_height</span> <span class="special">,</span> <span class="identifier">max_tree_height</span> <span class="special">);</span>
+<span class="keyword">auto</span> <span class="identifier">init_tree_generator</span> <span class="special">=</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">make_basic_generate_strategy</span><span class="special">(</span> <span class="identifier">rng</span> <span class="special">,</span> <span class="identifier">node_generator</span> <span class="special">,</span> <span class="identifier">min_tree_height</span> <span class="special">,</span> <span class="identifier">init_max_tree_height</span> <span class="special">);</span>
+<span class="keyword">for</span><span class="special">(</span> <span class="keyword">auto</span> <span class="special">&amp;</span> <span class="identifier">individum</span> <span class="special">:</span>  <span class="identifier">population</span> <span class="special">)</span>
+    <span class="identifier">init_tree_generator</span><span class="special">(</span> <span class="identifier">individum</span> <span class="special">);</span>
+</pre>
+          <p>
+          </p>
+          <p>
+            One way to generate the first generation is to randomly build up the
+            individuals from nodes. Advanced cases could use hand made individuals
+            or other generations of the population. More intelligent ways to generate
+            the individuals leads to faster optimization times.
+          </p>
+          <div class="section">
+            <div class="titlepage">
+              <div>
+                <div>
+                  <h6 class="title">
+                    <a id="gpcxx.tutorial.artificial_ant.simulation.main_application.generation_loop"></a>
+                    <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.main_application.generation_loop" title="Generation loop">Generation
+            loop</a>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <p>
+</p>
+            <pre class="programlisting">    <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">timer</span> <span class="identifier">overall_timer</span><span class="special">;</span>
+    <span class="keyword">bool</span>    <span class="identifier">has_optimal_fitness</span> <span class="special">{</span> <span class="keyword">false</span> <span class="special">};</span>
+    <span class="identifier">size_t</span>  <span class="identifier">generation</span> <span class="special">{</span> <span class="number">0</span> <span class="special">};</span>
+    <span class="keyword">do</span>
+    <span class="special">{</span>
+        <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">timer</span> <span class="identifier">iteration_timer</span><span class="special">;</span>
+        <span class="keyword">if</span><span class="special">(</span> <span class="identifier">generation</span> <span class="special">!=</span> <span class="number">0</span> <span class="special">)</span>
+            <span class="identifier">evolver</span><span class="special">.</span><span class="identifier">next_generation</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">,</span> <span class="identifier">fitness</span> <span class="special">);</span>
+        <span class="keyword">double</span> <span class="identifier">evolve_time</span> <span class="special">{</span> <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">seconds</span><span class="special">()</span> <span class="special">};</span>
+
+        <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">restart</span><span class="special">();</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">transform</span><span class="special">(</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="special">[&amp;](</span> <span class="identifier">tree_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">t</span> <span class="special">)</span> <span class="special">{</span>
+            <span class="keyword">return</span> <span class="identifier">fitness_f</span><span class="special">(</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">ant_sim_santa_fe</span> <span class="special">);</span>
+        <span class="special">}</span> <span class="special">);</span>
+
+
+        <span class="special">{</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">ofstream</span> <span class="identifier">fout</span><span class="special">(</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">(</span>  <span class="string">"pop_"</span> <span class="special">)</span> <span class="special">+</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">to_string</span><span class="special">(</span> <span class="identifier">generation</span> <span class="special">)</span> <span class="special">);</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span> <span class="identifier">size_t</span> <span class="special">&gt;</span> <span class="identifier">indices</span><span class="special">(</span> <span class="identifier">population_size</span> <span class="special">);</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">iota</span><span class="special">(</span> <span class="identifier">indices</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">indices</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">,</span> <span class="number">0</span> <span class="special">);</span>
+            <span class="identifier">std</span><span class="special">::</span><span class="identifier">sort</span><span class="special">(</span> <span class="identifier">indices</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">indices</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">,</span> <span class="special">[&amp;](</span> <span class="identifier">size_t</span> <span class="identifier">i</span> <span class="special">,</span> <span class="identifier">size_t</span> <span class="identifier">j</span> <span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">bool</span> <span class="special">{</span>
+                <span class="keyword">return</span> <span class="identifier">fitness</span><span class="special">[</span><span class="identifier">i</span><span class="special">]</span> <span class="special">&lt;</span> <span class="identifier">fitness</span><span class="special">[</span><span class="identifier">j</span><span class="special">];</span> <span class="special">}</span> <span class="special">);</span>
+
+            <span class="keyword">for</span><span class="special">(</span> <span class="identifier">size_t</span> <span class="identifier">j</span><span class="special">=</span><span class="number">0</span> <span class="special">;</span> <span class="identifier">j</span><span class="special">&lt;</span><span class="identifier">population_size</span> <span class="special">;</span> <span class="special">++</span><span class="identifier">j</span> <span class="special">)</span>
+            <span class="special">{</span>
+                <span class="identifier">size_t</span> <span class="identifier">i</span> <span class="special">=</span> <span class="identifier">indices</span><span class="special">[</span><span class="identifier">j</span><span class="special">];</span>
+                <span class="identifier">fout</span> <span class="special">&lt;&lt;</span> <span class="identifier">j</span> <span class="special">&lt;&lt;</span> <span class="string">" "</span> <span class="special">&lt;&lt;</span> <span class="identifier">i</span> <span class="special">&lt;&lt;</span> <span class="string">" "</span>
+                     <span class="special">&lt;&lt;</span> <span class="identifier">fitness</span><span class="special">[</span><span class="identifier">i</span><span class="special">]</span> <span class="special">&lt;&lt;</span> <span class="string">" "</span> <span class="special">&lt;&lt;</span> <span class="identifier">population</span><span class="special">[</span><span class="identifier">i</span><span class="special">].</span><span class="identifier">root</span><span class="special">().</span><span class="identifier">height</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="string">" "</span>
+                     <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">simple</span><span class="special">(</span> <span class="identifier">population</span><span class="special">[</span><span class="identifier">i</span><span class="special">]</span> <span class="special">,</span> <span class="keyword">false</span> <span class="special">)</span>
+                     <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+            <span class="special">}</span>
+        <span class="special">}</span>
+<span class="comment">/*
+        {
+            using namespace std;
+            std::vector&lt; size_t &gt; idx;
+            auto iter = gpcxx::sort_indices( fitness , idx );
+            auto best = population[ idx[0] ];
+            ant_simulation sim { santa_fe_trail, b.get_size_x(), b.get_size_y(), { 0, 0 }, east, max_steps };
+            for( size_t i=0 ; i&lt;100 ; ++i )
+            {
+                cout &lt;&lt; simple( best , false ) &lt;&lt; endl &lt;&lt; endl;
+                best.root()-&gt;eval( sim );
+                cout &lt;&lt; sim.get_board_as_str() &lt;&lt; endl;
+                usleep( 50 * 1000 );
+            }
+        }*/</span>
+
+
+        <span class="keyword">double</span> <span class="identifier">eval_time</span> <span class="special">=</span> <span class="identifier">iteration_timer</span><span class="special">.</span><span class="identifier">seconds</span><span class="special">();</span>
+
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">0</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Generation "</span>    <span class="special">&lt;&lt;</span> <span class="identifier">generation</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Evolve time "</span>   <span class="special">&lt;&lt;</span> <span class="identifier">evolve_time</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Eval time "</span>     <span class="special">&lt;&lt;</span> <span class="identifier">eval_time</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Best individuals\n"</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">best_individuals</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">,</span> <span class="identifier">fitness</span> <span class="special">,</span> <span class="number">2</span> <span class="special">,</span> <span class="number">3</span> <span class="special">,</span> <span class="keyword">false</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span><span class="special">;</span>
+        <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">indent</span><span class="special">(</span> <span class="number">1</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">"Statistics : "</span>      <span class="special">&lt;&lt;</span> <span class="identifier">gpcxx</span><span class="special">::</span><span class="identifier">calc_population_statistics</span><span class="special">(</span> <span class="identifier">population</span> <span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">newl</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+
+        <span class="identifier">generation</span><span class="special">++;</span>
+        <span class="identifier">has_optimal_fitness</span> <span class="special">=</span> <span class="special">(</span> <span class="number">0</span> <span class="special">==</span> <span class="special">*</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">min_element</span><span class="special">(</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">)</span> <span class="special">);</span>
+    <span class="special">}</span> <span class="keyword">while</span><span class="special">(</span> <span class="special">!</span><span class="identifier">has_optimal_fitness</span> <span class="special">&amp;&amp;</span> <span class="identifier">generation</span> <span class="special">&lt;</span> <span class="identifier">generation_max</span> <span class="special">);</span>
+</pre>
+            <p>
+            </p>
+            <p>
+              The generation loop represents the cycle of life for the individuals:
+            </p>
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style="list-style-type: disc; ">
+                <li class="listitem">
+                  reproduction
+                </li>
+                <li class="listitem">
+                  being judged / selection
+                </li>
+                <li class="listitem">
+                  does it make sens to go on
+                </li>
+              </ul>
+            </div>
+            <div class="section">
+              <div class="titlepage">
+                <div>
+                  <div>
+                    <h6 class="title">
+                      <a id="gpcxx.tutorial.artificial_ant.simulation.main_application.generation_loop.fitness_calculation"></a>
+                      <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.main_application.generation_loop.fitness_calculation" title="Fitness_calculation">Fitness_calculation</a>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+              <p>
+</p>
+              <pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">transform</span><span class="special">(</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">population</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">,</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">()</span> <span class="special">,</span> <span class="special">[&amp;](</span> <span class="identifier">tree_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">t</span> <span class="special">)</span> <span class="special">{</span>
+    <span class="keyword">return</span> <span class="identifier">fitness_f</span><span class="special">(</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">ant_sim_santa_fe</span> <span class="special">);</span>
+<span class="special">}</span> <span class="special">);</span>
+</pre>
+              <p>
+              </p>
+              <p>
+                This is the part where fitness vector is filled with the measured
+                fitness of the population. The measuring is done by the fitness_f
+                function object. The <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">transform</span></code>
+                function iterates throw the population and for every individuals,
+                the following lambda function is called:
+</p>
+              <pre class="programlisting"><span class="special">[&amp;](</span> <span class="identifier">tree_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">t</span> <span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">fitness_f</span><span class="special">(</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">ant_sim_santa_fe</span> <span class="special">);</span> <span class="special">}</span>
+</pre>
+              <p>
+              </p>
+              <p>
+                <code class="computeroutput"><span class="identifier">fitness_f</span></code> gets the
+                individual (<code class="computeroutput"><span class="identifier">t</span></code>) and
+                a reference to <code class="computeroutput"><span class="identifier">ant_sim_santa_fe</span></code>
+                (<code class="computeroutput"><span class="identifier">ant_simulation</span> <span class="keyword">const</span></code>) and returns the measured fitness.
+                The lambda function is one possible customization point for the fitness.
+                It is to remember that genetic programming optimize to meet the fitness
+                function, this can lead to individuals that are perfectly able to
+                find all food on the trail, but failing to solve the trail, if they
+                start from the end. A possible fix could see like this
+              </p>
+              <p>
+</p>
+              <pre class="programlisting"><span class="special">[&amp;](</span> <span class="identifier">tree_type</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">t</span> <span class="special">)</span> <span class="special">{</span>
+	<span class="keyword">return</span> <span class="identifier">fitness_f</span><span class="special">(</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">ant_sim_santa_fe</span> <span class="special">)</span> <span class="special">+</span>
+	       <span class="identifier">fitness_f</span><span class="special">(</span> <span class="identifier">t</span> <span class="special">,</span> <span class="identifier">other_trail</span> <span class="special">);</span>
+<span class="special">}</span>
+</pre>
+              <p>
+              </p>
+            </div>
+            <div class="section">
+              <div class="titlepage">
+                <div>
+                  <div>
+                    <h6 class="title">
+                      <a id="gpcxx.tutorial.artificial_ant.simulation.main_application.generation_loop.breakup_conditions"></a>
+                      <a class="link" href="artificial_ant.html#gpcxx.tutorial.artificial_ant.simulation.main_application.generation_loop.breakup_conditions" title="Breakup conditions">Breakup
+              conditions</a>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+              <p>
+</p>
+              <pre class="programlisting">    <span class="identifier">generation</span><span class="special">++;</span>
+    <span class="identifier">has_optimal_fitness</span> <span class="special">=</span> <span class="special">(</span> <span class="number">0</span> <span class="special">==</span> <span class="special">*</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">min_element</span><span class="special">(</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span> <span class="identifier">fitness</span><span class="special">.</span><span class="identifier">end</span><span class="special">()</span> <span class="special">)</span> <span class="special">);</span>
+<span class="special">}</span> <span class="keyword">while</span><span class="special">(</span> <span class="special">!</span><span class="identifier">has_optimal_fitness</span> <span class="special">&amp;&amp;</span> <span class="identifier">generation</span> <span class="special">&lt;</span> <span class="identifier">generation_max</span> <span class="special">);</span>
+</pre>
+              <p>
+              </p>
+              <p>
+                If a solution is optimal in the sense of the fitness function, the
+                generation loop is stopped. If there are still wishes/improvements
+                left unsatisfied by the solution, then the fitness function does
+                not cover all aspects of the task and has to be extend. To implement
+                the wished fitness measure can be the hardest part.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table xmlns="" xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%">
+      <tr>
+        <td align="left"></td>
+        <td align="right">
+          <div class="copyright-footer">Copyright &#169; 2013, 2014 Karsten Ahnert<p xmlns="http://www.w3.org/1999/xhtml">
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a xmlns="" href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p></div>
+        </td>
+      </tr>
+    </table>
+    <hr xmlns="" />
+    <div xmlns="" class="spirit-nav">
+      <a accesskey="p" href="../tutorial.html">
+        <img src="../../images/prev.png" alt="Prev" />
+      </a>
+      <a accesskey="u" href="../tutorial.html">
+        <img src="../../images/up.png" alt="Up" />
+      </a>
+      <a accesskey="h" href="../../index.html">
+        <img src="../../images/home.png" alt="Home" />
+      </a>
+      <a accesskey="n" href="../genetic_programming_basics.html">
+        <img src="../../images/next.png" alt="Next" />
+      </a>
+    </div>
+  </body>
+</html>
