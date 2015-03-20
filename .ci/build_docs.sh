@@ -5,7 +5,7 @@ cd $BOOST_ROOT/tools/quickbook
 ../../b2 dist-bin -d0
 export QUICKBOOK_ROOT="$BOOST_ROOT/dist/bin"
 export BOOSTBOOK_ROOT="$BOOST_ROOT/tools/boostbook"
-export DOCBOOK_ROOT="$GPCXX_ROOT/third_party/doc_book"
+export DOCBOOK_ROOT="$GPCXX_ROOT/third_party/docbook"
 
 sudo apt-get install -qq doxygen
 sudo apt-get install -qq xsltproc
@@ -27,6 +27,9 @@ rm docbook-xsl-1.78.1.tar.bz2
 
 cd $GPCXX_ROOT
 cd build
+ls $QUICKBOOK_ROOT
+ls $BOOSTBOOK_ROOT
+ls $DOCBOOK_ROOT
 cmake .. -DGPCXX_BUILD_DOCS=1
 make documentation
 
