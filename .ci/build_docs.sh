@@ -2,10 +2,13 @@ set -x
 set -e
 
 cd $BOOST_ROOT/tools/quickbook
-../../b2 dist-bin
-export $QUICKBOOK_ROOT=$BOOST_ROOT/dist/bin
-export $BOOSTBOOK_ROOT=$BOOST_ROOT/tools/boostbook
-export $DOCBOOK_ROOT=$GPCXX_ROOT/third_party/doc_book
+../../b2 dist-bin -d0
+export $QUICKBOOK_ROOT="$BOOST_ROOT/dist/bin"
+export $BOOSTBOOK_ROOT="$BOOST_ROOT/tools/boostbook"
+export $DOCBOOK_ROOT="$GPCXX_ROOT/third_party/doc_book"
+
+sudo apt-get install -qq doxygen
+sudo apt-get install -qq xsltproc
 
 mkdir $DOCBOOK_ROOT
 cd $DOCBOOK_ROOT
