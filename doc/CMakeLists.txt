@@ -120,6 +120,23 @@ add_custom_target ( documentation
   )
 
 
+set ( GH_PAGES_PATH "${CMAKE_CURRENT_BINARY_DIR}/gh-pages" )
+set ( REPO_PATH "git@github.com:Ambrosys/gpcxx.git" )
+message ( STATUS "Creating gh-pages directory in ${GH_PAGES_PATH}" )
+add_custom_target ( public-gh-pages 
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${GH_PAGES_PATH}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${GH_PAGES_PATH}
+  COMMAND git clone -b gh-pages "${REPO_PATH}" --single-branch ${GH_PAGES_PATH}
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${GH_PAGES_PATH}/doc
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${GH_PAGES_PATH}/doc
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/html ${GH_PAGES_PATH}/doc
+  COMMAND ${CMAKE_COMMAND} -E chdir ${GH_PAGES_PATH}/doc git add -A
+  COMMAND ${CMAKE_COMMAND} -E chdir ${GH_PAGES_PATH}/doc git commit -m "adding current documentation version"
+  COMMAND ${CMAKE_COMMAND} -E chdir ${GH_PAGES_PATH}/doc git push origin gh-pages
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${GH_PAGES_PATH}
+)
+
+
 else ()
 
   message ( WARNING "Could not find Doxygon, Xstlproc, or Quickbook. Doc will not be generated" )
