@@ -1,7 +1,6 @@
 set -x
 set -e
 
-REPO_PATH="https://headmyshoulder:${GIT_TOKEN}@github.com/Ambrosys/gpcxx.git"
 COVERITY_PATH=coverity
 COMMIT_USER="Coverity Scan Builder"
 COMMIT_EMAIL="travis@travis-ci.org"

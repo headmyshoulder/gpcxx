@@ -14,7 +14,9 @@ os:
 env:
   global:
     - GCC_VERSION="4.9"
-    - secure: "a7ElJhM8X3f7Pzzm262g53XMgTESjC3GiWkusr3uxiwfEpjDkNyU0HsA+m3eSZOF6pNDswFvEkkvjB3VIiLbtM+KoT0osK3fmm1Mp6s5/Ty7UGiRbQOGIIeWi88n/5/xpRczXyoKRMX+rE+H/BoK4C1uGxkUm99+kdQ6zMhgco8="
+    - REPO_PATH="https://headmyshoulder:${GIT_TOKEN}@github.com/Ambrosys/gpcxx.git"
+    # - RUN_VALGRIND=1
+    - secure: "a7ElJhM8X3f7Pzzm262g53XMgTESjC3G01iWkusr3uxiwfEpjDkNyU0HsA+m3eSZOF6pNDswFvEkkvjB3VIiLbtM+KoT0osK3fmm1Mp6s5/Ty7UGiRbQOGIIeWi88n/5/xpRczXyoKRMX+rE+H/BoK4C1uGxkUm99+kdQ6zMhgco8="
     - secure: "jq8/7MDVz6pZgu62Pfc+/MYlXoMQaSoOHITGZlS0JR71HM1zsMHyRtHbBtW2nuh2a82LmERuNH4iy4oeLJKO8sc6Wj3/glJhnefSd+KS03AEnPNPWfNZBC+GwxXoFaY0imE41CXtb2SzSzgzdh+uDBiPkgRXBzN4zzdV34OOpfc="
 
   matrix:
@@ -35,6 +37,7 @@ before_install:
   - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ]; then export COVERALLS_BUILD=1; fi
   - if [ -n "$MASTER_BUILD" ]; then echo "This is the Master build"; fi
   - if [ -n "$COVERALLS_BUILD" ]; then echo "This is the coverall build"; fi
+  - if [ -n "$RUN_VALGRIND" ]; then echo "Running valgrind"; fi
   - .ci/setup_compiler.sh
   - .ci/init_thirdparty.sh
   # some variables need to be set here

@@ -3,9 +3,9 @@ set -e
 
 cd $BOOST_ROOT/tools/quickbook
 ../../b2 dist-bin -d0
-export $QUICKBOOK_ROOT="$BOOST_ROOT/dist/bin"
-export $BOOSTBOOK_ROOT="$BOOST_ROOT/tools/boostbook"
-export $DOCBOOK_ROOT="$GPCXX_ROOT/third_party/doc_book"
+export QUICKBOOK_ROOT="$BOOST_ROOT/dist/bin"
+export BOOSTBOOK_ROOT="$BOOST_ROOT/tools/boostbook"
+export DOCBOOK_ROOT="$GPCXX_ROOT/third_party/doc_book"
 
 sudo apt-get install -qq doxygen
 sudo apt-get install -qq xsltproc
@@ -29,4 +29,25 @@ cd $GPCXX_ROOT
 cd build
 cmake .. -DGPCXX_BUILD_DOCS
 make documentation
+
+
+GH_PAGES_PATH="gh-pages"
+COMMIT_USER="Documentation Builder"
+COMMIT_EMAIL="travis@travis-ci.org"
+
+git config user.name "${COMMIT_USER}"
+git config user.email "${COMMIT_EMAIL}"
+
+# Get a clean version of the repo.
+rm -rf ${GH_PAGES_PATH}
+mkdir -p ${GH_PAGES_PATH}
+git clone -b gh-pages "${REPO_PATH}" --single-branch ${GH_PAGES_PATH}
+
+
+cd ${GH_PAGES_PATH}/doc
+rm -rf *
+cp -rf ../../doc/html/* .
+git add -A
+git commit -m "adding current documentation version"
+git push origin gh-pages
 
