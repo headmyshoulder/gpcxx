@@ -38,8 +38,6 @@ GH_PAGES_PATH="gh-pages"
 COMMIT_USER="Documentation Builder"
 COMMIT_EMAIL="travis@travis-ci.org"
 
-git config user.name "${COMMIT_USER}"
-git config user.email "${COMMIT_EMAIL}"
 
 # Get a clean version of the repo.
 rm -rf ${GH_PAGES_PATH}
@@ -51,6 +49,8 @@ cd ${GH_PAGES_PATH}/doc
 rm -rf *
 cp -rf ../../doc/html/* .
 git add -A
+git config user.name "${COMMIT_USER}"
+git config user.email "${COMMIT_EMAIL}"
 git commit -m "adding current documentation version"
 git push origin gh-pages
 
