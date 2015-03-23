@@ -17,6 +17,8 @@ env:
     - RUN_VALGRIND=1
     - secure: "a7ElJhM8X3f7Pzzm262g53XMgTESjC3G01iWkusr3uxiwfEpjDkNyU0HsA+m3eSZOF6pNDswFvEkkvjB3VIiLbtM+KoT0osK3fmm1Mp6s5/Ty7UGiRbQOGIIeWi88n/5/xpRczXyoKRMX+rE+H/BoK4C1uGxkUm99+kdQ6zMhgco8="
     - secure: "jq8/7MDVz6pZgu62Pfc+/MYlXoMQaSoOHITGZlS0JR71HM1zsMHyRtHbBtW2nuh2a82LmERuNH4iy4oeLJKO8sc6Wj3/glJhnefSd+KS03AEnPNPWfNZBC+GwxXoFaY0imE41CXtb2SzSzgzdh+uDBiPkgRXBzN4zzdV34OOpfc="
+    # COVERITY_SCAN_TOKEN
+    - secure: "KFTdHiHehYwK2SciIhdv3eDwi6nNWpwyjv8RqfiWs1ItFjr1292kLwKUVcjEz15tVQMmkWz8IbXe1YFMUbd8lswyRFO6Cpeaw9MP8yfnGkOxtdSddEtQyaujY8eiYQPkPjCGXg3uxzmhGdHx7OI4REcrjoWmKZvMXi/01CnXLnU="
     - REPO_PATH="https://headmyshoulder:${GIT_TOKEN}@github.com/Ambrosys/gpcxx.git"
 
   matrix:
@@ -42,6 +44,7 @@ before_install:
   - .ci/init_thirdparty.sh
   # some variables need to be set here
   - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
+  - echo "$PROJECT_NAME"
 
 
 
