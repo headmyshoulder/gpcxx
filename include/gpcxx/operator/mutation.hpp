@@ -32,6 +32,17 @@ public:
             m_strategy( node );
         return node;
     }
+    
+//     template< typename Pop , typename Fitness >
+//     std::tuple< typename Pop::value_type , typename Pop::const_iterator >
+//     operator()( Pop const& pop , Fitness const& fitness )
+//     {
+//         auto iter = m_selector( pop , fitness );
+//         auto node = *iter;
+//         if( ! node.empty() )
+//             m_strategy( node );
+//         return std::make_tuple( iter , node );
+//     }
 
 private:
 
