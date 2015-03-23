@@ -70,6 +70,16 @@ void tree_simple_io( void )
     cout << endl << endl;
 }
 
+void tree_simple_io_1( void )
+{
+    //[ tree_simple_io_1
+    auto tree = create_tree();
+    
+    // will write ( y - 5 ) + x
+    cout << simple( tree ) << endl;
+    //]
+}    
+
 
 void tree_polish_io( void )
 {
@@ -122,6 +132,7 @@ void tree_polish_io_3( void )
 int main( int argc , char **argv )
 {
     tree_simple_io();
+    tree_simple_io_1();
     tree_polish_io();
     
 
