@@ -50,6 +50,7 @@ file(WRITE "${doxyfile}"
 
 file ( GLOB_RECURSE QBK_FILES *.qbk )
 file ( GLOB_RECURSE EXAMPLE_FILES "../examples/*.cpp" )
+file ( GLOB_RECURSE IMAGE_FILES "images/*" )
 
 message ( STATUS "Qbk files for doc: ${QBK_FILES}" )
 message ( STATUS "Cpp files for doc: ${EXAMPLE_FILES}" )
@@ -62,6 +63,7 @@ add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
   DEPENDS
     ${QBK_FILES}
     ${EXAMPLE_FILES}
+    ${IMAGE_FILES}
   )
 
 add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"

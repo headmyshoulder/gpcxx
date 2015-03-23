@@ -1,14 +1,15 @@
 [section Operations on tree]
 
-[section construction]
+[section Creation and modification of the tree structure]
 
-Trees can be constructed with the insert methods. Three methods exist:
+[import ../examples/api/tree_methods.cpp]
 
-[import ../examples/api/tree_insert.cpp]
+Trees can be created and  modified with several methods:
 
-[*`insert_below`]
-
-The first method is the `insert_below` method. It inserts the node below the node specified with the passed cursor, The next three snippets shwo how a tree can be build with this method
+[table:id Tree Modification
+    [[Method] [Description]]
+    [[[*`insert_below`]]
+    [The first method is the `insert_below` method. It inserts the node below the node specified with the passed cursor, The next three snippets show how a tree can be build with this method
 
 [insert_below_1]
 
@@ -20,9 +21,16 @@ A graphical representation of the above three snippets is
 
 [$images/insert_below_1.png] [$images/insert_below_2.png] [$images/insert_below_3.png]
 
-[*`insert`]
+'insert_below' can also insert complete subtrees into a new tree:
 
-The next method is the `insert` method. It inserts a node in front of the passed cursor. The next three snippets shwo how a tree can be build with this method
+[insert_below_4]
+
+This creates a new tree with one node "X" and the complete `tree` as children of "X".
+
+[$images/insert_below_4.png]
+    ]]
+    [[[*`insert`]]
+    [The next method is the `insert` method. It inserts a node in front of the passed cursor. The next three snippets shwo how a tree can be build with this method
 
 [insert_1]
 
@@ -32,11 +40,9 @@ The next method is the `insert` method. It inserts a node in front of the passed
 
 A graphical representation of the above three snippets is
 
-[$images/insert_1.png] [$images/insert_2.png] [$images/insert_3.png] 
-
-[*`insert_above`]
-
-`insert_above` can insert a new node above a current node, such that this node becomes a child of the inserted one.
+[$images/insert_1.png] [$images/insert_2.png] [$images/insert_3.png]
+    ]]
+    [[[*`insert_above`]] [`insert_above` can insert a new node above a current node, such that this node becomes a child of the inserted one.
 
 [insert_above_1]
 
@@ -46,29 +52,91 @@ A graphical representation of the above three snippets is
 
 A graphical representation of the above three snippets is
 
-[$images/insert_above_1.png [valign "top"]] [$images/insert_above_2.png] [$images/insert_above_3.png] 
+[$images/insert_above_1.png [valign top]] [$images/insert_above_2.png] [$images/insert_above_3.png]
 
+Insert below can also insert subtree.
+    ]]
+    [[[*`emplace_below`]] [Similar like `insert_below`, but it construct the new node inplace. See for examples the emplace methods of the STL-containers (`std::vector<>`, `std::list<>`, ... ). An example is
+
+[emplace_below_1]
+    ]]
+    [[[[*`emplace`]] [Simpilar like `insert`, but it constructs the new new node inplace. An example is
+
+[emplace_1]
+    ]]
+    [[[*`assign`]] [Assigns an existing subtree to the tree.]]
+    [[[*`clear`]] [Delete the whole tree.]]
+    [[[*`erase`]] [Remove single nodes and its sub nodes from the tree. An example is
+
+[erase_1]
+
+[erase_2]
+
+A graphical representation of the above three snippets is
+
+[$images/erase_1.png] [$images/erase_2.png]
+    ]]
+    [[[*`swap`]] [Swaps complete trees.]]
+    [[[*`swap_subtrees`]] [Swaps subtrees.]]
+]
 
 [endsect]
 
 
 [section Queries]
 
-accessor, size, height, ...
+[table:id Tree Queries
+    [[Method] [Return Value] [Description]]
+    [[`size()`] [`size_type`] [Return the number of nodes of the tree.]]
+    [[`empty()`] [`bool`] [ Wether the tree is empty, hence it has no nodes.]]
+    [[`max_size()`] [`size_type`] [The maximal possible number of nodes in the tree.]]
+    [[`get_allocator()`] [`allocator_type`] [The allocator of the tree.]]
+]
 
-swap nodes - pictures
+An example is
+
+[querying_1]
+
 
 [endsect]
 
 [section Cursors and iterators]
 
-root
+[import ../examples/api/tree_traversal.cpp]
 
-shoot
+Cursor are used to access individual nodes of the tree. They are the generalizations of iterators for hierarchical data structures. The tree supports several methods to obtain cursors from the tree:
 
-pre-order
+[table:id Cursors from trees
+    [[Method] [Return Values] [Description]]
+    [[`root()`] [`cursor` or `const_cursor`] [Returns the root cursor of the tree.]]
+    [[`croot()`] [`const_cursor`] [Returns the root cursor of the tree.]]
+    [[`shoot()`] [`cursor` or `const_cursor`] [Returns a cursor marking the cursor behind the last node of the tree.]]    
+    [[`cshoot()`] [`const_cursor`] [Returns a cursor marking the cursor behind the last node of the tree.]]
+    [[`rank_is(n)`] [`cursor` or `const_cursor`] [Returns the `n`-th node of the tree.]]
+]
 
-end-order
+An example snippet showing how cursors can be used is
+[cursor_1]
+
+[cursor_2]
+
+Besides the access via the `children(i)` method, cursor are a random access container, iterating over the children of the current node:
+
+[cursor_3]
+
+Cursors also support some statistical informations about the current node. For example the `height()` method returns the height of the current subtree, while the `level()` methods return the level of the current node:
+
+[cursor_4]
+
+
+The trees can be travesed with the help of iterators. Two iterators exist, pre-order and post-order iterators. They can be used like
+
+
+
+[preorder_iteration_1]
+
+[postorder_iteration_1]
+
 
 
 
