@@ -20,6 +20,7 @@ env:
     # COVERITY_SCAN_TOKEN
     - secure: "KFTdHiHehYwK2SciIhdv3eDwi6nNWpwyjv8RqfiWs1ItFjr1292kLwKUVcjEz15tVQMmkWz8IbXe1YFMUbd8lswyRFO6Cpeaw9MP8yfnGkOxtdSddEtQyaujY8eiYQPkPjCGXg3uxzmhGdHx7OI4REcrjoWmKZvMXi/01CnXLnU="
     - REPO_PATH="https://headmyshoulder:${GIT_TOKEN}@github.com/Ambrosys/gpcxx.git"
+
   matrix:
     - BUILD_TYPE=Debug
     - BUILD_TYPE=Release
