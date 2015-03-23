@@ -1,10 +1,14 @@
 [section Operations on tree]
 
-construction
+[section construction]
+
+Trees can be constructed with the insert methods. Three methods exist:
 
 [import ../examples/api/tree_insert.cpp]
 
-insert_below:
+[*`insert_below`]
+
+The first method is the `insert_below` method. It inserts the node below the node specified with the passed cursor, The next three snippets shwo how a tree can be build with this method
 
 [insert_below_1]
 
@@ -12,19 +16,63 @@ insert_below:
 
 [insert_below_3]
 
+A graphical representation of the above three snippets is
+
 [$images/insert_below_1.png] [$images/insert_below_2.png] [$images/insert_below_3.png]
 
+[*`insert`]
+
+The next method is the `insert` method. It inserts a node in front of the passed cursor. The next three snippets shwo how a tree can be build with this method
+
+[insert_1]
+
+[insert_2]
+
+[insert_3]
+
+A graphical representation of the above three snippets is
+
+[$images/insert_1.png] [$images/insert_2.png] [$images/insert_3.png] 
+
+[*`insert_above`]
+
+`insert_above` can insert a new node above a current node, such that this node becomes a child of the inserted one.
+
+[insert_above_1]
+
+[insert_above_2]
+
+[insert_above_3]
+
+A graphical representation of the above three snippets is
+
+[$images/insert_above_1.png [valign "top"]] [$images/insert_above_2.png] [$images/insert_above_3.png] 
 
 
-insert nodes - pictures
+[endsect]
 
 
+[section Queries]
 
 accessor, size, height, ...
 
 swap nodes - pictures
 
-cursors
+[endsect]
+
+[section Cursors and iterators]
+
+root
+
+shoot
+
+pre-order
+
+end-order
+
+
+
+[endsect]
 
 
 [endsect]
