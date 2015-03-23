@@ -27,14 +27,15 @@ env:
 
 matrix:
   exclude:
-    - os: osx   # For now disable gcc on osx as g++4.8 is not yet available
+    # For now disable gcc on osx as g++4.8 is not yet available
+    - os: osx   
       compiler: gcc
 
     
     
 before_install:
-  - echo "$PROJECT_NAME"
-  - echo "Gcc version $GCC_VERSION"
+  - echo "${PROJECT_NAME}"
+  - echo "Gcc version ${GCC_VERSION}"
   - export GPCXX_ROOT=`pwd`
   - cd $GPCXX_ROOT
   - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ] && [ "$TRAVIS_BRANCH" == "master" ]; then export MASTER_BUILD=1; fi
