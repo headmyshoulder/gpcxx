@@ -55,7 +55,7 @@ install:
 
 script:
   - cd $GPCXX_ROOT
-  - if [ -z "$COVERITY_PUSH" ]; then .ci/build_and_test.sh; fi
+  - .ci/build_and_test.sh
   
 after_success:
   - cd $GPCXX_ROOT
@@ -68,12 +68,12 @@ after_success:
 
 
 
-addons:
-  coverity_scan:
-    project:
-      name: "Ambrosys/gpcxx"
-      description: "Build submitted via Travis CI"
-    notification_email: karsten.ahnert@gmx.de
-    build_command_prepend: "cd build && cmake .. -DGPCXX_BUILD_DOCS=OFF"
-    build_command:   "make"
-    branch_pattern: coverity_scan
+# addons:
+#   coverity_scan:
+#     project:
+#       name: "Ambrosys/gpcxx"
+#       description: "Build submitted via Travis CI"
+#     notification_email: karsten.ahnert@gmx.de
+#     build_command_prepend: "cd build && cmake .. -DGPCXX_BUILD_DOCS=OFF"
+#     build_command: "make"
+#     branch_pattern: coverity_scan
