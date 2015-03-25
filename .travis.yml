@@ -54,7 +54,7 @@ install:
   - mkdir build
 
 script:
-  # - cd $GPCXX_ROOT
+  - cd $GPCXX_ROOT
   # - .ci/build_and_test.sh
   
 after_success:
