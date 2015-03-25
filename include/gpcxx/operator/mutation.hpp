@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include <random>
 #include <cassert>
+#include <utility>
+
 
 namespace gpcxx {
 
@@ -20,7 +22,7 @@ class mutation
 public:
 
     mutation( Strategy strategy , Selector selector )
-    : m_strategy( strategy ) , m_selector( selector ) { }
+    : m_strategy( std::move( strategy ) ) , m_selector( std::move( selector ) ) { }
 
     template< typename Pop , typename Fitness >
     typename Pop::value_type
@@ -31,17 +33,6 @@ public:
             m_strategy( t );
         return t;
     }
-    
-//     template< typename Pop , typename Fitness >
-//     std::tuple< typename Pop::value_type , typename Pop::const_iterator >
-//     operator()( Pop const& pop , Fitness const& fitness )
-//     {
-//         auto iter = m_selector( pop , fitness );
-//         auto node = *iter;
-//         if( ! node.empty() )
-//             m_strategy( node );
-//         return std::make_tuple( iter , node );
-//     }
 
 private:
 
