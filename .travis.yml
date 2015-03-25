@@ -14,7 +14,7 @@ os:
 env:
   global:
     - GCC_VERSION="4.9"
-    - RUN_VALGRIND=1
+    # - RUN_VALGRIND=1
     # GIT_TOKEN
     - secure: "jq8/7MDVz6pZgu62Pfc+/MYlXoMQaSoOHITGZlS0JR71HM1zsMHyRtHbBtW2nuh2a82LmERuNH4iy4oeLJKO8sc6Wj3/glJhnefSd+KS03AEnPNPWfNZBC+GwxXoFaY0imE41CXtb2SzSzgzdh+uDBiPkgRXBzN4zzdV34OOpfc="
     # COVERITY_SCAN_TOKEN
