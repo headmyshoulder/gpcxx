@@ -18,9 +18,9 @@ set -e
 # git pull --no-edit origin master
 # git push origin coverity_scan
 
-COVERITY_SCAN_PROJECT_NAME="Ambosys/gpcxx"
-COVERITY_SCAN_NOTIFICATION_EMAIL="karsten.ahnert@gmx.de"
-COVERITY_SCAN_BUILD_COMMAND="make"
-COVERITY_SCAN_BUILD_COMMAND_PREPEND="mkdir coverity_build && cd coverity_build && cmake .. -DGPCXX_BUILD_DOCS=OFF"
-COVERITY_SCAN_BRANCH_PATTERN="master"
+export COVERITY_SCAN_PROJECT_NAME="Ambosys/gpcxx"
+export COVERITY_SCAN_NOTIFICATION_EMAIL="karsten.ahnert@gmx.de"
+export COVERITY_SCAN_BUILD_COMMAND="make"
+export COVERITY_SCAN_BUILD_COMMAND_PREPEND="mkdir coverity_build && cd coverity_build && cmake .. -DGPCXX_BUILD_DOCS=OFF"
+export COVERITY_SCAN_BRANCH_PATTERN="master"
 curl -s https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh |bash
