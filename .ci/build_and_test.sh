@@ -1,11 +1,6 @@
 set -x
 set -e
 
-if  [ ${COVERITY_SCAN_BRANCH} == 1 ]; 
-then
-    exit 0;
-fi
-
 cd build
 export CMAKE_OPTIONS="-DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
 if [ -n "$MASTER_BUILD" ];
