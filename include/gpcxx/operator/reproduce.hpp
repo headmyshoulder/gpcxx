@@ -27,7 +27,7 @@ public:
     typename Pop::value_type
     operator()( Pop const& pop , Fitness const& fitness ) const
     {
-        return m_selector( pop , fitness );
+        return *( m_selector( pop , fitness ) );
     }
     
 private:

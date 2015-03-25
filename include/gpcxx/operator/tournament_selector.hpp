@@ -14,6 +14,7 @@
 
 #include <random>
 #include <cassert>
+#include <iterator>
 
 namespace gpcxx {
 
@@ -27,10 +28,10 @@ public:
     : m_rng( rng ) , m_tournament_size( tournament_size ) { }
     
     template< typename Pop , typename Fitness >
-    typename Pop::value_type const&
+    typename Pop::const_iterator
     operator()( Pop const& pop , Fitness const & fitness ) const
     {
-        typedef typename Pop::value_type individual_type;
+        typedef typename Pop::const_iterator iterator;
         
         assert( pop.size() == fitness.size() );
         assert( m_tournament_size > 0 );
@@ -39,7 +40,7 @@ public:
         std::uniform_int_distribution< size_t > dist( 0 , pop.size()-1 );
         
         size_t index = dist( m_rng );
-        individual_type const* best = &( pop[ index ] );
+        iterator best = std::next( std::begin( pop ) , index );
         double best_value = fitness[ index ];
         
         for( size_t i=1 ; i<m_tournament_size ; ++i )
@@ -47,11 +48,11 @@ public:
             size_t index = dist( m_rng );
             if( fitness[index] < best_value )
             {
-                best = &( pop[index] );
+                best = std::next( std::begin( pop ) , index );
                 best_value = fitness[index];
             }
         }
-        return *best;
+        return best;
     }
     
 private:

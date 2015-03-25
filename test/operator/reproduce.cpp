@@ -29,6 +29,6 @@ TYPED_TEST( reproduce_tests , instanciation )
     std::vector< typename TestFixture::tree_type > pop( 10 , typename TestFixture::tree_type() );
     std::vector< double > fitness( 10 );
     auto selector = gpcxx::make_random_selector( this->m_gen.rng );
-    auto node = selector( pop , fitness );
+    /* auto node = */ selector( pop , fitness );
 }
 

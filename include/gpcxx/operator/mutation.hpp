@@ -26,11 +26,10 @@ public:
     typename Pop::value_type
     operator()( Pop const& pop , Fitness const& fitness )
     {
-        typedef typename Pop::value_type individual_type;
-        individual_type node = m_selector( pop , fitness );
-        if( !node.empty() )
-            m_strategy( node );
-        return node;
+        auto t = *( m_selector( pop , fitness ) );
+        if( ! t.empty() )
+            m_strategy( t );
+        return t;
     }
     
 //     template< typename Pop , typename Fitness >

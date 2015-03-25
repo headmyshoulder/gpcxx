@@ -13,6 +13,7 @@
 #define GPCXX_OPERATOR_RANDOM_SELECTOR_HPP_DEFINED
 
 #include <random>
+#include <iterator>
 
 namespace gpcxx {
 
@@ -25,12 +26,12 @@ public:
     random_selector( Rng &rng ) : m_rng( rng ) { }
     
     template< typename Pop , typename Fitness >
-    typename Pop::value_type const&
+    typename Pop::const_iterator 
     operator()( Pop const& pop , Fitness const& fitness ) const
     {
         size_t n = pop.size();
         std::uniform_int_distribution< size_t > dist( 0 , n-1 );
-        return pop[ dist( m_rng ) ];
+        return std::next( std::begin( pop ) , dist( m_rng ) );
     }
     
 private:
