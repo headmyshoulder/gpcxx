@@ -58,8 +58,8 @@ script:
   - .ci/build_and_test.sh
   
 after_success:
-  - cd $GPCXX_ROOT
-  - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coverity_scan.sh; fi
+  # - cd $GPCXX_ROOT
+  # - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coverity_scan.sh; fi
   # - cd $GPCXX_ROOT
   # - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
   - cd $GPCXX_ROOT
