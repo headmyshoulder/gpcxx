@@ -13,16 +13,30 @@
 #define GPCXX_EVAL_ADJUSTED_FITNESS_HPP_INCLUDED
 
 #include <algorithm>
+#include <vector>
 
 
 namespace gpcxx {
 
 
-constexpr auto adjusted_fitness_single = []( auto fitness ) {
-    using value_type = decltype( fitness );
-    const value_type one = static_cast< value_type >( 1.0 );
-    return one / ( one + fitness );
-};
+namespace detail
+{
+
+    struct adjusted_fitness_single_fn
+    {
+        template< typename T >
+        T operator()( T t ) const
+        {
+            const T one = static_cast< T >( 1.0 );
+            return one / ( one + t );
+        }
+    };
+
+    
+} // namespace detail
+
+static constexpr detail::adjusted_fitness_single_fn adjusted_fitness_single = detail::adjusted_fitness_single_fn {};
+
 
 template< typename StandardizedFitness , typename AdjustedFitness >
 void adjusted_fitness( StandardizedFitness const& sf , AdjustedFitness& af )

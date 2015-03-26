@@ -16,11 +16,24 @@
 #include <algorithm>
 
 namespace gpcxx {
+    
+namespace detail
+{
 
+    struct hits_single_fn
+    {
+        template< typename T >
+        bool operator()( T x , T tolerance ) const
+        {
+            T one = static_cast< T >( 1.0 );
+            return ( x > ( one - tolerance ) );
+        }
+    };
 
-constexpr auto hits_single = []( auto x , auto tolerance ) -> bool {
-    using value_type = decltype( tolerance );
-    return x > ( static_cast< value_type >( 1.0 ) - tolerance ); };
+    
+} // namespace detail
+
+static constexpr detail::hits_single_fn hits_single = detail::hits_single_fn {};
     
 template< typename AdjustedFitness , typename Hits , typename Value >
 void hits( AdjustedFitness const& af , Hits& hits , Value tolerance )
