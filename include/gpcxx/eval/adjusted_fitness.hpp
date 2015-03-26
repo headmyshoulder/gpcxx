@@ -40,6 +40,18 @@ std::vector< typename StandardizedFitness::value_type > adjusted_fitness( Standa
 }
 
 
+/*
+VERSIONS
+
+view = adjusted_fitness_view( sf );  // view
+af = adjusted_fitness( sf );         // return transformed fitness
+adjust_fitness( sf );                // transform inplace
+adjust_fitness( sf , af );           // transform out-of-place
+
+*/
+
+
+
 
 } // namespace gpcxx
 
