@@ -1,6 +1,14 @@
 set -x
 set -e
 
+curl -s https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh | COVERITY_SCAN_PROJECT_NAME="Ambrosys/gpcxx" COVERITY_SCAN_NOTIFICATION_EMAIL="karsten.ahnert@gmx.de" COVERITY_SCAN_BUILD_COMMAND="make" COVERITY_SCAN_BUILD_COMMAND_PREPEND="mkdir coverity_build && cd coverity_build && cmake .. -DGPCXX_BUILD_DOCS=OFF" COVERITY_SCAN_BRANCH_PATTERN=master bash
+
+
+# curl -s https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh | COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG" COVERITY_SCAN_NOTIFICATION_EMAIL="karsten.ahnert@gmx.de" COVERITY_SCAN_BUILD_COMMAND="make" COVERITY_SCAN_BUILD_COMMAND_PREPEND="cd build && cmake .. -DGPCXX_BUILD_DOCS=OFF" COVERITY_SCAN_BRANCH_PATTERN=coverity_scan bash
+
+
+
+# old stuff
 # COVERITY_PATH=coverity
 # COMMIT_USER="Coverity Scan Builder"
 # COMMIT_EMAIL="travis@travis-ci.org"
@@ -17,14 +25,3 @@ set -e
 
 # git pull --no-edit origin master
 # git push origin coverity_scan
-
-# export COVERITY_SCAN_PROJECT_NAME="Ambosys/gpcxx"
-# export COVERITY_SCAN_NOTIFICATION_EMAIL="karsten.ahnert@gmx.de"
-# export COVERITY_SCAN_BUILD_COMMAND="make"
-# export COVERITY_SCAN_BUILD_COMMAND_PREPEND="mkdir coverity_build && cd coverity_build && cmake .. -DGPCXX_BUILD_DOCS=OFF"
-# export COVERITY_SCAN_BRANCH_PATTERN="master"
-
-curl -s https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh | COVERITY_SCAN_PROJECT_NAME="Ambosys/gpcxx" COVERITY_SCAN_NOTIFICATION_EMAIL="karsten.ahnert@gmx.de" COVERITY_SCAN_BUILD_COMMAND="make" COVERITY_SCAN_BUILD_COMMAND_PREPEND="mkdir coverity_build && cd coverity_build && cmake .. -DGPCXX_BUILD_DOCS=OFF" COVERITY_SCAN_BRANCH_PATTERN=master bash
-
-
-# curl -s https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh | COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG" COVERITY_SCAN_NOTIFICATION_EMAIL="karsten.ahnert@gmx.de" COVERITY_SCAN_BUILD_COMMAND="make" COVERITY_SCAN_BUILD_COMMAND_PREPEND="cd build && cmake .. -DGPCXX_BUILD_DOCS=OFF" COVERITY_SCAN_BRANCH_PATTERN=coverity_scan bash
