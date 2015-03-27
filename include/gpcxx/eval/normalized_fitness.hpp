@@ -18,24 +18,48 @@
 
 
 namespace gpcxx {
+    
+namespace detail {
+    
+    
+    struct normalized_fitness_transform_fn
+    {
+        template< typename AdjustedFitness , typename NormalizedFitness >
+        void operator()( AdjustedFitness const& af , NormalizedFitness& nf ) const
+        {
+            nf.resize( af.size() );
+            auto sum = std::accumulate( std::begin( af ) , std::end( af ) , static_cast< typename AdjustedFitness::value_type >( 0.0 ) );
+            std::transform( std::begin( af ) , std::end( af ) , std::begin( nf ) , [sum]( auto& x ) { return x / sum; } );
+        }
+    };
+    
+    struct normalized_fitness_copy_fn
+    {
+        template< typename AdjustedFitness >
+        std::vector< typename AdjustedFitness::value_type > operator()( AdjustedFitness const& af ) const
+        {
+            std::vector< typename AdjustedFitness::value_type > nf;
+            normalized_fitness_transform_fn {} ( af , nf );
+            return nf;
+        }
+    };
+    
+    struct normalized_fitness_inplace_fn
+    {
+        template< typename AdjustedFitness >
+        void operator()( AdjustedFitness& af ) const
+        {
+            auto sum = std::accumulate( std::begin( af ) , std::end( af ) , static_cast< typename AdjustedFitness::value_type >( 0.0 ) );
+            std::for_each( std::begin( af ) ,std::end( af ) , [sum]( auto& x ) { x /= sum; } );
+        }
+    };
+    
+} // namespace detail
 
-template< typename AdjustedFitness , typename NormalizedFitness >
-void normalized_fitness( AdjustedFitness const& af , NormalizedFitness& nf )
-{
-    nf.resize( af.size() );
-    auto sum = std::accumulate( af.begin() , af.end() , static_cast< typename AdjustedFitness::value_type >( 0.0 ) );
-    std::transform( std::begin( af ) , std::end( af ) , std::begin( nf ) , [sum]( auto& x ) { return x / sum; } );
-}
 
-template< typename AdjustedFitness >
-std::vector< typename AdjustedFitness::value_type > normalized_fitness( AdjustedFitness const& af )
-{
-    std::vector< typename AdjustedFitness::value_type > nf;
-    normalized_fitness( af , nf );
-    return nf;
-}
-
-
+static constexpr detail::normalized_fitness_transform_fn normalized_fitness = detail::normalized_fitness_transform_fn {};
+static constexpr detail::normalized_fitness_copy_fn normalized_fitness_copy = detail::normalized_fitness_copy_fn {};
+static constexpr detail::normalized_fitness_inplace_fn normalized_fitness_inplace = detail::normalized_fitness_inplace_fn {};
 
 
 } // namespace gpcxx

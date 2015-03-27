@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <iterator>
 
 
 namespace gpcxx {
@@ -31,36 +32,58 @@ namespace detail
             return one / ( one + t );
         }
     };
+    
+    
+    struct adjusted_fitness_transform_fn
+    {
+        template< typename StandardizedFitness , typename AdjustedFitness >
+        void operator()( StandardizedFitness const& sf , AdjustedFitness& af ) const
+        {
+            af.resize( sf.size() );
+            std::transform( sf.begin() , sf.end() , af.begin() , adjusted_fitness_single_fn {} );
+        }
+        
+    };
+    
+    struct adjusted_fitness_copy_fn
+    {
+        template< typename StandardizedFitness >
+        std::vector< typename StandardizedFitness::value_type > operator()( StandardizedFitness const& sf ) const
+        {
+            std::vector< typename StandardizedFitness::value_type > af;
+            adjusted_fitness_transform_fn {} ( sf , af );
+            return af;
+        }
+    };
+    
+    struct adjusted_fitness_fn
+    {
+        template< typename StandardizedFitness >
+        void operator()( StandardizedFitness& f ) const
+        {
+            std::for_each( std::begin( f ) , std::end( f ) , []( auto& x ) { x = adjusted_fitness_single_fn {}( x ); } );
+        }
+    };
+    
 
     
 } // namespace detail
 
 static constexpr detail::adjusted_fitness_single_fn adjusted_fitness_single = detail::adjusted_fitness_single_fn {};
+static constexpr detail::adjusted_fitness_transform_fn adjusted_fitness = detail::adjusted_fitness_transform_fn {};
+static constexpr detail::adjusted_fitness_copy_fn adjusted_fitness_copy = detail::adjusted_fitness_copy_fn {};
+static constexpr detail::adjusted_fitness_fn adjusted_fitness_inplace = detail::adjusted_fitness_fn {};
 
 
-template< typename StandardizedFitness , typename AdjustedFitness >
-void adjusted_fitness( StandardizedFitness const& sf , AdjustedFitness& af )
-{
-    af.resize( sf.size() );
-    std::transform( sf.begin() , sf.end() , af.begin() , adjusted_fitness_single );
-}
-
-template< typename StandardizedFitness >
-std::vector< typename StandardizedFitness::value_type > adjusted_fitness( StandardizedFitness const& sf )
-{
-    std::vector< typename StandardizedFitness::value_type > af;
-    adjusted_fitness( sf , af );
-    return af;
-}
 
 
 /*
 VERSIONS
 
 view = adjusted_fitness_view( sf );  // view
-af = adjusted_fitness( sf );         // return transformed fitness
 adjust_fitness( sf );                // transform inplace
-adjust_fitness( sf , af );           // transform out-of-place
+af = adjusted_fitness_copy( sf );         // return transformed fitness
+adjust_fitness_transform( sf , af );           // transform out-of-place
 
 */
 

@@ -41,9 +41,32 @@ TEST( TESTNAME , adjusted_fitness )
 TEST( TESTNAME , adjusted_fitness_copy )
 {
     std::vector< double > sf = { 2.0 , 0.0 , 1.0e10 };
-    std::vector< double > af = gpcxx::adjusted_fitness( sf );
+    std::vector< double > af = gpcxx::adjusted_fitness_copy( sf );
     EXPECT_EQ( af.size() , size_t( 3 ) );
     EXPECT_NEAR( 0.3333333333 , af[0] , 1.0e-10 );
     EXPECT_DOUBLE_EQ( 1.0 , af[1]  );
     EXPECT_NEAR( 1.0e-10 , af[2] , 1.0e-10 );
+}
+
+TEST( TESTNAME , adjusted_fitness_inplace )
+{
+    std::vector< double > sf = { 2.0 , 0.0 , 1.0e10 };
+    gpcxx::adjusted_fitness_inplace( sf );
+    EXPECT_EQ( sf.size() , size_t( 3 ) );
+    EXPECT_NEAR( 0.3333333333 , sf[0] , 1.0e-10 );
+    EXPECT_DOUBLE_EQ( 1.0 , sf[1]  );
+    EXPECT_NEAR( 1.0e-10 , sf[2] , 1.0e-10 );
+}
+
+TEST( TESTNAME , adjusted_fitness_copy_as_functor )
+{
+    std::vector < std::vector< double > > sf = {
+        { 2.0 , 0.0 , 1.0e10 } ,
+        { 3.0 , 1.0 , 0.0 } ,
+        { 5.0 , 0.1 , 0.1 , 0.5 } };
+    std::vector< std::vector< double > > af( sf.size() );
+    std::transform( sf.begin() , sf.end() , af.begin() , gpcxx::adjusted_fitness_copy );
+    EXPECT_EQ( af[0].size() , size_t( 3 ) );
+    EXPECT_EQ( af[1].size() , size_t( 3 ) );
+    EXPECT_EQ( af[2].size() , size_t( 4 ) );
 }
