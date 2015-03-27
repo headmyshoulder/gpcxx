@@ -96,6 +96,14 @@ protected:
     // void TearDown( void ) override  { }
 };
 
+TEST_F( TESTNAME , empty_tree )
+{
+    basic_tree< std::string > t;
+    ostringstream str;
+    str << polish( t );
+    EXPECT_EQ( str.str() , "" );
+}
+
 
 TEST_F( TESTNAME , polish_tree1_withseparator )
 {

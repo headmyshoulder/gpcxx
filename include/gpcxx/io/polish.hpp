@@ -43,7 +43,8 @@ void write_polish_cursor( std::ostream &out , Cursor t , std::string const& sep 
 template< typename Tree , typename SymbolMapper >
 void write_polish( std::ostream &out , Tree const& t , std::string const& sep , std::string const &opening , std::string const& closing , SymbolMapper const& mapper )
 {
-    write_polish_cursor( out , t.root() , sep , opening , closing , mapper );
+    if( !t.empty() )
+        write_polish_cursor( out , t.root() , sep , opening , closing , mapper );
 }
 
 template< typename Tree , typename SymbolMapper >
