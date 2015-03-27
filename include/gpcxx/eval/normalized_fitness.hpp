@@ -14,15 +14,25 @@
 
 #include <algorithm>
 #include <numeric>
+#include <iterator>
 
 
 namespace gpcxx {
 
-template< typename AdjustedFitness >
-void normalize_fitness( AdjustedFitness& fitness )
+template< typename AdjustedFitness , typename NormalizedFitness >
+void normalized_fitness( AdjustedFitness const& af , NormalizedFitness& nf )
 {
-    auto sum = std::accumulate( fitness.begin() , fitness.end() , static_cast< typename AdjustedFitness::value_type >( 0.0 ) );
-    std::for_each( fitness.begin() , fitness.end() , [sum]( auto& x ) { x /= sum; } );
+    nf.resize( af.size() );
+    auto sum = std::accumulate( af.begin() , af.end() , static_cast< typename AdjustedFitness::value_type >( 0.0 ) );
+    std::transform( std::begin( af ) , std::end( af ) , std::begin( nf ) , [sum]( auto& x ) { return x / sum; } );
+}
+
+template< typename AdjustedFitness >
+std::vector< typename AdjustedFitness::value_type > normalized_fitness( AdjustedFitness const& af )
+{
+    std::vector< typename AdjustedFitness::value_type > nf;
+    normalized_fitness( af , nf );
+    return nf;
 }
 
 
