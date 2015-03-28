@@ -60,7 +60,7 @@ void write_simple( std::ostream &out , Tree const& t , bool write_infix , Symbol
         write_simple_cursor( out , t.root() , write_infix , mapper );
 }
 
-template< typename Tree , typename SymbolMapper >
+template< typename Tree , typename SymbolMapper = gpcxx::identity >
 std::string simple_string( Tree const& t , bool write_infix = true , SymbolMapper const &mapper = SymbolMapper() )
 {
     std::ostringstream str;
