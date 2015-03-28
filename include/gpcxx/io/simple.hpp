@@ -61,7 +61,7 @@ void write_simple( std::ostream &out , Tree const& t , bool write_infix , Symbol
 }
 
 template< typename Tree , typename SymbolMapper >
-std::string simple_string( Tree const& t , bool write_infix , SymbolMapper const& mapper )
+std::string simple_string( Tree const& t , bool write_infix = true , SymbolMapper const &mapper = SymbolMapper() )
 {
     std::ostringstream str;
     write_simple( str , t , write_infix , mapper );

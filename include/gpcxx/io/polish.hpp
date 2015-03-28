@@ -48,7 +48,7 @@ void write_polish( std::ostream &out , Tree const& t , std::string const& sep , 
 }
 
 template< typename Tree , typename SymbolMapper >
-std::string polish_string( Tree const& t , std::string const& sep , std::string const &opening , std::string const& closing , SymbolMapper const& mapper )
+std::string polish_string( Tree const& t , std::string const& sep = "|" , std::string const &opening = "" , std::string const& closing = "" , SymbolMapper const &mapper = SymbolMapper() )
 {
     std::ostringstream str;
     write_polish( str , t , sep , opening , closing , mapper );
