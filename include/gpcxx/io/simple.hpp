@@ -56,7 +56,8 @@ void write_simple_cursor( std::ostream &out , Cursor t , bool write_infix , Symb
 template< typename Tree , typename SymbolMapper >
 void write_simple( std::ostream &out , Tree const& t , bool write_infix , SymbolMapper const& mapper )
 {
-    write_simple_cursor( out , t.root() , write_infix , mapper );
+    if( !t.empty() )
+        write_simple_cursor( out , t.root() , write_infix , mapper );
 }
 
 template< typename Tree , typename SymbolMapper >

@@ -16,6 +16,14 @@
 
 using namespace std;
 
+TEST( TESTNAME , empty_tree )
+{
+    basic_tree< std::string > tree;
+    ostringstream str;
+    str << simple( tree );
+    EXPECT_EQ( str.str() , "" );
+}
+
 TEST( TESTNAME , simple1 )
 {
     test_tree< basic_tree_tag > tree;
