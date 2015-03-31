@@ -12,6 +12,8 @@
 #ifndef GPCXX_EVAL_HITS_HPP_INCLUDED
 #define GPCXX_EVAL_HITS_HPP_INCLUDED
 
+#include <boost/range/adaptor/transformed.hpp>
+
 #include <vector>
 #include <algorithm>
 
@@ -48,6 +50,12 @@ std::vector< bool > hits( AdjustedFitness const& af , Value tolerance )
     std::vector< bool > h;
     hits( af , h , tolerance );
     return h;
+}
+
+template< typename AdjustedFitness , typename Value >
+auto hits_view( AdjustedFitness const& af , Value tolerance )
+{
+    return boost::adaptors::transform( af , [tolerance]( auto x ) { return hits_single( x , tolerance ); } );
 }
 
 

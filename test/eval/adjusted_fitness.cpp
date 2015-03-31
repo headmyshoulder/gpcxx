@@ -70,3 +70,13 @@ TEST( TESTNAME , adjusted_fitness_copy_as_functor )
     EXPECT_EQ( af[1].size() , size_t( 3 ) );
     EXPECT_EQ( af[2].size() , size_t( 4 ) );
 }
+
+TEST( TESTNAME , adjusted_fitness_view )
+{
+    std::vector< double > sf = { 2.0 , 0.0 , 1.0e10 };
+    auto view = gpcxx::adjusted_fitness_view( sf );
+    EXPECT_EQ( view.size() , size_t( 3 ) );
+    EXPECT_NEAR( 0.3333333333 , view[0] , 1.0e-10 );
+    EXPECT_DOUBLE_EQ( 1.0 , view[1]  );
+    EXPECT_NEAR( 1.0e-10 , view[2] , 1.0e-10 );
+}

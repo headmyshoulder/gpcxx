@@ -12,6 +12,8 @@
 #ifndef GPCXX_EVAL_ADJUSTED_FITNESS_HPP_INCLUDED
 #define GPCXX_EVAL_ADJUSTED_FITNESS_HPP_INCLUDED
 
+#include <boost/range/adaptor/transformed.hpp>
+
 #include <algorithm>
 #include <vector>
 #include <iterator>
@@ -65,7 +67,14 @@ namespace detail
         }
     };
     
-
+    struct adjusted_fitness_view_fn
+    {
+        template< typename StandardizedFitness >
+        auto operator()( StandardizedFitness const& f ) const
+        {
+            return boost::adaptors::transform( f , adjusted_fitness_single_fn {} );
+        }
+    };
     
 } // namespace detail
 
@@ -73,19 +82,9 @@ static constexpr detail::adjusted_fitness_single_fn adjusted_fitness_single = de
 static constexpr detail::adjusted_fitness_transform_fn adjusted_fitness = detail::adjusted_fitness_transform_fn {};
 static constexpr detail::adjusted_fitness_copy_fn adjusted_fitness_copy = detail::adjusted_fitness_copy_fn {};
 static constexpr detail::adjusted_fitness_fn adjusted_fitness_inplace = detail::adjusted_fitness_fn {};
+static constexpr detail::adjusted_fitness_view_fn adjusted_fitness_view = detail::adjusted_fitness_view_fn {};
 
 
-
-
-/*
-VERSIONS
-
-view = adjusted_fitness_view( sf );  // view
-adjust_fitness( sf );                // transform inplace
-af = adjusted_fitness_copy( sf );         // return transformed fitness
-adjust_fitness_transform( sf , af );           // transform out-of-place
-
-*/
 
 
 

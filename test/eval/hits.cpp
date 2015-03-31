@@ -54,3 +54,17 @@ TEST( TESTNAME , hits_copy )
     EXPECT_TRUE( hits[6] );
 }
 
+TEST( TESTNAME , hits_view )
+{
+    std::vector< double > adjusted_fitness = { 0.9 , 0.8  , 0.0 , 0.5 , 1.0 , 0.84 , 0.86 };
+    auto hits = gpcxx::hits_view( adjusted_fitness , 0.15 );
+    EXPECT_EQ( hits.size() , size_t( 7 ) );
+    EXPECT_TRUE( hits[0] );
+    EXPECT_FALSE( hits[1] );
+    EXPECT_FALSE( hits[2] );
+    EXPECT_FALSE( hits[3] );
+    EXPECT_TRUE( hits[4] );
+    EXPECT_FALSE( hits[5] );
+    EXPECT_TRUE( hits[6] );
+}
+

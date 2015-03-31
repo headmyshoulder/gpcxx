@@ -56,3 +56,16 @@ TEST( TESTNAME , normalized_fitness_inplace )
     EXPECT_DOUBLE_EQ( 0.1 , adjusted_fitness[3] );
     EXPECT_DOUBLE_EQ( 0.5 , adjusted_fitness[4] );
 }
+
+TEST( TESTNAME , normalized_fitness_view )
+{
+    vector< double > adjusted_fitness = { 0.0 , 0.5 , 0.3 , 0.2 , 1.0 };
+    auto view = gpcxx::normalized_fitness_view( adjusted_fitness );
+    EXPECT_EQ( view.size() , size_t( 5 ) );
+    EXPECT_DOUBLE_EQ( 0.0 , view[0] );
+    EXPECT_DOUBLE_EQ( 0.25 , view[1] );
+    EXPECT_DOUBLE_EQ( 0.15 , view[2] );
+    EXPECT_DOUBLE_EQ( 0.1 , view[3] );
+    EXPECT_DOUBLE_EQ( 0.5 , view[4] );
+
+}
