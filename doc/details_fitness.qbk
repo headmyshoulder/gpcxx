@@ -1,0 +1,23 @@
+[section Fitness]
+
+[import ../examples/api/fitness.cpp]
+
+To measure the fitness of an individuum several measures have been developed.
+
+[*Raw fitness] - The raw fitness is the fitness measured in terms of the problem.
+
+[*Standarized fitness] - ...
+
+[*Adjusted fitness] - ...
+
+[*Normalized fitness] - ...
+
+[*Hits] - ...
+
+
+[fitness_simple_example]
+
+[fitness_simple_views_2]
+
+
+[endsect]

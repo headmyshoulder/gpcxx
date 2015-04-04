@@ -73,6 +73,7 @@ private:
 };
 
 
+
 template< typename T1 , typename ErcDist , typename Result = boost::variant< T1 , typename ErcDist::result_type > >
 uniform_symbol_erc< T1 , typename ErcDist::result_type , ErcDist , Result >
 make_uniform_symbol_erc(

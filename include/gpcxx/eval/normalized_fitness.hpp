@@ -33,7 +33,7 @@ namespace detail {
         {
             nf.resize( af.size() );
             auto sum = std::accumulate( std::begin( af ) , std::end( af ) , static_cast< typename AdjustedFitness::value_type >( 0.0 ) );
-            std::transform( std::begin( af ) , std::end( af ) , std::begin( nf ) , [sum]( auto& x ) { return x / sum; } );
+            std::transform( std::begin( af ) , std::end( af ) , std::begin( nf ) , [sum]( auto x ) { return x / sum; } );
         }
     };
     

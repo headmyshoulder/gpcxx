@@ -4,8 +4,6 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#define FUSION_MAX_VECTOR_SIZE 20
-
 #include <gpcxx/tree.hpp>
 #include <gpcxx/generate.hpp>
 #include <gpcxx/operator.hpp>
@@ -20,8 +18,6 @@
 #include <random>
 #include <vector>
 #include <functional>
-
-const std::string tab = "\t";
 
 /*
 //[ intrusive_node_implementation
@@ -75,7 +71,7 @@ int main( int argc , char *argv[] )
     
     
     //[ define_terminal_set
-    gpcxx::uniform_symbol< node_type > terminal_gen { std::vector< node_type >{
+    auto terminal_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type >{
         node_type { []( context_type const& c , node_type const& n ) { return 1.0; } ,      "1" } ,
         node_type { []( context_type const& c , node_type const& n ) { return 2.0; } ,      "2" } ,
         node_type { []( context_type const& c , node_type const& n ) { return 3.0; } ,      "3" } ,
@@ -92,12 +88,12 @@ int main( int argc , char *argv[] )
     //]
 
     //[ define_function_set
-    gpcxx::uniform_symbol< node_type > unary_gen { std::vector< node_type > {
+    auto unary_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type > {
         node_type { gpcxx::sin_func {}                                               ,      "s" } ,
         node_type { gpcxx::cos_func {}                                               ,      "c" }
     } };
 
-    gpcxx::uniform_symbol< node_type > binary_gen{ std::vector< node_type > {
+    auto binary_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type > {
         node_type { gpcxx::plus_func {}                                              ,      "+" } ,
         node_type { gpcxx::minus_func {}                                             ,      "-" } ,
         node_type { gpcxx::multiplies_func {}                                        ,      "*" } ,
@@ -106,7 +102,7 @@ int main( int argc , char *argv[] )
     //]
 
     //[ define_node_generator
-    gpcxx::node_generator< node_type , rng_type , 3 > node_generator {
+    auto node_generator = gpcxx::node_generator< node_type , rng_type , 3 > {
         { 1.0 , 0 , terminal_gen } ,
         { 1.0 , 1 , unary_gen } ,
         { 1.0 , 2 , binary_gen } };

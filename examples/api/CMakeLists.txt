@@ -10,3 +10,4 @@
 add_executable ( tree_io tree_io.cpp )
 add_executable ( tree_methods tree_methods.cpp )
 add_executable ( tree_traversal tree_traversal.cpp )
+add_executable ( fitness fitness.cpp )

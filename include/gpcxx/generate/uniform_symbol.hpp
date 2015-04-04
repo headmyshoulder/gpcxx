@@ -20,8 +20,14 @@ struct uniform_symbol
     typedef T value_type;
 
 
-    uniform_symbol( const std::vector< value_type > &symbols )
+    uniform_symbol( const std::vector< value_type >& symbols )
     : m_symbols( symbols )
+    {
+        assert( !m_symbols.empty() );
+    }
+    
+    uniform_symbol( std::vector< value_type >&& symbols )
+    : m_symbols( std::move( symbols ) )
     {
         assert( !m_symbols.empty() );
     }
