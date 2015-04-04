@@ -71,7 +71,7 @@ int main( int argc , char *argv[] )
     
     
     //[ define_terminal_set
-    auto terminal_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type >{
+    auto terminal_gen = gpcxx::make_uniform_symbol( std::vector< node_type >{
         node_type { []( context_type const& c , node_type const& n ) { return 1.0; } ,      "1" } ,
         node_type { []( context_type const& c , node_type const& n ) { return 2.0; } ,      "2" } ,
         node_type { []( context_type const& c , node_type const& n ) { return 3.0; } ,      "3" } ,
@@ -84,21 +84,21 @@ int main( int argc , char *argv[] )
         node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" } ,
         node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,
         node_type { gpcxx::array_terminal< 2 >{}                                     ,      "z" }
-    } };
+    } );
     //]
 
     //[ define_function_set
-    auto unary_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type > {
+    auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::sin_func {}                                               ,      "s" } ,
         node_type { gpcxx::cos_func {}                                               ,      "c" }
-    } };
+    } );
 
-    auto binary_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type > {
+    auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::plus_func {}                                              ,      "+" } ,
         node_type { gpcxx::minus_func {}                                             ,      "-" } ,
         node_type { gpcxx::multiplies_func {}                                        ,      "*" } ,
         node_type { gpcxx::divides_func {}                                           ,      "/" }
-    } };
+    } );
     //]
 
     //[ define_node_generator

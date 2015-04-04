@@ -17,6 +17,8 @@
 #include <gpcxx/io.hpp>
 #include <gpcxx/stat.hpp>
 #include <gpcxx/app.hpp>
+#include <gpcxx/util.hpp>
+
 
 
 
@@ -76,20 +78,37 @@ private:
     erc_dist_type m_erc_dist;
 };
 
-template< typename Value >
+template< typename Value , typename ErcGen >
+auto make_uniform_symbol_erc_generator( std::vector< Value > symbols , double prob_fraction_erc , ErcGen erc_gen )
+{
+    return uniform_symbol_erc_generator< Value , ErcGen >( std::move( symbols ) , prob_fraction_erc , std::move( erc_gen ) );
+}
+
+template< typename Value , typename Dist >
 struct erc_generator
 {
     using value_type = Value;
     
+    erc_generator( Dist const& dist )
+    : m_dist( dist ) {}
+    
     template< typename Rng >
     value_type operator()( Rng& rng ) const
     {
-        return value_type {};
+        auto x = m_dist( rng );
+        return value_type { [x]( auto const& c , auto const& n ) { return x; } , std::to_string( x ) };
     }
     
 private:
     
+    Dist m_dist;
 };
+
+template< typename Value , typename Dist >
+auto make_erc_generator( Dist const& dist )
+{
+    return erc_generator< Value , Dist >( dist );
+}
 
 
 
@@ -115,34 +134,30 @@ int main( int argc , char *argv[] )
     
     
     //[ define_terminal_set
-    auto terminal_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type >{
-        node_type { []( context_type const& c , node_type const& n ) { return 1.0; } ,      "1" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 2.0; } ,      "2" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 3.0; } ,      "3" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 4.0; } ,      "4" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 5.0; } ,      "5" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 6.0; } ,      "6" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 7.0; } ,      "7" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 8.0; } ,      "8" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 9.0; } ,      "9" } ,
-        node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" } ,
-        node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,
-        node_type { gpcxx::array_terminal< 2 >{}                                     ,      "z" }
-    } };
+    auto erc_gen = make_erc_generator< node_type >( []( auto& rng ) {
+        std::normal_distribution<> dist( 0.0 , 1.0 );
+        return dist( rng ); } );
+    auto terminal_gen = make_uniform_symbol_erc_generator(
+        std::vector< node_type >{
+            node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" } ,
+            node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,
+            node_type { gpcxx::array_terminal< 2 >{}                                     ,      "z" } } ,
+        0.25 ,
+        erc_gen );
     //]
 
     //[ define_function_set
-    auto unary_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type > {
+    auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::sin_func {}                                               ,      "s" } ,
         node_type { gpcxx::cos_func {}                                               ,      "c" }
-    } };
+    } );
 
-    auto binary_gen = gpcxx::uniform_symbol< node_type > { std::vector< node_type > {
+    auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::plus_func {}                                              ,      "+" } ,
         node_type { gpcxx::minus_func {}                                             ,      "-" } ,
         node_type { gpcxx::multiplies_func {}                                        ,      "*" } ,
         node_type { gpcxx::divides_func {}                                           ,      "/" }
-    } };
+    } );
     //]
 
     //[ define_node_generator
@@ -151,15 +166,15 @@ int main( int argc , char *argv[] )
         { 1.0 , 1 , unary_gen } ,
         { 1.0 , 2 , binary_gen } };
     //]
-        
+
     //[ define_gp_parameters
-    size_t population_size = 812;
+    size_t population_size = 512;
     size_t generation_size = 50;
     size_t number_elite = 1;
-    double mutation_rate = 0.2;
-    double crossover_rate = 0.6;
-    double reproduction_rate = 0.3;
-    size_t min_tree_height = 4 , max_tree_height = 12;
+    double mutation_rate = 0.1;
+    double crossover_rate = 0.8;
+    double reproduction_rate = 0.0;
+    size_t min_tree_height = 2 , max_tree_height = 12;
     size_t tournament_size = 15;
     //]
 
