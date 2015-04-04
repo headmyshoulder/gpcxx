@@ -3,18 +3,26 @@
 [table Examples Overview
   [[File] [Brief Description]]
 
-  [[[github_link examples/api/fitness.cpp api/fitness.cpp]]
+  [[[gpcxx_link examples/api/fitness.cpp api/fitness.cpp]]
   [This examples shows how to use the various fitness types.]]
   
-  [[[github_link examples/api/tree_io.cpp api/tree_io.cpp]]
-  [tba]]
+  [[[gpcxx_link examples/api/tree_io.cpp api/tree_io.cpp]]
+  [This examples shows the input and outout functions of __gpcxx.]]
 
-  [[[github_link examples/api/tree_io.cpp api/tree_methods.cpp]]
-  [tba]]
+  [[[gpcxx_link examples/api/tree_io.cpp api/tree_methods.cpp]]
+  [This examples shows the operations and methods of trees and how they can be created.]]
+
+  [[[gpcxx_link examples/api/tree_io.cpp api/tree_traversal.cpp]]
+  [This examples show how tree can be traversed.]]
+
+  [[[gpcxx_link examples/artificial_ant/artificial_ant.cpp artificial_ant/artificial_ant.cpp]]
+  [This is an implementation of the popular artificial example also known as the Sante Fe trail.]]
   
-  [[[github_link examples/api/tree_io.cpp api/tree_traversal.cpp]]
-  [tba]]
+  [[[gpcxx_link examples/symb_reg/symb_reg.cpp symb_reg/symb_reg.cpp]]
+  [This examples shows a simple symbolic regression.]]
 
+  [[[gpcxx_link examples/symb_reg/symb_reg_erc.cpp symb_reg/symb_reg_erc.cpp]]
+  [This examples shows how symbolic regression can be implemented and how ERCs (ephemeral random constants) can be used in __gpcxx.]]
 
 ]
 

@@ -96,6 +96,6 @@ the main evolution loop.
 Altough the code looks quite complicated and bloated it shows the main features of _gpcxx and nearly all customization points. In near future, some top level
 classes and structures for simplifiying genetic programming will be introduced.
 
-The full code can be found here:  [github_link examples/symb_reg/symb_reg.cpp symb_reg.cpp]
+The full code can be found here:  [gpcxx_link examples/symb_reg/symb_reg.cpp symb_reg.cpp]
 
 [endsect]
