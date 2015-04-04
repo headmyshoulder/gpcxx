@@ -12,7 +12,7 @@
 #ifndef GPCXX_OPERATOR_CROSSOVER_HPP_DEFINED
 #define GPCXX_OPERATOR_CROSSOVER_HPP_DEFINED
 
-#include <random>
+#include <utility>
 
 namespace gpcxx {
 
@@ -23,7 +23,7 @@ class crossover
 public:
     
     crossover( Strategy strategy , Selector selector )
-    : m_strategy( strategy ) , m_selector( selector ) { }
+    : m_strategy( std::move( strategy ) ) , m_selector( std::move( selector ) ) { }
     
     template< typename Pop , typename Fitness >
     std::pair< typename Pop::value_type , typename Pop::value_type >
