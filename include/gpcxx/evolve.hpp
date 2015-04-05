@@ -13,6 +13,7 @@
 #define GPCXX_EVOLVE_HPP_DEFINED
 
 #include <gpcxx/evolve/static_pipeline.hpp>
+#include <gpcxx/evolve/dynamic_pipeline.hpp>
 
 
 #endif // GPCXX_EVOLVE_HPP_DEFINED
