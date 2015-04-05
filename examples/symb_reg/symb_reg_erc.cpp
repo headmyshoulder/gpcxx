@@ -188,8 +188,8 @@ int main( int argc , char *argv[] )
     //]
     
     //[ define_evolution
-    using evolver_type = gpcxx::static_pipeline< population_type , fitness_type , rng_type >;
-    evolver_type evolver( number_elite , mutation_rate , crossover_rate , reproduction_rate , rng );
+    using evolver_type = gpcxx::dynamic_pipeline< population_type , fitness_type , rng_type >;
+    evolver_type evolver( rng , number_elite );
     //]
 
     //[define_evaluator
@@ -204,13 +204,17 @@ int main( int argc , char *argv[] )
     //[define_genetic_operators
     auto tree_generator = gpcxx::make_ramp( rng , node_generator , min_tree_height , max_tree_height , 0.5 );
     auto fitness_f = gpcxx::make_regression_fitness( evaluator {} );
-    evolver.mutation_function() = gpcxx::make_mutation(
-        gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
-        gpcxx::make_tournament_selector( rng , tournament_size ) );
-    evolver.crossover_function() = gpcxx::make_crossover( 
-        gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
-        gpcxx::make_tournament_selector( rng , tournament_size ) );
-    evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
+    evolver.add_operator( gpcxx::make_mutation(
+            gpcxx::make_point_mutation( rng , tree_generator , max_tree_height , 20 ) ,
+            gpcxx::make_tournament_selector( rng , tournament_size ) )
+        , mutation_rate );
+    evolver.add_operator( gpcxx::make_crossover( 
+            gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
+            gpcxx::make_tournament_selector( rng , tournament_size ) )
+        , crossover_rate );
+    evolver.add_operator( gpcxx::make_reproduce(
+            gpcxx::make_tournament_selector( rng , tournament_size ) )
+        , reproduction_rate );
     //]
 
 

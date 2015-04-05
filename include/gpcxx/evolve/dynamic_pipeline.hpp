@@ -77,7 +77,8 @@ private:
         while( new_pop.size() < n )
         {
             int choice = dist( m_rng );
-            auto trees = m_operators[ choice ];
+            auto& op = m_operators[ choice ];
+            auto trees = op( pop , fitness );
             for( auto iter = trees.begin() ; ( iter != trees.end() ) && ( new_pop.size() < n ) ; ++iter )
                 new_pop.push_back( std::move( *iter ) );
         }
