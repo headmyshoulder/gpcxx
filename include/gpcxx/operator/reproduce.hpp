@@ -12,7 +12,8 @@
 #ifndef GPCXX_OPERATOR_REPRODUCE_HPP_DEFINED
 #define GPCXX_OPERATOR_REPRODUCE_HPP_DEFINED
 
-#include <algorithm>
+#include <vector>
+#include <cassert>
 
 namespace gpcxx {
 
@@ -24,10 +25,31 @@ public:
     reproduce( Selector selector ) : m_selector( selector ) { }
     
     template< typename Pop , typename Fitness >
-    typename Pop::value_type
+    std::vector< typename Pop::value_type >
     operator()( Pop const& pop , Fitness const& fitness ) const
     {
-        return *( m_selector( pop , fitness ) );
+        std::vector< typename Pop::value_type > nodes( 1 );
+        nodes[0] = *( m_selector( pop , fitness ) );
+        return nodes;
+    }
+   
+    template< typename Pop , typename Fitness >
+    std::vector< typename Pop::const_iterator >
+    selection( Pop const& pop , Fitness const& fitness )
+    {
+        std::vector< typename Pop::const_iterator > s( 1 );
+        s[0].push_back( m_selector( pop , fitness ) );
+        return s;
+    }
+    
+    template< typename Selection >
+    std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type >
+    operation( Selection const& selection )
+    {
+        assert( selection.size() == 1 );
+        std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type > nodes( 1 );
+        nodes[0] = *( selection[0] );
+        return nodes;        
     }
     
 private:

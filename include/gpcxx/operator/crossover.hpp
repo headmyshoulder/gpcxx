@@ -13,6 +13,8 @@
 #define GPCXX_OPERATOR_CROSSOVER_HPP_DEFINED
 
 #include <utility>
+#include <vector>
+#include <cassert>
 
 namespace gpcxx {
 
@@ -25,15 +27,40 @@ public:
     crossover( Strategy strategy , Selector selector )
     : m_strategy( std::move( strategy ) ) , m_selector( std::move( selector ) ) { }
     
+    
     template< typename Pop , typename Fitness >
-    std::pair< typename Pop::value_type , typename Pop::value_type >
+    std::vector< typename Pop::value_type >
     operator()( Pop const& pop , Fitness const& fitness )
     {
-        auto node1 = *( m_selector( pop , fitness ) );
-        auto node2 = *( m_selector( pop , fitness ) );
-        if( ( ! node1.empty() ) && ( ! node2.empty() ) )
-            m_strategy( node1 , node2 );
-        return std::make_pair( node1 , node2 );
+        std::vector< typename Pop::value_type > nodes( 2 );
+        nodes[ 0 ] = *( m_selector( pop , fitness ) );
+        nodes[ 1 ] = *( m_selector( pop , fitness ) );
+        if( ( ! nodes[0].empty() ) && ( ! nodes[1].empty() ) )
+            m_strategy( nodes[0] , nodes[0] );
+        return nodes;
+    }
+    
+    template< typename Pop , typename Fitness >
+    std::vector< typename Pop::const_iterator >
+    selection( Pop const& pop , Fitness const& fitness )
+    {
+        std::vector< typename Pop::const_iterator > s[2];
+        s[0].push_back( m_selector( pop , fitness ) );
+        s[1].push_back( m_selector( pop , fitness ) );
+        return s;
+    }
+    
+    template< typename Selection >
+    std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type >
+    operation( Selection const& selection )
+    {
+        assert( selection.size() == 2 );
+        std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type > nodes( 2 );
+        nodes[ 0 ] = *( selection[0] );
+        nodes[ 1 ] = *( selection[1] );
+        if( ( ! nodes[0].empty() ) && ( ! nodes[1].empty() ) )
+            m_strategy( nodes[0] , nodes[0] );
+        return nodes;
     }
     
 private:

@@ -32,6 +32,7 @@ TYPED_TEST( crossover_tests , instanciation )
     auto c = gpcxx::make_crossover(
         gpcxx::make_one_point_crossover_strategy( this->m_gen.rng , 10 ) ,
         gpcxx::make_random_selector( this->m_gen.rng ) );
-    c( pop , fitness );
+    auto crossover_nodes = c( pop , fitness );
+    EXPECT_EQ( crossover_nodes.size() , size_t( 2 ) );
 }
 

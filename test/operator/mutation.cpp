@@ -28,5 +28,6 @@ TYPED_TEST( mutation_tests , instanciation )
     auto m = gpcxx::make_mutation(
         gpcxx::make_simple_mutation_strategy( this->m_gen.rng , this->m_gen.node_generator ) ,
         gpcxx::make_random_selector( this->m_gen.rng ) );
-    m( pop , fitness );
+    auto mutated_nodes = m( pop , fitness );
+    EXPECT_EQ( mutated_nodes.size() , size_t( 1 ) );
 }

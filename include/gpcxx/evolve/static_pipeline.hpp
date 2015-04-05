@@ -31,9 +31,9 @@ public:
     typedef Fitness fitness_type;
     typedef Rng rng_type;
 
-    typedef std::function< individual_type( population_type const& , fitness_type const& ) > mutation_type;
-    typedef std::function< std::pair< individual_type , individual_type >( population_type const& , fitness_type const& ) > crossover_type;
-    typedef std::function< individual_type( population_type const& , fitness_type const& ) > reproduction_type;
+    typedef std::function< std::vector< individual_type >( population_type const& , fitness_type const& ) > mutation_type;
+    typedef std::function< std::vector< individual_type >( population_type const& , fitness_type const& ) > crossover_type;
+    typedef std::function< std::vector< individual_type >( population_type const& , fitness_type const& ) > reproduction_type;
 
     static_pipeline( size_t number_elite , double mutation_rate , double crossover_rate , double reproduction_rate , rng_type &rng )
         : m_number_elite( number_elite ) , m_mutation_rate( mutation_rate ) , m_crossover_rate( crossover_rate ) , m_reproduction_rate( reproduction_rate )
@@ -84,28 +84,31 @@ private:
             {
                 case 0 : // mutation
                 {
-                    individual_type mutated_tree = m_mutation_function( pop , fitness );
-                    new_pop.push_back( std::move( mutated_tree ) );
+                    std::vector< individual_type > mutated_trees = m_mutation_function( pop , fitness );
+                    assert( mutated_trees.size() == 1 );
+                    new_pop.push_back( std::move( mutated_trees[0] ) );
                 }
                 break;
                 case 1 : // crossover
                 {
-                    std::pair< individual_type , individual_type > trees = m_crossover_function( pop , fitness );
+                    std::vector< individual_type > trees = m_crossover_function( pop , fitness );
+                    assert( trees.size() == 2 );
                     if( new_pop.size() == ( n - 1 ) )
                     {
-                        new_pop.push_back( std::move( trees.first ) );
+                        new_pop.push_back( std::move( trees[0] ) );
                     }
                     else
                     {
-                        new_pop.push_back( std::move( trees.first ) );
-                        new_pop.push_back( std::move( trees.second ) );
+                        new_pop.push_back( std::move( trees[0] ) );
+                        new_pop.push_back( std::move( trees[1] ) );
                     }
                 }
                 break;
                 case 2 : // reproduction
                 {
-                    individual_type reproduced_node = m_reproduction_function( pop , fitness );
-                    new_pop.push_back( std::move( reproduced_node ) );
+                    std::vector< individual_type > reproduced_nodes = m_reproduction_function( pop , fitness );
+                    assert( reproduced_nodes.size() == 1 );
+                    new_pop.push_back( std::move( reproduced_nodes[0] ) );
                 }
                 break;
             }
