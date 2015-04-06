@@ -13,11 +13,12 @@
 #define GPCXX_EVOLVE_DYNAMIC_PIPELINE_HPP_INCLUDED
 
 #include <gpcxx/util/sort_indices.hpp>
+#include <gpcxx/operator/any_genetic_operator.hpp>
 
-#include <functional>
 #include <cassert>
 #include <random>
 #include <vector>
+
 
 namespace gpcxx {
 
@@ -31,7 +32,7 @@ public:
     using individual_type = typename population_type::value_type;
     using fitness_type = Fitness;
     using rng_type = Rng;
-    using genetic_operator_type = std::function< std::vector< individual_type >( population_type const& , fitness_type const& ) >;
+    using genetic_operator_type = any_genetic_operator< population_type , fitness_type >;
 
     dynamic_pipeline( rng_type &rng , size_t number_elite )
         : m_rng( rng )

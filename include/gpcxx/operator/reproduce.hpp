@@ -38,7 +38,7 @@ public:
     selection( Pop const& pop , Fitness const& fitness )
     {
         std::vector< typename Pop::const_iterator > s( 1 );
-        s[0].push_back( m_selector( pop , fitness ) );
+        s[0] = m_selector( pop , fitness );
         return s;
     }
     
