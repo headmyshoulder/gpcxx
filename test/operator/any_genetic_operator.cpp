@@ -9,6 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
+
+// uncomment the following line to see the debug output
 #define GPCXX_ANY_GENETIC_OPERATOR_DEBUG 1
 
 #include <gpcxx/operator/any_genetic_operator.hpp>
@@ -28,7 +30,7 @@ struct mocker
 {
     MOCK_METHOD2( op , population_type( population_type const& , fitness_type const& ) );
     MOCK_METHOD2( selection , selection_type( population_type const& , fitness_type const& ) );
-    MOCK_METHOD1( selection , population_type( selection_type const& ) );
+    MOCK_METHOD1( operation , population_type( selection_type const& ) );
     MOCK_METHOD0( copy , void( void ) );
     MOCK_METHOD0( move , void( void ) );
     MOCK_METHOD0( copy_assign , void( void ) );
@@ -54,9 +56,11 @@ struct mock_functor
     }
     population_type operation( selection_type const& selection )
     {
-        return m_mocker.selection( selection );
+        return m_mocker.operation( selection );
     }
 };
+
+using namespace ::testing;
 
 TEST( TESTNAME , default_construction )
 {
@@ -66,7 +70,6 @@ TEST( TESTNAME , default_construction )
 
 TEST( TESTNAME , construct_from_value_copy )
 {
-    using namespace ::testing;
     mocker m;
     EXPECT_CALL( m , copy() )
         .Times( 1 );
@@ -77,7 +80,6 @@ TEST( TESTNAME , construct_from_value_copy )
 
 TEST( TESTNAME , construct_from_value_move )
 {
-    using namespace ::testing;
     mocker m;
     EXPECT_CALL( m , move() )
         .Times( 1 );
@@ -88,7 +90,6 @@ TEST( TESTNAME , construct_from_value_move )
 
 TEST( TESTNAME , copy_construct )
 {
-    using namespace ::testing;
     mocker m;
     EXPECT_CALL( m , copy() )
         .Times( 2 );
@@ -99,9 +100,31 @@ TEST( TESTNAME , copy_construct )
     EXPECT_TRUE( op2 );
 }
 
+TEST( TESTNAME , copy_construct2 )
+{
+    mocker m;
+    EXPECT_CALL( m , copy() )
+        .Times( 2 );
+    mock_functor f( m );
+    any_genetic_operator_type op( f );
+    any_genetic_operator_type const& opref = op;
+    any_genetic_operator_type op2( opref );
+    EXPECT_TRUE( op );
+    EXPECT_TRUE( op2 );
+}
+
+TEST( TESTNAME , copy_construct_from_empty )
+{
+    mocker m;
+    mock_functor f( m );
+    any_genetic_operator_type op;
+    any_genetic_operator_type op2( op );
+    EXPECT_FALSE( op );
+    EXPECT_FALSE( op2 );
+}
+
 TEST( TESTNAME , move_construct )
 {
-    using namespace ::testing;
     mocker m;
     EXPECT_CALL( m , copy() )
         .Times( 1 );
@@ -112,25 +135,104 @@ TEST( TESTNAME , move_construct )
     EXPECT_TRUE( op2 );
 }
 
+TEST( TESTNAME , move_construct_from_empty )
+{
+    mocker m;
+    mock_functor f( m );
+    any_genetic_operator_type op;
+    any_genetic_operator_type op2( std::move( op ) );
+    EXPECT_FALSE( op );
+    EXPECT_FALSE( op2 );
+}
+
+
 TEST( TESTNAME , copy_assign )
 {
+    mocker m;
+    EXPECT_CALL( m , copy() )
+        .Times( 2 );
+    mock_functor f( m );
+    any_genetic_operator_type op( f );
+    any_genetic_operator_type op2;
+    op2 = op;
+    EXPECT_TRUE( op );
+    EXPECT_TRUE( op2 );
+}
+
+TEST( TESTNAME , copy_assign2 )
+{
+    mocker m;
+    EXPECT_CALL( m , copy() )
+        .Times( 2 );
+    mock_functor f( m );
+    any_genetic_operator_type op( f );
+    any_genetic_operator_type const& opref = op;
+    any_genetic_operator_type op2;
+    op2 = opref;
+    EXPECT_TRUE( op );
+    EXPECT_TRUE( op2 );
+}
+
+TEST( TESTNAME , copy_assign_from_empty )
+{
+    mocker m;
+    mock_functor f( m );
+    any_genetic_operator_type op;
+    any_genetic_operator_type op2;
+    op2 = op;
+    EXPECT_FALSE( op );
+    EXPECT_FALSE( op2 );
 }
 
 TEST( TESTNAME , move_assign )
 {
+    mocker m;
+    EXPECT_CALL( m , copy() )
+        .Times( 1 );
+    mock_functor f( m );
+    any_genetic_operator_type op( f );
+    any_genetic_operator_type op2;
+    op2 = std::move( op );
+    EXPECT_FALSE( op );
+    EXPECT_TRUE( op2 );
 }
+
+TEST( TESTNAME , move_assign_from_empty )
+{
+    mocker m;
+    mock_functor f( m );
+    any_genetic_operator_type op;
+    any_genetic_operator_type op2;
+    op2 = std::move( op );
+    EXPECT_FALSE( op );
+    EXPECT_FALSE( op2 );
+}
+
 
 TEST( TESTNAME , copy_value_assign )
 {
+    mocker m;
+    mock_functor f( m );
+    EXPECT_CALL( m , copy() )
+        .Times( 1 );
+    any_genetic_operator_type op;
+    op = f;
+    EXPECT_TRUE( op );
 }
 
-TEST( TESTNAME( move_value_assign )
+TEST( TESTNAME , move_value_assign )
 {
+    mocker m;
+    mock_functor f( m );
+    EXPECT_CALL( m , move() )
+        .Times( 1 );
+    any_genetic_operator_type op;
+    op = std::move( f );
+    EXPECT_TRUE( op );
 }
 
 TEST( TESTNAME , op )
 {
-    using namespace ::testing;
     mocker m;
     EXPECT_CALL( m , copy() )
         .Times( 1 );
@@ -145,9 +247,29 @@ TEST( TESTNAME , op )
 
 TEST( TESTNAME , selection )
 {
+    mocker m;
+    EXPECT_CALL( m , copy() )
+        .Times( 1 );
+    EXPECT_CALL( m , selection( testing::_ , testing::_ ) )
+        .Times( 1 )
+        .WillOnce( Return( selection_type{} ) );
+    mock_functor f( m );
+    any_genetic_operator_type op( f );
+    EXPECT_TRUE( op );
+    op.selection( population_type {} , fitness_type {} );
 }
 
 TEST( TESTNAME , operation )
 {
+    mocker m;
+    EXPECT_CALL( m , copy() )
+        .Times( 1 );
+    EXPECT_CALL( m , operation( testing::_ ) )
+        .Times( 1 )
+        .WillOnce( Return( population_type{} ) );
+    mock_functor f( m );
+    any_genetic_operator_type op( f );
+    EXPECT_TRUE( op );
+    op.operation( selection_type {} );
 }
 

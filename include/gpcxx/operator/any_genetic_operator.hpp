@@ -33,6 +33,9 @@ class any_genetic_operator
 {
 public:
     
+    template< typename T >
+    using remove_rcv = std::remove_cv_t< std::remove_reference_t< T > >;
+    
     using population_type = Pop;
     using fitness_type = Fitness;
     using value_type = typename Pop::value_type;
@@ -46,7 +49,7 @@ public:
     
     template< typename T >
     any_genetic_operator( T&& t )
-    : m_data( new model< std::remove_cv_t< std::remove_reference_t< T > > >( std::forward< T >( t ) ) )
+    : m_data( new model< remove_rcv< T > >( std::forward< T >( t ) ) )
     {
         #ifdef GPCXX_ANY_GENETIC_OPERATOR_DEBUG
         namespace ti = boost::typeindex;
@@ -55,7 +58,7 @@ public:
     }
     
     any_genetic_operator( any_genetic_operator const& op )
-    : m_data( op.m_data->clone() )
+    : m_data( ( op.m_data ) ? op.m_data->clone() : nullptr  )
     {
         #ifdef GPCXX_ANY_GENETIC_OPERATOR_DEBUG
         std::cout << "const copy ctor" << std::endl;
@@ -63,7 +66,7 @@ public:
     }
     
     any_genetic_operator( any_genetic_operator& op )
-    : m_data( op.m_data->clone() )
+    : m_data( ( op.m_data ) ? op.m_data->clone() : nullptr )
     {
         #ifdef GPCXX_ANY_GENETIC_OPERATOR_DEBUG
         std::cout << "non-const copy ctor" << std::endl;
@@ -75,10 +78,32 @@ public:
     any_genetic_operator& operator=( any_genetic_operator const& op )
     {
         #ifdef GPCXX_ANY_GENETIC_OPERATOR_DEBUG
-        std::cout << "copy assignment" << std::endl;
+        std::cout << "const copy assignment" << std::endl;
         #endif
+        if( op.m_data ) m_data.reset( op.m_data->clone() );
         return *this;
     }
+    
+    any_genetic_operator& operator=( any_genetic_operator& op )
+    {
+        #ifdef GPCXX_ANY_GENETIC_OPERATOR_DEBUG
+        std::cout << "non const copy assignment" << std::endl;
+        #endif
+        if( op.m_data ) m_data.reset( op.m_data->clone() );
+        return *this;
+    }
+    
+    template< typename T >
+    any_genetic_operator& operator=( T&& t )
+    {
+        #ifdef GPCXX_ANY_GENETIC_OPERATOR_DEBUG
+        namespace ti = boost::typeindex;
+        std::cout << "universal copy assignment" << ti::type_id_with_cvr< T >().pretty_name() << " " << ti::type_id_runtime( t ).pretty_name() << std::endl;
+        #endif
+        m_data.reset( new model< remove_rcv< T > >( std::forward< T >( t ) ) );
+        return *this;
+    }
+    
     
     any_genetic_operator& operator=( any_genetic_operator&& op ) = default;
 
@@ -202,4 +227,5 @@ private:
 
 #endif // GPCXX_OPERATOR_ANY_GENETIC_OPERATOR_HPP_INCLUDED
 
+struct T;
 struct T;
