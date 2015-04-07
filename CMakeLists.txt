@@ -33,6 +33,18 @@ if ( ${GPCXX_TEST_COVERAGE} )
 endif ()
 
 include ( CreateVersionFile )
+include ( ForwardingHeader )
+
+create_forwarding_header ( include/gpcxx/app.hpp include/gpcxx/app )
+create_forwarding_header ( include/gpcxx/eval.hpp include/gpcxx/eval )
+create_forwarding_header ( include/gpcxx/evolve.hpp include/gpcxx/evolve )
+create_forwarding_header ( include/gpcxx/generate.hpp include/gpcxx/generate )
+create_forwarding_header ( include/gpcxx/io.hpp include/gpcxx/io )
+create_forwarding_header ( include/gpcxx/operator.hpp include/gpcxx/operator )
+create_forwarding_header ( include/gpcxx/stat.hpp include/gpcxx/stat )
+create_forwarding_header ( include/gpcxx/tree.hpp include/gpcxx/tree include/gpcxx/tree/iterator )
+create_forwarding_header ( include/gpcxx/util.hpp include/gpcxx/util )
+
 
 message ( STATUS "Building project ${CMAKE_PROJECT_NAME}" )
 message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )

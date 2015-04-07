@@ -8,6 +8,9 @@ if ( ${DOXYGEN_FOUND} AND ${XSLTPROC_FOUND} AND ${QuickBook_FOUND} )
 set ( catalog "${CMAKE_CURRENT_BINARY_DIR}/catalog.xml" )
 configure_file ( catalog.xml.in "${catalog}" )
 
+
+configure_file ( config.qbk.cmake config.qbk )
+
 set ( xml_dir "${CMAKE_CURRENT_BINARY_DIR}/xml" )
 set ( doxyfile "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" )
 

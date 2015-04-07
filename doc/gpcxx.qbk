@@ -10,6 +10,7 @@
      ]
 ]
 
+[include config.qbk]
 
 [def __koza1_ref [link koza1 \[1\] ]]
 
