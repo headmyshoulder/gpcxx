@@ -9,6 +9,7 @@
 
 #include <gpcxx/util/sort_indices.hpp>
 #include <gpcxx/util/indent.hpp>
+#include <gpcxx/util/identity.hpp>
 #include <gpcxx/io/simple.hpp>
 
 #include <ostream>
