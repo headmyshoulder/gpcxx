@@ -1,13 +1,8 @@
-[library gpcxx
+[article gpcxx
      [quickbook 1.5]
      [id gpcxx]
-     [dirname gpcxx]
      [authors [Ahnert, Karsten]]
      [copyright 2013-2014 Karsten Ahnert]
-     [category math]
-     [purpose 
-        Genetic programming.
-     ]
      [license
      Distributed under the Boost Software License, Version 1.0.
      (See accompanying file LICENSE_1_0.txt or copy
