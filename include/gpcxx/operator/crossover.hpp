@@ -16,6 +16,7 @@
 #include <vector>
 #include <cassert>
 
+
 namespace gpcxx {
 
     
@@ -32,21 +33,19 @@ public:
     std::vector< typename Pop::value_type >
     operator()( Pop const& pop , Fitness const& fitness )
     {
-        std::vector< typename Pop::value_type > nodes( 2 );
-        nodes[ 0 ] = *( m_selector( pop , fitness ) );
-        nodes[ 1 ] = *( m_selector( pop , fitness ) );
-        if( ( ! nodes[0].empty() ) && ( ! nodes[1].empty() ) )
-            m_strategy( nodes[0] , nodes[0] );
-        return nodes;
+        auto sel = selection( pop , fitness );
+        return operation( sel );
     }
     
     template< typename Pop , typename Fitness >
     std::vector< typename Pop::const_iterator >
     selection( Pop const& pop , Fitness const& fitness )
     {
+        assert( pop.size() > 2 );
         std::vector< typename Pop::const_iterator > s(2);
-        s[0] = m_selector( pop , fitness );
-        s[1] = m_selector( pop , fitness );
+        s[1] = s[0] = m_selector( pop , fitness );
+        while( s[0] == s[1] )
+            s[1] = m_selector( pop , fitness );
         return s;
     }
     
@@ -59,7 +58,7 @@ public:
         nodes[ 0 ] = *( selection[0] );
         nodes[ 1 ] = *( selection[1] );
         if( ( ! nodes[0].empty() ) && ( ! nodes[1].empty() ) )
-            m_strategy( nodes[0] , nodes[0] );
+            m_strategy( nodes[0] , nodes[1] );
         return nodes;
     }
     

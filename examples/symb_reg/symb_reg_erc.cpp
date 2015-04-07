@@ -173,7 +173,7 @@ int main( int argc , char *argv[] )
     size_t number_elite = 1;
     double mutation_rate = 0.1;
     double crossover_rate = 0.8;
-    double reproduction_rate = 0.0;
+    double reproduction_rate = 0.1;
     size_t min_tree_height = 2 , max_tree_height = 12;
     size_t tournament_size = 15;
     //]
