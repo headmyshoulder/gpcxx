@@ -18,7 +18,7 @@
 #include <cassert>
 #include <random>
 #include <vector>
-
+#include <functional>
 
 namespace gpcxx {
 
@@ -33,17 +33,32 @@ public:
     using fitness_type = Fitness;
     using rng_type = Rng;
     using genetic_operator_type = any_genetic_operator< population_type , fitness_type >;
+    using index_vector = std::vector< size_t >;
+    using operator_observer_type = std::function< void( int , index_vector const& , index_vector const& ) >;
+    
 
-    dynamic_pipeline( rng_type &rng , size_t number_elite )
+
+    dynamic_pipeline( rng_type &rng , size_t number_elite , operator_observer_type op = []( int choice , index_vector const& in , index_vector const& out ) {} )
         : m_rng( rng )
         , m_number_elite( number_elite ) 
         , m_rates() , m_operators()
+        , m_observer( std::move( op ) )
     { }
     
     void add_operator( genetic_operator_type const& op , double rate )
     {
         m_operators.push_back( op );
         m_rates.push_back( rate );
+    }
+    
+    operator_observer_type& operator_observer( void )
+    {
+        return m_observer;
+    }
+    
+    genetic_operator_type const& operator_observer( void ) const
+    {
+        return m_observer;
     }
 
     void next_generation( population_type &pop , fitness_type &fitness )
@@ -79,9 +94,19 @@ private:
         {
             int choice = dist( m_rng );
             auto& op = m_operators[ choice ];
-            auto trees = op( pop , fitness );
+            
+            auto selection = op.selection( pop , fitness );
+            index_vector in;
+            for( auto s : selection ) in.push_back( s - pop.begin() );
+            
+            auto trees = op.operation( selection );
+            index_vector out;
             for( auto iter = trees.begin() ; ( iter != trees.end() ) && ( new_pop.size() < n ) ; ++iter )
+            {
+                out.push_back( new_pop.size() );
                 new_pop.push_back( std::move( *iter ) );
+            }
+            m_observer( choice , in , out );
         }
         
         pop = std::move( new_pop );
@@ -91,6 +116,7 @@ private:
     double m_number_elite;
     std::vector< double > m_rates;
     std::vector< genetic_operator_type > m_operators;
+    operator_observer_type m_observer;
 };
 
 
