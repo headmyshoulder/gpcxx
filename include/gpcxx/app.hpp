@@ -13,9 +13,9 @@
 #define GPCXX_APP_HPP_DEFINED
 
 
-#include <gpcxx/app/timer.hpp>
 #include <gpcxx/app/generate_test_data.hpp>
 #include <gpcxx/app/normalize.hpp>
+#include <gpcxx/app/timer.hpp>
 
 
 #endif // GPCXX_APP_HPP_DEFINED

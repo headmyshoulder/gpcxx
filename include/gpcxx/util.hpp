@@ -13,15 +13,15 @@
 #define GPCXX_UTIL_HPP_DEFINED
 
 
+#include <gpcxx/util/array_unpack.hpp>
+#include <gpcxx/util/create_random_indices.hpp>
 #include <gpcxx/util/exception.hpp>
 #include <gpcxx/util/identity.hpp>
-#include <gpcxx/util/iterate_until.hpp>
 #include <gpcxx/util/indent.hpp>
-#include <gpcxx/util/array_unpack.hpp>
-#include <gpcxx/util/sort_indices.hpp>
+#include <gpcxx/util/iterate_until.hpp>
 #include <gpcxx/util/macros.hpp>
+#include <gpcxx/util/sort_indices.hpp>
 #include <gpcxx/util/version.hpp>
-#include <gpcxx/util/create_random_indices.hpp>
 
 
 #endif // GPCXX_UTIL_HPP_DEFINED

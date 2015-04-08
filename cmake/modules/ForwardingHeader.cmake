@@ -9,6 +9,8 @@ function ( create_forwarding_header header )
     list ( APPEND files ${tmpfiles} )
   endforeach ()
   
+  list ( SORT files )
+  
   set ( GPCXX_INCLUDE_LIST "" )
   foreach ( f ${files} )
     set ( GPCXX_INCLUDE_LIST "${GPCXX_INCLUDE_LIST}\n#include <${f}>" )

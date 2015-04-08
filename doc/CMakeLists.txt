@@ -8,8 +8,18 @@ if ( ${DOXYGEN_FOUND} AND ${XSLTPROC_FOUND} AND ${QuickBook_FOUND} )
 set ( catalog "${CMAKE_CURRENT_BINARY_DIR}/catalog.xml" )
 configure_file ( catalog.xml.in "${catalog}" )
 
+if( ${GPCXX_DOC_GITHUB_LINKS} )
+  set ( GPCXX_LINK_COMMAND "[template gpcxx_link[url text]'''<ulink url=\"https://github.com/Ambrosys/gpcxx/tree/master/'''[url]'''\" target=\"_blank\">'''[text]'''</ulink>''']" )
+else ()
+  set ( GPCXX_LINK_COMMAND "[template gpcxx_link[url text]'''<ulink url=\"../../../'''[url]'''\" target=\"_blank\">'''[text]'''</ulink>''']" )
+endif ()
 
+set ( GPCXX_VERSION_STRING "v${GPCXX_VERSION_MAJOR}.${GPCXX_VERSION_MINOR}.${GPCXX_VERSION_PATCH}" )
+
+
+message ( STATUS "Creating config file for documentation" )
 configure_file ( config.qbk.cmake config.qbk )
+
 
 set ( xml_dir "${CMAKE_CURRENT_BINARY_DIR}/xml" )
 set ( doxyfile "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" )
@@ -79,6 +89,7 @@ add_custom_command ( OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.xml"
   DEPENDS
     ${QBK_FILES}
     "${CMAKE_CURRENT_BINARY_DIR}/gpcxx.qbk"
+    "${CMAKE_CURRENT_BINARY_DIR}/config.qbk"
 #     "${CMAKE_CURRENT_BINARY_DIR}/reference.xml"
   )
   

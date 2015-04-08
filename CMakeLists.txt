@@ -11,6 +11,7 @@ option ( GPCXX_BUILD_PERFORMANCE_TESTS "Enable to build the performance tests" O
 option ( GPCXX_BUILD_EXAMPLES "Enable to build the examples" ON )
 option ( GPCXX_BUILD_TESTS "Enable to build the tests" ON )
 option ( GPCXX_TEST_COVERAGE "Analyze test coverage with gcov/lcov" OFF )
+option ( GPCXX_DOC_GITHUB_LINKS "Use links to github" ON )
 
 # Add path for custom modules
 set ( CMAKE_MODULE_PATH

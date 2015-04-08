@@ -12,11 +12,6 @@
 
 [include config.qbk]
 
-[def __koza1_ref [link koza1 \[1\] ]]
-
-[def __wiki_santa_fe_trail_problem [@http://en.wikipedia.org/wiki/Santa_Fe_Trail_problem Wikipedia: Santa Fe Trail problem]]
-
-
 
 [def __alpha '''&#945;''']
 [def __beta '''&#946;''']
@@ -39,27 +34,25 @@
 [def __theta '''&#952;''']
 [def __Theta '''&#920;''']
 [def __xi '''&#958;''']
-
 [def __space '''&#8203;''']
 
+[template super[x]'''<superscript>'''[x]'''</superscript>''']
+[template sub[x]'''<subscript>'''[x]'''</subscript>''']
+[template subl[x]'''<subscript>'''__space[x]'''</subscript>''']
+
+[def __koza1_ref [link koza1 \[1\] ]]
+[def __wiki_santa_fe_trail_problem [@http://en.wikipedia.org/wiki/Santa_Fe_Trail_problem Wikipedia: Santa Fe Trail problem]]
+
 [def __gpcxx gpcxx]
-
 [def __gpcxx_github '''<ulink url="https://github.com/Ambrosys/gpcxx" target="_blank">github.com/Ambrosys/gpcxx</ulink>''']
-
-
 [def __concepts [link gpcxx.concepts Concepts]]
 [def __tree_concept [link gpcxx.concepts.tree Tree]]
 [def __cursor_concept [link gpcxx.concepts.cursor Cursor]]
 [def __tree_node_concept [link gpcxx.concepts.treenode TreeNode]]
 
 
-[template super[x]'''<superscript>'''[x]'''</superscript>''']
-[template sub[x]'''<subscript>'''[x]'''</subscript>''']
-[template subl[x]'''<subscript>'''__space[x]'''</subscript>''']
 
-[template gpcxx_link[url text]'''<ulink url="https://github.com/Ambrosys/gpcxx/tree/master/'''[url]'''" target="_blank">'''[text]'''</ulink>''']
-[/ [template gpcxx_link[url text]'''<ulink url="../../../'''[url]'''" target="_blank">'''[text]'''</ulink>'''] ]
-
+This is __gpcxx [gpcxx_version] build from commit [gpcxx_version_sha1].
 
 [include getting_started.qbk]
 [include tutorial.qbk]

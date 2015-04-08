@@ -13,15 +13,15 @@
 #define GPCXX_TREE_HPP_DEFINED
 
 
+#include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 #include <gpcxx/tree/intrusive_func.hpp>
-#include <gpcxx/tree/basic_tree.hpp>
-#include <gpcxx/tree/intrusive_node.hpp>
-#include <gpcxx/tree/intrusive_tree.hpp>
 #include <gpcxx/tree/intrusive_func_node.hpp>
 #include <gpcxx/tree/intrusive_named_func_node.hpp>
-#include <gpcxx/tree/iterator/postorder_iterator.hpp>
+#include <gpcxx/tree/intrusive_node.hpp>
+#include <gpcxx/tree/intrusive_tree.hpp>
 #include <gpcxx/tree/iterator/iterator_base.hpp>
+#include <gpcxx/tree/iterator/postorder_iterator.hpp>
 #include <gpcxx/tree/iterator/preorder_iterator.hpp>
 
 
