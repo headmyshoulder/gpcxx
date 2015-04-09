@@ -262,7 +262,8 @@ private:
     
     typename base_type::difference_type distance_to( tree_base_cursor const& other ) const
     {
-        // TODO: implement
+        using diff_type = typename base_type::difference_type;
+        return static_cast< diff_type >( other.m_pos ) - static_cast< diff_type >( m_pos );
     }
     
     bool equal( tree_base_cursor const& other) const

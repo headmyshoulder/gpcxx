@@ -266,6 +266,27 @@ public:
         insert_below( root() , subtree );
     }
     
+    template< typename InputCursor >
+    void assign( cursor position , InputCursor subtree )
+    {
+        if( position.node() == nullptr ) return;
+        if( subtree.node() == nullptr ) return;
+        
+        while( ! position.empty() )
+            erase( position.begin() );
+        
+//         for( cursor c = position.begin() ; c != position.end() ; ++c )
+//         {
+//             erase_impl( c );
+//             static_cast< node_pointer >( position.node() )->set_child_node( c - position.begin() , nullptr );
+//         }
+        *position = *subtree;
+        for( const_cursor c = subtree.begin() ; c!= subtree.end() ; ++c )
+        {
+            insert_below( position , c );
+        }
+    }
+    
     cursor insert_below( const_cursor position , const value_type& val )
     {
         node_pointer new_node = m_node_allocator.allocate( 1 );

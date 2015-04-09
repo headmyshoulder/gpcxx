@@ -209,7 +209,13 @@ TEST( TESTNAME , cursor_parents )
     EXPECT_EQ( trees.data.root().children(0).children(0).parent() , trees.data.root().children(0) );
 }
 
-
+TEST( TESTNAME , cursor_distance )
+{
+    test_tree< basic_tree_tag > trees;
+    EXPECT_EQ( trees.data.root().children(0) - trees.data.root().children(0) , 0 );
+    EXPECT_EQ( trees.data.root().children(0) - trees.data.root().children(1) , -1 );
+    EXPECT_EQ( trees.data.root().children(1) - trees.data.root().children(0) , 1 );
+}
 
 TEST( TESTNAME , insert_cursor )
 {
