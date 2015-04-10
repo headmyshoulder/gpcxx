@@ -303,6 +303,27 @@ TYPED_TEST( general_tree_tests , assign_cursor2 )
     test_cursor( this->m_test_trees.data.root().children(1).children(1) , "2" , 0 , 1 , 2 );
 }
 
+TYPED_TEST( general_tree_tests , assign_cursor3 )
+{
+    this->m_test_trees.data.assign( this->m_test_trees.data2.root() , this->m_tree.root() );
+    
+    EXPECT_EQ( this->m_test_trees.data2.size() , size_t( 4 ) );
+    EXPECT_FALSE( this->m_test_trees.data2.empty() );
+    test_cursor( this->m_test_trees.data2.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( this->m_test_trees.data2.root().children(0) , "cos" , 1 , 2 , 1 );
+    test_cursor( this->m_test_trees.data2.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( this->m_test_trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
+}
+
+TYPED_TEST( general_tree_tests , assign_cursor4 )
+{
+    this->m_test_trees.data.assign( this->m_tree.root() , this->m_test_trees.data2.root() );
+    
+    EXPECT_EQ( this->m_tree.size() , size_t( 0 ) );
+    EXPECT_TRUE( this->m_tree.empty() );
+}
+
+
 
 TYPED_TEST( general_tree_tests , clear )
 {
