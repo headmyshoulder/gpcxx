@@ -93,10 +93,10 @@ struct operator_observer
     using generation_type = std::vector< operator_result >;
     using generation_vector = std::vector< generation_type > ;
     
-    operator_observer( void )
-    : m_generations() , m_current( nullptr )
+    operator_observer( size_t population_size )
+    : m_population_size( population_size ) , m_generations() , m_current( nullptr )
     {
-        next_generation();
+        // next_generation();
     }
     
     template< typename Indices >
@@ -113,9 +113,13 @@ struct operator_observer
     
     void write( std::ostream& out )
     {
-        detail::write( out , m_generations );
+        out << "{\n";
+        out << "  \"population_size\" : " << m_population_size << " , \n";
+        out << "  \"generations\" : "; detail::write( out , m_generations ); out << "\n";
+        out << "}\n";
     }
     
+    size_t m_population_size;
     generation_vector m_generations;
     generation_type* m_current;
 };
@@ -179,8 +183,8 @@ int main( int argc , char *argv[] )
     //]
 
     //[ define_gp_parameters
-    size_t population_size = 32;
-    size_t generation_size = 20;
+    size_t population_size = 64;
+    size_t generation_size = 5;
     size_t number_elite = 1;
     double mutation_rate = 0.1;
     double crossover_rate = 0.8;
@@ -241,15 +245,17 @@ int main( int argc , char *argv[] )
     std::cout << std::endl << std::endl;
     //]
     
-    operator_observer obs;
+    operator_observer obs { population.size() };
     evolver.operator_observer() = std::ref( obs );
     
     //[main_loop
     for( size_t i=0 ; i<generation_size ; ++i )
     {
+        obs.next_generation();
         evolver.next_generation( population , fitness );
         for( size_t i=0 ; i<population.size() ; ++i )
             fitness[i] = fitness_f( population[i] , c );
+        
         
         std::cout << "Iteration " << i << std::endl;
         std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
