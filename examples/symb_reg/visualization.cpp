@@ -25,7 +25,7 @@
 #include <functional>
 #include <ostream>
 #include <fstream>
-
+#include <tuple>
 
 namespace detail {
     
@@ -62,66 +62,132 @@ namespace detail {
 
 } // namespace detail
 
-struct operator_result
+
+struct evolution_part
 {
     int op;
-    std::vector< size_t > in;
-    std::vector< size_t > out;
+    size_t in;
+    size_t out;
 };
 
-namespace detail {
-    
-template<>
-struct writer< operator_result >
-{
-    static void write( std::ostream& out , operator_result const& r )
-    {
-        out << "{\n";
-        out << "  \"op\" : " << r.op << " , \n";
-        out << "  \"in\" : "; detail::write( out , r.in ); out << " , \n";
-        out << "  \"out\" : "; detail::write( out , r.out ); out << "\n";
-        out << "}\n";
-    }
-};
-    
-} // namespace detail
 
 
 struct operator_observer
 {
+    using population_type = std::vector< std::tuple< double , std::string > >;
+    using population_vector = std::vector< population_type >;
     
-    using generation_type = std::vector< operator_result >;
-    using generation_vector = std::vector< generation_type > ;
+    using evolution_type = std::vector< evolution_part >;
+    using evolution_vector = std::vector< evolution_type >;
     
     operator_observer( size_t population_size )
-    : m_population_size( population_size ) , m_generations() , m_current( nullptr )
+    : m_population_size( population_size ) , m_populations() , m_evolutions() , m_current( nullptr )
     {
-        // next_generation();
     }
     
     template< typename Indices >
     void operator()( int choice , Indices const& in , Indices const& out )
     {
-        m_current->push_back( operator_result { choice , in , out } );
+        for( auto i : in )
+        {
+            for( auto o : out )
+            {
+                m_current->push_back( evolution_part { choice , i , o } );
+            }
+        }
     }
     
-    void next_generation( void )
+    template< typename Pop , typename Fitness >
+    void next_generation( Pop const& population , Fitness const& fitness )
     {
-        m_generations.push_back( generation_type {} );
-        m_current = & ( m_generations.back() );
+        assert( population.size() == fitness.size() );
+        m_populations.push_back( population_type {} );
+        for( size_t i=0 ; i<population.size() ; ++i )
+        {
+            m_populations.back().push_back( std::make_tuple( fitness[i] , gpcxx::simple_string( population[i] ) ) );
+        }
+        
+        m_evolutions.push_back( evolution_type {} );
+        m_current = & ( m_evolutions.back() );
     }
+    
+    void write_double( std::ostream& out , double x )
+    {
+        if( isnan( x ) ) out << "0.0";
+        else out << x;
+    }
+    
+    void write_nodes( std::ostream& out )
+    {
+        out << "[\n";
+        bool first = true;
+        for( size_t i=0 ; i<m_populations.size() ; ++i )
+        {
+            assert( m_populations[i].size() == m_population_size );
+            for( size_t j=0 ; j<m_populations[i].size() ; ++j )
+            {
+                if( first )
+                {
+                    first = false;
+                }
+                else
+                {
+                    out << " , \n";
+                }
+
+                auto const& p = m_populations[i][j];
+                out << "{ ";
+                out << "\"generation\" : " << i << " , ";
+                out << "\"name\" : \"" << std::to_string( j + 1 )<< "\" , ";
+                out << "\"formula\" : \"" << std::get< 1 >( p ) << "\" , ";
+                out << "\"value\" : "; write_double( out , std::get< 0 >( p ) ); out << " ";
+                out << "}";
+            }
+        }
+        out << "]\n";
+    }
+    
+    void write_links( std::ostream& out )
+    {
+        out << "[\n";
+        bool first = true;
+        for( size_t i=0 ; i<m_evolutions.size() ; ++i )
+        {
+            for( size_t j=0 ; j<m_evolutions[i].size() ; ++j )
+            {
+                if( first )
+                {
+                    first = false;
+                }
+                else
+                {
+                    out << " , \n";
+                }
+                auto const& e = m_evolutions[i][j];
+                out << "{";
+                out << "\"source\" : " << i * m_population_size + e.in << " , ";
+                out << "\"target\" : " << ( i + 1 ) * m_population_size + e.out << " , ";
+                out << "\"op\" : " << e.op << " ";
+                out << "}";
+            }
+        }
+        out << "]\n";
+    }
+
     
     void write( std::ostream& out )
     {
         out << "{\n";
         out << "  \"population_size\" : " << m_population_size << " , \n";
-        out << "  \"generations\" : "; detail::write( out , m_generations ); out << "\n";
+        out << "  \"nodes\" : "; write_nodes( out ); out << " , \n";
+        out << "  \"links\" : "; write_links( out ); out << "\n";
         out << "}\n";
     }
     
     size_t m_population_size;
-    generation_vector m_generations;
-    generation_type* m_current;
+    population_vector m_populations;
+    evolution_vector m_evolutions;
+    evolution_type* m_current;
 };
 
 
@@ -184,13 +250,13 @@ int main( int argc , char *argv[] )
 
     //[ define_gp_parameters
     size_t population_size = 64;
-    size_t generation_size = 5;
+    size_t generation_size = 15;
     size_t number_elite = 1;
     double mutation_rate = 0.1;
     double crossover_rate = 0.8;
     double reproduction_rate = 0.1;
     size_t min_tree_height = 2 , max_tree_height = 12;
-    size_t tournament_size = 15;
+    size_t tournament_size = 10;
     //]
 
         
@@ -247,15 +313,15 @@ int main( int argc , char *argv[] )
     
     operator_observer obs { population.size() };
     evolver.operator_observer() = std::ref( obs );
+    obs.next_generation( population , fitness );
     
     //[main_loop
     for( size_t i=0 ; i<generation_size ; ++i )
     {
-        obs.next_generation();
         evolver.next_generation( population , fitness );
         for( size_t i=0 ; i<population.size() ; ++i )
             fitness[i] = fitness_f( population[i] , c );
-        
+        obs.next_generation( population , fitness );   
         
         std::cout << "Iteration " << i << std::endl;
         std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
