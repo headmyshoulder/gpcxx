@@ -33,26 +33,19 @@ public:
         std::uniform_int_distribution< size_t > dist1( 0 , t1.size() - 1 );
         std::uniform_int_distribution< size_t > dist2( 0 , t2.size() - 1 );
 
-        bool good = true;
-        size_t iter = 0;
-        cursor n1  , n2 ;
-        do
+        for( size_t iter = 0 ; iter < m_max_iterations ; ++iter )
         {
-            size_t i1 = dist1( m_rng );
-            size_t i2 = dist2( m_rng );
-
-            n1 = t1.rank_is( i1 );
-            n2 = t2.rank_is( i2 );
+            cursor n1 = t1.rank_is( dist1( m_rng ) );
+            cursor n2 = t2.rank_is( dist2( m_rng ) );
 
             size_t nh1 = n1.level() + n2.height();
             size_t nh2 = n2.level() + n1.height();
-            good = ( ( nh1 <= m_max_height ) && ( nh2 <= m_max_height ) );
-            ++iter;
+            if( ( nh1 <= m_max_height ) && ( nh2 <= m_max_height ) )
+            {
+                swap_subtrees( t1 , n1 , t2 , n2 );
+                break;
+            }
         }
-        while( ( iter < m_max_iterations ) && ( good == false ) );
-
-        if( good )
-            swap_subtrees( t1 , n1 , t2 , n2 );
     }
     
 private:
