@@ -13,7 +13,7 @@
 #define GPCXX_EVAL_REGRESSION_FITNESS_HPP_DEFINED
 
 #include <vector>
-
+#include <cmath>
 
 namespace gpcxx {
 
@@ -76,7 +76,8 @@ struct regression_fitness
     template< typename Tree , typename TrainingData >
     value_type operator()( Tree const & t , TrainingData const& c ) const
     {
-        return 1.0 - 1.0 / ( 1.0 + get_chi2( t , c ) );
+        value_type chi2 = get_chi2( t , c );
+        return ( isnan( chi2 ) ? 1.0 : 1.0 - 1.0 / ( 1.0 + chi2 ) );
     }
 };
 
