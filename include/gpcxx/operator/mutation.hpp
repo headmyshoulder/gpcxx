@@ -5,8 +5,10 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#ifndef MUTATION_H_INCLUDED
-#define MUTATION_H_INCLUDED
+#ifndef GPCXX_OPERATOR_MUTATION_H_INCLUDED
+#define GPCXX_OPERATOR_MUTATION_H_INCLUDED
+
+#include <gpcxx/operator/detail/operator_base.hpp>
 
 #include <utility>
 #include <vector>
@@ -16,10 +18,10 @@
 namespace gpcxx {
 
 template< typename Strategy , typename Selector >
-class mutation
+class mutation : public detail::operator_base< Strategy::arity >
 {
 public:
-
+    
     mutation( Strategy strategy , Selector selector )
     : m_strategy( std::move( strategy ) ) , m_selector( std::move( selector ) ) { }
 
@@ -72,4 +74,4 @@ mutation< Strategy , Selector > make_mutation( Strategy strategy , Selector sele
 
 } // namespace gpcxx
 
-#endif // MUTATION_H_INCLUDED
+#endif // GPCXX_OPERATOR_MUTATION_H_INCLUDED

@@ -12,6 +12,7 @@
 #ifndef GPCXX_OPERATOR_SIMPLE_MUTATION_STRATEGY_HPP_DEFINED
 #define GPCXX_OPERATOR_SIMPLE_MUTATION_STRATEGY_HPP_DEFINED
 
+#include <gpcxx/operator/detail/operator_base.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 
 #include <random>
@@ -34,7 +35,7 @@ namespace detail {
 
 
 template< typename Rng , typename Generator >
-struct simple_mutation_strategy
+struct simple_mutation_strategy : public detail::operator_base< 1 >
 {
     Rng &m_rng;
     Generator &m_gen;

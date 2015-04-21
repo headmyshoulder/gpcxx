@@ -168,13 +168,13 @@ int main( int argc , char *argv[] )
     //]
 
     //[ define_gp_parameters
-    size_t population_size = 512;
+    size_t population_size = 512 * 4;
     size_t generation_size = 50;
-    size_t number_elite = 1;
-    double mutation_rate = 0.1;
-    double crossover_rate = 0.8;
-    double reproduction_rate = 0.1;
-    size_t min_tree_height = 2 , max_tree_height = 12;
+    size_t number_elite = 2;
+    double mutation_rate = 0.3;
+    double crossover_rate = 0.7;
+    double reproduction_rate = 0.0;
+    size_t min_tree_height = 2 , max_tree_height = 10;
     size_t tournament_size = 15;
     //]
 

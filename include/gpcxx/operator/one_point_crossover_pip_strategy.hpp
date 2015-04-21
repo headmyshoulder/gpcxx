@@ -9,7 +9,7 @@
 #define ONE_POINT_CROSSOVER_PIP_STRATEGY_H_INCLUDED
 
 
-#include <gpcxx/io.hpp>
+#include <gpcxx/operator/detail/operator_base.hpp>
 
 #include <random>
 #include <stdexcept>
@@ -22,10 +22,10 @@ namespace gpcxx {
 
 
     template< typename Rng >
-    class one_point_crossover_pip_strategy
+    class one_point_crossover_pip_strategy : public detail::operator_base< 2 >
     {
     public:
-
+        
         one_point_crossover_pip_strategy( Rng &rng , size_t max_height , size_t max_iterations, double internal_node_favor_rate = 0.9 )
                 : m_rng( rng ) , m_max_height( max_height ) , m_max_iterations( max_iterations ) , m_internal_node_favor_rate ( internal_node_favor_rate ) { }
 
@@ -46,7 +46,7 @@ namespace gpcxx {
         }
 
         template< class Tree >
-        void operator()( Tree & t1 , Tree & t2 )
+        bool operator()( Tree & t1 , Tree & t2 )
         {
             typedef typename Tree::cursor cursor;
 
@@ -89,7 +89,14 @@ namespace gpcxx {
             while( not good and ( iteration < m_max_iterations ) );
 
             if( good )
+            {
                 swap_subtrees( *( trees[ 0 ] ) , cur[ 0 ] , *( trees[ 1 ] ) , cur[ 1 ] );
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
 

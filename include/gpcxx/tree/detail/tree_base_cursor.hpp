@@ -282,13 +282,13 @@ private:
 };
 
 template< typename Node1 , typename Node2 >
-bool cursor_comp( tree_base_cursor< Node1 > const& c1 , tree_base_cursor< Node2 > const& c2 )
+bool cursor_equal( tree_base_cursor< Node1 > const& c1 , tree_base_cursor< Node2 > const& c2 )
 {
     if( c1.size() != c2.size() ) return false;
     if( *c1 != *c2 ) return false;
     for( size_t i=0 ; i<c1.size() ; ++i )
     {
-        if( !cursor_comp( c1.children(i) , c2.children(i) ) ) return false;
+        if( !cursor_equal( c1.children(i) , c2.children(i) ) ) return false;
     }
     return true;
 }

@@ -570,7 +570,7 @@ template< typename Node , typename Allocator >
 bool operator==( tree_base< Node , Allocator > const& x , tree_base< Node , Allocator > const& y )
 {
     if( x.size() != y.size() ) return false;
-    return detail::cursor_comp( x.root() , y.root() );
+    return detail::cursor_equal( x.root() , y.root() );
 }
 
 template< typename Node , typename Allocator >

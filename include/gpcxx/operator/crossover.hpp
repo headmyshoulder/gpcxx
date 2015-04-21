@@ -12,6 +12,8 @@
 #ifndef GPCXX_OPERATOR_CROSSOVER_HPP_DEFINED
 #define GPCXX_OPERATOR_CROSSOVER_HPP_DEFINED
 
+#include <gpcxx/operator/detail/operator_base.hpp>
+
 #include <utility>
 #include <vector>
 #include <cassert>
@@ -21,7 +23,7 @@ namespace gpcxx {
 
     
 template< typename Strategy , typename Selector >
-class crossover
+class crossover : public detail::operator_base< Strategy::arity >
 {
 public:
     

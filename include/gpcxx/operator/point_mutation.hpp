@@ -12,6 +12,8 @@
 #ifndef GPCXX_OPERATOR_POINT_MUTATION_HPP_INCLUDED
 #define GPCXX_OPERATOR_POINT_MUTATION_HPP_INCLUDED
 
+#include <gpcxx/operator/detail/operator_base.hpp>
+
 #include <random>
 
 namespace gpcxx {
@@ -20,7 +22,7 @@ namespace gpcxx {
 template< typename Rng             // models RandomNumberEngine
         , typename TreeGenerator   // models TreeGenerator
         >
-class point_mutation
+class point_mutation : public detail::operator_base< 1 >
 {
 public:
 

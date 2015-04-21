@@ -39,6 +39,8 @@ struct mocker
 
 struct mock_functor
 {
+    static const size_t arity = 1;
+    
     mocker &m_mocker;
     mock_functor( mocker &m ) : m_mocker( m ) { }
     mock_functor( mock_functor const& m ) : m_mocker( m.m_mocker ) { m_mocker.copy(); }
@@ -76,6 +78,7 @@ TEST( TESTNAME , construct_from_value_copy )
     mock_functor f( m );
     any_genetic_operator_type op( f );
     EXPECT_TRUE( op );
+    EXPECT_EQ( size_t( 1 ) , op.arity() );
 }
 
 TEST( TESTNAME , construct_from_value_move )

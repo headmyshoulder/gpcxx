@@ -12,13 +12,15 @@
 #ifndef GPCXX_OPERATOR_REPRODUCE_HPP_DEFINED
 #define GPCXX_OPERATOR_REPRODUCE_HPP_DEFINED
 
+#include <gpcxx/operator/detail/operator_base.hpp>
+
 #include <vector>
 #include <cassert>
 
 namespace gpcxx {
 
 template< typename Selector>
-class reproduce
+class reproduce : public detail::operator_base< 1 >
 {
 public:
     

@@ -7,6 +7,7 @@
 #ifndef ONE_POINT_CROSSOVER_STRATEGY_H_INCLUDED
 #define ONE_POINT_CROSSOVER_STRATEGY_H_INCLUDED
 
+#include <gpcxx/operator/detail/operator_base.hpp>
 
 #include <random>
 #include <stdexcept>
@@ -17,7 +18,7 @@
 namespace gpcxx {
 
 template< typename Rng >
-class one_point_crossover_strategy
+class one_point_crossover_strategy : public detail::operator_base< 2 >
 {
 public:
     
@@ -26,7 +27,7 @@ public:
     
 
     template< class Tree >
-    void operator()( Tree &t1 , Tree &t2 )
+    bool operator()( Tree &t1 , Tree &t2 )
     {
         typedef typename Tree::cursor cursor;
 
@@ -37,15 +38,20 @@ public:
         {
             cursor n1 = t1.rank_is( dist1( m_rng ) );
             cursor n2 = t2.rank_is( dist2( m_rng ) );
+            if( cursor_equal( n1 , n2 ) )
+            {
+                continue;
+            }
 
             size_t nh1 = n1.level() + n2.height();
             size_t nh2 = n2.level() + n1.height();
             if( ( nh1 <= m_max_height ) && ( nh2 <= m_max_height ) )
             {
                 swap_subtrees( t1 , n1 , t2 , n2 );
-                break;
+                return true;
             }
         }
+        return false;
     }
     
 private:

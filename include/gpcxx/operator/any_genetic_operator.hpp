@@ -127,6 +127,13 @@ public:
         return m_data->op( selection );
     }
     
+    // find better name
+    size_t arity( void ) const
+    {
+        assert( m_data );
+        return m_data->arity();
+    }
+    
     operator bool( void ) const
     {
         return static_cast< bool >( m_data );
@@ -141,6 +148,7 @@ private:
         virtual value_vector_type op( population_type const& , fitness_type const& ) = 0;
         virtual selection_type selection( population_type const& , fitness_type const& ) = 0;
         virtual value_vector_type op( selection_type const& ) = 0;
+        virtual size_t arity( void ) const = 0;
         virtual concept* clone( void ) const = 0;
     };
     
@@ -161,6 +169,10 @@ private:
         value_vector_type op( selection_type const& selection ) override
         {
             return m_data.operation( selection );
+        }
+        size_t arity( void ) const override
+        {
+            return T::arity;
         }
         concept* clone( void ) const override
         {

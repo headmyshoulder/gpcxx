@@ -36,7 +36,7 @@ TYPED_TEST( one_point_crossover_strategy_tests , instanciation )
         size_t l1 = this->m_test_trees.data.size() + this->m_test_trees.data2.size();
 //         cerr << this->m_test_trees.data.size() << " " << simple( this->m_test_trees.data ) << "\n";
 //         cerr << this->m_test_trees.data2.size() << " " << simple( this->m_test_trees.data2 ) << "\n\n";
-        c( this->m_test_trees.data , this->m_test_trees.data2 );
+        EXPECT_TRUE( c( this->m_test_trees.data , this->m_test_trees.data2 ) );
 //         cerr << this->m_test_trees.data.size() << " " << simple( this->m_test_trees.data ) << "\n";
 //         cerr << this->m_test_trees.data2.size() << " " << simple( this->m_test_trees.data2 ) << "\n";
 //         cerr << endl;
@@ -54,7 +54,7 @@ TYPED_TEST( one_point_crossover_strategy_tests , heights )
         auto c = gpcxx::make_one_point_crossover_strategy( this->m_gen.rng , size_t( 5 ) );
 //         cerr << this->m_test_trees.data.size() << " " << simple( this->m_test_trees.data ) << "\n";
 //         cerr << this->m_test_trees.data2.size() << " " << simple( this->m_test_trees.data2 ) << "\n\n";
-        c( this->m_test_trees.data , this->m_test_trees.data2 );
+        EXPECT_TRUE( c( this->m_test_trees.data , this->m_test_trees.data2 ) );
 //         cerr << this->m_test_trees.data.size() << " " << simple( this->m_test_trees.data ) << "\n";
 //         cerr << this->m_test_trees.data2.size() << " " << simple( this->m_test_trees.data2 ) << "\n";
 //         cerr << endl;
