@@ -14,6 +14,8 @@
 
 #include <vector>
 #include <cmath>
+#include <cstddef>
+#include <array>
 
 namespace gpcxx {
 

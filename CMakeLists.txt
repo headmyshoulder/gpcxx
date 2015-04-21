@@ -2,7 +2,9 @@
 # Author: Karsten Ahnert (karsten.ahnert@gmx.de)
 
 project ( gpcxx )
+
 cmake_minimum_required ( VERSION 2.8 )
+
 
 set ( THIRDPARTY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party" )
 
@@ -12,6 +14,7 @@ option ( GPCXX_BUILD_EXAMPLES "Enable to build the examples" ON )
 option ( GPCXX_BUILD_TESTS "Enable to build the tests" ON )
 option ( GPCXX_TEST_COVERAGE "Analyze test coverage with gcov/lcov" OFF )
 option ( GPCXX_DOC_GITHUB_LINKS "Use links to github" ON )
+option ( GPCXX_CHECK_HEADER_COMPILE "Check if headers compile standalone" OFF )
 
 # Add path for custom modules
 set ( CMAKE_MODULE_PATH
@@ -35,6 +38,15 @@ endif ()
 
 include ( CreateVersionFile )
 include ( ForwardingHeader )
+include ( CheckHeaders )
+
+message ( STATUS "Building project ${CMAKE_PROJECT_NAME}" )
+message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
+
+find_package ( Boost REQUIRED COMPONENTS thread system )
+
+include_directories ( SYSTEM ${Boost_INCLUDE_DIRS} )
+include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 create_forwarding_header ( include/gpcxx/app.hpp include/gpcxx/app )
 create_forwarding_header ( include/gpcxx/eval.hpp include/gpcxx/eval )
@@ -46,15 +58,17 @@ create_forwarding_header ( include/gpcxx/stat.hpp include/gpcxx/stat )
 create_forwarding_header ( include/gpcxx/tree.hpp include/gpcxx/tree include/gpcxx/tree/iterator )
 create_forwarding_header ( include/gpcxx/util.hpp include/gpcxx/util )
 
-
-message ( STATUS "Building project ${CMAKE_PROJECT_NAME}" )
-message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
-
-
-find_package ( Boost REQUIRED COMPONENTS thread system )
-
-include_directories ( SYSTEM ${Boost_INCLUDE_DIRS} )
-include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )
+if ( ${GPCXX_CHECK_HEADER_COMPILE} )
+  check_if_headers_compile ( include/gpcxx/app )
+  check_if_headers_compile ( include/gpcxx/eval )
+  check_if_headers_compile ( include/gpcxx/evolve )
+  check_if_headers_compile ( include/gpcxx/generate )
+  check_if_headers_compile ( include/gpcxx/io )
+  check_if_headers_compile ( include/gpcxx/operator )
+  check_if_headers_compile ( include/gpcxx/stat )
+  check_if_headers_compile ( include/gpcxx/tree )
+  check_if_headers_compile ( include/gpcxx/util )
+endif ()
 
 
 if ( ${GPCXX_BUILD_EXAMPLES} )

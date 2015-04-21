@@ -290,7 +290,7 @@ int main( int argc , char *argv[] )
             gpcxx::make_tournament_selector( rng , tournament_size ) )
         , mutation_rate );
     evolver.add_operator( gpcxx::make_crossover( 
-            gpcxx::make_one_point_crossover_pip_strategy( rng , 10 , 0.01 ) ,
+            gpcxx::make_one_point_crossover_pip_strategy( rng , 10 , 100 , 0.01 ) ,
             gpcxx::make_tournament_selector( rng , tournament_size ) )
         , crossover_rate );
     evolver.add_operator( gpcxx::make_reproduce(
