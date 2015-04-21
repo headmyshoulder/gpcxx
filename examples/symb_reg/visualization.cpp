@@ -113,7 +113,7 @@ struct operator_observer
     
     void write_double( std::ostream& out , double x )
     {
-        if( isnan( x ) ) out << "0.0";
+        if( isnan( x ) ) out << "1.0";
         else out << x;
     }
     
@@ -249,11 +249,11 @@ int main( int argc , char *argv[] )
     //]
 
     //[ define_gp_parameters
-    size_t population_size = 64;
-    size_t generation_size = 15;
+    size_t population_size = 256;
+    size_t generation_size = 8;
     size_t number_elite = 1;
-    double mutation_rate = 0.1;
-    double crossover_rate = 0.8;
+    double mutation_rate = 0.3;
+    double crossover_rate = 0.6;
     double reproduction_rate = 0.1;
     size_t min_tree_height = 2 , max_tree_height = 12;
     size_t tournament_size = 10;
@@ -290,7 +290,7 @@ int main( int argc , char *argv[] )
             gpcxx::make_tournament_selector( rng , tournament_size ) )
         , mutation_rate );
     evolver.add_operator( gpcxx::make_crossover( 
-            gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
+            gpcxx::make_one_point_crossover_pip_strategy( rng , 10 , 0.01 ) ,
             gpcxx::make_tournament_selector( rng , tournament_size ) )
         , crossover_rate );
     evolver.add_operator( gpcxx::make_reproduce(
@@ -321,7 +321,7 @@ int main( int argc , char *argv[] )
         evolver.next_generation( population , fitness );
         for( size_t i=0 ; i<population.size() ; ++i )
             fitness[i] = fitness_f( population[i] , c );
-        obs.next_generation( population , fitness );   
+        obs.next_generation( population , fitness );
         
         std::cout << "Iteration " << i << std::endl;
         std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
