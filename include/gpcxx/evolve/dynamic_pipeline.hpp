@@ -47,8 +47,9 @@ public:
     
     void add_operator( genetic_operator_type const& op , double rate )
     {
+        assert( op.arity() > 0 );
         m_operators.push_back( op );
-        m_rates.push_back( rate );
+        m_rates.push_back( rate / double( op.arity() ) );
     }
     
     operator_observer_type& operator_observer( void )
