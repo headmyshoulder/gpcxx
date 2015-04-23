@@ -39,6 +39,7 @@
 [template super[x]'''<superscript>'''[x]'''</superscript>''']
 [template sub[x]'''<subscript>'''[x]'''</subscript>''']
 [template subl[x]'''<subscript>'''__space[x]'''</subscript>''']
+[def __sum __Sigma]
 
 [def __koza1_ref [link koza1 \[1\] ]]
 [def __wiki_santa_fe_trail_problem [@http://en.wikipedia.org/wiki/Santa_Fe_Trail_problem Wikipedia: Santa Fe Trail problem]]

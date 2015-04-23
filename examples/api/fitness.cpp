@@ -54,6 +54,15 @@ int main( int argc , char** argv )
         for( auto h : hits ) std::cout << h << std::endl;
         std::cout << std::endl;
     }
+    
+    {
+        //[ adjusted_fitness_example
+//         auto a = gpcxx::adjusted_fitness_copy( fitness );
+//         auto av = gpcxx::adjusted_fitness_view( fitness );
+//         vector< double > af;
+//         gpcxx::adjusted_fitness_inplace( fitness , af );
+        //]
+    }
 
     
     return 0;

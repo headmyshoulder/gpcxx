@@ -2,22 +2,55 @@
 
 [import ../examples/api/fitness.cpp]
 
-To measure the fitness of an individuum several measures have been developed.
+To measure the fitness of an individuum several measures have been developed. 
 
-[*Raw fitness] - The raw fitness is the fitness measured in terms of the problem.
+[*Raw fitness] - The most important fitness type is the raw fitness ['r] and it 
+is measured in terms of the problem. It should be a real number with the 
+property that an optimal solution should result in a minimum of the raw 
+fitness. The raw fitness is usually used as fitness in genetic programming. How 
+it is computed and passed to the evolution algorithm is explained in the 
+tutorials.
 
-[*Standarized fitness] - ...
+[*Standarized fitness] - The standarized fitness ['s] is the shifted raw 
+fitness, such that the minimal value is at zero. It also needs to be provided by 
+the user.
 
-[*Adjusted fitness] - ...
+[*Adjusted fitness] - The adjusted fitness ['a] is defined in terms of the 
+standardized fitness ['s]
 
-[*Normalized fitness] - ...
+['a = 1 / ( 1 + s )]
 
-[*Hits] - ...
+Several methods to compute the adjusted fitness from the standarized 
+fitness exist. For an overview see the table below.
 
+[*Normalized fitness] - The normalized fitness normalizes the adjusted fitness 
+over the whole population. It is defined as
 
-[fitness_simple_example]
+['n[sub i] = a[sub i] / __sum [sub j] a[sub j]]
 
-[fitness_simple_views_2]
+[*Hits] - Sometimes one measures the result of the evolution by a number called 
+hits. This is the number of individuals which perfectly or near perfectly match 
+the problem and hence their fitness is optimal.
+
+[table:id Fitness Overview
+  [[Fitness] [Example]]
+
+  [
+    [Adjusted fitness]
+    [[fitness_simple_example]]
+  ]
+  
+  [
+    [Normalized fitness]
+    [[fitness_simple_example]]
+  ]
+
+  [
+    [Hits]
+    [[fitness_simple_example]]
+  ]
+]
+
 
 
 [endsect]
