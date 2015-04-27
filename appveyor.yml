@@ -9,3 +9,4 @@ build_script:
 - cmake ..
 - cmake --build .
 - ctest
+
