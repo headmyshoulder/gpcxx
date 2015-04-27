@@ -37,17 +37,17 @@ the problem and hence their fitness is optimal.
 
   [
     [Adjusted fitness]
-    [[fitness_simple_example]]
+    [[adjusted_fitness_example]]
   ]
   
   [
     [Normalized fitness]
-    [[fitness_simple_example]]
+    [[normalized_fitness_example]]
   ]
 
   [
     [Hits]
-    [[fitness_simple_example]]
+    [[hits_example]]
   ]
 ]
 
