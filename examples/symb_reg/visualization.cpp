@@ -192,6 +192,26 @@ struct operator_observer
 };
 
 
+template< typename Data , typename F >
+void generate_test_data( Data& data, double rmin , double rmax , double stepsize , F f )
+{
+    data.x[0].clear(); data.x[1].clear(); data.x[2].clear(); data.y.clear();
+    
+    for( double xx = rmin ; xx <= rmax ; xx += stepsize )
+    {
+        for( double yy = rmin ; yy <= rmax ; yy += stepsize )
+        {
+            for( double zz = rmin ; zz <= rmax ; zz += stepsize )
+            {
+                data.x[0].push_back( xx );
+                data.x[1].push_back( yy );
+                data.x[2].push_back( zz );
+                data.y.push_back( f( xx , yy , zz ) );
+            }
+        }
+    }
+}
+
 
 int main( int argc , char *argv[] )
 {
@@ -199,13 +219,15 @@ int main( int argc , char *argv[] )
     using rng_type = std::mt19937;
     rng_type rng;
     
-    gpcxx::regression_training_data< double , 1 > c;
-    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x )
-            { return  x * x * x + 1.0 / 10.0 * x * x - 3.0 / 4.0 * x + 1.0 ; } );
+    auto f = []( double x , double y , double z )
+            { return  1.0 / ( 1.0 + 1.0 / ( x * x * x * x ) ) + 1.0 / ( 1.0 + 1.0 / ( y * y * y * y ) ) + 1.0 / ( 1.0 + 1.0 / ( z * z * z * z ) ); };
+    gpcxx::regression_training_data< double , 3 > c;
+    generate_test_data( c , -5.0 , 5.0 , 0.4 , f );
+    // gpcxx::generate_regression_test_data( c , 1024 , rng , f );
     //]
     
     //[ define_tree_types
-    using context_type = gpcxx::regression_context< double , 1 >;
+    using context_type = gpcxx::regression_context< double , 3 >;
     using node_type = gpcxx::intrusive_named_func_node< double , const context_type > ;
     using tree_type = gpcxx::intrusive_tree< node_type >;
     //]
@@ -213,23 +235,18 @@ int main( int argc , char *argv[] )
     
     //[ define_terminal_set
     auto terminal_gen = gpcxx::make_uniform_symbol( std::vector< node_type >{
-        node_type { []( context_type const& c , node_type const& n ) { return 1.0; } ,      "1" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 2.0; } ,      "2" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 3.0; } ,      "3" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 4.0; } ,      "4" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 5.0; } ,      "5" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 6.0; } ,      "6" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 7.0; } ,      "7" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 8.0; } ,      "8" } ,
-        node_type { []( context_type const& c , node_type const& n ) { return 9.0; } ,      "9" } ,
-        node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" }
+        node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" } ,
+        node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,
+        node_type { gpcxx::array_terminal< 2 >{}                                     ,      "z" }        
     } );
     //]
 
     //[ define_function_set
     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::sin_func {}                                               ,      "s" } ,
-        node_type { gpcxx::cos_func {}                                               ,      "c" }
+        node_type { gpcxx::cos_func {}                                               ,      "c" } ,
+        node_type { gpcxx::exp_func {}                                               ,      "e" } ,
+        node_type { gpcxx::log_func {}                                               ,      "l" }
     } );
 
     auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
@@ -243,19 +260,19 @@ int main( int argc , char *argv[] )
     //[ define_node_generator
     auto node_generator = gpcxx::node_generator< node_type , rng_type , 3 > {
         { 1.0 , 0 , terminal_gen } ,
-        { 1.0 , 1 , unary_gen } ,
+        { 0.5 , 1 , unary_gen } ,
         { 1.0 , 2 , binary_gen } };
     //]
 
     //[ define_gp_parameters
     size_t population_size = 256;
     size_t generation_size = 15;
-    size_t number_elite = 1;
-    double mutation_rate = 0.3;
-    double crossover_rate = 0.6;
+    size_t number_elite = 2;
+    double mutation_rate = 0.0;
+    double crossover_rate = 0.9;
     double reproduction_rate = 0.1;
-    size_t min_tree_height = 2 , max_tree_height = 12;
-    size_t tournament_size = 10;
+    size_t min_tree_height = 2 , max_tree_height = 15;
+    size_t tournament_size = 7;
     //]
 
         
@@ -274,7 +291,7 @@ int main( int argc , char *argv[] )
 
     //[define_evaluator
     using evaluator = struct {
-        using context_type = gpcxx::regression_context< double , 1 >;
+        using context_type = gpcxx::regression_context< double , 3 >;
         using value_type = double;
         value_type operator()( tree_type const& t , context_type const& c ) const {
             return t.root()->eval( c );
