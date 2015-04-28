@@ -27,6 +27,92 @@
 #include <fstream>
 #include <tuple>
 
+
+template< typename Value , typename ErcDist >
+struct uniform_symbol_erc_generator
+{
+    using value_type = Value;
+    using erc_dist_type = ErcDist;
+
+
+    uniform_symbol_erc_generator( std::vector< value_type > symbols , double prob_fraction_erc , erc_dist_type erc_dist )
+    : m_symbols( std::move( symbols ) ) , m_prob_fraction_erc( prob_fraction_erc ) , m_erc_dist( std::move( erc_dist ) )
+    {
+        assert( !m_symbols.empty() );
+        assert( m_prob_fraction_erc > 0.0 );
+    }
+
+    template< typename Rng >
+    value_type operator()( Rng &rng )
+    {
+        std::discrete_distribution< size_t > dist( { 1.0 , m_prob_fraction_erc } );
+        if( dist( rng ) == 0 )
+        {
+            return random_symbol( rng );
+        }
+        else
+        {
+            return erc( rng );
+        }
+    }
+
+    template< typename Rng >
+    value_type random_symbol( Rng &rng ) const
+    {
+        assert( !m_symbols.empty() );
+        std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
+        return m_symbols[ dist( rng ) ];
+    }
+    
+    template< typename Rng >
+    value_type erc( Rng &rng ) 
+    {
+        return m_erc_dist( rng );
+    }
+
+    size_t num_symbols( void ) const { return m_symbols.size(); }
+
+private:
+
+    std::vector< value_type > m_symbols;
+    double m_prob_fraction_erc;
+    erc_dist_type m_erc_dist;
+};
+
+template< typename Value , typename ErcGen >
+auto make_uniform_symbol_erc_generator( std::vector< Value > symbols , double prob_fraction_erc , ErcGen erc_gen )
+{
+    return uniform_symbol_erc_generator< Value , ErcGen >( std::move( symbols ) , prob_fraction_erc , std::move( erc_gen ) );
+}
+
+template< typename Value , typename Dist >
+struct erc_generator
+{
+    using value_type = Value;
+    
+    erc_generator( Dist const& dist )
+    : m_dist( dist ) {}
+    
+    template< typename Rng >
+    value_type operator()( Rng& rng ) const
+    {
+        auto x = m_dist( rng );
+        return value_type { [x]( auto const& c , auto const& n ) { return x; } , std::to_string( x ) };
+    }
+    
+private:
+    
+    Dist m_dist;
+};
+
+template< typename Value , typename Dist >
+auto make_erc_generator( Dist const& dist )
+{
+    return erc_generator< Value , Dist >( dist );
+}
+
+
+
 namespace detail {
     
     template< typename T >
@@ -113,7 +199,7 @@ struct operator_observer
     
     void write_double( std::ostream& out , double x )
     {
-        if( isnan( x ) ) out << "1.0";
+        if( std::isnan( x ) ) out << "1.0";
         else out << x;
     }
     
@@ -198,13 +284,13 @@ int main( int argc , char *argv[] )
     using rng_type = std::mt19937;
     rng_type rng;
     
-    gpcxx::regression_training_data< double , 3 > c;
-    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
-            { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * x3 + 1.0 ; } );
+    gpcxx::regression_training_data< double , 1 > c;
+    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x )
+            { return  x * x * x + 1.0 / 10.0 * x * x - 3.0 / 4.0 * x + 1.0 ; } );
     //]
     
     //[ define_tree_types
-    using context_type = gpcxx::regression_context< double , 3 >;
+    using context_type = gpcxx::regression_context< double , 1 >;
     using node_type = gpcxx::intrusive_named_func_node< double , const context_type > ;
     using tree_type = gpcxx::intrusive_tree< node_type >;
     //]
@@ -221,9 +307,7 @@ int main( int argc , char *argv[] )
         node_type { []( context_type const& c , node_type const& n ) { return 7.0; } ,      "7" } ,
         node_type { []( context_type const& c , node_type const& n ) { return 8.0; } ,      "8" } ,
         node_type { []( context_type const& c , node_type const& n ) { return 9.0; } ,      "9" } ,
-        node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" } ,
-        node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,
-        node_type { gpcxx::array_terminal< 2 >{}                                     ,      "z" }
+        node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" }
     } );
     //]
 
@@ -250,7 +334,7 @@ int main( int argc , char *argv[] )
 
     //[ define_gp_parameters
     size_t population_size = 256;
-    size_t generation_size = 8;
+    size_t generation_size = 15;
     size_t number_elite = 1;
     double mutation_rate = 0.3;
     double crossover_rate = 0.6;
@@ -275,7 +359,7 @@ int main( int argc , char *argv[] )
 
     //[define_evaluator
     using evaluator = struct {
-        using context_type = gpcxx::regression_context< double , 3 >;
+        using context_type = gpcxx::regression_context< double , 1 >;
         using value_type = double;
         value_type operator()( tree_type const& t , context_type const& c ) const {
             return t.root()->eval( c );
@@ -290,7 +374,8 @@ int main( int argc , char *argv[] )
             gpcxx::make_tournament_selector( rng , tournament_size ) )
         , mutation_rate );
     evolver.add_operator( gpcxx::make_crossover( 
-            gpcxx::make_one_point_crossover_pip_strategy( rng , 10 , 100 , 0.01 ) ,
+            // gpcxx::make_one_point_crossover_strategy( rng , 10 , 100 , 0.01 ) ,
+            gpcxx::make_one_point_crossover_strategy( rng , max_tree_height ) ,
             gpcxx::make_tournament_selector( rng , tournament_size ) )
         , crossover_rate );
     evolver.add_operator( gpcxx::make_reproduce(
