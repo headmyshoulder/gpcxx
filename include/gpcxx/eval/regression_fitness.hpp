@@ -25,7 +25,7 @@ struct regression_training_data
 {
     static const size_t dim = Dim;
     SequenceType y;
-    SequenceType x[dim];
+    std::array< SequenceType , dim > x;
 };
 
 template< typename Value , size_t Dim >
