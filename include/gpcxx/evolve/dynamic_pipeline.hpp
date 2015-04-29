@@ -83,16 +83,17 @@ private:
         new_pop.reserve( pop.size() );
  
         // elite
-        index_vector elite_in_indices;
-        index_vector elite_out_indices;
         for( size_t i=0 ; i<m_number_elite ; ++i )
         {
+            index_vector elite_in_indices;
+            index_vector elite_out_indices;
             size_t index = indices[i] ;
             elite_in_indices.push_back( index );
             elite_out_indices.push_back( new_pop.size() );
             new_pop.push_back( pop[ index ] );
+            m_observer( -1 , elite_in_indices , elite_out_indices );
         }
-        m_observer( -1 , elite_in_indices , elite_out_indices );
+
 
         size_t n = pop.size();
         std::discrete_distribution< int > dist( m_rates.begin() , m_rates.end() );

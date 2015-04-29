@@ -75,7 +75,7 @@ struct evolution_part
 
 struct operator_observer
 {
-    using population_type = std::vector< std::tuple< double , std::string > >;
+    using population_type = std::vector< std::tuple< double , std::string , size_t > >;
     using population_vector = std::vector< population_type >;
     
     using evolution_type = std::vector< evolution_part >;
@@ -105,7 +105,7 @@ struct operator_observer
         m_populations.push_back( population_type {} );
         for( size_t i=0 ; i<population.size() ; ++i )
         {
-            m_populations.back().push_back( std::make_tuple( fitness[i] , gpcxx::simple_string( population[i] ) ) );
+            m_populations.back().push_back( std::make_tuple( fitness[i] , gpcxx::simple_string( population[i] ) , population[i].size() ) );
         }
         
         m_evolutions.push_back( evolution_type {} );
@@ -116,6 +116,11 @@ struct operator_observer
     {
         if( std::isnan( x ) ) out << "1.0";
         else out << x;
+    }
+    
+    void write_int( std::ostream& out , int x )
+    {
+        out << x;
     }
     
     void write_nodes( std::ostream& out )
@@ -141,7 +146,8 @@ struct operator_observer
                 out << "\"generation\" : " << i << " , ";
                 out << "\"name\" : \"" << std::to_string( j + 1 )<< "\" , ";
                 out << "\"formula\" : \"" << std::get< 1 >( p ) << "\" , ";
-                out << "\"value\" : "; write_double( out , std::get< 0 >( p ) ); out << " ";
+                out << "\"value\" : "; write_double( out , std::get< 0 >( p ) ); out << " , ";
+                out << "\"size\" : "; write_int( out , std::get< 2 >( p ) ); out << " ";
                 out << "}";
             }
         }
@@ -266,12 +272,12 @@ int main( int argc , char *argv[] )
 
     //[ define_gp_parameters
     size_t population_size = 256;
-    size_t generation_size = 15;
+    size_t generation_size = 12;
     size_t number_elite = 2;
-    double mutation_rate = 0.0;
-    double crossover_rate = 0.9;
+    double mutation_rate = 0.3;
+    double crossover_rate = 0.6;
     double reproduction_rate = 0.1;
-    size_t min_tree_height = 2 , max_tree_height = 15;
+    size_t min_tree_height = 2 , max_tree_height = 12;
     size_t tournament_size = 7;
     //]
 
