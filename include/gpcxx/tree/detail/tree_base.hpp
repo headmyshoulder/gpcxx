@@ -253,6 +253,11 @@ public:
         return allocator_type( m_node_allocator );
     }
     
+    size_type height( void ) const
+    {
+        return croot().height();
+    }
+    
     
     
     
