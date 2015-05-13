@@ -22,7 +22,7 @@ namespace detail {
 
 
 template< size_t MaxArity >
-void inspect_node_base( std::ostream &out , node_base< MaxArity > *ptr , size_t ind )
+void inspect_node_base( std::ostream &out , node_base< descending_array_node< MaxArity > > *ptr , size_t ind )
 {
     out << indent( ind , "  " ) << std::string( "+-" ) << ptr << "\n";
     if( ptr != nullptr )

@@ -23,7 +23,7 @@ template< typename Node > class tree_base_cursor;
 
 
 template< typename T , size_t MaxArity >
-class basic_node : public node_base< MaxArity >
+class basic_node : public node_base< descending_array_node< MaxArity > >
 {
     template< typename N > friend class tree_base_cursor;
     
@@ -34,7 +34,7 @@ public:
     using const_reference = value_type const&;
     
     using node_type = basic_node< value_type , MaxArity >;
-    using node_base_type = node_base< MaxArity >;
+    using node_base_type = node_base< descending_array_node< MaxArity > >;
     using node_pointer = node_type*;
     using node_reference = node_type&;
     

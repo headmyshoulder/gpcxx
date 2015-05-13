@@ -1,5 +1,5 @@
 /*
- * gpcxx/tree/detail/node_base.hpp
+ * node_base.hpp
  * Date: 2015-01-31
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -12,71 +12,111 @@
 #ifndef GPCXX_TREE_DETAIL_NODE_BASE_HPP_INCLUDED
 #define GPCXX_TREE_DETAIL_NODE_BASE_HPP_INCLUDED
 
+#include <memory>
+#include <vector>
 #include <array>
 #include <algorithm>
 #include <cassert>
 
+struct D;
 
 namespace gpcxx {
 namespace detail {
-    
-template< size_t MaxArity >
-class node_base
+
+class ascending_node_base
 {
-
 public:
-
-    static const size_t max_arity = MaxArity;
-    typedef node_base< max_arity > node_base_type;
-    typedef std::array< node_base_type* , max_arity > children_type;
     
+    ascending_node_base( ascending_node_base* p = nullptr ) noexcept
+    : m_parent( p ) {}
     
-    node_base( node_base_type *parent = nullptr ) noexcept
-    : m_parent( parent ) , m_children()
-    {
-        std::fill( m_children.begin() , m_children.end() , nullptr );
-    }
-    
-    
-    node_base_type* child_node( size_t i ) noexcept
-    {
-        return m_children[i];
-    }
-    
-    
-    node_base_type const* child_node( size_t i ) const noexcept
-    {
-        return m_children[i];
-    }
-    
-    void set_child_node( size_t i , node_base_type* n ) noexcept
-    {
-        m_children[i] = n;
-    }
-    
-    
-    node_base_type* parent_node( void ) noexcept
+    ascending_node_base* parent_node( void ) noexcept
     {
         return m_parent;
     }
     
-    
-    node_base_type const* parent_node( void ) const noexcept
+    ascending_node_base const* parent_node( void ) const  noexcept
     {
         return m_parent;
     }
     
-    void set_parent_node( node_base_type *parent ) noexcept
+    void set_parent_node( ascending_node_base* parent ) noexcept
     {
         m_parent = parent;
     }
 
 
-    size_t child_index( node_base_type const* child ) const
+    
+protected:
+    
+    ascending_node_base* m_parent;
+};
+
+
+
+template< typename Allocator = std::allocator< void* > >
+class descending_vector_node
+{
+    using allocator_type = Allocator;
+    using node_pointer = descending_vector_node< allocator_type >*;
+    using const_node_pointer = descending_vector_node< allocator_type> const*;
+    using container_type = std::vector< node_pointer , allocator_type >;
+    
+public:
+    
+    size_t max_size( void ) const noexcept
     {
-        return std::distance( m_children.begin() , find_child( child ) );
+        return m_children.size();
     }
     
+    
+    size_t size( void ) const noexcept
+    {
+        return m_children.size();
+    }
+    
+    
+    size_t attach_child( node_pointer child )
+    {
+        m_children.push_back( child );
+        return m_children.size();
+    }
+    
+    void insert_child( size_t i , node_pointer child )
+    {
+        m_children.insert( m_children.begin() + i , child );
+    }
+    
+    
+    void remove_child( const_node_pointer child )
+    {
+        auto iter = std::find( m_children.begin() , m_children.end() , child );
+        assert( iter != m_children.end() );
+        m_children.erase( iter );
+    }
+
+    
+protected:
+    
+    container_type m_children;
+};
+
+template< size_t MaxArity >
+class descending_array_node
+{
+    static const size_t max_arity = MaxArity;
+    using node_pointer = descending_array_node< max_arity >*;
+    using const_node_pointer = descending_array_node< max_arity > const*;
+    using container_type = std::array< node_pointer , max_arity >;
+    
+public:
+    
+    descending_array_node( void )
+    : m_children()
+    {
+        std::fill( m_children.begin() , m_children.end() , nullptr );
+    }
+
     
     size_t max_size( void ) const noexcept
     {
@@ -84,22 +124,22 @@ public:
     }
     
     
-    size_t size( void ) const
+    size_t size( void ) const noexcept
     {
-        typename children_type::const_iterator end = std::find( m_children.begin() , m_children.end() , nullptr );
+        auto end = std::find( m_children.begin() , m_children.end() , nullptr );
         return std::distance( m_children.begin() , end );
     }
     
     
-    size_t attach_child( node_base_type *child )
+    size_t attach_child( node_pointer child )
     {
-        typename children_type::iterator iter = find_free_child_entry();
+        auto iter = find_free_child_entry();
         assert( iter != m_children.end() );
         *iter = child;
         return std::distance( m_children.begin() , iter );
     }
     
-    void insert_child( size_t i , node_base_type *child )
+    void insert_child( size_t i , node_pointer child )
     {
         assert( size() < max_size() );
         auto end = m_children.begin() + size() + 1;
@@ -108,10 +148,11 @@ public:
     }
     
     
-    void remove_child( node_base_type *child )
+    void remove_child( const_node_pointer child )
     {
-        typename children_type::iterator iter = find_child( child );
-        typename children_type::iterator end = m_children.begin() + size();
+        auto iter = std::find( m_children.begin() , m_children.end() ,  child );
+        assert( iter != m_children.end() );
+        auto end = m_children.begin() + size();
         
         assert( iter != m_children.end() );
         
@@ -119,14 +160,90 @@ public:
         *end = nullptr;
     }
     
+private:
+    
+    typename container_type::iterator find_free_child_entry( void )
+    {
+        return std::find_if( m_children.begin() , m_children.end() , []( auto* ptr ) { return ptr == nullptr; } );
+    }
+    
+    typename container_type::const_iterator find_free_child_entry( void ) const
+    {
+        return std::find_if( m_children.begin() , m_children.end() , []( auto* ptr ) { return ptr == nullptr; } );
+    }
+
+
+    
+protected:
+    
+    container_type m_children;
+};
+
+template< typename DescendingNode >
+struct node_base : public DescendingNode , ascending_node_base
+{
+    // types
+    
+    using self_type = node_base< DescendingNode >;
+    using node_base_pointer = self_type*;
+    using const_node_base_pointer = self_type const*;
+    
+    
+    // construct
+    node_base( node_base* parent = nullptr )
+    : DescendingNode() , ascending_node_base( parent )
+    { }
+    
+    // HIER GEHTS WEITER
+    node_base_pointer child_node( size_t i ) noexcept
+    {
+        return static_cast< node_base_pointer >( this->m_children[i] );
+    }
+    
+    
+    const_node_base_pointer child_node( size_t i ) const noexcept
+    {
+        return static_cast< const_node_base_pointer >( this->m_children[i] );
+    }
+    
+    void set_child_node( size_t i , node_base_pointer n ) noexcept
+    {
+        this->m_children[i] = n;
+    }
+    
+    
+    node_base_pointer parent_node( void ) noexcept
+    {
+        return static_cast< node_base_pointer >( m_parent );
+    }
+    
+    
+    const_node_base_pointer parent_node( void ) const noexcept
+    {
+        return static_cast< const_node_base_pointer >( m_parent );
+    }
+    
+    void set_parent_node( node_base_pointer parent ) noexcept
+    {
+        m_parent = parent;
+    }
+
+
+    size_t child_index( const_node_base_pointer child ) const
+    {
+        return std::distance( this->m_children.begin() , find_child( child ) );
+    }
+    
+    
+
     size_t count_nodes( void ) const noexcept
     {
         size_t count = 1;
-        auto iter = m_children.begin();
-        auto last = m_children.begin() + size();
+        auto iter = this->m_children.begin();
+        auto last = this->m_children.begin() + this->size();
         for( ; iter != last ; )
         {
-            count += ( (*iter++)->count_nodes() );
+            count += ( static_cast< const_node_base_pointer >(*iter++)->count_nodes() );
         }
         return count;
     }
@@ -134,10 +251,10 @@ public:
     size_t height( void ) const noexcept
     {
         size_t h = 0;
-        auto iter = m_children.begin();
-        auto last = m_children.begin() + size();
+        auto iter = this->m_children.begin();
+        auto last = this->m_children.begin() + this->size();
         for( ; iter != last ; )
-            h = std::max( h , (*iter++)->height() );
+            h = std::max( h , static_cast< const_node_base_pointer >(*iter++)->height() );
         return 1 + h;
     }
     
@@ -146,37 +263,26 @@ public:
         if( m_parent == nullptr ) return 0;
         return 1 + parent_node()->level();
     }
-
     
 protected:
     
-    typename children_type::iterator find_free_child_entry( void )
+    auto find_child( const_node_base_pointer child )
     {
-        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr == nullptr; } );
+        return std::find( this->m_children.begin() , this->m_children.end() , child );
     }
     
-    typename children_type::const_iterator find_free_child_entry( void ) const
+    auto find_child( const_node_base_pointer child ) const
     {
-        return std::find_if( m_children.begin() , m_children.end() , []( node_base_type *ptr ) { return ptr == nullptr; } );
+        return std::find( this->m_children.begin() , this->m_children.end() , child );
     }
-    
-    typename children_type::iterator find_child( node_base_type const* child )
-    {
-        return std::find( m_children.begin() , m_children.end() , child );
-    }
-    
-    typename children_type::const_iterator find_child( node_base_type const* child ) const
-    {
-        return std::find( m_children.begin() , m_children.end() , child );
-    }
-    
-    node_base_type *m_parent;
-    children_type m_children;
+
 };
+
 
 
 } // namespace detail
 } // namespace gpcxx
+
 
 
 #endif // GPCXX_TREE_DETAIL_NODE_BASE_HPP_INCLUDED

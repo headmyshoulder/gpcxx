@@ -30,14 +30,14 @@ template< typename Node > class tree_base_cursor;
 
 
 template< typename Node , size_t MaxArity = 2 >
-class intrusive_node : public detail::node_base< MaxArity >
+class intrusive_node : public detail::node_base< detail::descending_array_node< MaxArity > >
 {
     template< typename N > friend class detail::tree_base_cursor;
    
 public:
     
     using node_type = Node;
-    using node_base_type = detail::node_base< MaxArity >;
+    using node_base_type = detail::node_base< detail::descending_array_node< MaxArity > >;
     using node_pointer = node_type*;
     using const_node_pointer = node_type const*;
     using value_type = node_type;
