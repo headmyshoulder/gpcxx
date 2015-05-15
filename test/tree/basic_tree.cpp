@@ -10,6 +10,7 @@
 
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/detail/inspect_node_base.hpp>
+#include <gpcxx/util/macros.hpp>
 
 #include "../common/test_tree.hpp"
 #include "../common/test_functions.hpp"
@@ -481,4 +482,15 @@ TEST( TESTNAME , swap_subtrees5 )
     test_cursor( trees.data2.root().children(0).children(0) , "y" , 0 , 1 , 2 );
     test_cursor( trees.data2.root().children(0).children(1) , "2" , 0 , 1 , 2 );
     test_cursor( trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
+}
+
+
+TEST( TESTNAME , default_construct2 )
+{
+    basic_growing_tree< int > tree;
+    auto root = tree.root();
+    GPCXX_UNUSED_VAR( root );
+    // EXPECT_EQ( root.node() , nullptr );
+    EXPECT_EQ( tree.size() , size_t( 0 ) );
+    EXPECT_TRUE( tree.empty() );
 }

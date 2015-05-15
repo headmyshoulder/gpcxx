@@ -14,6 +14,7 @@
 
 #include <gpcxx/tree/detail/node_base.hpp>
 
+
 #include <array>
 #include <algorithm>
 #include <cassert>
@@ -30,7 +31,7 @@ template< typename Node > class tree_base_cursor;
 
 
 template< typename Node , size_t MaxArity = 2 >
-class intrusive_node : public detail::node_base< detail::descending_array_node< MaxArity > >
+class intrusive_node : public detail::node_base< detail::descending_array_node< MaxArity > > 
 {
     template< typename N > friend class detail::tree_base_cursor;
    

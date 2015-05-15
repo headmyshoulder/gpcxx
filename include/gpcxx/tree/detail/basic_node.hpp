@@ -12,7 +12,6 @@
 #ifndef GPCXX_TREE_DETAIL_BASIC_NODE_HPP_DEFINED
 #define GPCXX_TREE_DETAIL_BASIC_NODE_HPP_DEFINED
 
-#include <gpcxx/tree/detail/node_base.hpp>
 
 namespace gpcxx {
 namespace detail {
@@ -22,8 +21,8 @@ template< typename Node > class tree_base_cursor;
 
 
 
-template< typename T , size_t MaxArity >
-class basic_node : public node_base< descending_array_node< MaxArity > >
+template< typename T , typename NodeBase  >
+class basic_node : public NodeBase
 {
     template< typename N > friend class tree_base_cursor;
     
@@ -33,8 +32,8 @@ public:
     using reference = value_type&;
     using const_reference = value_type const&;
     
-    using node_type = basic_node< value_type , MaxArity >;
-    using node_base_type = node_base< descending_array_node< MaxArity > >;
+    using node_type = basic_node< value_type , NodeBase >;
+    using node_base_type = NodeBase ;
     using node_pointer = node_type*;
     using node_reference = node_type&;
     

@@ -11,6 +11,7 @@
 
 #include <gpcxx/tree/detail/tree_base.hpp>
 #include <gpcxx/tree/detail/basic_node.hpp>
+#include <gpcxx/tree/detail/node_base.hpp>
 
 #include <sstream>
 #include <gtest/gtest.h>
@@ -22,5 +23,5 @@ using namespace gpcxx;
 
 TEST( TESTNAME , default_construct )
 {
-    detail::tree_base< detail::basic_node< std::string , 2 > , std::allocator< std::string > > t;
+    detail::tree_base< detail::basic_node< std::string , detail::node_base< detail::descending_array_node< 2 > > >  , std::allocator< std::string > > t;
 }
