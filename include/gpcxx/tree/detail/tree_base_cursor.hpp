@@ -198,12 +198,22 @@ public:
     
     bool is_root( void ) const noexcept
     {
-        return ( ( m_node->parent_node() == 0 ) && ( m_pos == 0 ) );
+        return ( ( m_node->parent_node() == nullptr ) && ( m_pos == 0 ) );
     }
     
     bool is_shoot( void ) const noexcept
     {
-        return ( ( m_node->parent_node() == 0 ) && ( m_pos == 1 ) );
+        return ( ( m_node->parent_node() == nullptr ) && ( m_pos == 1 ) );
+    }
+    
+    bool valid( void ) const
+    {
+        return ( m_node != nullptr ) && ( m_node->valid_child( m_pos ) );
+    }
+    
+    bool invalid( void ) const
+    {
+        return ( m_node == nullptr ) || ( m_node->invalid_child( m_pos ) );
     }
     
     

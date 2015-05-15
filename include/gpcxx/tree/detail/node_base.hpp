@@ -94,6 +94,16 @@ public:
         assert( iter != m_children.end() );
         m_children.erase( iter );
     }
+    
+    bool valid_child( size_t i ) const
+    {
+        return ( i < m_children.size() );
+    }
+    
+    bool invalid_child( size_t i ) const
+    {
+        return ( ! valid_child( i ) );
+    }
 
     
 protected:
@@ -159,6 +169,18 @@ public:
         std::copy( iter + 1 , end-- , iter );
         *end = nullptr;
     }
+    
+    bool valid_child( size_t i ) const
+    {
+        return ! invalid_child( i );
+    }
+    
+    bool invalid_child( size_t i ) const
+    {
+        assert( i < max_arity );
+        return ( m_children[i] == nullptr );
+    }
+
     
 private:
     

@@ -274,17 +274,12 @@ public:
     template< typename InputCursor >
     void assign( cursor position , InputCursor subtree )
     {
-        if( position.node() == nullptr ) return;
-        if( subtree.node() == nullptr ) return;
+        if( position.invalid() ) return;
+        if( subtree.invalid() ) return;
         
         while( ! position.empty() )
             erase( position.begin() );
         
-//         for( cursor c = position.begin() ; c != position.end() ; ++c )
-//         {
-//             erase_impl( c );
-//             static_cast< node_pointer >( position.node() )->set_child_node( c - position.begin() , nullptr );
-//         }
         *position = *subtree;
         for( const_cursor c = subtree.begin() ; c!= subtree.end() ; ++c )
         {
@@ -390,12 +385,12 @@ public:
         parent2->set_child_node( i2 , n1 );
         
         long num_nodes1 = 0 , num_nodes2 = 0;
-        if( n1 != nullptr )
+        if( c1.valid() )
         {
             n1->set_parent_node( parent2 );
             num_nodes1 = n1->count_nodes();
         }
-        if( n2 != nullptr )
+        if( c2.valid() )
         {
             n2->set_parent_node( parent1 );
             num_nodes2 = n2->count_nodes();
@@ -408,7 +403,7 @@ public:
     
     void erase( const_cursor position ) noexcept
     {
-        if( position.node() == nullptr ) return;
+        if( position.invalid() ) return;
         
         --m_size;
         
@@ -457,7 +452,7 @@ private:
     cursor insert_below_impl( const_cursor position , node_pointer new_node )
     {
         ++m_size;
-        if( position.node() == nullptr )
+        if( position.invalid() )
         {
             return insert_into_empty_node( position , new_node );
         }
@@ -476,7 +471,7 @@ private:
     cursor insert_impl( const_cursor position , node_pointer new_node )
     {
         ++m_size;
-        if( position.node() == nullptr )
+        if( position.invalid() )
         {
             return insert_into_empty_node( position , new_node );
         }
@@ -497,7 +492,7 @@ private:
     cursor insert_above_impl( const_cursor position , node_pointer new_node )
     {
         ++m_size;
-        if( position.node() == nullptr )
+        if( position.invalid() )
         {
             return insert_into_empty_node( position , new_node );
         }
