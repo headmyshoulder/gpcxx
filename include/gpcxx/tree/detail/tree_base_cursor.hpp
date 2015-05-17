@@ -28,7 +28,21 @@ namespace detail {
 
     
 
-
+/**
+ * cursor consist of node pointer of parent and index for the current node, which is the child index in the parent
+ * 
+ * cursor validity:
+ * # complete invalid cursor: parent node is nullptr, exist if default constructed
+ * # invalid cursor - current node is not present, but parent is ok
+ *   * the root of an empty tree is such kind of invalid node
+ *   * the end cursor of a node is such kind of invalid node
+ * 
+ * TODO: Find a better name for complete invalid cursors and implement a check in cursor
+ * 
+ * special cursors:
+ * # root: invalid cursor can be used to insert
+ * # shoot: invalid cursor symbolizing the very last element
+ */
 template< typename Node >
 class tree_base_cursor : public boost::iterator_facade<
     tree_base_cursor< Node > ,                           // Derived-Iterator

@@ -35,6 +35,8 @@ void test_cursor( Cursor n , std::string const& value , size_t arity , size_t he
     EXPECT_EQ( n.height() , height );
     EXPECT_EQ( n.level() , level );
     test_value( *n , value );
+    EXPECT_TRUE( n.valid() );
+    EXPECT_FALSE( n.invalid() );
 }
 
 

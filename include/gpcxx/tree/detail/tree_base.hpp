@@ -225,6 +225,9 @@ public:
             return shoot();
         return rank_is_impl< const_cursor >( root() , n );
     }
+
+    // additional stuff for concept correctness:
+    // size_type rank_of( const_cursor c ) const;
     
     
     
@@ -373,8 +376,11 @@ public:
     
     void swap_subtrees( cursor c1 , tree_base& other , cursor c2 )
     {
+        assert( c1.valid() && c2.valid() );
+        
         node_base_pointer parent1 = c1.parent_node();
         node_base_pointer parent2 = c2.parent_node();
+        
         node_base_pointer n1 = c1.node();
         node_base_pointer n2 = c2.node();
         
@@ -385,16 +391,12 @@ public:
         parent2->set_child_node( i2 , n1 );
         
         long num_nodes1 = 0 , num_nodes2 = 0;
-        if( c1.valid() )
-        {
-            n1->set_parent_node( parent2 );
-            num_nodes1 = n1->count_nodes();
-        }
-        if( c2.valid() )
-        {
-            n2->set_parent_node( parent1 );
-            num_nodes2 = n2->count_nodes();
-        }
+        n1->set_parent_node( parent2 );
+        num_nodes1 = n1->count_nodes();
+
+        n2->set_parent_node( parent1 );
+        num_nodes2 = n2->count_nodes();
+
         m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
         other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
     }
@@ -425,13 +427,6 @@ public:
     
     
     
-    //
-    // additional stuff for concept correctness:
-    //
-    // cursor insert( cursor position , const value_type &val );
-    // cursor insert( cursor position , value_type &&val );
-    // template< typename InputCursor > cursor insert( cursor position , InputCursor subtree );
-    // size_type rank_of( const_cursor c ) const;
     
     
     
@@ -529,7 +524,7 @@ private:
             m_size = tree.m_size;
             
             tree.m_size = 0;
-            tree.m_header.set_child_node( 0 , nullptr );
+            tree.m_header.remove_child( n );
         }
     }
     

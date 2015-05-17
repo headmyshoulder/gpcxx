@@ -11,7 +11,7 @@
 
 
 // uncomment the following line to see the debug output
-#define GPCXX_ANY_GENETIC_OPERATOR_DEBUG 1
+// #define GPCXX_ANY_GENETIC_OPERATOR_DEBUG 1
 
 #include <gpcxx/operator/any_genetic_operator.hpp>
 #include <gpcxx/tree/basic_tree.hpp>

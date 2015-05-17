@@ -21,14 +21,14 @@ namespace detail {
     
 
 
-template< size_t MaxArity >
-void inspect_node_base( std::ostream &out , node_base< descending_array_node< MaxArity > > *ptr , size_t ind )
+template< typename DescendingNode >
+void inspect_node_base( std::ostream &out , node_base< DescendingNode > *ptr , size_t ind )
 {
     out << indent( ind , "  " ) << std::string( "+-" ) << ptr << "\n";
     if( ptr != nullptr )
     {
-        for( size_t i=0 ; i<MaxArity ; ++i )
-            inspect_node_base( out , ptr->children( i ) , ind + 1 );
+        for( size_t i=0 ; i<ptr->size() ; ++i )
+            inspect_node_base( out , ptr->child_node( i ) , ind + 1 );
     }
 }
 

@@ -66,7 +66,7 @@ public:
     
     size_t max_size( void ) const noexcept
     {
-        return m_children.size();
+        return m_children.max_size();
     }
     
     
@@ -79,7 +79,7 @@ public:
     size_t attach_child( node_pointer child )
     {
         m_children.push_back( child );
-        return m_children.size();
+        return m_children.size() - 1;
     }
     
     void insert_child( size_t i , node_pointer child )

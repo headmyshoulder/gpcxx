@@ -23,8 +23,6 @@ using namespace std;
 using namespace gpcxx;
 
 
-// detail::inspect_basic_node( clog , root.parent_node() , 0 );
-
 #define TESTNAME basic_tree_tests
 
 
@@ -413,56 +411,7 @@ TEST( TESTNAME , rank_is )
     EXPECT_EQ( trees.data.rank_is( 7 ) , trees.data.shoot() );
 }
 
-TEST( TESTNAME , swap_subtrees1 )
-{
-    basic_tree< std::string > t1 , t2;
-    swap_subtrees( t1 , t1.root() , t2 , t2.root() );
-    EXPECT_TRUE( t1.empty() );
-    EXPECT_TRUE( t2.empty() );
-    EXPECT_EQ( t1.size() , size_t( 0 ) );
-    EXPECT_EQ( t2.size() , size_t( 0 ) );
-}
-
-TEST( TESTNAME , swap_subtrees2 )
-{
-    basic_tree< std::string > t1 , t2;
-    t1.insert_below( t1.root() , "+" );
-    swap_subtrees( t1 , t1.root() , t2 , t2.root() );
-    EXPECT_TRUE( t1.empty() );
-    EXPECT_FALSE( t2.empty() );
-    EXPECT_EQ( t1.size() , size_t( 0 ) );
-    EXPECT_EQ( t2.size() , size_t( 1 ) );
-}
-
-TEST( TESTNAME , swap_subtrees3 )
-{
-    basic_tree< std::string > t1 , t2;
-    auto c1 = t1.insert_below( t1.root() , "+" );
-    t1.insert_below( c1 , "-" );
-    swap_subtrees( t1 , t1.root() , t2 , t2.root() );
-    EXPECT_TRUE( t1.empty() );
-    EXPECT_FALSE( t2.empty() );
-    EXPECT_EQ( t1.size() , size_t( 0 ) );
-    EXPECT_EQ( t2.size() , size_t( 2 ) );
-    test_cursor( t2.root() , "+" , 1 , 2 , 0 );
-    test_cursor( t2.root().children(0) , "-" , 0 , 1 , 1 );
-}
-
-TEST( TESTNAME , swap_subtrees4 )
-{
-    basic_tree< std::string > t1 , t2;
-    auto c1 = t1.insert_below( t1.root() , "+" );
-    t1.insert_below( c1 , "-" );
-    swap_subtrees( t1 , t1.root().children(0) , t2 , t2.root() );
-    EXPECT_FALSE( t1.empty() );
-    EXPECT_FALSE( t2.empty() );
-    EXPECT_EQ( t1.size() , size_t( 1 ) );
-    EXPECT_EQ( t2.size() , size_t( 1 ) );
-    test_cursor( t1.root() , "+" , 0 , 1 , 0 );
-    test_cursor( t2.root() , "-" , 0 , 1 , 0 );
-}
-
-TEST( TESTNAME , swap_subtrees5 )
+TEST( TESTNAME , swap_subtrees )
 {
     test_tree< basic_tree_tag > trees;
     swap_subtrees( trees.data , trees.data.root().children(1)  , trees.data2 , trees.data2.root().children(0) );
@@ -482,15 +431,4 @@ TEST( TESTNAME , swap_subtrees5 )
     test_cursor( trees.data2.root().children(0).children(0) , "y" , 0 , 1 , 2 );
     test_cursor( trees.data2.root().children(0).children(1) , "2" , 0 , 1 , 2 );
     test_cursor( trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
-}
-
-
-TEST( TESTNAME , default_construct2 )
-{
-    basic_growing_tree< int > tree;
-    auto root = tree.root();
-    GPCXX_UNUSED_VAR( root );
-    // EXPECT_EQ( root.node() , nullptr );
-    EXPECT_EQ( tree.size() , size_t( 0 ) );
-    EXPECT_TRUE( tree.empty() );
 }
