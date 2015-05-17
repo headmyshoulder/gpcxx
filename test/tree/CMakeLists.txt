@@ -7,6 +7,7 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 add_executable ( tree_tests
   basic_tree.cpp
+  basic_growing_tree.cpp
   general_tree.cpp
   intrusive_tree.cpp
   preorder_iterator.cpp
