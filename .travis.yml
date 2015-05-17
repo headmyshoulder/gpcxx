@@ -30,6 +30,9 @@ matrix:
     # For now disable gcc on osx as g++4.8 is not yet available
     - os: osx   
       compiler: gcc
+    # Disable debug build of clang because of compiler errors with auto return types and debug informations
+    - compiler: clang
+      env: BUILD_TYPE=Release
 
     
     
