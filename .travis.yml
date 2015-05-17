@@ -32,7 +32,7 @@ matrix:
       compiler: gcc
     # Disable debug build of clang because of compiler errors with auto return types and debug informations
     - compiler: clang
-      env: BUILD_TYPE=Release
+      env: BUILD_TYPE=Debug
 
     
     
