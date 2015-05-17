@@ -52,15 +52,14 @@ protected:
     ascending_node_base* m_parent;
 };
 
-
-
 template< typename Allocator = std::allocator< void* > >
 class descending_vector_node
 {
     using allocator_type = Allocator;
     using node_pointer = descending_vector_node< allocator_type >*;
-    using const_node_pointer = descending_vector_node< allocator_type> const*;
-    using container_type = std::vector< node_pointer , allocator_type >;
+    using const_node_pointer = descending_vector_node< allocator_type > const*;
+    using real_allocator_type = typename allocator_type::template rebind< node_pointer >::other;
+    using container_type = std::vector< node_pointer , real_allocator_type >;
     
 public:
     
