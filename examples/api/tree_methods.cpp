@@ -9,7 +9,7 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <gpcxx/tree/basic_tree.hpp>
+#include <gpcxx/tree/basic_nary_tree.hpp>
 #include <gpcxx/io/graphviz.hpp>
 
 #include <string>
@@ -22,7 +22,7 @@ using namespace gpcxx;
 void insert_below_examples( void )
 {
     //[ insert_below_1
-    basic_tree< std::string > tree;
+    basic_nary_tree< std::string > tree;
     tree.insert_below( tree.root() , "A" );
     //]
     
@@ -41,7 +41,7 @@ void insert_below_examples( void )
     generate_graphviz_png( "insert_below_3.png" , tree );
     
     //[ insert_below_4
-    basic_tree< std::string > tree2;
+    basic_nary_tree< std::string > tree2;
     tree2.insert_below( tree2.root() , "X" );
     tree2.insert_below( tree2.root() , tree.root() );
     //]
@@ -53,7 +53,7 @@ void insert_below_examples( void )
 void insert_examples( void )
 {
     //[ insert_1
-    basic_tree< std::string , 3 > tree;
+    basic_nary_tree< std::string , 3 > tree;
     tree.insert( tree.root() , "A" );
     auto c1 = tree.insert_below( tree.root() , "B" );
     //]
@@ -76,7 +76,7 @@ void insert_examples( void )
 void insert_above_examples( void )
 {
     //[ insert_above_1
-    basic_tree< std::string > tree;
+    basic_nary_tree< std::string > tree;
     tree.insert( tree.root() , "A" );
     tree.insert_below( tree.root() , "B" );
     auto c1 = tree.insert_below( tree.root() , "C" );
@@ -100,7 +100,7 @@ void insert_above_examples( void )
 void emplace_below_examples( void )
 {
     //[ emplace_below_1
-    basic_tree< std::string > tree;
+    basic_nary_tree< std::string > tree;
     auto c1 = tree.emplace_below( tree.root() , "A" );
     tree.emplace_below( c1 , "B" );
     tree.emplace_below( c1 , "C" );
@@ -110,7 +110,7 @@ void emplace_below_examples( void )
 void emplace_examples( void )
 {
     //[ emplace_1
-    basic_tree< std::string , 3 > tree;
+    basic_nary_tree< std::string , 3 > tree;
     tree.emplace( tree.root() , "A" );
     auto c1 = tree.emplace_below( tree.root() , "B" );
     auto c2 = tree.emplace( c1 , "C" );
@@ -121,7 +121,7 @@ void emplace_examples( void )
 void erase_examples( void )
 {
     //[ erase_1
-    basic_tree< std::string > tree;
+    basic_nary_tree< std::string > tree;
     tree.insert_below( tree.root() , "A" );
     auto c1 = tree.insert_below( tree.root() , "B" );
     auto c2 = tree.insert_below( tree.root() , "C" );
@@ -143,7 +143,7 @@ void erase_examples( void )
 void querying_examples( void )
 {
     //[ querying_1
-    basic_tree< std::string > tree;
+    basic_nary_tree< std::string > tree;
     tree.insert_below( tree.root() , "A" );
     tree.insert_below( tree.root() , "B" );
     tree.insert_below( tree.root() , "C" );
