@@ -22,14 +22,16 @@
 namespace gpcxx {
 
 
-template< typename Res , typename Context, size_t Arity = 2 >
-class intrusive_named_func_node : public gpcxx::intrusive_node< intrusive_named_func_node< Res , Context , Arity > , Arity >
+
+
+template< typename Res , typename Context, typename Allocator = std::allocator< void* > >
+class intrusive_named_func_node : public gpcxx::intrusive_node< intrusive_named_func_node< Res , Context , Allocator > , Allocator >
 {
 public:
     
     using result_type = Res;
     using context_type = Context;
-    using node_type = intrusive_named_func_node< result_type , context_type , Arity >;
+    using node_type = intrusive_named_func_node< result_type , context_type , Allocator >;
     
     typedef std::function< result_type( context_type& , node_type const& ) > func_type;
     
@@ -63,8 +65,10 @@ private:
 };
 
 
-template< typename Res , typename Context , size_t Arity >
-std::ostream& operator<<( std::ostream &out , intrusive_named_func_node< Res , Context , Arity > const& node )
+
+
+template< typename Res , typename Context , typename Allocator >
+std::ostream& operator<<( std::ostream &out , intrusive_named_func_node< Res , Context , Allocator > const& node )
 {
     out << node.name();
     return out;

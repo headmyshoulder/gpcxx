@@ -13,6 +13,7 @@
 #define GPCXX_TEST_COMMON_TEST_FUNCTIONS_HPP_INCLUDED
 
 #include <gpcxx/tree/intrusive_named_func_node.hpp>
+#include <gpcxx/tree/intrusive_nary_named_func_node.hpp>
 #include <gtest/gtest.h>
 
 template< typename T >
@@ -22,10 +23,17 @@ void test_value( T const& t , std::string const& value )
 }
 
 template< typename Res , typename Context, size_t Arity >
-void test_value( gpcxx::intrusive_named_func_node< Res , Context , Arity > const& t , std::string const& value )
+void test_value( gpcxx::intrusive_nary_named_func_node< Res , Context , Arity > const& t , std::string const& value )
 {
     EXPECT_EQ( t.name() , value );
 }
+
+template< typename Res , typename Context, typename Allocator >
+void test_value( gpcxx::intrusive_named_func_node< Res , Context , Allocator > const& t , std::string const& value )
+{
+    EXPECT_EQ( t.name() , value );
+}
+
 
 
 template< typename Cursor >

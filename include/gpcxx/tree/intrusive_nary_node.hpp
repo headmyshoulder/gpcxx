@@ -1,6 +1,6 @@
 /*
- * gpcxx/tree/intrusive_node.hpp
- * Date: 2013-10-14
+ * gpcxx/tree/intrusive_nary_node.hpp
+ * Date: 2015-05-18
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
  *
@@ -9,8 +9,9 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_TREE_INTRUSIVE_NODE_HPP_INCLUDED
-#define GPCXX_TREE_INTRUSIVE_NODE_HPP_INCLUDED
+#ifndef GPCXX_TREE_INTRUSIVE_NARY_NODE_HPP_INCLUDED
+#define GPCXX_TREE_INTRUSIVE_NARY_NODE_HPP_INCLUDED
+
 
 #include <gpcxx/tree/detail/node_base.hpp>
 
@@ -18,7 +19,6 @@
 #include <array>
 #include <algorithm>
 #include <cassert>
-#include <memory>
 
     
 namespace gpcxx {
@@ -31,42 +31,42 @@ template< typename Node > class tree_base_cursor;
 
 
 
-template< typename Node , typename Allocator = std::allocator< void* > >
-class intrusive_node : public detail::node_base< detail::descending_vector_node< Allocator > > 
+template< typename Node , size_t MaxArity = 2 >
+class intrusive_nary_node : public detail::node_base< detail::descending_array_node< MaxArity > > 
 {
     template< typename N > friend class detail::tree_base_cursor;
    
 public:
     
     using node_type = Node;
-    using node_base_type = detail::node_base< detail::descending_vector_node< Allocator > >;
+    using node_base_type = detail::node_base< detail::descending_array_node< MaxArity > >;
     using node_pointer = node_type*;
     using const_node_pointer = node_type const*;
     using value_type = node_type;
     using reference = value_type&;
     using const_reference = value_type const&;
     
-    intrusive_node( node_type *parent = nullptr ) noexcept
+    intrusive_nary_node( node_type *parent = nullptr ) noexcept
     : node_base_type( parent )
     {
     }
     
-    intrusive_node( intrusive_node const& )
+    intrusive_nary_node( intrusive_nary_node const& )
     : node_base_type()
     {
     }
     
-    intrusive_node( intrusive_node && )
+    intrusive_nary_node( intrusive_nary_node && )
     : node_base_type()
     {
     }
     
-    intrusive_node& operator=( intrusive_node const& )
+    intrusive_nary_node& operator=( intrusive_nary_node const& )
     {
         return *this;
     }
     
-    intrusive_node& operator=( intrusive_node && )
+    intrusive_nary_node& operator=( intrusive_nary_node && )
     {
         return *this;
     }
@@ -100,6 +100,4 @@ private:
 
 
 
-
-
-#endif // GPCXX_TREE_INTRUSIVE_NODE_HPP_INCLUDED
+#endif // GPCXX_TREE_INTRUSIVE_NARY_NODE_HPP_INCLUDED

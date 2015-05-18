@@ -24,7 +24,7 @@ template <class T>
 class general_tree_tests : public test_template< T > { };
 
 
-using Implementations = testing::Types< basic_nary_tree_tag , intrusive_tree_tag , basic_tree_tag >;
+using Implementations = testing::Types< basic_nary_tree_tag , basic_tree_tag , intrusive_nary_tree_tag , intrusive_tree_tag >;
 
 TYPED_TEST_CASE( general_tree_tests , Implementations );
 

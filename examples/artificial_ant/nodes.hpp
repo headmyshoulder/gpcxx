@@ -27,7 +27,7 @@ namespace ant_example {
 size_t const max_children = 3;
 using context_type = ant_simulation;
 using node_return_type = void;
-using node_type = gpcxx::intrusive_named_func_node< node_return_type , context_type, max_children > ;
+using node_type = gpcxx::intrusive_nary_named_func_node< node_return_type , context_type, max_children > ;
 using tree_type = gpcxx::intrusive_tree< node_type >;
 using population_type = std::vector< tree_type >;
 using fitness_type = std::vector< int >;
