@@ -13,6 +13,7 @@
 #define GPCXX_TREE_HPP_DEFINED
 
 
+#include <gpcxx/tree/basic_nary_tree.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 #include <gpcxx/tree/intrusive_func.hpp>

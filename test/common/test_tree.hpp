@@ -9,6 +9,7 @@
 
 #include "intrusive_node_generator.hpp"
 
+#include <gpcxx/tree/basic_nary_tree.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
 #include <gpcxx/tree/intrusive_named_func_node.hpp>
@@ -17,8 +18,8 @@
 #include <string>
 #include <array>
 
-struct basic_tree_tag { };
-struct basic_growing_tree_tag : public basic_tree_tag { };
+struct basic_nary_tree_tag { };
+struct basic_tree_tag : public basic_nary_tree_tag { };
 struct intrusive_tree_tag { };
 
 using context_type = std::array< double , 3 >;
@@ -26,14 +27,14 @@ using context_type = std::array< double , 3 >;
 
 template< typename Tag > struct get_tree_type;
 
-template<> struct get_tree_type< basic_tree_tag >
+template<> struct get_tree_type< basic_nary_tree_tag >
 {
-    typedef gpcxx::basic_tree< std::string , 3 > type;
+    typedef gpcxx::basic_nary_tree< std::string , 3 > type;
 };
 
-template<> struct get_tree_type< basic_growing_tree_tag >
+template<> struct get_tree_type< basic_tree_tag >
 {
-    typedef gpcxx::basic_growing_tree< std::string > type;
+    typedef gpcxx::basic_tree< std::string > type;
 };
 
 template<> struct get_tree_type< intrusive_tree_tag >
