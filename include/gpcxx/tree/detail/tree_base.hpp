@@ -401,9 +401,7 @@ public:
         other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
     }
     
-    
-    
-    void erase( const_cursor position ) noexcept
+    void erase( const_cursor position )
     {
         if( position.invalid() ) return;
         
@@ -419,9 +417,24 @@ public:
         m_node_allocator.deallocate( ptr , 1 );
     }
     
-    void clear( void ) noexcept
+    void clear( void )
     {
         erase( root() );
+    }
+    
+    
+    void move_subtree( const_cursor position , const_cursor subtree )
+    {
+        assert( position.valid() && subtree.valid() );
+        
+        node_pointer node1 = const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.node() ) );
+        const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.parent_node() ) )->remove_child( node1 );
+
+        node_pointer parent2 = const_cast< node_pointer >( static_cast< const_node_pointer >( position.parent_node() ) );
+        size_t pos2 = position.pos();
+        erase_without_removing_child( position );
+        parent2->set_child_node( pos2 , node1 );
+        node1->set_parent_node( parent2 );
     }
     
     
@@ -432,7 +445,27 @@ public:
     
 private:
     
-    void erase_impl( const_cursor position ) noexcept
+    static node_pointer node_from_cursor( const_cursor position )
+    {
+        return const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
+    }
+    
+    void erase_without_removing_child( const_cursor position )
+    {
+        assert( position.valid() );
+        
+        --m_size;
+        
+        for( const_cursor c = position.begin() ; c != position.end() ; ++c )
+        {
+            erase_impl( c );
+        }
+        node_pointer ptr = const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
+        m_node_allocator.destroy( ptr );
+        m_node_allocator.deallocate( ptr , 1 );
+    }
+    
+    void erase_impl( const_cursor position )
     {
         --m_size;
         for( const_cursor c = position.begin() ; c != position.end() ; ++c )
