@@ -15,6 +15,8 @@ execute_process ( COMMAND git describe --tags --abbrev=4 --match v*.* HEAD
                   OUTPUT_VARIABLE GPCXX_GIT_VERSION
                   OUTPUT_STRIP_TRAILING_WHITESPACE
                   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/" )
+
+message ( STATUS "${GPCXX_GIT_VERSION}" )
                   
 execute_process ( COMMAND git status -uno -s 
                   OUTPUT_VARIABLE GPCXX_GIT_STATUS 
