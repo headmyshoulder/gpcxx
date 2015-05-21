@@ -12,6 +12,7 @@
 #ifndef GPCXX_TREE_DETAIL_BASIC_NODE_HPP_DEFINED
 #define GPCXX_TREE_DETAIL_BASIC_NODE_HPP_DEFINED
 
+#include <utility>
 
 namespace gpcxx {
 namespace detail {
