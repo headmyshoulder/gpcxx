@@ -9,6 +9,7 @@ add_executable ( io_tests
   simple.cpp
   graphviz.cpp
   polish.cpp
+  json.cpp
   )
 
 target_link_libraries ( io_tests gtest gtest_main )
