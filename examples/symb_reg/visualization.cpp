@@ -250,10 +250,10 @@ int main( int argc , char *argv[] )
 
     //[ define_function_set
     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
-        node_type { gpcxx::sin_func {}                                               ,      "s" } ,
-        node_type { gpcxx::cos_func {}                                               ,      "c" } ,
-        node_type { gpcxx::exp_func {}                                               ,      "e" } ,
-        node_type { gpcxx::log_func {}                                               ,      "l" }
+        node_type { gpcxx::sin_func {}                                               ,      "sin" } ,
+        node_type { gpcxx::cos_func {}                                               ,      "cos" } ,
+        node_type { gpcxx::exp_func {}                                               ,      "exp" } ,
+        node_type { gpcxx::log_func {}                                               ,      "log" }
     } );
 
     auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
@@ -329,6 +329,9 @@ int main( int argc , char *argv[] )
         tree_generator( population[i] );
         fitness[i] = fitness_f( population[i] , c );
     }
+    
+    std::ofstream json_out( "example_tree.json" );
+    json_out << gpcxx::json( population[0] ) << std::endl;
     
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;
     std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
