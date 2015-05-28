@@ -25,6 +25,13 @@ namespace detail {
         T v2 = std::abs( v );
         return ( v2 < 1.0e-20 ) ? std::log( 1.0e-20 ) : std::log( v2 );
     }
+    
+    template< typename T >
+    inline T gpcxx_rlog( T v )
+    {
+        T v2 = std::abs( v );
+        return ( v2 < 1.0e-20 ) ? 0.0 : std::log( v2 );
+    }
 } // namespace detail
 
 
@@ -51,7 +58,7 @@ struct NAME                                                                     
 UNARY_FUNC( sin_func , std::sin );
 UNARY_FUNC( cos_func , std::cos );
 UNARY_FUNC( exp_func , std::exp );
-UNARY_FUNC( log_func , detail::gpcxx_log );
+UNARY_FUNC( log_func , detail::gpcxx_rlog );
 
 BINARY_OPERATOR( plus_func , + );
 BINARY_OPERATOR( minus_func , - );

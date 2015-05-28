@@ -45,14 +45,17 @@ gpcxx::regression_training_data< double , 1 > generate_test_data( Rng& rng , siz
 int main( int argc , char** argv )
 {
     using rng_type = std::mt19937;
-    rng_type rng;
+    std::random_device rd;
+    rng_type rng { rd() };
 
-//     auto c = generate_test_data( rng , 20 , []( double x )
-//             { return  x * x * x * x + x * x * x + x * x + x; } );
-
-    auto c = generate_test_data( rng , 20 , []( double x )
+    auto koza1 = generate_test_data( rng , 20 , []( double x )
             { return  x * x * x * x + x * x * x + x * x + x; } );
-
+    auto koza2 = generate_test_data( rng , 20 , []( double x )
+            { return x * x * x * x * x - 2.0 * x * x * x + x; } );
+    auto koza3 = generate_test_data( rng , 20 , []( double x )
+            { return x * x * x * x * x * x - 2.0 * x * x * x * x + x * x;  } );
+    
+    auto c = koza2;
     
     // define_tree_types
     using context_type = gpcxx::regression_context< double , 1 >;
