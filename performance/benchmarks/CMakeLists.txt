@@ -1,0 +1,1 @@
+add_executable ( koza koza.cpp )
