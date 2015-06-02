@@ -1,5 +1,5 @@
 /*
- * gpcxx/tree/intrusive_func.hpp
+ * gpcxx/tree/intrusive_functions.hpp
  * Date: 2013-10-15
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_TREE_INTRUSIVE_FUNC_HPP_INCLUDED
-#define GPCXX_TREE_INTRUSIVE_FUNC_HPP_INCLUDED
+#ifndef GPCXX_TREE_INTRUSIVE_FUNCTIONS_HPP_INCLUDED
+#define GPCXX_TREE_INTRUSIVE_FUNCTIONS_HPP_INCLUDED
 
 #include <cmath>
 #include <cstddef>
@@ -125,4 +125,4 @@ struct double_terminal
 } // namespace gpcxx
 
 
-#endif // GPCXX_TREE_INTRUSIVE_FUNC_HPP_INCLUDED
+#endif // GPCXX_TREE_INTRUSIVE_FUNCTIONS_HPP_INCLUDED

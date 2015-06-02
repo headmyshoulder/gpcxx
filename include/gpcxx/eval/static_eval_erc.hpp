@@ -61,7 +61,7 @@ public:
     typedef boost::variant< value_type , symbol_type > node_attribute_type;
     
     
-    typedef uniform_symbol_erc< symbol_type , value_type , erc_dist_type , node_attribute_type > symbol_erc_distribution_type;
+    typedef uniform_symbol_erc< node_attribute_type , erc_dist_type > symbol_erc_distribution_type;
     typedef uniform_symbol< symbol_type > symbol_distribution_type;
 
     

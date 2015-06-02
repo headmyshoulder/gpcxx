@@ -27,69 +27,12 @@
 #include <vector>
 #include <functional>
 
-template< typename Value , typename ErcDist >
-struct uniform_symbol_erc_generator
-{
-    using value_type = Value;
-    using erc_dist_type = ErcDist;
-
-
-    uniform_symbol_erc_generator( std::vector< value_type > symbols , double prob_fraction_erc , erc_dist_type erc_dist )
-    : m_symbols( std::move( symbols ) ) , m_prob_fraction_erc( prob_fraction_erc ) , m_erc_dist( std::move( erc_dist ) )
-    {
-        assert( !m_symbols.empty() );
-        assert( m_prob_fraction_erc > 0.0 );
-    }
-
-    template< typename Rng >
-    value_type operator()( Rng &rng )
-    {
-        std::discrete_distribution< size_t > dist( { 1.0 , m_prob_fraction_erc } );
-        if( dist( rng ) == 0 )
-        {
-            return random_symbol( rng );
-        }
-        else
-        {
-            return erc( rng );
-        }
-    }
-
-    template< typename Rng >
-    value_type random_symbol( Rng &rng ) const
-    {
-        assert( !m_symbols.empty() );
-        std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
-        return m_symbols[ dist( rng ) ];
-    }
-    
-    template< typename Rng >
-    value_type erc( Rng &rng ) 
-    {
-        return m_erc_dist( rng );
-    }
-
-    size_t num_symbols( void ) const { return m_symbols.size(); }
-
-private:
-
-    std::vector< value_type > m_symbols;
-    double m_prob_fraction_erc;
-    erc_dist_type m_erc_dist;
-};
-
-template< typename Value , typename ErcGen >
-auto make_uniform_symbol_erc_generator( std::vector< Value > symbols , double prob_fraction_erc , ErcGen erc_gen )
-{
-    return uniform_symbol_erc_generator< Value , ErcGen >( std::move( symbols ) , prob_fraction_erc , std::move( erc_gen ) );
-}
-
 template< typename Value , typename Dist >
-struct erc_generator
+struct intrusive_erc_generator
 {
     using value_type = Value;
     
-    erc_generator( Dist const& dist )
+    intrusive_erc_generator( Dist const& dist )
     : m_dist( dist ) {}
     
     template< typename Rng >
@@ -105,9 +48,9 @@ private:
 };
 
 template< typename Value , typename Dist >
-auto make_erc_generator( Dist const& dist )
+auto make_intrusive_erc_generator( Dist const& dist )
 {
-    return erc_generator< Value , Dist >( dist );
+    return intrusive_erc_generator< Value , Dist >( dist );
 }
 
 
@@ -134,10 +77,10 @@ int main( int argc , char *argv[] )
     
     
     //[ define_terminal_set
-    auto erc_gen = make_erc_generator< node_type >( []( auto& rng ) {
+    auto erc_gen = make_intrusive_erc_generator< node_type >( []( auto& rng ) {
         std::normal_distribution<> dist( 0.0 , 1.0 );
         return dist( rng ); } );
-    auto terminal_gen = make_uniform_symbol_erc_generator(
+    auto terminal_gen = gpcxx::make_uniform_symbol_erc< node_type >(
         std::vector< node_type >{
             node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" } ,
             node_type { gpcxx::array_terminal< 1 >{}                                     ,      "y" } ,

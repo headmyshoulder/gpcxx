@@ -24,7 +24,7 @@ TEST( TESTNAME , TestCase )
 {
     std::mt19937 rng;
     std::vector< std::string > symbols( { "x" , "y" } );
-    auto gen = gpcxx::make_uniform_symbol_erc( symbols , 1.0 , std::normal_distribution<>( 0.0 , 1.0 ) );
+    auto gen = gpcxx::make_uniform_symbol_erc< boost::variant< std::string , double > >( symbols , 1.0 , std::normal_distribution<>( 0.0 , 1.0 ) );
     typedef decltype( gen ) generator_type;
     
     bool double_found = false;

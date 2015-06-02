@@ -8,7 +8,7 @@
 
 #include <gpcxx/tree/intrusive_tree.hpp>
 #include <gpcxx/tree/intrusive_named_func_node.hpp>
-#include <gpcxx/tree/intrusive_func.hpp>
+#include <gpcxx/tree/intrusive_functions.hpp>
 
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/generate/node_generator.hpp>

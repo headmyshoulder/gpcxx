@@ -12,7 +12,7 @@
 #ifndef GPCXX_TEST_COMMON_INTRUSIVE_NODE_GENERATOR_HPP_INCLUDED
 #define GPCXX_TEST_COMMON_INTRUSIVE_NODE_GENERATOR_HPP_INCLUDED
 
-#include <gpcxx/tree/intrusive_func.hpp>
+#include <gpcxx/tree/intrusive_functions.hpp>
 #include <gpcxx/util/exception.hpp>
 
 using namespace gpcxx;
