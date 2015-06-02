@@ -19,39 +19,11 @@
 #include <gpcxx/app.hpp>
 #include <gpcxx/util.hpp>
 
-
-
-
 #include <iostream>
 #include <random>
 #include <vector>
 #include <functional>
 
-template< typename Value , typename Dist >
-struct intrusive_erc_generator
-{
-    using value_type = Value;
-    
-    intrusive_erc_generator( Dist const& dist )
-    : m_dist( dist ) {}
-    
-    template< typename Rng >
-    value_type operator()( Rng& rng ) const
-    {
-        auto x = m_dist( rng );
-        return value_type { [x]( auto const& c , auto const& n ) { return x; } , std::to_string( x ) };
-    }
-    
-private:
-    
-    Dist m_dist;
-};
-
-template< typename Value , typename Dist >
-auto make_intrusive_erc_generator( Dist const& dist )
-{
-    return intrusive_erc_generator< Value , Dist >( dist );
-}
 
 
 
@@ -77,7 +49,7 @@ int main( int argc , char *argv[] )
     
     
     //[ define_terminal_set
-    auto erc_gen = make_intrusive_erc_generator< node_type >( []( auto& rng ) {
+    auto erc_gen = gpcxx::make_intrusive_erc_generator< node_type >( []( auto& rng ) {
         std::normal_distribution<> dist( 0.0 , 1.0 );
         return dist( rng ); } );
     auto terminal_gen = gpcxx::make_uniform_symbol_erc< node_type >(
