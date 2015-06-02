@@ -22,10 +22,10 @@ namespace gpcxx {
 template< typename T1 , typename T2 , typename ErcDist , typename Result = boost::variant< T1 , T2 > >
 struct uniform_symbol_erc
 {
-    typedef T1 symbol_type;
-    typedef T2 erc_type;
-    typedef ErcDist erc_dist_type;
-    typedef Result result_type;
+    using symbol_type   = T1;
+    using erc_type      = T2;
+    using erc_dist_type = ErcDist;
+    using result_type   = Result;
 
 
     uniform_symbol_erc( std::vector< symbol_type > const& symbols , double prob_fraction_erc , erc_dist_type const& erc_dist )

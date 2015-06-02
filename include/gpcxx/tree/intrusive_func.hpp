@@ -15,23 +15,40 @@
 #include <cmath>
 #include <cstddef>
 
+
+
 namespace gpcxx {
 
 namespace detail {
     
-    template< typename T >
-    inline T gpcxx_log( T v )
+    constexpr auto gpcxx_log = []( auto v )
     {
-        T v2 = std::abs( v );
+        decltype( v ) v2 = std::abs( v );
         return ( v2 < 1.0e-20 ) ? std::log( 1.0e-20 ) : std::log( v2 );
-    }
+    };
+
+//     template< typename T >
+//     inline T gpcxx_log( T v )
+//     {
+//         T v2 = std::abs( v );
+//         return ( v2 < 1.0e-20 ) ? std::log( 1.0e-20 ) : std::log( v2 );
+//     }
     
-    template< typename T >
-    inline T gpcxx_rlog( T v )
+    constexpr auto gpcxx_rlog = []( auto v )
     {
-        T v2 = std::abs( v );
+        decltype( v ) v2 = std::abs( v );
         return ( v2 < 1.0e-20 ) ? 0.0 : std::log( v2 );
-    }
+    };
+    
+    
+//     template< typename T >
+//     inline T gpcxx_rlog( T v )
+//     {
+//         T v2 = std::abs( v );
+//         return ( v2 < 1.0e-20 ) ? 0.0 : std::log( v2 );
+//     }
+    
+    
 } // namespace detail
 
 
