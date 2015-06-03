@@ -11,7 +11,7 @@
 
 #include <gpcxx/io/simple.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
-#include <gpcxx/tree/intrusive_func_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_func_node.hpp>
 #include <gpcxx/tree/intrusive_functions.hpp>
 #include <gpcxx/app/timer.hpp>
 

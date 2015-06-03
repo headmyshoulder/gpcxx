@@ -1,5 +1,5 @@
 /*
- * gpcxx/tree/intrusive_named_func_node.hpp
+ * gpcxx/tree/intrusive_nodes/intrusive_named_func_node.hpp
  * Date: 2013-10-15
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,10 +9,10 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_TREE_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED
-#define GPCXX_TREE_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED
+#ifndef GPCXX_TREE_INTRUSIVE_NODES_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED
+#define GPCXX_TREE_INTRUSIVE_NODES_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED
 
-#include <gpcxx/tree/intrusive_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_node.hpp>
 
 #include <functional>
 #include <string>
@@ -78,4 +78,4 @@ std::ostream& operator<<( std::ostream &out , intrusive_named_func_node< Res , C
 } // namespace gpcxx
 
 
-#endif // GPCXX_TREE_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED
+#endif // GPCXX_TREE_INTRUSIVE_NODES_INTRUSIVE_NAMED_FUNC_NODE_HPP_INCLUDED

@@ -17,13 +17,7 @@
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
 #include <gpcxx/tree/intrusive_erc_generator.hpp>
-#include <gpcxx/tree/intrusive_func_node.hpp>
 #include <gpcxx/tree/intrusive_functions.hpp>
-#include <gpcxx/tree/intrusive_named_func_node.hpp>
-#include <gpcxx/tree/intrusive_nary_func_node.hpp>
-#include <gpcxx/tree/intrusive_nary_named_func_node.hpp>
-#include <gpcxx/tree/intrusive_nary_node.hpp>
-#include <gpcxx/tree/intrusive_node.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
 #include <gpcxx/tree/iterator/iterator_base.hpp>
 #include <gpcxx/tree/iterator/postorder_iterator.hpp>

@@ -1,5 +1,5 @@
 /*
- * gpcxx/tree/intrusive_nary_node.hpp
+ * gpcxx/tree/intrusive_nodes/intrusive_nary_node.hpp
  * Date: 2015-05-18
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_TREE_INTRUSIVE_NARY_NODE_HPP_INCLUDED
-#define GPCXX_TREE_INTRUSIVE_NARY_NODE_HPP_INCLUDED
+#ifndef GPCXX_TREE_INTRUSIVE_NODES_INTRUSIVE_NARY_NODE_HPP_INCLUDED
+#define GPCXX_TREE_INTRUSIVE_NODES_INTRUSIVE_NARY_NODE_HPP_INCLUDED
 
 
 #include <gpcxx/tree/detail/node_base.hpp>
@@ -100,4 +100,4 @@ private:
 
 
 
-#endif // GPCXX_TREE_INTRUSIVE_NARY_NODE_HPP_INCLUDED
+#endif // GPCXX_TREE_INTRUSIVE_NODES_INTRUSIVE_NARY_NODE_HPP_INCLUDED

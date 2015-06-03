@@ -7,7 +7,7 @@
 #define FUSION_MAX_VECTOR_SIZE 20
 
 #include <gpcxx/tree/intrusive_tree.hpp>
-#include <gpcxx/tree/intrusive_named_func_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_named_func_node.hpp>
 #include <gpcxx/tree/intrusive_functions.hpp>
 
 #include <gpcxx/generate/uniform_symbol.hpp>

@@ -12,8 +12,8 @@
 #include <gpcxx/tree/basic_nary_tree.hpp>
 #include <gpcxx/tree/basic_tree.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
-#include <gpcxx/tree/intrusive_named_func_node.hpp>
-#include <gpcxx/tree/intrusive_nary_named_func_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_named_func_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_nary_named_func_node.hpp>
 #include <gpcxx/util/identity.hpp>
 
 #include <string>

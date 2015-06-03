@@ -10,7 +10,7 @@
  */
 
 #include <gpcxx/tree/intrusive_tree.hpp>
-#include <gpcxx/tree/intrusive_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_node.hpp>
 
 #include <gtest/gtest.h>
 

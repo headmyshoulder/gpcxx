@@ -12,6 +12,7 @@
 
 
 #include <gpcxx/tree.hpp>
+#include <gpcxx/intrusive_nodes.hpp>
 #include <gpcxx/generate.hpp>
 #include <gpcxx/operator.hpp>
 #include <gpcxx/eval.hpp>
@@ -50,12 +51,12 @@ int main( int argc , char** argv )
 
     auto koza1 = generate_test_data( rng , 20 , []( double x )
             { return  x * x * x * x + x * x * x + x * x + x; } );
-    auto koza2 = generate_test_data( rng , 20 , []( double x )
+    auto koza2 = generate_test_data( rng , 50 , []( double x )
             { return x * x * x * x * x - 2.0 * x * x * x + x; } );
-    auto koza3 = generate_test_data( rng , 20 , []( double x )
+    auto koza3 = generate_test_data( rng , 50 , []( double x )
             { return x * x * x * x * x * x - 2.0 * x * x * x * x + x * x;  } );
     
-    auto c = koza2;
+    auto c = koza3;
     
     // define_tree_types
     using context_type = gpcxx::regression_context< double , 1 >;
@@ -64,15 +65,23 @@ int main( int argc , char** argv )
     
     
     // define node types
-    auto terminal_gen = gpcxx::make_uniform_symbol( std::vector< node_type >{
-        node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" }
-    } );
-    auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
-        node_type { gpcxx::sin_func {}                                               ,      "sin" } ,
-        node_type { gpcxx::cos_func {}                                               ,      "cos" } ,
-        node_type { gpcxx::exp_func {}                                               ,      "exp" } ,
-        node_type { gpcxx::log_func {}                                               ,      "log" }
-    } );
+//     auto terminal_gen = gpcxx::make_uniform_symbol( std::vector< node_type >{
+//         node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" }
+//     } );
+    auto erc_gen = gpcxx::make_intrusive_erc_generator< node_type >( []( auto& rng ) {
+        std::uniform_real_distribution<> dist( -1.0 , 1.0 );
+        return dist( rng ); } );
+    auto terminal_gen = gpcxx::make_uniform_symbol_erc< node_type >(
+        std::vector< node_type >{
+            node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" } } ,
+        0.25 ,
+        erc_gen );
+//     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
+//         node_type { gpcxx::sin_func {}                                               ,      "sin" } ,
+//         node_type { gpcxx::cos_func {}                                               ,      "cos" } ,
+//         node_type { gpcxx::exp_func {}                                               ,      "exp" } ,
+//         node_type { gpcxx::log_func {}                                               ,      "log" }
+//     } );
     auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::plus_func {}                                              ,      "+" } ,
         node_type { gpcxx::minus_func {}                                             ,      "-" } ,
@@ -81,13 +90,13 @@ int main( int argc , char** argv )
     } );
 
 
-    auto node_generator = gpcxx::node_generator< node_type , rng_type , 3 > {
+    auto node_generator = gpcxx::node_generator< node_type , rng_type , 2 > {
         { 1.0 , 0 , terminal_gen } ,
-        { 1.0 , 1 , unary_gen } ,
+        // { 1.0 , 1 , unary_gen } ,
         { 1.0 , 2 , binary_gen } };
         
     // define_gp_parameters
-    size_t population_size = 512;
+    size_t population_size = 4000;
     size_t generation_size = 50;
     size_t number_elite = 1;
     double mutation_rate = 0.2;

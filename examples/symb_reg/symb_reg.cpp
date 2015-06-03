@@ -5,6 +5,7 @@
  */
 
 #include <gpcxx/tree.hpp>
+#include <gpcxx/intrusive_nodes.hpp>
 #include <gpcxx/generate.hpp>
 #include <gpcxx/operator.hpp>
 #include <gpcxx/eval.hpp>

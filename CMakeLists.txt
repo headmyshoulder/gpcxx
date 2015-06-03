@@ -56,6 +56,7 @@ create_forwarding_header ( include/gpcxx/io.hpp include/gpcxx/io )
 create_forwarding_header ( include/gpcxx/operator.hpp include/gpcxx/operator )
 create_forwarding_header ( include/gpcxx/stat.hpp include/gpcxx/stat )
 create_forwarding_header ( include/gpcxx/tree.hpp include/gpcxx/tree include/gpcxx/tree/iterator )
+create_forwarding_header ( include/gpcxx/intrusive_nodes.hpp include/gpcxx/tree/intrusive_nodes )
 create_forwarding_header ( include/gpcxx/util.hpp include/gpcxx/util )
 
 if ( ${GPCXX_CHECK_HEADER_COMPILE} )

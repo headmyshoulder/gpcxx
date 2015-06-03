@@ -12,8 +12,8 @@
 #ifndef GPCXX_TEST_COMMON_TEST_FUNCTIONS_HPP_INCLUDED
 #define GPCXX_TEST_COMMON_TEST_FUNCTIONS_HPP_INCLUDED
 
-#include <gpcxx/tree/intrusive_named_func_node.hpp>
-#include <gpcxx/tree/intrusive_nary_named_func_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_named_func_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_nary_named_func_node.hpp>
 #include <gtest/gtest.h>
 
 template< typename T >

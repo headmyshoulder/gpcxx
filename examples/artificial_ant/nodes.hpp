@@ -15,6 +15,7 @@
 #include "simulation.hpp"
 
 #include <gpcxx/tree.hpp>
+#include <gpcxx/intrusive_nodes.hpp>
 
 #include <vector>
 
