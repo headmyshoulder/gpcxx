@@ -30,9 +30,11 @@ void write_population_json( std::ostream& out , Population const& pop , Fitness 
     for( size_t i=0 ; i<pop.size() ; ++i )
     {
         out << indent( indent_i + 1 ) << "{" << newline;
-        out << indent( indent_i + 2 ) << "\"tree\" : " << newline << gpcxx::json( pop[i] , newline , "  " , indent_i + 2 ) << " , " << newline;
-        out << indent( indent_i + 2 ) << "\"polish\" : \"" << gpcxx::polish( pop[i] , "|" ) << "\" ," << newline;
-        out << indent( indent_i + 2 ) << "\"fitness\" : " << fit[i] << newline;
+        out << indent( indent_i + 2 ) << R"("tree" : )" << newline << gpcxx::json( pop[i] , newline , "  " , indent_i + 2 ) << " , " << newline;
+        out << indent( indent_i + 2 ) << R"("polish" : ")" << gpcxx::polish( pop[i] , "|" ) << R"(" ,)" << newline;
+        out << indent( indent_i + 2 ) << R"("fitness" : )" << fit[i] << " , " << newline;
+        out << indent( indent_i + 2 ) << R"("size " : )" << pop[i].size() << " , " << newline;
+        out << indent( indent_i + 2 ) << R"("height" : )" << pop[i].root().height() << newline;
         out << indent( indent_i + 1 ) << "}";
         if( i != ( pop.size() -1 ) ) out << " , ";
         out << newline;

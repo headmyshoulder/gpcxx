@@ -29,6 +29,7 @@ TEST( TESTNAME , write  )
     population.push_back( trees.data );
     population.push_back( trees.data2 );
     population.push_back( trees.data3 );
+    population.push_back( tree_type {} );
     std::vector< double > fitness { 0.5 , 0.6 , 0.9 };
     
     std::ostringstream str;
@@ -67,7 +68,9 @@ TEST( TESTNAME , write  )
       ]
     } , 
     "polish" : "plus|sin|x|minus|y|2" ,
-    "fitness" : 0.5
+    "fitness" : 0.5 , 
+    "size " : 6 , 
+    "height" : 3
   } , 
   {
     "tree" : 
@@ -90,7 +93,9 @@ TEST( TESTNAME , write  )
       ]
     } , 
     "polish" : "minus|cos|y|x" ,
-    "fitness" : 0.6
+    "fitness" : 0.6 , 
+    "size " : 4 , 
+    "height" : 3
   } , 
   {
     "tree" : 
@@ -140,7 +145,9 @@ TEST( TESTNAME , write  )
       ]
     } , 
     "polish" : "plus3|sin|x|minus|y|2|minus|cos|y|x" ,
-    "fitness" : 0.9
+    "fitness" : 0.9 , 
+    "size " : 10 , 
+    "height" : 4
   }
 ])";
     EXPECT_EQ( ref , str.str() );
