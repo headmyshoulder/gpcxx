@@ -30,7 +30,7 @@ TEST( TESTNAME , write  )
     population.push_back( trees.data2 );
     population.push_back( trees.data3 );
     population.push_back( tree_type {} );
-    std::vector< double > fitness { 0.5 , 0.6 , 0.9 };
+    std::vector< double > fitness { 0.5 , 0.6 , 0.9 , 0.0 };
     
     std::ostringstream str;
     str << gpcxx::population_json( population , fitness );
@@ -148,6 +148,14 @@ TEST( TESTNAME , write  )
     "fitness" : 0.9 , 
     "size " : 10 , 
     "height" : 4
+  } , 
+  {
+    "tree" : 
+    {} , 
+    "polish" : "" ,
+    "fitness" : 0 , 
+    "size " : 0 , 
+    "height" : 0
   }
 ])";
     EXPECT_EQ( ref , str.str() );

@@ -34,7 +34,7 @@ void write_population_json( std::ostream& out , Population const& pop , Fitness 
         out << indent( indent_i + 2 ) << R"("polish" : ")" << gpcxx::polish( pop[i] , "|" ) << R"(" ,)" << newline;
         out << indent( indent_i + 2 ) << R"("fitness" : )" << fit[i] << " , " << newline;
         out << indent( indent_i + 2 ) << R"("size " : )" << pop[i].size() << " , " << newline;
-        out << indent( indent_i + 2 ) << R"("height" : )" << pop[i].root().height() << newline;
+        out << indent( indent_i + 2 ) << R"("height" : )" << ( pop[i].empty() ? 0 : pop[i].root().height() ) << newline;
         out << indent( indent_i + 1 ) << "}";
         if( i != ( pop.size() -1 ) ) out << " , ";
         out << newline;
