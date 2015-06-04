@@ -21,32 +21,31 @@ namespace gpcxx {
 
 namespace detail {
     
-    constexpr auto gpcxx_log = []( auto v )
+    struct gpcxx_log_impl
     {
-        decltype( v ) v2 = std::abs( v );
-        return ( v2 < 1.0e-20 ) ? std::log( 1.0e-20 ) : std::log( v2 );
+        template< typename T >
+        T operator()( T v ) const
+        {
+            T v2 = std::abs( v );
+            return ( v2 < 1.0e-20 ) ? std::log( 1.0e-20 ) : std::log( v2 );
+        }
     };
+    
+    static constexpr auto gpcxx_log = gpcxx_log_impl {};
 
-//     template< typename T >
-//     inline T gpcxx_log( T v )
-//     {
-//         T v2 = std::abs( v );
-//         return ( v2 < 1.0e-20 ) ? std::log( 1.0e-20 ) : std::log( v2 );
-//     }
-    
-    constexpr auto gpcxx_rlog = []( auto v )
+    struct gpcxx_rlog_impl
     {
-        decltype( v ) v2 = std::abs( v );
-        return ( v2 < 1.0e-20 ) ? 0.0 : std::log( v2 );
+        template< typename T >
+        T operator()( T v ) const
+        {
+            T v2 = std::abs( v );
+            return ( v2 < 1.0e-20 ) ? 0.0 : std::log( v2 );
+        }
     };
     
+    static constexpr auto gpcxx_rlog = gpcxx_rlog_impl {};
     
-//     template< typename T >
-//     inline T gpcxx_rlog( T v )
-//     {
-//         T v2 = std::abs( v );
-//         return ( v2 < 1.0e-20 ) ? 0.0 : std::log( v2 );
-//     }
+    
     
     
 } // namespace detail
