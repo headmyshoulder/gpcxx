@@ -46,16 +46,16 @@ void write_json_cursor( std::ostream& out , Cursor t , std::string const& newlin
     
     
 template< typename Tree , typename SymbolMapper >
-void write_json( std::ostream& out , Tree const& t , std::string const& newline , std::string const& indent , SymbolMapper const& mapper )
+void write_json( std::ostream& out , Tree const& t , std::string const& newline , std::string const& indent , size_t indent_i , SymbolMapper const& mapper )
 {
-    write_json_cursor( out , t.root() , newline , indent , 0 , mapper );
+    write_json_cursor( out , t.root() , newline , indent , indent_i , mapper );
 }
 
 template< typename Tree , typename SymbolMapper = gpcxx::identity >
 std::string json_string( Tree const& t , std::string const& newline = "\n" , std::string const& indent = "  " , SymbolMapper const& mapper = SymbolMapper {} )
 {
     std::ostringstream str;
-    write_json( str , t , newline , indent , mapper );
+    write_json( str , t , newline , indent , 0 , mapper );
     return str.str();
 }
 
@@ -68,13 +68,14 @@ struct json_writer
     Tree const& m_t;
     std::string const& m_newline;
     std::string const& m_indent;
+    size_t m_indent_i;
     SymbolMapper const& m_mapper;
-    json_writer( Tree const& t , std::string const& newline , std::string const& indent , SymbolMapper const& mapper )
-    : m_t( t ) , m_newline( newline ) , m_indent( indent ) , m_mapper( mapper ) { }
+    json_writer( Tree const& t , std::string const& newline , std::string const& indent , size_t indent_i , SymbolMapper const& mapper )
+    : m_t( t ) , m_newline( newline ) , m_indent( indent ) , m_indent_i( indent_i ) , m_mapper( mapper ) { }
 
     std::ostream& operator()( std::ostream& out ) const
     {
-        write_json( out , m_t , m_newline , m_indent , m_mapper );
+        write_json( out , m_t , m_newline , m_indent , m_indent_i , m_mapper );
         return out;
     }
 };
@@ -92,9 +93,9 @@ std::ostream& operator<<( std::ostream& out , json_writer< T , SymbolMapper > co
 
 
 template< typename T , typename SymbolMapper = gpcxx::identity >
-detail::json_writer< T , SymbolMapper > json( T const& t , std::string const& newline = "\n" , std::string const& indent= "  " , SymbolMapper const &mapper = SymbolMapper() )
+detail::json_writer< T , SymbolMapper > json( T const& t , std::string const& newline = "\n" , std::string const& indent= "  " , size_t indent_i = 0 , SymbolMapper const &mapper = SymbolMapper() )
 {
-    return detail::json_writer< T , SymbolMapper >( t , newline , indent , mapper );
+    return detail::json_writer< T , SymbolMapper >( t , newline , indent , indent_i , mapper );
 }
 
 

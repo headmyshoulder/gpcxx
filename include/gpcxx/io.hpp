@@ -19,6 +19,7 @@
 #include <gpcxx/io/json.hpp>
 #include <gpcxx/io/latex.hpp>
 #include <gpcxx/io/polish.hpp>
+#include <gpcxx/io/population_json.hpp>
 #include <gpcxx/io/simple.hpp>
 
 
