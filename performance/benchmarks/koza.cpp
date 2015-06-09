@@ -136,13 +136,17 @@ int main( int argc , char** argv )
         gpcxx::make_one_point_crossover_strategy( rng , 10 ) ,
         gpcxx::make_tournament_selector( rng , tournament_size ) );
     evolver.reproduction_function() = gpcxx::make_reproduce( gpcxx::make_tournament_selector( rng , tournament_size ) );
-
+    
+    std::ofstream fout { "koza_evolution.json" };
+    
     // init_population
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
         fitness[i] = fitness_f( population[i] , c );
     }
+    
+    fout << "[" << gpcxx::population_json( population , fitness , 1 , "\n" , false );
 
     std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;
     std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
@@ -158,7 +162,10 @@ int main( int argc , char** argv )
         std::cout << "Iteration " << i << std::endl;
         std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
         std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+        
+        fout << " , " << "\n" << gpcxx::population_json( population , fitness , 1 , "\n" , false );
     }
+    fout << "]" << "\n";
 
     return 0;
 }
