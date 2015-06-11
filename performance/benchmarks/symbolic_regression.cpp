@@ -1,5 +1,5 @@
 /*
- * koza.cpp
+ * symbolic_regression.cpp
  * Date: 2015-05-28
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,7 +9,7 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-
+#include "symbolic_regression_problems.hpp"
 
 #include <gpcxx/tree.hpp>
 #include <gpcxx/intrusive_nodes.hpp>
@@ -27,21 +27,6 @@
 #include <vector>
 #include <functional>
 
-template< typename Rng , typename F >
-gpcxx::regression_training_data< double , 1 > generate_test_data( Rng& rng , size_t  num_of_points , F f )
-{
-    gpcxx::regression_training_data< double , 1 > c;
-    std::uniform_real_distribution< double > dist( -1.0 , 1.0 );
-    for( size_t i=0 ; i<20 ; ++i )
-    {
-        double x = dist( rng );
-        c.y.push_back( f( x ) );
-        c.x[0].push_back( x );
-    }
-    return c;
-}
-
-
 
 int main( int argc , char** argv )
 {
@@ -49,14 +34,8 @@ int main( int argc , char** argv )
     std::random_device rd;
     rng_type rng { rd() };
 
-    auto koza1 = generate_test_data( rng , 20 , []( double x )
-            { return  x * x * x * x + x * x * x + x * x + x; } );
-    auto koza2 = generate_test_data( rng , 50 , []( double x )
-            { return x * x * x * x * x - 2.0 * x * x * x + x; } );
-    auto koza3 = generate_test_data( rng , 50 , []( double x )
-            { return x * x * x * x * x * x - 2.0 * x * x * x * x + x * x;  } );
-    
-    auto c = koza3;
+    // auto problem = generate_koza1( rng );  // koza1 - koza3 
+    auto problem = generate_nguyen9( rng );
     
     // define_tree_types
     using context_type = gpcxx::regression_context< double , 1 >;
@@ -73,7 +52,9 @@ int main( int argc , char** argv )
         return dist( rng ); } );
     auto terminal_gen = gpcxx::make_uniform_symbol_erc< node_type >(
         std::vector< node_type >{
-            node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" } } ,
+            node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" } ,
+            node_type { gpcxx::array_terminal< 1 >{}                                 ,      "y" }
+        } ,
         0.25 ,
         erc_gen );
 //     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
@@ -143,7 +124,7 @@ int main( int argc , char** argv )
     for( size_t i=0 ; i<population.size() ; ++i )
     {
         tree_generator( population[i] );
-        fitness[i] = fitness_f( population[i] , c );
+        fitness[i] = fitness_f( population[i] , problem );
     }
     
     fout << "[" << gpcxx::population_json( population , fitness , 1 , "\n" , false );
@@ -157,7 +138,7 @@ int main( int argc , char** argv )
     {
         evolver.next_generation( population , fitness );
         for( size_t i=0 ; i<population.size() ; ++i )
-            fitness[i] = fitness_f( population[i] , c );
+            fitness[i] = fitness_f( population[i] , problem );
         
         std::cout << "Iteration " << i << std::endl;
         std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;

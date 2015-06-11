@@ -1,1 +1,1 @@
-add_executable ( koza koza.cpp )
+add_executable ( symbolic_regression symbolic_regression.cpp )
