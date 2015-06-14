@@ -36,8 +36,7 @@ int main( int argc , char *argv[] )
     using rng_type = std::mt19937;
     rng_type rng;
     
-    gpcxx::regression_training_data< double , 3 > c;
-    gpcxx::generate_regression_test_data( c , 1024 , rng , []( double x1 , double x2 , double x3 )
+    auto c = gpcxx::generate_normal_distributed_test_data< 3 >( rng , 1024 , []( double x1 , double x2 , double x3 )
             { return  x1 * x1 * x1 + 1.0 / 10.0 * x2 * x2 - 3.0 / 4.0 * x3 + 1.0 ; } );
     //]
     

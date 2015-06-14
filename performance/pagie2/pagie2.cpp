@@ -24,6 +24,7 @@
 #include <gpcxx/stat/population_statistics.hpp>
 #include <gpcxx/app/timer.hpp>
 #include <gpcxx/app/normalize.hpp>
+#include <gpcxx/app/generate_evenly_space_test_data.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 
@@ -47,25 +48,6 @@ typedef std::vector< value_type > fitness_type;
 
 
 
-template< typename F >
-void generate_test_data( trainings_data_type &data, double rmin , double rmax , double stepsize , F f )
-{
-    data.x[0].clear(); data.x[1].clear(); data.x[2].clear(); data.y.clear();
-    
-    for( double xx = rmin ; xx <= rmax ; xx += stepsize )
-    {
-        for( double yy = rmin ; yy <= rmax ; yy += stepsize )
-        {
-            for( double zz = rmin ; zz <= rmax ; zz += stepsize )
-            {
-                data.x[0].push_back( xx );
-                data.x[1].push_back( yy );
-                data.x[2].push_back( zz );
-                data.y.push_back( f( xx , yy , zz ) );
-            }
-        }
-    }
-}
 
 
 namespace pl = std::placeholders;
@@ -75,8 +57,7 @@ int main( int argc , char *argv[] )
 {
     rng_type rng;
 
-    trainings_data_type c;
-    generate_test_data( c , -5.0 , 5.0 + 0.1 , 0.4 , []( double x1 , double x2 , double x3 ) {
+    trainings_data_type c = gpcxx::generate_evenly_spaced_test_data< 3 >( -5.0 , 5.0 + 0.1 , 0.4 , []( double x1 , double x2 , double x3 ) {
                         return  1.0 / ( 1.0 + pow( x1 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x2 , -4.0 ) ) + 1.0 / ( 1.0 + pow( x3 , -4.0 ) ); } );
     gpcxx::normalize( c.y );
     

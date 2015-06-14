@@ -52,8 +52,8 @@ int main( int argc , char** argv )
         return dist( rng ); } );
     auto terminal_gen = gpcxx::make_uniform_symbol_erc< node_type >(
         std::vector< node_type >{
-            node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" } ,
-            node_type { gpcxx::array_terminal< 1 >{}                                 ,      "y" }
+            node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" }
+       // , node_type { gpcxx::array_terminal< 1 >{}                                 ,      "y" }
         } ,
         0.25 ,
         erc_gen );
