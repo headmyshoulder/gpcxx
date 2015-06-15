@@ -7,6 +7,7 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 add_executable ( app_tests
   generate_evenly_spaced_test_data.cpp
+  generate_random_test_data.cpp
   )
 
 target_link_libraries ( app_tests gtest gtest_main )

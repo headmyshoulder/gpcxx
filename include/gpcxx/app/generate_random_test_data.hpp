@@ -45,6 +45,9 @@ auto generate_random_test_data( Rng& rng , size_t num_of_points , Params const& 
         dists[i] = boost::fusion::invoke( detail::factory< Dist >() , params[i] );
     
     regression_training_data< Value , Dim > data;
+    data.y.resize( num_of_points );
+    for( size_t d=0 ; d<Dim ; ++d ) data.x[d].resize( num_of_points );
+    
     for( size_t i=0 ; i<num_of_points ; ++i )
     {
         std::array< Value , Dim > arr;
