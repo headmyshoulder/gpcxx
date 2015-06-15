@@ -15,6 +15,7 @@
 
 #include <gpcxx/app/generate_evenly_space_test_data.hpp>
 #include <gpcxx/app/generate_normal_distributed_test_data.hpp>
+#include <gpcxx/app/generate_random_test_data.hpp>
 #include <gpcxx/app/generate_uniform_distributed_test_data.hpp>
 #include <gpcxx/app/normalize.hpp>
 #include <gpcxx/app/timer.hpp>
