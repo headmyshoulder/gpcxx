@@ -12,7 +12,7 @@
 #ifndef GPCXX_APP_GENERATE_UNIFORM_DISTRIBUTED_TEST_DATA_HPP_INCLUDED
 #define GPCXX_APP_GENERATE_UNIFORM_DISTRIBUTED_TEST_DATA_HPP_INCLUDED
 
-#include <gpcxx/eval/regression_fitness.hpp>
+#include <gpcxx/app/generate_random_test_data.hpp>
 #include <gpcxx/util/array_unpack.hpp>
 
 #include <array>
@@ -24,31 +24,23 @@
 
 namespace gpcxx {
 
-template< size_t Dim , typename Rng , typename F , typename Value = double >
-auto generate_uniform_distributed_test_data( Rng& rng , size_t num_of_points , std::array< std::pair< Value , Value > , Dim > const& bounds , F f )
+template< size_t Dim , typename Rng , typename Params , typename F , typename Value = double >
+auto generate_uniform_distributed_test_data( Rng& rng , size_t num_of_points , Params const& bounds , F f )
 {
-    gpcxx::regression_training_data< Value , Dim > c;
-    for( size_t j=0 ; j<num_of_points ; ++j )
-    {
-        std::array< Value , Dim > arr;
-        for( size_t i=0 ; i<Dim ; ++i )
-        {
-            std::uniform_real_distribution< Value > dist( bounds[i].first , bounds[i].second );
-            arr[i] = dist( rng );
-        }
-        c.y.push_back( gpcxx::array_unpack( arr , f ) );
-        for( size_t i=0 ; i<Dim ; ++i )
-            c.x[i].push_back( arr[i] );
-    }
-    return c;
+    return generate_random_test_data< Dim , std::uniform_real_distribution< Value > , Rng , Params , F , Value >( rng , num_of_points , bounds , f );
 }
 
 template< size_t Dim , typename Rng , typename F , typename Value = double >
 auto generate_uniform_distributed_test_data( Rng& rng , size_t num_of_points , Value min , Value max , F f )
 {
-    std::array< std::pair< Value , Value > , Dim > bounds;
-    std::for_each( bounds.begin() , bounds.end() , [min,max]( auto& bound ) { bound.first = min; bound.second = max; } );
-    return generate_uniform_distributed_test_data< Dim , Rng , F , Value >( rng , num_of_points , bounds , f );
+    using param_type = std::array< std::pair< Value , Value > , Dim >;
+    param_type bounds;
+    for( auto& bound : bounds )
+    {
+        bound.first = min;
+        bound.second = max;
+    }
+    return generate_uniform_distributed_test_data< Dim , Rng , param_type , F , Value >( rng , num_of_points , bounds , f );
 }
 
 template< size_t Dim , typename Rng , typename F , typename Value = double >

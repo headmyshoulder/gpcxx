@@ -35,7 +35,8 @@ int main( int argc , char** argv )
     rng_type rng { rd() };
 
     // auto problem = generate_koza1( rng );  // koza1 - koza3 
-    auto problem = generate_nguyen9( rng );
+    // auto problem = generate_nguyen9( rng );
+    auto problem = generate_pagie1();
     
     // define_tree_types
     using context_type = gpcxx::regression_context< double , 1 >;
@@ -53,16 +54,16 @@ int main( int argc , char** argv )
     auto terminal_gen = gpcxx::make_uniform_symbol_erc< node_type >(
         std::vector< node_type >{
             node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" }
-       // , node_type { gpcxx::array_terminal< 1 >{}                                 ,      "y" }
+          , node_type { gpcxx::array_terminal< 1 >{}                                 ,      "y" }
         } ,
         0.25 ,
         erc_gen );
-    auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
-        node_type { gpcxx::sin_func {}                                               ,      "sin" } ,
-        node_type { gpcxx::cos_func {}                                               ,      "cos" } ,
-        node_type { gpcxx::exp_func {}                                               ,      "exp" } ,
-        node_type { gpcxx::log_func {}                                               ,      "log" }
-    } );
+//     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
+//         node_type { gpcxx::sin_func {}                                               ,      "sin" } ,
+//         node_type { gpcxx::cos_func {}                                               ,      "cos" } ,
+//         node_type { gpcxx::exp_func {}                                               ,      "exp" } ,
+//         node_type { gpcxx::log_func {}                                               ,      "log" }
+//     } );
     auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::plus_func {}                                              ,      "+" } ,
         node_type { gpcxx::minus_func {}                                             ,      "-" } ,
@@ -71,9 +72,9 @@ int main( int argc , char** argv )
     } );
 
 
-    auto node_generator = gpcxx::node_generator< node_type , rng_type , 3 > {
+    auto node_generator = gpcxx::node_generator< node_type , rng_type , 2 > {
         { 1.0 , 0 , terminal_gen } ,
-        { 1.0 , 1 , unary_gen } ,
+//        { 1.0 , 1 , unary_gen } ,
         { 1.0 , 2 , binary_gen } };
         
     // define_gp_parameters
