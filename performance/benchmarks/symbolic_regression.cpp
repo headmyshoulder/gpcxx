@@ -10,6 +10,7 @@
  */
 
 #include "symbolic_regression_problems.hpp"
+#include "symbolic_regression_function_sets.hpp"
 
 #include <gpcxx/tree.hpp>
 #include <gpcxx/intrusive_nodes.hpp>
@@ -43,39 +44,8 @@ int main( int argc , char** argv )
     using node_type = gpcxx::intrusive_named_func_node< double , const context_type > ;
     using tree_type = gpcxx::intrusive_tree< node_type >;
     
-    
     // define node types
-//     auto terminal_gen = gpcxx::make_uniform_symbol( std::vector< node_type >{
-//         node_type { gpcxx::array_terminal< 0 >{}                                     ,      "x" }
-//     } );
-    auto erc_gen = gpcxx::make_intrusive_erc_generator< node_type >( []( auto& rng ) {
-        std::uniform_real_distribution<> dist( -1.0 , 1.0 );
-        return dist( rng ); } );
-    auto terminal_gen = gpcxx::make_uniform_symbol_erc< node_type >(
-        std::vector< node_type >{
-            node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" }
-          , node_type { gpcxx::array_terminal< 1 >{}                                 ,      "y" }
-        } ,
-        0.25 ,
-        erc_gen );
-//     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
-//         node_type { gpcxx::sin_func {}                                               ,      "sin" } ,
-//         node_type { gpcxx::cos_func {}                                               ,      "cos" } ,
-//         node_type { gpcxx::exp_func {}                                               ,      "exp" } ,
-//         node_type { gpcxx::log_func {}                                               ,      "log" }
-//     } );
-    auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
-        node_type { gpcxx::plus_func {}                                              ,      "+" } ,
-        node_type { gpcxx::minus_func {}                                             ,      "-" } ,
-        node_type { gpcxx::multiplies_func {}                                        ,      "*" } ,
-        node_type { gpcxx::divides_func {}                                           ,      "/" }
-    } );
-
-
-    auto node_generator = gpcxx::node_generator< node_type , rng_type , 2 > {
-        { 1.0 , 0 , terminal_gen } ,
-//        { 1.0 , 1 , unary_gen } ,
-        { 1.0 , 2 , binary_gen } };
+    auto node_generator = koza_function_set< node_type , rng_type , 2 , false >();
         
     // define_gp_parameters
     size_t population_size = 4000;
