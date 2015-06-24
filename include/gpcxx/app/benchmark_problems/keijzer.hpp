@@ -12,7 +12,7 @@
 #ifndef GPCXX_APP_BENCHMARK_PROBLEMS_KEIJZER_HPP_INCLUDED
 #define GPCXX_APP_BENCHMARK_PROBLEMS_KEIJZER_HPP_INCLUDED
 
-#include <gpcxx/app/generate_evenly_space_test_data.hpp>
+#include <gpcxx/app/generate_evenly_spaced_test_data.hpp>
 #include <gpcxx/app/generate_uniform_distributed_test_data.hpp>
 
 #include <boost/math/constants/constants.hpp>
@@ -78,7 +78,7 @@ auto generate_keijzer4( void ) {
 template< typename Rng >
 auto generate_keijzer5( Rng& rng ) {
     return gpcxx::generate_uniform_distributed_test_data< 3 >( rng , 1000 ,
-        {{ std::make_pair( -1.0 , 1.0 ) , std::make_pair( 1.0 , 2.0 ) , std::make_pair( -1.0 , 1.0 )  }} ,
+        std::array< std::pair< double , double > , 3 >{{ std::make_pair( -1.0 , 1.0 ) , std::make_pair( 1.0 , 2.0 ) , std::make_pair( -1.0 , 1.0 )  }} ,
         keijzer_func6 );
 }
 

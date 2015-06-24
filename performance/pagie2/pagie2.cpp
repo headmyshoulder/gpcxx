@@ -24,7 +24,7 @@
 #include <gpcxx/stat/population_statistics.hpp>
 #include <gpcxx/app/timer.hpp>
 #include <gpcxx/app/normalize.hpp>
-#include <gpcxx/app/generate_evenly_space_test_data.hpp>
+#include <gpcxx/app/generate_evenly_spaced_test_data.hpp>
 
 #include <boost/fusion/include/make_vector.hpp>
 

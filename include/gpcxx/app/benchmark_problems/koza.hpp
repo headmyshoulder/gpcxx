@@ -27,15 +27,15 @@ inline double koza_func3( double x ) { return x * x * x * x * x * x - 2.0 * x * 
 
 template< typename Rng >
 auto generate_koza1( Rng& rng ) {
-    return generate_uniform_distributed_test_data< 1 >( rng , 20 , {{ std::make_pair( -1.0 , 1.0 ) }} , koza_func1 ); }
+    return generate_uniform_distributed_test_data< 1 >( rng , 20 , -1.0 , 1.0 , koza_func1 ); }
 
 template< typename Rng >
 auto generate_koza2( Rng& rng ) {
-    return generate_uniform_distributed_test_data< 1 >( rng , 20 , {{ std::make_pair( -1.0 , 1.0 ) }} , koza_func2 ); }
+    return generate_uniform_distributed_test_data< 1 >( rng , 20 , -1.0 , 1.0 , koza_func2 ); }
 
 template< typename Rng >
 auto generate_koza3( Rng& rng ) {
-    return generate_uniform_distributed_test_data< 1 >( rng , 20 , {{ std::make_pair( -1.0 , 1.0 ) }} , koza_func3 ); }
+    return generate_uniform_distributed_test_data< 1 >( rng , 20 , -1.0 , 1.0 , koza_func3 ); }
 
 
 

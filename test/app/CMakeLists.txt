@@ -6,6 +6,7 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 
 add_executable ( app_tests
+  benchmark_problems.cpp
   generate_evenly_spaced_test_data.cpp
   generate_random_test_data.cpp
   )

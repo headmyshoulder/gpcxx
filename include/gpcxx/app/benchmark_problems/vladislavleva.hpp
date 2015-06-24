@@ -13,7 +13,7 @@
 #define GPCXX_APP_BENCHMARK_PROBLEMS_VLADISLAVLEVA_HPP_INCLUDED
 
 #include <gpcxx/app/generate_uniform_distributed_test_data.hpp>
-#include <gpcxx/app/generate_evenly_space_test_data.hpp>
+#include <gpcxx/app/generate_evenly_spaced_test_data.hpp>
 
 #include <cmath>
 
@@ -57,7 +57,9 @@ auto generate_vladislavleva2( void ) {
     return generate_evenly_spaced_test_data< 1 >( 0.05 , 10.0 , 0.1 , vladislavleva_func2 ); }
 
 auto generate_vladislavleva3( void ) {
-    return generate_evenly_spaced_test_data< 2 >( {{ std::make_tuple( 0.05 , 10.0 , 0.1 ) , std::make_tuple( 0.05 , 10.05 , 2.0 ) }} , vladislavleva_func3 ); }
+    return generate_evenly_spaced_test_data< 2 >(
+        std::array< std::tuple< double , double , double > , 2 >{{ std::make_tuple( 0.05 , 10.0 , 0.1 ) , std::make_tuple( 0.05 , 10.05 , 2.0 ) }}
+      , vladislavleva_func3 ); }
 
 template< typename Rng >
 auto generate_vladislavleva4( Rng& rng ) {
@@ -66,7 +68,8 @@ auto generate_vladislavleva4( Rng& rng ) {
 template< typename Rng >
 auto generate_vladislavleva5( Rng& rng ) {
     return generate_uniform_distributed_test_data< 3 >( rng , 300 ,
-        {{ std::make_pair( 0.05 , 2.0 ) , std::make_pair( 1.0 , 2.0 ) , std::make_tuple( 0.05 , 2.0 ) }} , vladislavleva_func5 ); }
+        std::array< std::pair< double , double > , 3 > {{ std::make_pair( 0.05 , 2.0 ) , std::make_pair( 1.0 , 2.0 ) , std::make_pair( 0.05 , 2.0 ) }}
+      , vladislavleva_func5 ); }
 
 template< typename Rng >
 auto generate_vladislavleva6( Rng& rng ) {

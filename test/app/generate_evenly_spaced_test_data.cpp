@@ -4,7 +4,7 @@
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  */
 
-#include <gpcxx/app/generate_evenly_space_test_data.hpp>
+#include <gpcxx/app/generate_evenly_spaced_test_data.hpp>
 
 #include <gtest/gtest.h>
 

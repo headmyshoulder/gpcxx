@@ -12,7 +12,7 @@
 #ifndef GPCXX_APP_BENCHMARK_PROBLEMS_PAGIE_HPP_INCLUDED
 #define GPCXX_APP_BENCHMARK_PROBLEMS_PAGIE_HPP_INCLUDED
 
-#include <gpcxx/app/generate_evenly_space_test_data.hpp>
+#include <gpcxx/app/generate_evenly_spaced_test_data.hpp>
 
 namespace gpcxx {
     

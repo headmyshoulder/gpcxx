@@ -1,5 +1,5 @@
 /*
- * gpcxx/app/generate_evenly_space_test_data.hpp
+ * gpcxx/app/generate_evenly_spaced_test_data.hpp
  * Date: 2015-06-14
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_APP_GENERATE_EVENLY_SPACE_TEST_DATA_HPP_INCLUDED
-#define GPCXX_APP_GENERATE_EVENLY_SPACE_TEST_DATA_HPP_INCLUDED
+#ifndef GPCXX_APP_GENERATE_EVENLY_SPACED_TEST_DATA_HPP_INCLUDED
+#define GPCXX_APP_GENERATE_EVENLY_SPACED_TEST_DATA_HPP_INCLUDED
 
 #include <gpcxx/eval/regression_fitness.hpp>
 #include <gpcxx/util/array_unpack.hpp>
@@ -69,4 +69,4 @@ auto generate_evenly_spaced_test_data( Value min , Value max , Value stepsize , 
 } // namespace gpcxx
 
 
-#endif // GPCXX_APP_GENERATE_EVENLY_SPACE_TEST_DATA_HPP_INCLUDED
+#endif // GPCXX_APP_GENERATE_EVENLY_SPACED_TEST_DATA_HPP_INCLUDED
