@@ -14,6 +14,7 @@
 
 
 #include <gpcxx/app/benchmark_problems/keijzer.hpp>
+#include <gpcxx/app/benchmark_problems/korns.hpp>
 #include <gpcxx/app/benchmark_problems/koza.hpp>
 #include <gpcxx/app/benchmark_problems/nguyen.hpp>
 #include <gpcxx/app/benchmark_problems/pagie.hpp>

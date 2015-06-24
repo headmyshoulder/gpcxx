@@ -19,6 +19,7 @@
 #include <gpcxx/eval.hpp>
 #include <gpcxx/evolve.hpp>
 #include <gpcxx/generate.hpp>
+#include <gpcxx/gpcxx.hpp>
 #include <gpcxx/intrusive_nodes.hpp>
 #include <gpcxx/io.hpp>
 #include <gpcxx/operator.hpp>

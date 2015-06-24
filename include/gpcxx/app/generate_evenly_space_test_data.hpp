@@ -41,7 +41,7 @@ void iterate( gpcxx::regression_training_data< Value , Dim >& data , std::array<
 }
 
 
-}
+} // namespace generate_detail
 
 template< size_t Dim , typename F , typename Value = double >
 auto generate_evenly_spaced_test_data( std::array< std::tuple< Value , Value , Value > , Dim > const& params , F f )
