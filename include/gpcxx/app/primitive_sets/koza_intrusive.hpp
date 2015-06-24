@@ -1,6 +1,6 @@
 /*
- * gpcxx/performance/benchmarks/symbolic_regression_function_sets.hpp
- * Date: 2015-06-16
+ * gpcxx/app/primitive_sets/koza_intrusive.hpp
+ * Date: 2015-06-24
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
  *
@@ -9,8 +9,9 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_PERFORMANCE_BENCHMARKS_SYMBOLIC_REGRESSION_FUNCTION_SETS_HPP_INCLUDED
-#define GPCXX_PERFORMANCE_BENCHMARKS_SYMBOLIC_REGRESSION_FUNCTION_SETS_HPP_INCLUDED
+#ifndef GPCXX_APP_PRIMITIVE_SETS_KOZA_INTRUSIVE_HPP_INCLUDED
+#define GPCXX_APP_PRIMITIVE_SETS_KOZA_INTRUSIVE_HPP_INCLUDED
+
 
 #include <gpcxx/generate/uniform_symbol.hpp>
 #include <gpcxx/generate/uniform_symbol_erc.hpp>
@@ -18,9 +19,13 @@
 #include <gpcxx/tree/intrusive_erc_generator.hpp>
 #include <gpcxx/tree/intrusive_functions.hpp>
 
-#include <random>
 
 
+namespace gpcxx {
+
+    
+namespace detail {
+    
 template< typename Node , size_t NumTerminals >
 struct koza_variable_set_generator;
 
@@ -78,10 +83,12 @@ constexpr auto koza_terminal_set( std::false_type )
     return gpcxx::make_uniform_symbol( koza_variable_set_generator< Node , NumTerminals >::generate() );
 }
 
+} // namespace detail
+
 template< typename Node , typename Rng , size_t NumTerminals , bool Erc >
-constexpr auto koza_function_set( void )
+constexpr auto koza_intrusive_primitve_set( void )
 {
-    auto terminal_gen = koza_terminal_set< Node , NumTerminals >( std::integral_constant< bool, Erc >{} );
+    auto terminal_gen = detail::koza_terminal_set< Node , NumTerminals >( std::integral_constant< bool, Erc >{} );
 
     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< Node > {
         Node { gpcxx::sin_func {}                                               ,      "sin" } ,
@@ -106,9 +113,7 @@ constexpr auto koza_function_set( void )
 
 
 
+} // namespace gpcxx
 
 
-
-
-
-#endif // GPCXX_PERFORMANCE_BENCHMARKS_SYMBOLIC_REGRESSION_FUNCTION_SETS_HPP_INCLUDED
+#endif // GPCXX_APP_PRIMITIVE_SETS_KOZA_INTRUSIVE_HPP_INCLUDED

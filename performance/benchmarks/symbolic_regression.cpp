@@ -9,9 +9,6 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include "symbolic_regression_problems.hpp"
-#include "symbolic_regression_function_sets.hpp"
-
 #include <gpcxx/tree.hpp>
 #include <gpcxx/intrusive_nodes.hpp>
 #include <gpcxx/generate.hpp>
@@ -21,7 +18,8 @@
 #include <gpcxx/io.hpp>
 #include <gpcxx/stat.hpp>
 #include <gpcxx/app.hpp>
-
+#include <gpcxx/benchmark_problems.hpp>
+#include <gpcxx/primitive_sets.hpp>
 
 #include <iostream>
 #include <random>
@@ -37,7 +35,7 @@ int main( int argc , char** argv )
 
     // auto problem = generate_koza1( rng );  // koza1 - koza3 
     // auto problem = generate_nguyen9( rng );
-    auto problem = generate_pagie1();
+    auto problem = gpcxx::generate_pagie1();
     
     // define_tree_types
     using context_type = gpcxx::regression_context< double , 1 >;
@@ -45,7 +43,7 @@ int main( int argc , char** argv )
     using tree_type = gpcxx::intrusive_tree< node_type >;
     
     // define node types
-    auto node_generator = koza_function_set< node_type , rng_type , 2 , false >();
+    auto node_generator = gpcxx::koza_intrusive_primitve_set< node_type , rng_type , 2 , false >();
         
     // define_gp_parameters
     size_t population_size = 4000;
