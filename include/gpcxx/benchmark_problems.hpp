@@ -18,6 +18,7 @@
 #include <gpcxx/app/benchmark_problems/koza.hpp>
 #include <gpcxx/app/benchmark_problems/nguyen.hpp>
 #include <gpcxx/app/benchmark_problems/pagie.hpp>
+#include <gpcxx/app/benchmark_problems/vladislavleva.hpp>
 
 
 #endif // GPCXX_BENCHMARK_PROBLEMS_HPP_DEFINED

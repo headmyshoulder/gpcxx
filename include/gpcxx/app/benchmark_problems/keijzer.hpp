@@ -100,44 +100,32 @@ auto generate_keijzer9( void ) {
 
 template< typename Rng >
 auto generate_keijzer10( Rng& rng ) {
-    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 100 ,
-        {{ std::make_pair( 0.0 , 1.0 ) , std::make_pair( 0.0 , 1.0 ) }} ,
-        keijzer_func11 );
+    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 100 , 0.0 , 1.0 , keijzer_func11 );
 }
 
 template< typename Rng >
 auto generate_keijzer11( Rng& rng ) {
-    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 ,
-        {{ std::make_pair( -3.0 , 3.0 ) , std::make_pair( -3.0 , 3.0 ) }} ,
-        keijzer_func12 );
+    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 , -3.0 , 3.0 , keijzer_func12 );
 }
 
 template< typename Rng >
 auto generate_keijzer12( Rng& rng ) {
-    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 ,
-        {{ std::make_pair( -3.0 , 3.0 ) , std::make_pair( -3.0 , 3.0 ) }} ,
-        keijzer_func13 );
+    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 , -3.0 , 3.0 , keijzer_func13 );
 }
 
 template< typename Rng >
 auto generate_keijzer13( Rng& rng ) {
-    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 ,
-        {{ std::make_pair( -3.0 , 3.0 ) , std::make_pair( -3.0 , 3.0 ) }} ,
-        keijzer_func14 );
+    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 , -3.0 , 3.0 , keijzer_func14 );
 }
 
 template< typename Rng >
 auto generate_keijzer14( Rng& rng ) {
-    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 ,
-        {{ std::make_pair( -3.0 , 3.0 ) , std::make_pair( -3.0 , 3.0 ) }} ,
-        keijzer_func15 );
+    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 , -3.0 , 3.0 , keijzer_func15 );
 }
 
 template< typename Rng >
 auto generate_keijzer15( Rng& rng ) {
-    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 ,
-        {{ std::make_pair( -3.0 , 3.0 ) , std::make_pair( -3.0 , 3.0 ) }} ,
-        keijzer_func16 );
+    return gpcxx::generate_uniform_distributed_test_data< 2 >( rng , 20 , -3.0 , 3.0 , keijzer_func16 );
 }
 
 

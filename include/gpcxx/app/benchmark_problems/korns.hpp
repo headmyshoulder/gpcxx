@@ -65,15 +65,10 @@ double korns_func15( double x0 , double x1 , double x2 , double x3 , double x4 )
     return 12.0 - 6.0 * tan( x0 ) / exp( x1 ) * ( log( x2 ) - tan( x3 ) ); }
 
 
-#define GPCXX_GENERATE_KORNS( I )                                        \
-template< typename Rng >                                                 \
-auto generate_korns ## I ( Rng& rng ) {                                      \
-    return generate_uniform_distributed_test_data< 5 >( rng , 1000 ,     \
-        {{ std::make_pair( -50 , 50.0 )                                  \
-         , std::make_pair( -50 , 50.0 )                                  \
-         , std::make_pair( -50 , 50.0 )                                  \
-         , std::make_pair( -50 , 50.0 )                                  \
-         , std::make_pair( -50 , 50.0 ) }} , korns_func ## I ); }
+#define GPCXX_GENERATE_KORNS( I )                                                                         \
+template< typename Rng >                                                                                  \
+auto generate_korns ## I ( Rng& rng ) {                                                                   \
+    return generate_uniform_distributed_test_data< 5 >( rng , 1000 , -50.0 , 50.0 , korns_func ## I ); }
          
 GPCXX_GENERATE_KORNS(  1 )
 GPCXX_GENERATE_KORNS(  2 )
