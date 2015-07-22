@@ -103,6 +103,17 @@ public:
     {
         return ( ! valid_child( i ) );
     }
+    
+    container_type& get_children( void ) 
+    {
+        return m_children;
+    }
+    
+    container_type const& get_children( void ) const
+    {
+        return m_children;
+    }
+
 
     
 protected:
@@ -179,6 +190,17 @@ public:
         assert( i < max_arity );
         return ( m_children[i] == nullptr );
     }
+    
+    container_type& get_children( void ) 
+    {
+        return m_children;
+    }
+    
+    container_type const& get_children( void ) const
+    {
+        return m_children;
+    }
+    
 
     
 private:
