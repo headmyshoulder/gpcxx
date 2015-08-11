@@ -8,6 +8,7 @@
 #define ONE_POINT_CROSSOVER_STRATEGY_H_INCLUDED
 
 #include <gpcxx/operator/detail/operator_base.hpp>
+#include <gpcxx/tree/cursor_equal.hpp>
 
 #include <random>
 #include <stdexcept>

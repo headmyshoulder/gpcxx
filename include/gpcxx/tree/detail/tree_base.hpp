@@ -15,6 +15,7 @@
 // 
 #include <gpcxx/tree/detail/tree_base_cursor.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
+#include <gpcxx/tree/cursor_equal.hpp>
 #include <gpcxx/util/exception.hpp>
 
 #include <boost/mpl/and.hpp>
@@ -598,7 +599,7 @@ template< typename Node , typename Allocator >
 bool operator==( tree_base< Node , Allocator > const& x , tree_base< Node , Allocator > const& y )
 {
     if( x.size() != y.size() ) return false;
-    return detail::cursor_equal( x.root() , y.root() );
+    return cursor_equal( x.root() , y.root() );
 }
 
 template< typename Node , typename Allocator >
@@ -625,7 +626,6 @@ void swap_subtrees( tree_base< Node , Allocator >& t1 ,
 {
     t1.swap_subtrees( c1 , t2 , c2 );
 }
-
 
 
 
