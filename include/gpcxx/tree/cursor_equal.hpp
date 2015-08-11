@@ -12,6 +12,7 @@
 #ifndef GPCXX_TREE_CURSOR_EQUAL_HPP_INCLUDED
 #define GPCXX_TREE_CURSOR_EQUAL_HPP_INCLUDED
 
+#include <cstddef>
 
 namespace gpcxx {
 
