@@ -23,6 +23,7 @@
 #include <gpcxx/tree/iterator/iterator_base.hpp>
 #include <gpcxx/tree/iterator/postorder_iterator.hpp>
 #include <gpcxx/tree/iterator/preorder_iterator.hpp>
+#include <gpcxx/tree/transform_tree.hpp>
 
 
 #endif // GPCXX_TREE_HPP_DEFINED

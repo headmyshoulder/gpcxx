@@ -13,9 +13,10 @@ add_executable ( tree_tests
   preorder_iterator.cpp
   postorder_iterator.cpp
   tree_base.cpp
+  transform_tree.cpp
   )
 
-target_link_libraries ( tree_tests gtest gtest_main )
+target_link_libraries ( tree_tests gtest gtest_main gmock )
 
 add_test( NAME tree_tests COMMAND tree_tests )
 
