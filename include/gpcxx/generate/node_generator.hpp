@@ -50,7 +50,7 @@ public:
     node_generator( weighted_generator_type gen1 )
     : m_generators { { std::move( gen1 ) } }
     {
-        static_GPCXX_ASSERT( dim == 1 , "Dimension must be one." );
+        static_assert( dim == 1 , "Dimension must be one." );
         prepare();
     }
     
@@ -58,7 +58,7 @@ public:
     node_generator( weighted_generator_type gen1 , weighted_generator_type gen2 )
     : m_generators { { std::move( gen1 ) , std::move( gen2 ) } }
     {
-        static_GPCXX_ASSERT( dim == 2 , "Dimension must be two." );
+        static_assert( dim == 2 , "Dimension must be two." );
         prepare();
     }
     
@@ -66,7 +66,7 @@ public:
     node_generator( weighted_generator_type gen1 , weighted_generator_type gen2 , weighted_generator_type gen3 )
     : m_generators { { std::move( gen1 ) , std::move( gen2 ) , std::move( gen3 ) } }
     {
-        static_GPCXX_ASSERT( dim == 3 , "Dimension must be three." );
+        static_assert( dim == 3 , "Dimension must be three." );
         prepare();
     }
     
@@ -74,7 +74,7 @@ public:
     node_generator( generator_type terminal )
     : m_generators { { { 1.0 , 0 , std::move( terminal ) } } }
     {
-        static_GPCXX_ASSERT( dim == 1 , "Dimension must be one." );
+        static_assert( dim == 1 , "Dimension must be one." );
         prepare();
     }
     
@@ -85,7 +85,7 @@ public:
         { 1.0 , 1 , std::move( unary ) }
         } }
     {
-        static_GPCXX_ASSERT( dim == 2 , "Dimension must be two." );
+        static_assert( dim == 2 , "Dimension must be two." );
         prepare();
     }
     
@@ -97,7 +97,7 @@ public:
         { 1.0 , 2 , std::move( binary ) }
         } }
     {
-        static_GPCXX_ASSERT( dim == 3 , "Dimension must be three." );
+        static_assert( dim == 3 , "Dimension must be three." );
         prepare();
     }
     
