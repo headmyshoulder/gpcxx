@@ -17,12 +17,12 @@
 #include <gpcxx/tree/cursor_traits.hpp>
 #include <gpcxx/tree/cursor_equal.hpp>
 #include <gpcxx/util/exception.hpp>
+#include <gpcxx/util/assert.hpp>
 
 #include <boost/mpl/and.hpp>
 
 #include <type_traits>
 #include <queue>
-#include <cassert>
 #include <memory>
 
 
@@ -377,7 +377,7 @@ public:
     
     void swap_subtrees( cursor c1 , tree_base& other , cursor c2 )
     {
-        assert( c1.valid() && c2.valid() );
+        GPCXX_ASSERT( c1.valid() && c2.valid() );
         
         node_base_pointer parent1 = c1.parent_node();
         node_base_pointer parent2 = c2.parent_node();
@@ -426,7 +426,7 @@ public:
     
     void move_subtree( const_cursor position , const_cursor subtree )
     {
-        assert( position.valid() && subtree.valid() );
+        GPCXX_ASSERT( position.valid() && subtree.valid() );
         
         node_pointer node1 = const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.node() ) );
         const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.parent_node() ) )->remove_child( node1 );
@@ -453,7 +453,7 @@ private:
     
     void erase_without_removing_child( const_cursor position )
     {
-        assert( position.valid() );
+        GPCXX_ASSERT( position.valid() );
         
         --m_size;
         
@@ -540,11 +540,11 @@ private:
     cursor insert_into_empty_node( const_cursor position , node_pointer new_node )
     {
             node_base_pointer parent = const_cast< node_base_pointer >( position.parent_node() );
-            assert( parent->size() == 0 );
+            GPCXX_ASSERT( parent->size() == 0 );
             
             new_node->set_parent_node( parent );
             size_type index = parent->attach_child( new_node );
-            assert( index == 0 );
+            GPCXX_ASSERT( index == 0 );
             return cursor( parent , index );
     }
     
@@ -575,7 +575,7 @@ private:
             cursor_queue.pop();
             --remaining;
         }
-        assert( !cursor_queue.empty() );
+        GPCXX_ASSERT( !cursor_queue.empty() );
         return cursor_queue.front();
     }
     

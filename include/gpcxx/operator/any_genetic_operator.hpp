@@ -12,9 +12,10 @@
 #ifndef GPCXX_OPERATOR_ANY_GENETIC_OPERATOR_HPP_INCLUDED
 #define GPCXX_OPERATOR_ANY_GENETIC_OPERATOR_HPP_INCLUDED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <vector>
 #include <memory>
-#include <cassert>
 #include <utility>
 #include <type_traits>
 
@@ -111,26 +112,26 @@ public:
     
     value_vector_type operator()( population_type const& pop , fitness_type const& fitness )
     {
-        assert( m_data );
+        GPCXX_ASSERT( m_data );
         return m_data->op( pop , fitness );
     }
     
     selection_type selection( population_type const& pop , fitness_type const& fitness )
     {
-        assert( m_data );
+        GPCXX_ASSERT( m_data );
         return m_data->selection( pop , fitness );
     }
     
     value_vector_type operation( selection_type const& selection )
     {
-        assert( m_data );
+        GPCXX_ASSERT( m_data );
         return m_data->op( selection );
     }
     
     // find better name
     size_t arity( void ) const
     {
-        assert( m_data );
+        GPCXX_ASSERT( m_data );
         return m_data->arity();
     }
     

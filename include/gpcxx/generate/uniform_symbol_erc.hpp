@@ -12,6 +12,8 @@
 #ifndef GPCXX_GENERATE_UNIFORM_SYMBOL_ERC_HPP_DEFINED
 #define GPCXX_GENERATE_UNIFORM_SYMBOL_ERC_HPP_DEFINED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <boost/variant.hpp>
 
 #include <random>
@@ -30,8 +32,8 @@ struct uniform_symbol_erc
     uniform_symbol_erc( Symbols const& symbols , double prob_fraction_erc , erc_dist_type const& erc_dist )
     : m_symbols( symbols.begin() , symbols.end() ) , m_prob_fraction_erc( prob_fraction_erc ) , m_erc_dist( erc_dist )
     {
-        assert( !m_symbols.empty() );
-        assert( m_prob_fraction_erc > 0.0 );
+        GPCXX_ASSERT( !m_symbols.empty() );
+        GPCXX_ASSERT( m_prob_fraction_erc > 0.0 );
     }
 
     template< typename Rng >
@@ -51,7 +53,7 @@ struct uniform_symbol_erc
     template< typename Rng >
     result_type random_symbol( Rng &rng ) const
     {
-        assert( !m_symbols.empty() );
+        GPCXX_ASSERT( !m_symbols.empty() );
         std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
         return m_symbols[ dist( rng ) ];
     }

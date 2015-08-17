@@ -14,6 +14,7 @@
 
 
 #include <gpcxx/util/array_unpack.hpp>
+#include <gpcxx/util/assert.hpp>
 #include <gpcxx/util/create_random_indices.hpp>
 #include <gpcxx/util/exception.hpp>
 #include <gpcxx/util/identity.hpp>

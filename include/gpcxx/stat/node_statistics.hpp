@@ -12,8 +12,9 @@
 #ifndef GPCXX_STAT_NODE_STATISTICS_HPP_INCLUDED
 #define GPCXX_STAT_NODE_STATISTICS_HPP_INCLUDED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <ostream>
-#include <cassert>
 
 
 
@@ -37,7 +38,7 @@ namespace detail
         if( n.size() == 0 ) stat.num_terminals++;
         else if( n.size() == 1 ) stat.num_unaries++;
         else if( n.size() == 2 ) stat.num_binaries++;
-        else assert( false );
+        else GPCXX_ASSERT( false );
         for( size_t i=0 ; i<n.size() ; ++i ) update_statistics( n.children(i) , stat );
     }
 }
@@ -53,7 +54,7 @@ node_statistics calc_node_statistics_tree( Tree const& tree )
 template< typename Pop >
 node_statistics calc_node_statistics( Pop const& pop )
 {
-    assert( pop.size() > 0 );
+    GPCXX_ASSERT( pop.size() > 0 );
 
     size_t n = pop.size();
 

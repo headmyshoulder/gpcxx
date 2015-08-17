@@ -13,18 +13,18 @@
 #define GPCXX_PERFORMANCE_BENCHMARKS_WRITE_POPULATION_JSON_HPP_INCLUDED
 
 #include <gpcxx/util/indent.hpp>
+#include <gpcxx/util/assert.hpp>
 #include <gpcxx/io/json.hpp>
 #include <gpcxx/io/polish.hpp>
 
 #include <ostream>
-#include <cassert>
 
 namespace gpcxx {
     
 template< typename Population , typename Fitness >
 void write_population_json( std::ostream& out , Population const& pop , Fitness const& fit , size_t indent_i , std::string const& newline , bool write_tree_json )
 {
-    assert( pop.size() == fit.size() );
+    GPCXX_ASSERT( pop.size() == fit.size() );
     
     out << indent( indent_i ) << "[" << newline;
     for( size_t i=0 ; i<pop.size() ; ++i )

@@ -12,10 +12,11 @@
 #ifndef GPCXX_EVOLVE_DYNAMIC_PIPELINE_HPP_INCLUDED
 #define GPCXX_EVOLVE_DYNAMIC_PIPELINE_HPP_INCLUDED
 
-#include <gpcxx/util/sort_indices.hpp>
 #include <gpcxx/operator/any_genetic_operator.hpp>
+#include <gpcxx/util/sort_indices.hpp>
+#include <gpcxx/util/assert.hpp>
 
-#include <cassert>
+
 #include <random>
 #include <vector>
 #include <functional>
@@ -47,7 +48,7 @@ public:
     
     void add_operator( genetic_operator_type const& op , double rate )
     {
-        assert( op.arity() > 0 );
+        GPCXX_ASSERT( op.arity() > 0 );
         m_operators.push_back( op );
         m_rates.push_back( rate / double( op.arity() ) );
     }
@@ -72,9 +73,9 @@ private:
 
     void reproduce( population_type& pop , fitness_type& fitness )
     {
-        assert( pop.size() == fitness.size() );
-        assert( m_rates.size() == m_operators.size() );
-        assert( m_operators.size() > 0 );
+        GPCXX_ASSERT( pop.size() == fitness.size() );
+        GPCXX_ASSERT( m_rates.size() == m_operators.size() );
+        GPCXX_ASSERT( m_operators.size() > 0 );
 
         std::vector< size_t > indices;
         sort_indices( fitness , indices );

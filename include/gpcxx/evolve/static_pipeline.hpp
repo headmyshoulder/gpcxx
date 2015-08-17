@@ -13,9 +13,10 @@
 #define GPCXX_EVOLVE_STATIC_PIPELINE_HPP_DEFINED
 
 #include <gpcxx/util/sort_indices.hpp>
+#include <gpcxx/util/assert.hpp>
 
 #include <functional>
-#include <cassert>
+
 
 
 namespace gpcxx {
@@ -61,7 +62,7 @@ private:
 
     void reproduce( population_type &pop , fitness_type &fitness )
     {
-        assert( pop.size() == fitness.size() );
+        GPCXX_ASSERT( pop.size() == fitness.size() );
 
         std::vector< size_t > indices;
         sort_indices( fitness , indices );
@@ -85,14 +86,14 @@ private:
                 case 0 : // mutation
                 {
                     std::vector< individual_type > mutated_trees = m_mutation_function( pop , fitness );
-                    assert( mutated_trees.size() == 1 );
+                    GPCXX_ASSERT( mutated_trees.size() == 1 );
                     new_pop.push_back( std::move( mutated_trees[0] ) );
                 }
                 break;
                 case 1 : // crossover
                 {
                     std::vector< individual_type > trees = m_crossover_function( pop , fitness );
-                    assert( trees.size() == 2 );
+                    GPCXX_ASSERT( trees.size() == 2 );
                     if( new_pop.size() == ( n - 1 ) )
                     {
                         new_pop.push_back( std::move( trees[0] ) );
@@ -107,7 +108,7 @@ private:
                 case 2 : // reproduction
                 {
                     std::vector< individual_type > reproduced_nodes = m_reproduction_function( pop , fitness );
-                    assert( reproduced_nodes.size() == 1 );
+                    GPCXX_ASSERT( reproduced_nodes.size() == 1 );
                     new_pop.push_back( std::move( reproduced_nodes[0] ) );
                 }
                 break;

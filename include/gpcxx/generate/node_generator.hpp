@@ -12,11 +12,12 @@
 #ifndef GPCXX_GENERATE_NODE_GENERATOR_HPP_INCLUDED
 #define GPCXX_GENERATE_NODE_GENERATOR_HPP_INCLUDED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <utility>
 #include <random>
 #include <array>
 #include <algorithm>
-#include <cassert>
 #include <functional>
 
 
@@ -49,7 +50,7 @@ public:
     node_generator( weighted_generator_type gen1 )
     : m_generators { { std::move( gen1 ) } }
     {
-        static_assert( dim == 1 , "Dimension must be one." );
+        static_GPCXX_ASSERT( dim == 1 , "Dimension must be one." );
         prepare();
     }
     
@@ -57,7 +58,7 @@ public:
     node_generator( weighted_generator_type gen1 , weighted_generator_type gen2 )
     : m_generators { { std::move( gen1 ) , std::move( gen2 ) } }
     {
-        static_assert( dim == 2 , "Dimension must be two." );
+        static_GPCXX_ASSERT( dim == 2 , "Dimension must be two." );
         prepare();
     }
     
@@ -65,7 +66,7 @@ public:
     node_generator( weighted_generator_type gen1 , weighted_generator_type gen2 , weighted_generator_type gen3 )
     : m_generators { { std::move( gen1 ) , std::move( gen2 ) , std::move( gen3 ) } }
     {
-        static_assert( dim == 3 , "Dimension must be three." );
+        static_GPCXX_ASSERT( dim == 3 , "Dimension must be three." );
         prepare();
     }
     
@@ -73,7 +74,7 @@ public:
     node_generator( generator_type terminal )
     : m_generators { { { 1.0 , 0 , std::move( terminal ) } } }
     {
-        static_assert( dim == 1 , "Dimension must be one." );
+        static_GPCXX_ASSERT( dim == 1 , "Dimension must be one." );
         prepare();
     }
     
@@ -84,7 +85,7 @@ public:
         { 1.0 , 1 , std::move( unary ) }
         } }
     {
-        static_assert( dim == 2 , "Dimension must be two." );
+        static_GPCXX_ASSERT( dim == 2 , "Dimension must be two." );
         prepare();
     }
     
@@ -96,7 +97,7 @@ public:
         { 1.0 , 2 , std::move( binary ) }
         } }
     {
-        static_assert( dim == 3 , "Dimension must be three." );
+        static_GPCXX_ASSERT( dim == 3 , "Dimension must be three." );
         prepare();
     }
     
@@ -142,7 +143,7 @@ public:
     {
         auto iter = std::find_if( m_generators.begin() , m_generators.end() , [arity]( weighted_generator_type const& w ) -> bool {
             return arity == w.arity; } );
-        assert( iter != m_generators.end() );
+        GPCXX_ASSERT( iter != m_generators.end() );
         return iter->generator( rng );
     }
 
@@ -185,7 +186,7 @@ private:
         auto t_iter = std::copy_if( m_generators.begin() , m_generators.end() , m_non_terminal_generators.begin() ,
                       []( weighted_generator_type const& w ) -> bool { return w.arity != 0; } );
         std::ptrdiff_t len = std::distance( m_non_terminal_generators.begin() , t_iter );
-        assert( ( len >= 0 ) && ( len <= std::ptrdiff_t( dim ) ) );
+        GPCXX_ASSERT( ( len >= 0 ) && ( len <= std::ptrdiff_t( dim ) ) );
         std::transform( m_non_terminal_generators.begin() , t_iter , weight.begin() ,
                         []( weighted_generator_type const& w ) { return w.weight; } );
         m_non_terminal_dist = std::discrete_distribution<>( weight.begin() , weight.begin() + len );
@@ -202,9 +203,9 @@ private:
     void prepare_terminal_generator( void )
     {
         auto is_terminal = []( weighted_generator_type const& w ) -> bool { return w.arity == 0; };
-        assert( std::count_if( m_generators.begin() , m_generators.end() , is_terminal ) == 1 );
+        GPCXX_ASSERT( std::count_if( m_generators.begin() , m_generators.end() , is_terminal ) == 1 );
         auto w_iter = std::find_if( m_generators.begin() , m_generators.end() , is_terminal );
-        assert( w_iter != m_generators.end() );
+        GPCXX_ASSERT( w_iter != m_generators.end() );
         m_terminal_generator = w_iter->generator;
     }
     

@@ -14,12 +14,13 @@
 
 #include <gpcxx/tree/detail/node_helpers.hpp>
 #include <gpcxx/tree/cursor_traits.hpp>
+#include <gpcxx/util/assert.hpp>
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/iterator/iterator_concepts.hpp>
 
 #include <type_traits>
-#include <cassert>
+
 
 
 
@@ -168,7 +169,7 @@ public:
     
     cursor parent( void )
     {
-        assert( ! is_root() );
+        GPCXX_ASSERT( ! is_root() );
         auto parent_node = m_node->parent_node();
         return cursor( parent_node , parent_node->child_index( m_node ) );
     }
@@ -180,7 +181,7 @@ public:
     
     const_cursor cparent( void ) const
     {
-        assert( ! is_root() );
+        GPCXX_ASSERT( ! is_root() );
         auto parent_node = m_node->parent_node();
         return const_cursor( parent_node , parent_node->child_index( m_node ) );
     }

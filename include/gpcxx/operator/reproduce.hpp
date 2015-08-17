@@ -13,9 +13,9 @@
 #define GPCXX_OPERATOR_REPRODUCE_HPP_DEFINED
 
 #include <gpcxx/operator/detail/operator_base.hpp>
+#include <gpcxx/util/assert.hpp>
 
 #include <vector>
-#include <cassert>
 
 namespace gpcxx {
 
@@ -48,7 +48,7 @@ public:
     std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type >
     operation( Selection const& selection )
     {
-        assert( selection.size() == 1 );
+        GPCXX_ASSERT( selection.size() == 1 );
         std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type > nodes( 1 );
         nodes[0] = *( selection[0] );
         return nodes;        

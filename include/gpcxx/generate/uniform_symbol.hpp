@@ -7,8 +7,9 @@
 #ifndef GPCXX_GENERATE_UNIFORM_SYMBOL_HPP_INCLUDED
 #define GPCXX_GENERATE_UNIFORM_SYMBOL_HPP_INCLUDED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <vector>
-#include <cassert>
 #include <random>
 
 namespace gpcxx {
@@ -23,19 +24,19 @@ struct uniform_symbol
     uniform_symbol( const std::vector< value_type >& symbols )
     : m_symbols( symbols )
     {
-        assert( !m_symbols.empty() );
+        GPCXX_ASSERT( !m_symbols.empty() );
     }
     
     uniform_symbol( std::vector< value_type >&& symbols )
     : m_symbols( std::move( symbols ) )
     {
-        assert( !m_symbols.empty() );
+        GPCXX_ASSERT( !m_symbols.empty() );
     }
 
     template< typename Rng >
     value_type operator()( Rng &rng ) const
     {
-        assert( !m_symbols.empty() );
+        GPCXX_ASSERT( !m_symbols.empty() );
         std::uniform_int_distribution< size_t > dist( 0 , m_symbols.size() - 1 );
         return m_symbols[ dist( rng ) ];
     }

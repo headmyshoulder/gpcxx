@@ -13,10 +13,10 @@
 #define GPCXX_OPERATOR_CROSSOVER_HPP_DEFINED
 
 #include <gpcxx/operator/detail/operator_base.hpp>
+#include <gpcxx/util/assert.hpp>
 
 #include <utility>
 #include <vector>
-#include <cassert>
 
 
 namespace gpcxx {
@@ -43,7 +43,7 @@ public:
     std::vector< typename Pop::const_iterator >
     selection( Pop const& pop , Fitness const& fitness )
     {
-        assert( pop.size() > 2 );
+        GPCXX_ASSERT( pop.size() > 2 );
         std::vector< typename Pop::const_iterator > s(2);
         s[1] = s[0] = m_selector( pop , fitness );
         while( s[0] == s[1] )
@@ -55,7 +55,7 @@ public:
     std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type >
     operation( Selection const& selection )
     {
-        assert( selection.size() == 2 );
+        GPCXX_ASSERT( selection.size() == 2 );
         std::vector< typename std::iterator_traits< typename Selection::value_type >::value_type > nodes( 2 );
         nodes[ 0 ] = *( selection[0] );
         nodes[ 1 ] = *( selection[1] );

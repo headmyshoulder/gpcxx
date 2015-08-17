@@ -14,6 +14,7 @@
 
 #include <gpcxx/app/generate_evenly_spaced_test_data.hpp>
 #include <gpcxx/app/generate_uniform_distributed_test_data.hpp>
+#include <gpcxx/util/assert.hpp>
 
 #include <boost/math/constants/constants.hpp>
 #include <cmath>
@@ -33,7 +34,7 @@ double keijzer_func5( double x ) {
 double keijzer_func6( double x , double y , double z ) { return 30.0 * x * z / ( x - 10.0 ) / y / y; }
 
 double keijzer_func7( double x ) {
-    assert( x >= 1.0 );
+    GPCXX_ASSERT( x >= 1.0 );
     double n = static_cast< double >( static_cast< int >( x ) );
     return n * ( n - 1 ) / 2.0;
 }

@@ -12,13 +12,12 @@
 #ifndef GPCXX_TREE_DETAIL_NODE_BASE_HPP_INCLUDED
 #define GPCXX_TREE_DETAIL_NODE_BASE_HPP_INCLUDED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <memory>
 #include <vector>
 #include <array>
 #include <algorithm>
-#include <cassert>
-
-struct D;
 
 namespace gpcxx {
 namespace detail {
@@ -90,7 +89,7 @@ public:
     void remove_child( const_node_pointer child )
     {
         auto iter = std::find( m_children.begin() , m_children.end() , child );
-        assert( iter != m_children.end() );
+        GPCXX_ASSERT( iter != m_children.end() );
         m_children.erase( iter );
     }
     
@@ -154,14 +153,14 @@ public:
     size_t attach_child( node_pointer child )
     {
         auto iter = find_free_child_entry();
-        assert( iter != m_children.end() );
+        GPCXX_ASSERT( iter != m_children.end() );
         *iter = child;
         return std::distance( m_children.begin() , iter );
     }
     
     void insert_child( size_t i , node_pointer child )
     {
-        assert( size() < max_size() );
+        GPCXX_ASSERT( size() < max_size() );
         auto end = m_children.begin() + size() + 1;
         std::rotate( m_children.begin() + i , end - 1 , end );
         m_children[i] = child;
@@ -171,10 +170,10 @@ public:
     void remove_child( const_node_pointer child )
     {
         auto iter = std::find( m_children.begin() , m_children.end() ,  child );
-        assert( iter != m_children.end() );
+        GPCXX_ASSERT( iter != m_children.end() );
         auto end = m_children.begin() + size();
         
-        assert( iter != m_children.end() );
+        GPCXX_ASSERT( iter != m_children.end() );
         
         std::copy( iter + 1 , end-- , iter );
         *end = nullptr;
@@ -187,7 +186,7 @@ public:
     
     bool invalid_child( size_t i ) const
     {
-        assert( i < max_arity );
+        GPCXX_ASSERT( i < max_arity );
         return ( m_children[i] == nullptr );
     }
     

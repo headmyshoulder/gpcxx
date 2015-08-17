@@ -12,8 +12,9 @@
 #ifndef GPCXX_OPERATOR_TOURNAMENT_SELECTOR_HPP_DEFINED
 #define GPCXX_OPERATOR_TOURNAMENT_SELECTOR_HPP_DEFINED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <random>
-#include <cassert>
 #include <iterator>
 
 namespace gpcxx {
@@ -33,9 +34,9 @@ public:
     {
         typedef typename Pop::const_iterator iterator;
         
-        assert( pop.size() == fitness.size() );
-        assert( m_tournament_size > 0 );
-        assert( pop.size() > 0 );
+        GPCXX_ASSERT( pop.size() == fitness.size() );
+        GPCXX_ASSERT( m_tournament_size > 0 );
+        GPCXX_ASSERT( pop.size() > 0 );
         
         std::uniform_int_distribution< size_t > dist( 0 , pop.size()-1 );
         
