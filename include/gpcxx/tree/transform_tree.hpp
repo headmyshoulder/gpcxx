@@ -28,7 +28,7 @@ namespace gpcxx {
     
 enum rule_result { ascent , descent , repeat };
 
-std::string to_string( rule_result v )
+inline std::string to_string( rule_result v )
 {
     switch( v )
     {
@@ -47,7 +47,7 @@ std::string to_string( rule_result v )
     }
 }
 
-std::ostream& operator<<( std::ostream& out , rule_result const& v )
+inline std::ostream& operator<<( std::ostream& out , rule_result const& v )
 {
     out << to_string( v );
     return out;
