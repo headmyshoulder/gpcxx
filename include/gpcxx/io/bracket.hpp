@@ -100,7 +100,7 @@ detail::bracket_writer< T , SymbolMapper > bracket( T const& t , std::string con
 template< typename Tree , typename NodeMapper = gpcxx::identity >
 void read_bracket( std::string str , Tree &tree , NodeMapper const& mapper = NodeMapper {} , std::string const &opening = "{" , std::string const& closing = "}" )
 {
-    return detail::read_bracket_impl( str , tree , mapper , opening , closing );
+    detail::read_bracket_impl( str , tree , tree.root() , mapper , opening , closing );
 }
 
 

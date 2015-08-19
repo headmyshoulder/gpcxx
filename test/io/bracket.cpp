@@ -60,7 +60,7 @@ TEST( TESTNAME , read_empty_tree )
     basic_tree< std::string > t;
     std::string str {};
     gpcxx::read_bracket( str , t );
-    EXPECT_EQ( t.size() , size_t { 0 } );
+    EXPECT_TRUE( t.empty() );
 }
 
 TEST( TESTNAME , read_tree1 )
@@ -68,6 +68,22 @@ TEST( TESTNAME , read_tree1 )
     basic_tree< std::string > t;
     std::string str { "{plus{sin{x}}{minus{y}{2}}}" };
     gpcxx::read_bracket( str , t );
-    ASSERT_FALSE( t.empty() );
-    test_cursor( t.root() , "plus" , 2 , 2 , 0 );
+//     ASSERT_FALSE( t.empty() );
+//     test_cursor( t.root() , "plus" , 2 , 2 , 0 );
+}
+
+TEST( TESTNAME , read_tree2 )
+{
+    std::map< std::string , std::string > mapping = { { "+" , "plus" } , { "-" , "minus" } };
+    
+    auto mapper = [mapping]( std::string const& s ) -> std::string {
+        auto iter = mapping.find( s );
+        if( iter != mapping.end() ) return iter->second;
+        else return s; };
+        
+    basic_tree< std::string > t;
+    std::string str { "(+(sin(x))(-(y)(2)))" };
+    gpcxx::read_bracket( str , t , mapper , "(" , ")" );
+//     ASSERT_FALSE( t.empty() );
+//     test_cursor( t.root() , "plus" , 2 , 2 , 0 );
 }
