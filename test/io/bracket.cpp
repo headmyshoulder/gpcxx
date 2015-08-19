@@ -54,3 +54,20 @@ TEST( TESTNAME , bracket1_custom_mapper )
     str << gpcxx::bracket( tree.data , "(" , ")" , mapper );
     EXPECT_EQ( str.str() , "(+(sin(x))(-(y)(2)))" );
 }
+
+TEST( TESTNAME , read_empty_tree )
+{
+    basic_tree< std::string > t;
+    std::string str {};
+    gpcxx::read_bracket( str , t );
+    EXPECT_EQ( t.size() , size_t { 0 } );
+}
+
+TEST( TESTNAME , read_tree1 )
+{
+    basic_tree< std::string > t;
+    std::string str { "{plus{sin{x}}{minus{y}{2}}}" };
+    gpcxx::read_bracket( str , t );
+    ASSERT_FALSE( t.empty() );
+    test_cursor( t.root() , "plus" , 2 , 2 , 0 );
+}

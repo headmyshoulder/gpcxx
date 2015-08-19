@@ -15,9 +15,6 @@
 #include <gpcxx/util/identity.hpp>
 #include <gpcxx/io/detail/read_bracket.hpp>
 
-#include <boost/algorithm/string/find.hpp>
-#include <boost/range/algorithm/find.hpp>
-
 #include <ostream>
 #include <string>
 #include <sstream>
@@ -100,27 +97,10 @@ detail::bracket_writer< T , SymbolMapper > bracket( T const& t , std::string con
 
 
 
-template< typename Tree , typename NodeMapper >
-void read_bracket( std::string str , Tree &tree , NodeMapper const& mapper , std::string const &opening = "{" , std::string const& closing = "}" )
+template< typename Tree , typename NodeMapper = gpcxx::identity >
+void read_bracket( std::string str , Tree &tree , NodeMapper const& mapper = NodeMapper {} , std::string const &opening = "{" , std::string const& closing = "}" )
 {
-    auto iter = boost::range::find( str , opening );
-    detail::read_bracket_impl( std::make_pair( iter , str.end() ) , tree , tree.root() , opening , closing , mapper() );
-    
-//     using iterator_t = boost::split_iterator< std::string::const_iterator >;
-//     
-//     iterator_t first = iterator_t( str , boost::first_finder( opening , boost::is_iequal() ) );
-    
-    // auto rng = boost::ifind_first( str , opening );
-    
-    
-    
-//     
-//     if( opening != "" ) boost::algorithm::erase_all( str , opening );
-//     if( closing != "" ) boost::algorithm::erase_all( str , closing );
-//     
-//     
-//     
-//     detail::read_polish_impl( first , tree , tree.root() , mapper );
+    return detail::read_bracket_impl( str , tree , mapper , opening , closing );
 }
 
 
