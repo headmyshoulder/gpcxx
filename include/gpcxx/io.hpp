@@ -14,6 +14,7 @@
 
 
 #include <gpcxx/io/best_individuals.hpp>
+#include <gpcxx/io/bracket.hpp>
 #include <gpcxx/io/c_style.hpp>
 #include <gpcxx/io/graphviz.hpp>
 #include <gpcxx/io/json.hpp>

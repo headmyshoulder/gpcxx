@@ -6,6 +6,7 @@ include_directories ( ${gtest_SOURCE_DIR} )
 
 
 add_executable ( io_tests
+  bracket.cpp
   simple.cpp
   graphviz.cpp
   polish.cpp
