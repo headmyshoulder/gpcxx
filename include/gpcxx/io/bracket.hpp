@@ -15,6 +15,8 @@
 #include <gpcxx/util/identity.hpp>
 #include <gpcxx/io/detail/read_bracket.hpp>
 
+
+
 #include <ostream>
 #include <string>
 #include <sstream>
@@ -97,10 +99,14 @@ detail::bracket_writer< T , SymbolMapper > bracket( T const& t , std::string con
 
 
 
-template< typename Tree , typename NodeMapper = gpcxx::identity >
-void read_bracket( std::string str , Tree &tree , NodeMapper const& mapper = NodeMapper {} , std::string const &opening = "{" , std::string const& closing = "}" )
+template< typename Rng , typename Tree , typename NodeMapper = gpcxx::identity >
+void read_bracket( Rng const& rng , Tree &tree , NodeMapper const& mapper = NodeMapper {} , std::string const &opening = "{" , std::string const& closing = "}" )
 {
-    detail::read_bracket_impl( str , tree , tree.root() , mapper , opening , closing );
+    if( ! boost::empty( rng ) )
+    {
+        auto irng = boost::make_iterator_range( boost::begin( rng ) , boost::end( rng ) );
+        detail::read_bracket( irng , tree , mapper , opening , closing );
+    }
 }
 
 

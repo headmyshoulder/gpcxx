@@ -14,78 +14,82 @@
 
 #include <gpcxx/util/exception.hpp>
 
-// #include <boost/config/warning_disable.hpp>
-#include <boost/spirit/include/qi.hpp>
-// #include <boost/spirit/include/phoenix_core.hpp>
-// #include <boost/spirit/include/phoenix_operator.hpp>
-// #include <boost/spirit/include/phoenix_fusion.hpp>
-// #include <boost/spirit/include/phoenix_stl.hpp>
-// #include <boost/fusion/include/adapt_struct.hpp>
-// #include <boost/variant/recursive_variant.hpp>
-// #include <boost/foreach.hpp>
-// #include <string>
-
-#include <iostream>
+#include <boost/algorithm/string/find.hpp>
+#include <boost/range.hpp>
 
 
 namespace gpcxx {
 namespace detail {
 
     
-namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
 
 
-template< typename Iterator >
-struct bracket_grammar : qi::grammar< Iterator , int , ascii::space_type >
+template< typename Rng1 , typename Rng2 , typename Rng3 >    
+std::string get_node( Rng1 const& rng , Rng2 const& p1 , Rng3 const& p2 )
 {
-    bracket_grammar( std::string const& opening , std::string const& closing )
-    : bracket_grammar::base_type( m_tree )
+    auto m = std::min( boost::begin( p1 ) , boost::begin( p2 ) );
+    return std::string { boost::begin( rng ) , m } ;
+}
+
+
+template< typename Rng >
+std::string get_string( Rng const& rng )
+{
+    return std::string{ boost::begin( rng ) , boost::end( rng ) };
+}
+
+
+
+template< typename Rng , typename Tree , typename Cursor , typename Mapper >
+Rng read_bracket_impl( Rng const& rng , Tree& tree , Cursor cursor , Mapper const& mapper , std::string const& opening , std::string const& closing )
+{
+    auto p1 = boost::algorithm::find_first( rng , opening );
+    auto p2 = boost::algorithm::find_first( rng , closing );
+
+    if( boost::empty( p2 ) )
     {
-        m_identifier = qi::lexeme[ ( qi::char_("a-zA-Z_") >> *qi::char_("a-zA-Z_0-9") ) ];
-        m_number = qi::double_;
-        m_operator = qi::lexeme[ qi::char_( "+*/&%?|<>#" ) || qi::char_( '-' ) ];
-        m_terminal = m_identifier | m_number | m_operator;
-        
-        m_node =
-               m_terminal
-            >> *m_subtree;
-            
-        m_subtree =
-               qi::lit( opening )
-            >> m_node
-            >> qi::lit( closing );
-            
-        m_tree = - m_subtree;
+        throw gpcxx_exception( "Missing closing bracket" );
     }
-    
-    qi::rule< Iterator , int , ascii::space_type > m_tree;
-    qi::rule< Iterator , int , ascii::space_type > m_subtree;
-    qi::rule< Iterator , int , ascii::space_type > m_node;
-    qi::rule< Iterator , int , ascii::space_type > m_identifier;
-    qi::rule< Iterator , int , ascii::space_type > m_number;
-    qi::rule< Iterator , int , ascii::space_type > m_operator;
-    qi::rule< Iterator , int , ascii::space_type > m_terminal;
-};
 
+    std::string node = get_node( rng , p1 , p2 );
+    auto c = tree.insert_below( cursor , mapper( node ) );
 
-template< typename Tree , typename Cursor , typename Mapper >
-void read_bracket_impl( std::string const& str , Tree& tree , Cursor cursor , Mapper const& mapper , std::string const& opening , std::string const& closing )
-{
-    using grammar = bracket_grammar< std::string::const_iterator >;
-    
-    grammar g { opening , closing };
-    // client::mini_xml ast; // Our tree
-    
-    using boost::spirit::ascii::space;
-    std::string::const_iterator iter = str.begin();
-    std::string::const_iterator end = str.end();
-    int t;
-    bool r = qi::phrase_parse( iter , end , g , space , t );
-    
-    if( ! r || ( iter != end ) )
+    while( boost::begin( p1 ) < boost::begin( p2 ) )
     {
-        throw gpcxx_exception( "Parsing error in bracket: " + std::string( iter , end ) );
+        auto next = boost::make_iterator_range( boost::end( p1 ) , boost::end( rng ) );
+        // cout << "Inside loop \"" << get_string( next ) << "\"" << endl;
+        auto n = read_bracket_impl( next , tree , c , mapper , opening , closing );
+        p1 = boost::algorithm::find_first( n , opening );
+        p2 = boost::algorithm::find_first( n , closing );
+        if( boost::empty( p2 ) )
+        {
+            throw gpcxx_exception( "Missing closing bracket" );
+        }
+    }
+    return boost::make_iterator_range( boost::end( p2 ) , boost::end( rng ) );
+}
+
+template< typename Rng , typename Tree , typename Mapper >
+void read_bracket( Rng const& rng , Tree& tree , Mapper const& mapper , std::string const& opening , std::string const& closing )
+{
+    try
+    {
+        auto opening_pos = boost::algorithm::find_first( rng , opening );
+        if( boost::empty( opening_pos ) )
+        {
+            throw gpcxx_exception( "Could not find opening" );
+        }
+        
+        auto closing_pos = read_bracket_impl( boost::make_iterator_range( boost::end( opening_pos ) , boost::end( rng ) ) , tree , tree.root() , mapper , opening , closing );
+        
+        if( ! boost::empty( closing_pos ) )
+        {
+            throw gpcxx_exception( "Could not find closing" );
+        }
+    }
+    catch( gpcxx_exception& e )
+    {
+        throw gpcxx_exception( e.what() + std::string( " in \"" ) + get_string( rng ) + "\"" );
     }
 }
 

@@ -68,8 +68,13 @@ TEST( TESTNAME , read_tree1 )
     basic_tree< std::string > t;
     std::string str { "{plus{sin{x}}{minus{y}{2}}}" };
     gpcxx::read_bracket( str , t );
-//     ASSERT_FALSE( t.empty() );
-//     test_cursor( t.root() , "plus" , 2 , 2 , 0 );
+    ASSERT_FALSE( t.empty() );
+    test_cursor( t.root() , "plus" , 2 , 3 , 0 );
+    test_cursor( t.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( t.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( t.root().children(1) , "minus" , 2 , 2 , 1 );
+    test_cursor( t.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( t.root().children(1).children(1) , "2" , 0 , 1 , 2 );
 }
 
 TEST( TESTNAME , read_tree2 )
@@ -84,6 +89,32 @@ TEST( TESTNAME , read_tree2 )
     basic_tree< std::string > t;
     std::string str { "(+(sin(x))(-(y)(2)))" };
     gpcxx::read_bracket( str , t , mapper , "(" , ")" );
-//     ASSERT_FALSE( t.empty() );
-//     test_cursor( t.root() , "plus" , 2 , 2 , 0 );
+    ASSERT_FALSE( t.empty() );
+    test_cursor( t.root() , "plus" , 2 , 3 , 0 );
+    test_cursor( t.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( t.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( t.root().children(1) , "minus" , 2 , 2 , 1 );
+    test_cursor( t.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( t.root().children(1).children(1) , "2" , 0 , 1 , 2 );
+}
+
+TEST( TESTNAME , read_broken1 )
+{
+    basic_tree< std::string > t;
+    std::string str { "{" };
+    EXPECT_THROW( { gpcxx::read_bracket( str , t ); } , gpcxx::gpcxx_exception );
+}
+
+TEST( TESTNAME , read_broken2 )
+{
+    basic_tree< std::string > t;
+    std::string str { "}" };
+    EXPECT_THROW( { gpcxx::read_bracket( str , t ); } , gpcxx::gpcxx_exception );
+}
+
+TEST( TESTNAME , read_broken3 )
+{
+    basic_tree< std::string > t;
+    std::string str { "a" };
+    EXPECT_THROW( { gpcxx::read_bracket( str , t ); } , gpcxx::gpcxx_exception );
 }
