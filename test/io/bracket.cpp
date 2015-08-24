@@ -118,3 +118,13 @@ TEST( TESTNAME , read_broken3 )
     std::string str { "a" };
     EXPECT_THROW( { gpcxx::read_bracket( str , t ); } , gpcxx::gpcxx_exception );
 }
+
+TEST( TESTNAME , read_unicode )
+{
+    basic_tree< std::string > t;
+    std::string str = "{τ{σ}}";
+    gpcxx::read_bracket( str , t );
+    ASSERT_FALSE( t.empty() );
+    test_cursor( t.root() , "τ" , 1 , 2 , 0 );
+    test_cursor( t.root().children(0) , "σ" , 0 , 1 , 1 );
+}
