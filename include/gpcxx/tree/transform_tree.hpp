@@ -112,7 +112,12 @@ void transform_tree( Rules const& rules , Tree& tree , size_t max_trials = 1000 
     }
 }
 
-
+template< typename Rules , typename Tree >
+Tree transform_tree_copy( Rules const& rules , Tree tree , size_t max_trials = 1000 )
+{
+    transform_tree( rules , tree , max_trials );
+    return tree;
+}
 
 } // namespace gpcxx
 
