@@ -9,6 +9,7 @@ add_subdirectory ( util )
 add_subdirectory ( generate )
 add_subdirectory ( eval )
 add_subdirectory ( stat )
+add_subdirectory ( canonic )
 
 
 if ( ${GPCXX_TEST_COVERAGE} )

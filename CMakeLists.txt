@@ -61,6 +61,7 @@ create_forwarding_header ( include/gpcxx/tree.hpp include/gpcxx/tree include/gpc
 create_forwarding_header ( include/gpcxx/intrusive_nodes.hpp include/gpcxx/tree/intrusive_nodes )
 create_forwarding_header ( include/gpcxx/util.hpp include/gpcxx/util )
 create_forwarding_header ( include/gpcxx/gpcxx.hpp include/gpcxx )
+create_forwarding_header ( include/gpcxx/canonic.hpp include/gpcxx/canonic )
 
 if ( ${GPCXX_CHECK_HEADER_COMPILE} )
   check_if_headers_compile ( include/gpcxx/app )
@@ -72,6 +73,7 @@ if ( ${GPCXX_CHECK_HEADER_COMPILE} )
   check_if_headers_compile ( include/gpcxx/stat )
   check_if_headers_compile ( include/gpcxx/tree )
   check_if_headers_compile ( include/gpcxx/util )
+  check_if_headers_compile ( include/gpcxx/canonic )
 endif ()
 
 
