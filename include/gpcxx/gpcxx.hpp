@@ -15,6 +15,7 @@
 
 #include <gpcxx/app.hpp>
 #include <gpcxx/benchmark_problems.hpp>
+#include <gpcxx/canonic.hpp>
 #include <gpcxx/config_version.hpp>
 #include <gpcxx/eval.hpp>
 #include <gpcxx/evolve.hpp>

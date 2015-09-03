@@ -51,6 +51,8 @@ protected:
     ascending_node_base* m_parent;
 };
 
+
+// TODO: A contructor with an allocator argument is needed.
 template< typename Allocator = std::allocator< void* > >
 class descending_vector_node
 {

@@ -1,6 +1,6 @@
 /*
- * test/canonic/algebras.cpp
- * Date: 2015-09-02
+ * gpcxx/canonic.hpp
+ *
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
  *
@@ -9,16 +9,13 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
+#ifndef GPCXX_CANONIC_HPP_DEFINED
+#define GPCXX_CANONIC_HPP_DEFINED
+
+
+#include <gpcxx/canonic/algebraic_node.hpp>
 #include <gpcxx/canonic/algebras.hpp>
+#include <gpcxx/canonic/group.hpp>
 
-#include <gtest/gtest.h>
 
-#define TESTNAME algebras_tests
-
-using namespace std;
-using namespace gpcxx;
-
-TEST( TESTNAME , TestCase )
-{
-    EXPECT_EQ( true , true );
-}
+#endif // GPCXX_CANONIC_HPP_DEFINED

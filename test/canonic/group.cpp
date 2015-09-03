@@ -9,12 +9,15 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#include <sstream>
+#include <gpcxx/canonic/group.hpp>
+
 #include <gtest/gtest.h>
 
 #define TESTNAME group_tests
 
 using namespace std;
+using namespace gpcxx;
+
 
 TEST( TESTNAME , TestCase )
 {
