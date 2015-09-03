@@ -14,6 +14,8 @@
 
 #include <gpcxx/tree/intrusive_nodes/intrusive_node.hpp>
 
+#include <string>
+
 
 namespace gpcxx {
 
