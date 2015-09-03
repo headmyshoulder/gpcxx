@@ -32,58 +32,92 @@ public:
     
     void add_group( group_type g )
     {
+        add_associative_operation( g.operation() );
+        if( ! get_group( g.operation() ) )
+            m_groups.emplace_back( g );
+    }
+    
+    void add_abelian_group( group_type g )
+    {
+        add_group( g );
+        add_abelian_magma( g.operation() );
     }
     
     void add_associative_operation( node_type n )
     {
+        if( ! is_associative( n ) )
+            m_associative_operations.emplace_back( n );
     }
     
-    void add_commutative_magma( node_type n )
+    void add_abelian_magma( node_type n )
     {
+        if( ! is_commutative( n ) )
+            m_abelian_magmas.emplace_back( n );
     }
     
-    template< typename Cursor >
-    bool is_commutative( Cursor cursor ) const
+    bool is_commutative( node_type const& node ) const
     {
-        auto pred = [cursor]( auto const& n ) { return ( cursor->name() ) == n; };
-        return std::find_if( m_abelian_magmas.begin() , m_abelian_magmas.end() , pred ) != m_abelian_magmas.end();
+        return get_commutative_iter( node ) != m_abelian_magmas.end();
     }
     
-    template< typename Cursor >
-    bool is_associative( Cursor cursor ) const
+    bool is_associative( node_type const& node ) const
     {
-        auto pred = [cursor]( auto const& n ) { return cursor->name() == n; };
-        return std::find_if( m_associative_operations.begin() , m_associative_operations.end() , pred ) != m_associative_operations.end();
+        return get_associative_iter( node )  != m_associative_operations.end();
     }
     
-    template< typename Cursor >
-    optional_group get_group( Cursor cursor ) const
+    optional_group get_group( node_type const& node ) const
     {
-        auto pred = [cursor]( auto const& n ) { return cursor->name() == n.first; };
-        auto iter = std::find_if( m_groups.begin() , m_groups.end() , pred );
+        auto iter = get_group_iter( node );
         if( iter == m_groups.end() ) return boost::none_t {} ;
-        else return optional_group { iter->second };
+        else return optional_group { *iter };
     }
     
-    template< typename Cursor >
-    optional_group  get_group_from_inverse_operation( Cursor cursor ) const
+    optional_group  get_group_from_inverse_operation( node_type const& node ) const
     {
-        auto pred = [cursor]( auto const& n ) { return cursor->name() == n.second.inverse_operation(); };
-        auto iter = std::find_if( m_groups.begin() , m_groups.end() , pred );
+        auto iter = get_group_from_inverse_transformation_iter( node );
         if( iter == m_groups.end() ) return boost::none_t {} ;
-        else return optional_group { iter->second };
+        else return optional_group { *iter };
     }
     
-    template< typename Cursor >
-    optional_group  get_group_from_inverse_transformation( Cursor cursor ) const
+    optional_group  get_group_from_inverse_transformation( node_type const& node ) const
     {
-        auto pred = [cursor]( auto const& n ) { return cursor->name() == n.second.inverse_transformation(); };
-        auto iter = std::find_if( m_groups.begin() , m_groups.end() , pred );
+        auto iter = get_group_from_inverse_transformation_iter( node );
         if( iter == m_groups.end() ) return boost::none_t {} ;
-        else return optional_group { iter->second };
+        else return optional_group { *iter };
     }
 
 private:
+    
+    auto get_commutative_iter( node_type const& node ) const
+    {
+        auto pred = [&node]( auto const& n ) { return node == n; };
+        return std::find_if( m_abelian_magmas.begin() , m_abelian_magmas.end() , pred );
+    }
+
+    auto get_associative_iter( node_type const& node ) const
+    {
+        auto pred = [&node]( auto const& n ) { return node == n; };
+        return std::find_if( m_associative_operations.begin() , m_associative_operations.end() , pred );
+    }
+
+    auto get_group_iter( node_type const& node ) const
+    {
+        auto pred = [&node]( auto const& n ) { return node == n.operation(); };
+        return std::find_if( m_groups.begin() , m_groups.end() , pred );
+    }
+
+    auto get_group_from_inverse_operation_iter( node_type const& node ) const
+    {
+        auto pred = [node]( auto const& n ) { return node == n.inverse_operation(); };
+        return std::find_if( m_groups.begin() , m_groups.end() , pred );
+    }
+
+    auto get_group_from_inverse_transformation_iter( node_type const& node ) const
+    {
+        auto pred = [node]( auto const& n ) { return node == n.inverse_transformation(); };
+        return std::find_if( m_groups.begin() , m_groups.end() , pred );
+    }
+
 
     std::vector< node_type > m_abelian_magmas;
 

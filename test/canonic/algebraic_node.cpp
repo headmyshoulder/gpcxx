@@ -40,6 +40,16 @@ TEST( TESTNAME , test_commutative_binary_operation_construction )
     EXPECT_EQ( node.precedence() , 20 );
 }
 
+TEST( TESTNAME , test_non_commutative_binary_operation_construction )
+{
+    auto node = node_type::make_non_commutative_binary_operation( "-" );
+    EXPECT_EQ( node.name() , "-" );
+    EXPECT_FALSE( node.commutative() );
+    EXPECT_FALSE( node.associative() );
+    EXPECT_FALSE( node.constant() );
+    EXPECT_EQ( node.precedence() , 20 );
+}
+
 TEST( TESTNAME , test_unary_operation_construction )
 {
     auto node = node_type::make_unary_operation( "sin" );

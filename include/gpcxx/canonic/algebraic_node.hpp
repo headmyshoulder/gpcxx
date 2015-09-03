@@ -57,6 +57,11 @@ public:
         return self_type { name , true , true , false , 20 };
     }
     
+    static self_type make_non_commutative_binary_operation( std::string const& name )
+    {
+        return self_type { name , false , false , false , 20 };
+    }
+    
     static self_type make_unary_operation( std::string const& name )
     {
         return self_type { name , false , false , false , 10 };

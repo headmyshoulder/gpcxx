@@ -10,6 +10,7 @@
  */
 
 #include <gpcxx/canonic/algebras.hpp>
+#include <gpcxx/canonic/algebraic_node.hpp>
 
 #include <gtest/gtest.h>
 
@@ -18,7 +19,52 @@
 using namespace std;
 using namespace gpcxx;
 
-TEST( TESTNAME , TestCase )
+using node_type = algebraic_node<>;
+using algebras_type = algebras< node_type >;
+using group_type = algebras_type::group_type;
+
+TEST( TESTNAME , test_default_construction )
 {
-    EXPECT_EQ( true , true );
+    EXPECT_NO_THROW( algebras_type algebras; );
+}
+
+TEST( TESTNAME , test_abelian_magmas_add )
+{
+    algebras_type algebras;
+    auto n1 = node_type::make_commutative_binary_operation( "+" );
+    auto n2 = node_type::make_commutative_binary_operation( "*" );
+    algebras.add_abelian_magma( n1 );
+    EXPECT_TRUE( algebras.is_commutative( n1 ) );
+    EXPECT_FALSE( algebras.is_commutative( n2 ) );
+}
+
+TEST( TESTNAME , test_associative_operation_add )
+{
+    algebras_type algebras;
+    auto n1 = node_type::make_commutative_binary_operation( "+" );
+    auto n2 = node_type::make_commutative_binary_operation( "*" );
+    algebras.add_associative_operation( n1 );
+    EXPECT_TRUE( algebras.is_associative( n1 ) );
+    EXPECT_FALSE( algebras.is_associative( n2 ) );
+}
+
+TEST( TESTNAME , test_abelian_magma_add )
+{
+    algebras_type algebras;
+    auto op = node_type::make_commutative_binary_operation( "+" );
+    auto iop = node_type::make_non_commutative_binary_operation( "-" );
+    auto id = node_type::make_constant_terminal( "0" );
+    auto um = node_type::make_identity_operation( "um" );
+    group_type group { op , id , iop , um };
+        
+    algebras.add_group( group );
+    EXPECT_FALSE( algebras.is_commutative( op ) );
+    EXPECT_FALSE( algebras.is_commutative( iop ) );    
+    EXPECT_TRUE( algebras.is_associative( op ) );
+    EXPECT_FALSE( algebras.is_associative( iop ) );
+    EXPECT_TRUE( static_cast< bool >( algebras.get_group( op ) ) );
+    EXPECT_FALSE( static_cast< bool >( algebras.get_group( iop ) ) );
+    EXPECT_TRUE( static_cast< bool >( algebras.get_group_from_inverse_operation( iop ) ) );
+    EXPECT_FALSE( static_cast< bool >( algebras.get_group_from_inverse_operation( op ) ) );
+    EXPECT_TRUE( static_cast< bool >( algebras.get_group_from_inverse_transformation( um ) ) );
 }
