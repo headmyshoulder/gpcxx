@@ -74,14 +74,14 @@ public:
     
     optional_group  get_group_from_inverse_operation( node_type const& node ) const
     {
-        auto iter = get_group_from_inverse_transformation_iter( node );
+        auto iter = get_group_from_inverse_operation_iter( node );
         if( iter == m_groups.end() ) return boost::none_t {} ;
         else return optional_group { *iter };
     }
     
-    optional_group  get_group_from_inverse_transformation( node_type const& node ) const
+    optional_group  get_group_from_inverse_function( node_type const& node ) const
     {
-        auto iter = get_group_from_inverse_transformation_iter( node );
+        auto iter = get_group_from_inverse_function_iter( node );
         if( iter == m_groups.end() ) return boost::none_t {} ;
         else return optional_group { *iter };
     }
@@ -108,13 +108,13 @@ private:
 
     auto get_group_from_inverse_operation_iter( node_type const& node ) const
     {
-        auto pred = [node]( auto const& n ) { return node == n.inverse_operation(); };
+        auto pred = [&node]( auto const& n ) { return node == n.inverse_operation(); };
         return std::find_if( m_groups.begin() , m_groups.end() , pred );
     }
 
-    auto get_group_from_inverse_transformation_iter( node_type const& node ) const
+    auto get_group_from_inverse_function_iter( node_type const& node ) const
     {
-        auto pred = [node]( auto const& n ) { return node == n.inverse_transformation(); };
+        auto pred = [&node]( auto const& n ) { return node == n.inverse_function(); };
         return std::find_if( m_groups.begin() , m_groups.end() , pred );
     }
 
