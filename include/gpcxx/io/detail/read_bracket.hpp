@@ -72,24 +72,17 @@ Rng read_bracket_impl( Rng const& rng , Tree& tree , Cursor cursor , Mapper cons
 template< typename Rng , typename Tree , typename Mapper >
 void read_bracket( Rng const& rng , Tree& tree , Mapper const& mapper , std::string const& opening , std::string const& closing )
 {
-    try
+    auto opening_pos = boost::algorithm::find_first( rng , opening );
+    if( boost::empty( opening_pos ) )
     {
-        auto opening_pos = boost::algorithm::find_first( rng , opening );
-        if( boost::empty( opening_pos ) )
-        {
-            throw gpcxx_exception( "Could not find opening" );
-        }
-        
-        auto closing_pos = read_bracket_impl( boost::make_iterator_range( boost::end( opening_pos ) , boost::end( rng ) ) , tree , tree.root() , mapper , opening , closing );
-        
-        if( ! boost::empty( closing_pos ) )
-        {
-            throw gpcxx_exception( "Could not find closing" );
-        }
+        throw gpcxx_exception( "Could not find opening" );
     }
-    catch( gpcxx_exception& e )
+    
+    auto closing_pos = read_bracket_impl( boost::make_iterator_range( boost::end( opening_pos ) , boost::end( rng ) ) , tree , tree.root() , mapper , opening , closing );
+    
+    if( ! boost::empty( closing_pos ) )
     {
-        throw gpcxx_exception( e.what() + std::string( " in \"" ) + get_string( rng ) + "\"" );
+        throw gpcxx_exception( "Could not find closing" );
     }
 }
 

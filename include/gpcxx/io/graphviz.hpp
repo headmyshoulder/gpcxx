@@ -129,9 +129,9 @@ void generate_graphviz_output( const std::string& filename , const Tree& t , std
 
     std::string cmd = "dot -T"s + format_string + " __tmp__.dot -o"s + filename;
     if( std::system ( cmd.c_str() ) != 0 )
-        throw gpcxx_exception( "Could not create graphviz output. Command is "s  + cmd );
+        throw gpcxx_exception( "Could not create graphviz output." );
     if( std::system ( "rm __tmp__.dot" ) != 0 )
-        throw gpcxx_exception( "Could not remove temporary dot file. Command is rm __tmp__.dot" );
+        throw gpcxx_exception( "Could not remove temporary dot file." );
 }
 
 }
