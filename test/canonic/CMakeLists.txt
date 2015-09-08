@@ -9,6 +9,8 @@ add_executable ( canonic_tests
   algebraic_node.cpp
   algebras.cpp
   group.cpp
+  order_commutative.cpp
+  canonic_complete.cpp
   )
 
 target_link_libraries ( canonic_tests gtest gtest_main )

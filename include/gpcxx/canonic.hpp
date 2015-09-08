@@ -15,7 +15,9 @@
 
 #include <gpcxx/canonic/algebraic_node.hpp>
 #include <gpcxx/canonic/algebras.hpp>
+#include <gpcxx/canonic/algebras_rule.hpp>
 #include <gpcxx/canonic/group.hpp>
+#include <gpcxx/canonic/order_commutative.hpp>
 
 
 #endif // GPCXX_CANONIC_HPP_DEFINED

@@ -40,8 +40,10 @@ public:
     
     std::string& name( void ) { return m_name; }
     
+    // TODO: remove 
     bool commutative( void ) const { return m_commutative; }
     
+    // TODO: remove 
     bool associative( void ) const { return m_associative; }
     
     bool constant( void ) const { return m_constant; }
