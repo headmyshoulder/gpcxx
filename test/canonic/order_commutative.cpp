@@ -37,7 +37,7 @@ TEST( TESTNAME , test_tree1 )
     auto t = canonic_test_trees::test_tree1();
     
     algebras_type algebras { };
-    algebras.add_abelian_magma( node_type::make_commutative_binary_operation( "+" ) );
+    algebras.add_abelian_magma( node_type::make_binary_operation( "+" ) );
     
     rule_container rules { gpcxx::order_commutative< algebras_type > { algebras } };
     gpcxx::transform_tree( rules , t );
@@ -53,16 +53,16 @@ TEST( TESTNAME , test_tree2 )
     auto t = canonic_test_trees::test_tree2();
     
     algebras_type algebras { };
-    algebras.add_abelian_magma( node_type::make_commutative_binary_operation( "+" ) );
+    algebras.add_abelian_magma( node_type::make_binary_operation( "+" ) );
     
     rule_container rules { gpcxx::order_commutative< algebras_type > { algebras } };
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 5 ) );
     EXPECT_EQ( t.root()->name() , "+" );
-    EXPECT_EQ( t.root().children(0)->name() , "1.5" );
-    EXPECT_EQ( t.root().children(1)->name() , "x" );
-    EXPECT_EQ( t.root().children(2)->name() , "y" );
-    EXPECT_EQ( t.root().children(3)->name() , "z" );
+    EXPECT_EQ( t.root().children(0)->name() , "x" );
+    EXPECT_EQ( t.root().children(1)->name() , "y" );
+    EXPECT_EQ( t.root().children(2)->name() , "z" );
+    EXPECT_EQ( t.root().children(3)->name() , "1.5" );
 }
 

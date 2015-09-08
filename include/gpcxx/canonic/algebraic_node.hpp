@@ -29,10 +29,8 @@ public:
     using self_type = algebraic_node< allocator_type >;
     
     
-    algebraic_node( std::string const& name , bool commutative , bool associative , bool constant , int precedence )
+    algebraic_node( std::string const& name , bool constant , int precedence )
     : m_name( name )
-    , m_commutative( commutative )
-    , m_associative( associative )
     , m_constant( constant )
     , m_precedence( precedence ) {}
     
@@ -40,48 +38,34 @@ public:
     
     std::string& name( void ) { return m_name; }
     
-    // TODO: remove 
-    bool commutative( void ) const { return m_commutative; }
-    
-    // TODO: remove 
-    bool associative( void ) const { return m_associative; }
-    
     bool constant( void ) const { return m_constant; }
     
     int precedence( void ) const { return m_precedence; }
     
-    
-    
-    
-    // Factory functions for default nodes
-    static self_type make_commutative_binary_operation( std::string const& name )
+
+    static self_type make_binary_operation( std::string const& name )
     {
-        return self_type { name , true , true , false , 20 };
-    }
-    
-    static self_type make_non_commutative_binary_operation( std::string const& name )
-    {
-        return self_type { name , false , false , false , 20 };
+        return self_type { name , false , 20 };
     }
     
     static self_type make_unary_operation( std::string const& name )
     {
-        return self_type { name , false , false , false , 10 };
+        return self_type { name , false , 10 };
     }
     
     static self_type make_identity_operation( std::string  const& name )
     {
-        return self_type { name , false , false , false , 11 };
+        return self_type { name , false , 11 };
     }
     
     static self_type make_constant_terminal( std::string const& name )
     {
-        return self_type { name , false , false , true , 0 };
+        return self_type { name , true , 0 };
     }
     
     static self_type make_variable_terminal( std::string const& name )
     {
-        return self_type { name , false , false , false , 1 };
+        return self_type { name , false , 1 };
     }
 
     
@@ -117,7 +101,7 @@ bool operator!=( algebraic_node< Allocator > const& n1 , algebraic_node< Allocat
 template< typename Allocator >
 bool operator<( algebraic_node< Allocator > const& n1 , algebraic_node< Allocator > const& n2 )
 {
-    if( n1.precedence() < n2.precedence() ) return true;
+    if( n1.precedence() > n2.precedence() ) return true;
     if( n1.precedence() == n2.precedence() ) return ( n1.name() < n2.name() );
     return false;
 }

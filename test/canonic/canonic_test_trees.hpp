@@ -24,7 +24,7 @@ struct canonic_test_trees
     static tree_type test_tree1( void )
     {
         tree_type tree;
-        auto root = tree.insert_below( tree.root() , node_type::make_commutative_binary_operation( "+" ) );
+        auto root = tree.insert_below( tree.root() , node_type::make_binary_operation( "+" ) );
         /* auto n1 = */ tree.insert_below( root , node_type::make_variable_terminal( "y" ) );
         /* auto n1 = */ tree.insert_below( root , node_type::make_variable_terminal( "x" ) );
         return tree;
