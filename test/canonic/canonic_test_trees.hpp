@@ -14,27 +14,28 @@
 
 #include <gpcxx/canonic/algebraic_node.hpp>
 #include <gpcxx/tree/intrusive_tree.hpp>
+#include <gpcxx/tree/intrusive_functions.hpp>
 
 
 struct canonic_test_trees
 {
-    using node_type = gpcxx::algebraic_node<>;
+    using node_type = gpcxx::algebraic_node< double , std::array< double , 2 > >;
     using tree_type = gpcxx::intrusive_tree< node_type >;
     
     static tree_type test_tree1( void )
     {
         tree_type tree;
-        auto root = tree.insert_below( tree.root() , node_type::make_binary_operation( "+" ) );
-        /* auto n1 = */ tree.insert_below( root , node_type::make_variable_terminal( "y" ) );
-        /* auto n1 = */ tree.insert_below( root , node_type::make_variable_terminal( "x" ) );
+        auto root = tree.insert_below( tree.root() , node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
+        /* auto n1 = */ tree.insert_below( root , node_type::make_variable_terminal( gpcxx::array_terminal<1> {} , "y" ) );
+        /* auto n1 = */ tree.insert_below( root , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "x" ) );
         return tree;
     }
     
     static tree_type test_tree2( void )
     {
         tree_type tree = test_tree1();
-        /* auto n = */ tree.insert_below( tree.root() , node_type::make_constant_terminal( "1.5" ) );
-        /* auto n = */ tree.insert_below( tree.root() , node_type::make_variable_terminal( "z" ) );
+        /* auto n = */ tree.insert_below( tree.root() , node_type::make_constant_terminal( gpcxx::double_terminal<> { 1.5 } , "1.5" ) );
+        /* auto n = */ tree.insert_below( tree.root() , node_type::make_variable_terminal( gpcxx::array_terminal<2> {} , "z" ) );
         return tree;
     }
 

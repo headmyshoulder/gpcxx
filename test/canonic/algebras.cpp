@@ -11,15 +11,18 @@
 
 #include <gpcxx/canonic/algebras.hpp>
 #include <gpcxx/canonic/algebraic_node.hpp>
+#include <gpcxx/tree/intrusive_functions.hpp>
 
 #include <gtest/gtest.h>
+
+#include <array>
 
 #define TESTNAME algebras_tests
 
 using namespace std;
 using namespace gpcxx;
 
-using node_type = algebraic_node<>;
+using node_type = algebraic_node< double , std::array< double , 2 > const >;
 using algebras_type = algebras< node_type >;
 using group_type = algebras_type::group_type;
 
@@ -31,8 +34,8 @@ TEST( TESTNAME , test_default_construction )
 TEST( TESTNAME , test_add_abelian_magmas )
 {
     algebras_type algebras;
-    auto n1 = node_type::make_binary_operation( "+" );
-    auto n2 = node_type::make_binary_operation( "*" );
+    auto n1 = node_type::make_binary_operation( gpcxx::plus_func {} , "+" );
+    auto n2 = node_type::make_binary_operation( gpcxx::multiplies_func {} , "*" );
     algebras.add_abelian_magma( n1 );
     EXPECT_TRUE( algebras.is_commutative( n1 ) );
     EXPECT_FALSE( algebras.is_commutative( n2 ) );
@@ -41,8 +44,8 @@ TEST( TESTNAME , test_add_abelian_magmas )
 TEST( TESTNAME , test_add_associative_operation )
 {
     algebras_type algebras;
-    auto n1 = node_type::make_binary_operation( "+" );
-    auto n2 = node_type::make_binary_operation( "*" );
+    auto n1 = node_type::make_binary_operation( gpcxx::plus_func {} , "+" );
+    auto n2 = node_type::make_binary_operation( gpcxx::multiplies_func {} , "*" );
     algebras.add_associative_operation( n1 );
     EXPECT_TRUE( algebras.is_associative( n1 ) );
     EXPECT_FALSE( algebras.is_associative( n2 ) );
@@ -51,10 +54,10 @@ TEST( TESTNAME , test_add_associative_operation )
 TEST( TESTNAME , test_add_group )
 {
     algebras_type algebras;
-    auto op = node_type::make_binary_operation( "+" );
-    auto iop = node_type::make_binary_operation( "-" );
-    auto id = node_type::make_constant_terminal( "0" );
-    auto um = node_type::make_identity_operation( "um" );
+    auto op = node_type::make_binary_operation( gpcxx::plus_func {} , "+" );
+    auto iop = node_type::make_binary_operation( gpcxx::minus_func {} , "-" );
+    auto id = node_type::make_constant_terminal( gpcxx::double_terminal<> { 0.0 } , "0" );
+    auto um = node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" );
     group_type group { op , id , iop , um };
         
     algebras.add_group( group );
@@ -69,10 +72,10 @@ TEST( TESTNAME , test_add_group )
 TEST( TESTNAME , test_add_abelian_group )
 {
     algebras_type algebras;
-    auto op = node_type::make_binary_operation( "+" );
-    auto iop = node_type::make_binary_operation( "-" );
-    auto id = node_type::make_constant_terminal( "0" );
-    auto um = node_type::make_identity_operation( "um" );
+    auto op = node_type::make_binary_operation( gpcxx::plus_func {} , "+" );
+    auto iop = node_type::make_binary_operation( gpcxx::minus_func {} , "-" );
+    auto id = node_type::make_constant_terminal( gpcxx::double_terminal<> { 0.0 } , "0" );
+    auto um = node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" );
     group_type group { op , id , iop , um };
         
     algebras.add_abelian_group( group );

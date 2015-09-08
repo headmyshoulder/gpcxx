@@ -45,6 +45,27 @@ namespace detail {
     
     static constexpr auto gpcxx_rlog = gpcxx_rlog_impl {};
     
+    struct unary_minus_impl
+    {
+        template< typename T >
+        T operator()( T v ) const
+        {
+            return -v;
+        }
+    };
+    
+    static constexpr auto unary_minus = unary_minus_impl {};
+    
+    struct unary_inverse_impl
+    {
+        template< typename T >
+        T operator()( T v ) const
+        {
+            return 1.0 / v;
+        }
+    };
+    
+    static constexpr auto unary_inverse = unary_inverse_impl {};
     
     
     
@@ -75,6 +96,8 @@ UNARY_FUNC( sin_func , std::sin );
 UNARY_FUNC( cos_func , std::cos );
 UNARY_FUNC( exp_func , std::exp );
 UNARY_FUNC( log_func , detail::gpcxx_rlog );
+UNARY_FUNC( unary_minus_func , detail::unary_minus );
+UNARY_FUNC( unary_inverse_func , detail::unary_inverse );
 
 BINARY_OPERATOR( plus_func , + );
 BINARY_OPERATOR( minus_func , - );
@@ -125,3 +148,5 @@ struct double_terminal
 
 
 #endif // GPCXX_TREE_INTRUSIVE_FUNCTIONS_HPP_INCLUDED
+
+struct T;

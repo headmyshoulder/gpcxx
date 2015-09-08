@@ -37,7 +37,7 @@ TEST( TESTNAME , test_tree1 )
     auto t = canonic_test_trees::test_tree1();
     
     algebras_type algebras { };
-    algebras.add_abelian_magma( node_type::make_binary_operation( "+" ) );
+    algebras.add_abelian_magma( node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
     
     rule_container rules { gpcxx::order_commutative< algebras_type > { algebras } };
     gpcxx::transform_tree( rules , t );
@@ -53,7 +53,7 @@ TEST( TESTNAME , test_tree2 )
     auto t = canonic_test_trees::test_tree2();
     
     algebras_type algebras { };
-    algebras.add_abelian_magma( node_type::make_binary_operation( "+" ) );
+    algebras.add_abelian_magma( node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
     
     rule_container rules { gpcxx::order_commutative< algebras_type > { algebras } };
     gpcxx::transform_tree( rules , t );

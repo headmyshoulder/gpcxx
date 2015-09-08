@@ -48,6 +48,11 @@ public:
         return m_name;
     }
     
+    std::string& name( void )
+    {
+        return m_name;
+    }
+    
     bool operator==( intrusive_named_func_node const &other ) const
     {
         return m_name == other.m_name;
