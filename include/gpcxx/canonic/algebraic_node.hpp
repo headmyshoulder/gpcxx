@@ -12,16 +12,18 @@
 #ifndef GPCXX_CANONIC_ALGEBRAIC_NODE_HPP_INCLUDED
 #define GPCXX_CANONIC_ALGEBRAIC_NODE_HPP_INCLUDED
 
-#include <gpcxx/tree/intrusive_nodes/intrusive_named_func_node.hpp>
+#include <gpcxx/tree/intrusive_nodes/intrusive_node.hpp>
 
 #include <string>
+#include <functional>
+#include <utility>
 
 
 namespace gpcxx {
 
-// TODO: refactor to use function and name independent of intrusive_named_func_node
-template< typename Res , typename Context , typename Allocator = std::allocator< void* > >
-class algebraic_node : public intrusive_named_func_node< Res , Context , Allocator >
+
+template< typename Res , typename Context, typename Allocator = std::allocator< void* > >
+class algebraic_node : public gpcxx::intrusive_node< algebraic_node< Res , Context , Allocator > , Allocator >
 {
 public:
     
@@ -29,15 +31,29 @@ public:
     using result_type = Res;
     using context_type = Context;
     using self_type = algebraic_node< result_type , context_type , allocator_type >;
-    using base_type = intrusive_named_func_node< result_type , context_type , allocator_type >;
-    using func_type = typename base_type::func_type;
-    
-    
+    using base_type = intrusive_node< self_type , allocator_type >;
+    using func_type = std::function< result_type( context_type& , self_type const& ) >;
     
     algebraic_node( func_type f , std::string name , bool constant , int precedence )
-    : base_type( std::move( f ) , std::move( name ) )
+    : m_func( std::move( f ) )
+    , m_name( std::move( name ) )
     , m_constant( constant )
     , m_precedence( precedence ) {}
+    
+    result_type eval( context_type & context ) const
+    {
+        return m_func( context , *this );
+    }
+    
+    std::string const& name( void ) const
+    {
+        return m_name;
+    }
+    
+    std::string& name( void )
+    {
+        return m_name;
+    }
     
     bool constant( void ) const { return m_constant; }
     
@@ -73,6 +89,8 @@ public:
     
     
 private:
+    
+    func_type m_func;
     std::string m_name;
     bool m_commutative;
     bool m_associative;

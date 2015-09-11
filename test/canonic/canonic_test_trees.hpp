@@ -19,7 +19,7 @@
 
 struct canonic_test_trees
 {
-    using node_type = gpcxx::algebraic_node< double , std::array< double , 2 > >;
+    using node_type = gpcxx::algebraic_node< double , std::array< double , 2 > const >;
     using tree_type = gpcxx::intrusive_tree< node_type >;
     
     static tree_type test_tree1( void )

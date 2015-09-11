@@ -32,8 +32,7 @@ public:
     using result_type = Res;
     using context_type = Context;
     using node_type = intrusive_named_func_node< result_type , context_type , Allocator >;
-    
-    typedef std::function< result_type( context_type& , node_type const& ) > func_type;
+    using func_type = std::function< result_type( context_type& , node_type const& ) >;
     
     intrusive_named_func_node( func_type f , std::string name )
     : m_func( std::move( f ) ) , m_name( std::move( name ) ) { }
