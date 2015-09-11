@@ -19,6 +19,7 @@
 
 namespace gpcxx {
 
+// TODO: refactor to use function and name independent of intrusive_named_func_node
 template< typename Res , typename Context , typename Allocator = std::allocator< void* > >
 class algebraic_node : public intrusive_named_func_node< Res , Context , Allocator >
 {
