@@ -615,27 +615,6 @@ TYPED_TEST( general_tree_tests , rank_is )
     EXPECT_EQ( this->m_test_trees.data.rank_is( 7 ) , this->m_test_trees.data.shoot() );
 }
 
-TYPED_TEST( general_tree_tests , swap_subtrees )
-{
-    swap_subtrees( this->m_test_trees.data , this->m_test_trees.data.root().children(1)  , this->m_test_trees.data2 , this->m_test_trees.data2.root().children(0) );
-    
-    EXPECT_FALSE( this->m_test_trees.data.empty() );
-    EXPECT_FALSE( this->m_test_trees.data2.empty() );
-    EXPECT_EQ( this->m_test_trees.data.size() , size_t( 5 ) );
-    EXPECT_EQ( this->m_test_trees.data2.size() , size_t( 5 ) );
-    test_cursor( this->m_test_trees.data.root() , "plus" , 2 , 3 , 0 );
-    test_cursor( this->m_test_trees.data.root().children(0) , "sin" , 1 , 2 , 1 );
-    test_cursor( this->m_test_trees.data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
-    test_cursor( this->m_test_trees.data.root().children(1) , "cos" , 1 , 2 , 1 );
-    test_cursor( this->m_test_trees.data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
-    
-    test_cursor( this->m_test_trees.data2.root() , "minus" , 2 , 3 , 0 );
-    test_cursor( this->m_test_trees.data2.root().children(0) , "minus" , 2 , 2 , 1 );
-    test_cursor( this->m_test_trees.data2.root().children(0).children(0) , "y" , 0 , 1 , 2 );
-    test_cursor( this->m_test_trees.data2.root().children(0).children(1) , "2" , 0 , 1 , 2 );
-    test_cursor( this->m_test_trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
-}
-
 TYPED_TEST( general_tree_tests , move_subtree1 )
 {
     auto& tree = this->m_test_trees.data;
@@ -679,4 +658,94 @@ TYPED_TEST( general_tree_tests , move_subtree4 )
     EXPECT_FALSE( tree.empty() );
     EXPECT_EQ( tree.size() , size_t( 1 ) );
     test_cursor( tree.root() , "x" , 0 , 1 , 0 );
+}
+
+
+
+TYPED_TEST( general_tree_tests , swap_subtrees1 )
+{
+    typename general_tree_tests< TypeParam >::tree_type t1;
+    typename general_tree_tests< TypeParam >::tree_type t2;
+    swap_subtrees( t1 , t1.root()  , t2 , t2.root() );
+    EXPECT_TRUE( t1.empty() );
+    EXPECT_TRUE( t2.empty() );
+}
+
+TYPED_TEST( general_tree_tests , swap_subtrees2 )
+{
+    typename general_tree_tests< TypeParam >::tree_type t;
+    swap_subtrees( this->m_test_trees.data , this->m_test_trees.data.root()  , t , t.root() );
+
+    EXPECT_TRUE( this->m_test_trees.data.empty() );
+    typename general_tree_tests< TypeParam >::test_tree_type cmp_trees;
+    EXPECT_EQ( t , cmp_trees.data );
+}
+
+TYPED_TEST( general_tree_tests , swap_subtrees3 )
+{
+    typename general_tree_tests< TypeParam >::tree_type t;
+    swap_subtrees( t , t.root() , this->m_test_trees.data , this->m_test_trees.data.root() );
+
+    EXPECT_TRUE( this->m_test_trees.data.empty() );
+    typename general_tree_tests< TypeParam >::test_tree_type cmp_trees;
+    EXPECT_EQ( t , cmp_trees.data );
+}
+
+TYPED_TEST( general_tree_tests , swap_subtrees4 )
+{
+    typename general_tree_tests< TypeParam >::tree_type t;
+    swap_subtrees( this->m_test_trees.data , this->m_test_trees.data.root().children(0)  , t , t.root() );
+    
+    EXPECT_FALSE( this->m_test_trees.data.empty() );
+    EXPECT_FALSE( t.empty() );
+    EXPECT_EQ( this->m_test_trees.data.size() , static_cast< size_t >( 4 ) );
+    EXPECT_EQ( t.size() , static_cast< size_t >( 2 ) );
+    
+    test_cursor( this->m_test_trees.data.root() , "plus" , 1 , 3 , 0 );
+    test_cursor( this->m_test_trees.data.root().children(0) , "minus" , 2 , 2 , 1 );
+    test_cursor( this->m_test_trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( this->m_test_trees.data.root().children(0).children(1) , "2" , 0 , 1 , 2 );
+    
+    test_cursor( t.root() , "sin" , 1 , 2 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
+}
+
+TYPED_TEST( general_tree_tests , swap_subtrees5 )
+{
+    typename general_tree_tests< TypeParam >::tree_type t;
+    swap_subtrees( t , t.root() , this->m_test_trees.data , this->m_test_trees.data.root().children(0) );
+    
+    EXPECT_FALSE( this->m_test_trees.data.empty() );
+    EXPECT_FALSE( t.empty() );
+    EXPECT_EQ( this->m_test_trees.data.size() , static_cast< size_t >( 4 ) );
+    EXPECT_EQ( t.size() , static_cast< size_t >( 2 ) );
+    
+    test_cursor( this->m_test_trees.data.root() , "plus" , 1 , 3 , 0 );
+    test_cursor( this->m_test_trees.data.root().children(0) , "minus" , 2 , 2 , 1 );
+    test_cursor( this->m_test_trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( this->m_test_trees.data.root().children(0).children(1) , "2" , 0 , 1 , 2 );
+    
+    test_cursor( t.root() , "sin" , 1 , 2 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
+}
+
+TYPED_TEST( general_tree_tests , swap_subtrees6 )
+{
+    swap_subtrees( this->m_test_trees.data , this->m_test_trees.data.root().children(1)  , this->m_test_trees.data2 , this->m_test_trees.data2.root().children(0) );
+    
+    EXPECT_FALSE( this->m_test_trees.data.empty() );
+    EXPECT_FALSE( this->m_test_trees.data2.empty() );
+    EXPECT_EQ( this->m_test_trees.data.size() , size_t( 5 ) );
+    EXPECT_EQ( this->m_test_trees.data2.size() , size_t( 5 ) );
+    test_cursor( this->m_test_trees.data.root() , "plus" , 2 , 3 , 0 );
+    test_cursor( this->m_test_trees.data.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( this->m_test_trees.data.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( this->m_test_trees.data.root().children(1) , "cos" , 1 , 2 , 1 );
+    test_cursor( this->m_test_trees.data.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    
+    test_cursor( this->m_test_trees.data2.root() , "minus" , 2 , 3 , 0 );
+    test_cursor( this->m_test_trees.data2.root().children(0) , "minus" , 2 , 2 , 1 );
+    test_cursor( this->m_test_trees.data2.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( this->m_test_trees.data2.root().children(0).children(1) , "2" , 0 , 1 , 2 );
+    test_cursor( this->m_test_trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
 }

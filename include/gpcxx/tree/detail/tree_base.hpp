@@ -375,31 +375,69 @@ public:
         *this = std::move( tmp );
     }
     
+//     void swap_subtrees( cursor c1 , tree_base& other , cursor c2 )
+//     {
+//         GPCXX_ASSERT( c1.valid() && c2.valid() );
+//         
+//         node_base_pointer parent1 = c1.parent_node();
+//         node_base_pointer parent2 = c2.parent_node();
+//         
+//         node_base_pointer n1 = c1.node();
+//         node_base_pointer n2 = c2.node();
+//         
+//         size_type i1 = parent1->child_index( n1 );
+//         size_type i2 = parent2->child_index( n2 );
+//         
+//         parent1->set_child_node( i1 , n2 );
+//         parent2->set_child_node( i2 , n1 );
+//         
+//         long num_nodes1 = 0 , num_nodes2 = 0;
+//         n1->set_parent_node( parent2 );
+//         num_nodes1 = n1->count_nodes();
+// 
+//         n2->set_parent_node( parent1 );
+//         num_nodes2 = n2->count_nodes();
+// 
+//         m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
+//         other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
+//     }
+
     void swap_subtrees( cursor c1 , tree_base& other , cursor c2 )
     {
-        GPCXX_ASSERT( c1.valid() && c2.valid() );
+        GPCXX_ASSERT( ( c1.parent_node() != nullptr ) && ( c2.parent_node() != nullptr ) );
+        GPCXX_ASSERT( ( ! c1.is_shoot() ) && ( ! c2.is_shoot() ) );
         
-        node_base_pointer parent1 = c1.parent_node();
-        node_base_pointer parent2 = c2.parent_node();
+        if( c1.invalid() )
+        {
+            if( c2.valid() )
+            {
+                this->swap_impl1( c1 , other , c2 );
+            }
+            else
+            {
+                // Nothing to swap
+            }
+        }
+        else
+        {
+            if( c2.invalid() )
+            {
+                other.swap_impl1( c2 , *this , c1 );
+            }
+            else
+            {
+                swap_impl2( c1 , other , c2 );
+            }
+        }
         
-        node_base_pointer n1 = c1.node();
-        node_base_pointer n2 = c2.node();
+        // different cases:
+        // both are invalid
+        // one is invalud
+        // both are valid
         
-        size_type i1 = parent1->child_index( n1 );
-        size_type i2 = parent2->child_index( n2 );
         
-        parent1->set_child_node( i1 , n2 );
-        parent2->set_child_node( i2 , n1 );
         
-        long num_nodes1 = 0 , num_nodes2 = 0;
-        n1->set_parent_node( parent2 );
-        num_nodes1 = n1->count_nodes();
-
-        n2->set_parent_node( parent1 );
-        num_nodes2 = n2->count_nodes();
-
-        m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
-        other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
+        
     }
     
     void erase( const_cursor position )
@@ -578,6 +616,56 @@ private:
         GPCXX_ASSERT( !cursor_queue.empty() );
         return cursor_queue.front();
     }
+    
+    void swap_impl1( cursor c1 , tree_base& other , cursor c2 )
+    {
+        GPCXX_ASSERT( c1.invalid() && c2.valid() );
+        GPCXX_ASSERT( c2.node() != nullptr );
+        
+        
+        node_base_pointer parent1 = c1.parent_node();
+        node_base_pointer parent2 = c2.parent_node();
+        
+        node_base_pointer n2 = c2.node();
+        
+        parent1->attach_child( n2 );
+        parent2->remove_child( n2 );
+        
+        long num_nodes2 = n2->count_nodes();
+        n2->set_parent_node( parent1 );
+
+        m_size = ( long( m_size ) + num_nodes2 );
+        other.m_size = ( long( other.m_size ) - num_nodes2 );
+
+    }
+    
+    void swap_impl2( cursor c1 , tree_base& other , cursor c2 )
+    {
+        GPCXX_ASSERT( c1.valid() && c2.valid() );
+        
+        node_base_pointer parent1 = c1.parent_node();
+        node_base_pointer parent2 = c2.parent_node();
+        
+        node_base_pointer n1 = c1.node();
+        node_base_pointer n2 = c2.node();
+        
+        size_type i1 = parent1->child_index( n1 );
+        size_type i2 = parent2->child_index( n2 );
+        
+        parent1->set_child_node( i1 , n2 );
+        parent2->set_child_node( i2 , n1 );
+        
+        long num_nodes1 = 0 , num_nodes2 = 0;
+        n1->set_parent_node( parent2 );
+        num_nodes1 = n1->count_nodes();
+
+        n2->set_parent_node( parent1 );
+        num_nodes2 = n2->count_nodes();
+
+        m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
+        other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
+    }
+
     
     
 private:

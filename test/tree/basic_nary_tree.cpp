@@ -19,8 +19,14 @@
 
 #include <sstream>
 
+#include <iostream>
+#include <gpcxx/io/simple.hpp>
+
 using namespace std;
 using namespace gpcxx;
+
+
+
 
 
 #define TESTNAME basic_nary_tree_tests
@@ -411,7 +417,80 @@ TEST( TESTNAME , rank_is )
     EXPECT_EQ( trees.data.rank_is( 7 ) , trees.data.shoot() );
 }
 
-TEST( TESTNAME , swap_subtrees )
+TEST( TESTNAME , swap_subtrees1 )
+{
+    test_tree< basic_nary_tree_tag >::tree_type t1;
+    test_tree< basic_nary_tree_tag >::tree_type t2;
+    swap_subtrees( t1 , t1.root()  , t2 , t2.root() );
+    EXPECT_TRUE( t1.empty() );
+    EXPECT_TRUE( t2.empty() );
+}
+
+
+TEST( TESTNAME , swap_subtrees2 )
+{
+    test_tree< basic_nary_tree_tag > trees;
+    test_tree< basic_nary_tree_tag >::tree_type t;
+    swap_subtrees( trees.data , trees.data.root()  , t , t.root() );
+
+    EXPECT_TRUE( trees.data.empty() );
+    test_tree< basic_nary_tree_tag > cmp_trees;
+    EXPECT_EQ( t , cmp_trees.data );
+}
+
+TEST( TESTNAME , swap_subtrees3 )
+{
+    test_tree< basic_nary_tree_tag > trees;
+    test_tree< basic_nary_tree_tag >::tree_type t;
+    swap_subtrees( t , t.root() , trees.data , trees.data.root() );
+
+    EXPECT_TRUE( trees.data.empty() );
+    test_tree< basic_nary_tree_tag > cmp_trees;
+    EXPECT_EQ( t , cmp_trees.data );
+}
+
+TEST( TESTNAME , swap_subtrees4 )
+{
+    test_tree< basic_nary_tree_tag > trees;
+    test_tree< basic_nary_tree_tag >::tree_type t;
+    cout << gpcxx::simple( trees.data ) << endl;
+    swap_subtrees( trees.data , trees.data.root().children(0)  , t , t.root() );
+    
+    EXPECT_FALSE( trees.data.empty() );
+    EXPECT_FALSE( t.empty() );
+    EXPECT_EQ( trees.data.size() , static_cast< size_t >( 4 ) );
+    EXPECT_EQ( t.size() , static_cast< size_t >( 2 ) );
+    
+    test_cursor( trees.data.root() , "plus" , 1 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "minus" , 2 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(0).children(1) , "2" , 0 , 1 , 2 );
+    
+    test_cursor( t.root() , "sin" , 1 , 2 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
+}
+
+TEST( TESTNAME , swap_subtrees5 )
+{
+    test_tree< basic_nary_tree_tag > trees;
+    test_tree< basic_nary_tree_tag >::tree_type t;
+    swap_subtrees( t , t.root() , trees.data , trees.data.root().children(0) );
+    
+    EXPECT_FALSE( trees.data.empty() );
+    EXPECT_FALSE( t.empty() );
+    EXPECT_EQ( trees.data.size() , static_cast< size_t >( 4 ) );
+    EXPECT_EQ( t.size() , static_cast< size_t >( 2 ) );
+    
+    test_cursor( trees.data.root() , "plus" , 1 , 3 , 0 );
+    test_cursor( trees.data.root().children(0) , "minus" , 2 , 2 , 1 );
+    test_cursor( trees.data.root().children(0).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( trees.data.root().children(0).children(1) , "2" , 0 , 1 , 2 );
+    
+    test_cursor( t.root() , "sin" , 1 , 2 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
+}
+
+TEST( TESTNAME , swap_subtrees6 )
 {
     test_tree< basic_nary_tree_tag > trees;
     swap_subtrees( trees.data , trees.data.root().children(1)  , trees.data2 , trees.data2.root().children(0) );
@@ -432,3 +511,5 @@ TEST( TESTNAME , swap_subtrees )
     test_cursor( trees.data2.root().children(0).children(1) , "2" , 0 , 1 , 2 );
     test_cursor( trees.data2.root().children(1) , "x" , 0 , 1 , 1 );
 }
+
+
