@@ -367,40 +367,12 @@ public:
         return insert_above_impl( position , new_node );
     }
 
-    
     void swap( tree_base& other )
     {
         self_type tmp = std::move( other );
         other = std::move( *this );
         *this = std::move( tmp );
     }
-    
-//     void swap_subtrees( cursor c1 , tree_base& other , cursor c2 )
-//     {
-//         GPCXX_ASSERT( c1.valid() && c2.valid() );
-//         
-//         node_base_pointer parent1 = c1.parent_node();
-//         node_base_pointer parent2 = c2.parent_node();
-//         
-//         node_base_pointer n1 = c1.node();
-//         node_base_pointer n2 = c2.node();
-//         
-//         size_type i1 = parent1->child_index( n1 );
-//         size_type i2 = parent2->child_index( n2 );
-//         
-//         parent1->set_child_node( i1 , n2 );
-//         parent2->set_child_node( i2 , n1 );
-//         
-//         long num_nodes1 = 0 , num_nodes2 = 0;
-//         n1->set_parent_node( parent2 );
-//         num_nodes1 = n1->count_nodes();
-// 
-//         n2->set_parent_node( parent1 );
-//         num_nodes2 = n2->count_nodes();
-// 
-//         m_size = ( long( m_size ) - num_nodes1 + num_nodes2 );
-//         other.m_size = ( long( other.m_size ) - num_nodes2 + num_nodes1 );
-//     }
 
     void swap_subtrees( cursor c1 , tree_base& other , cursor c2 )
     {
@@ -429,15 +401,6 @@ public:
                 swap_impl2( c1 , other , c2 );
             }
         }
-        
-        // different cases:
-        // both are invalid
-        // one is invalud
-        // both are valid
-        
-        
-        
-        
     }
     
     void erase( const_cursor position )
@@ -466,25 +429,32 @@ public:
     {
         GPCXX_ASSERT( position.valid() && subtree.valid() );
         
+        node_pointer node2 = const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
+        
         node_pointer node1 = const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.node() ) );
         const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.parent_node() ) )->remove_child( node1 );
 
-        node_pointer parent2 = const_cast< node_pointer >( static_cast< const_node_pointer >( position.parent_node() ) );
-        size_t pos2 = position.pos();
-        erase_without_removing_child( position );
+        node_pointer parent2 = static_cast< node_pointer >( node2->parent_node() );
+        
+        size_t pos2 = parent2->child_index( node2 );
+        erase_without_removing_child( node2 );
         parent2->set_child_node( pos2 , node1 );
         node1->set_parent_node( parent2 );
     }
-    
+
     void move_and_insert_subtree( const_cursor position , const_cursor subtree )
     {
         GPCXX_ASSERT( position.valid() && subtree.valid() );
         
         node_pointer node1 = const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.node() ) );
-        const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.parent_node() ) )->remove_child( node1 );
-        
+        node_pointer parent1 = static_cast< node_pointer >( node1->parent_node() );
         node_pointer node2 = const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
-        node2->parent_node()->insert_child( position.pos() , node1 );
+        node_pointer parent2 = static_cast< node_pointer >( node2->parent_node() );
+        parent1->remove_child( node1 );
+        
+        size_t pos2 = parent2->child_index( node2 );
+        parent2->insert_child( pos2 , node1 );
+        node1->set_parent_node( node2->parent_node() );
     }
     
     
@@ -500,17 +470,13 @@ private:
         return const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
     }
     
-    void erase_without_removing_child( const_cursor position )
+    void erase_without_removing_child( node_pointer ptr )
     {
-        GPCXX_ASSERT( position.valid() );
-        
         --m_size;
-        
-        for( const_cursor c = position.begin() ; c != position.end() ; ++c )
+        for( size_t i=0 ; i<ptr->size() ; ++i )
         {
-            erase_impl( c );
+            erase_impl( const_cursor { ptr , i } );
         }
-        node_pointer ptr = const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
         m_node_allocator.destroy( ptr );
         m_node_allocator.deallocate( ptr , 1 );
     }

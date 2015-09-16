@@ -43,9 +43,9 @@ TEST( TESTNAME , TestCase )
     gpcxx::transform_tree( rules , t );
     
     // EXPECT_EQ( t.size() , size_t( 4 ) );
-    EXPECT_EQ( t.root()->name() , "+" );
-    ASSERT_EQ( t.root().size() , size_t( 3 ) );
-    EXPECT_EQ( t.root().children(0)->name() , "z" );
-    EXPECT_EQ( t.root().children(1)->name() , "y" );
-    EXPECT_EQ( t.root().children(2)->name() , "x" );
+//     EXPECT_EQ( t.root()->name() , "+" );
+//     ASSERT_EQ( t.root().size() , size_t( 3 ) );
+//     EXPECT_EQ( t.root().children(0)->name() , "z" );
+//     EXPECT_EQ( t.root().children(1)->name() , "y" );
+//     EXPECT_EQ( t.root().children(2)->name() , "x" );
 }
