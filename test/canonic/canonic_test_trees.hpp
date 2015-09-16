@@ -43,7 +43,7 @@ struct canonic_test_trees
     {
         tree_type tree;
         auto root = tree.insert_below( tree.root() , node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
-        auto n1 = tree.insert_below( root , node_type::make_variable_terminal( gpcxx::plus_func {} , "+" ) );
+        auto n1 = tree.insert_below( root , node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
         /* auto n2 = */ tree.insert_below( root , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "x" ) );
         /* auto n3 = */ tree.insert_below( n1 , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "z" ) );
         /* auto n4 = */ tree.insert_below( n1 , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "y" ) );

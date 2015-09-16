@@ -15,7 +15,6 @@
 #include <gpcxx/canonic/algebras_rule.hpp>
 #include <gpcxx/tree/transform_tree.hpp>
 
-
 namespace gpcxx {
 
     
@@ -29,33 +28,20 @@ struct left_lift : protected algebras_rule< Algebras >
     {
         if( this->m_algebras->is_associative( *c ) )
         {
+            
             if( c.size() < 2 )
                 throw gpcxx::gpcxx_exception( "Associative nodes need to have more then 1 children." );
 
             auto left = c.children( 0 );
             if( this->m_algebras->is_associative( *left ) && ( (*c) == (*left) ) )
             {
-                size_t num_children = left.size();
-                auto node = c.node();
-                for( size_t i=0 ; i<num_children ; ++i )
+                while( left->size() > 0 )
                 {
-                    node->insert_child( i , left.children(i).node() );
+                    // attention: left get invalidated in this call
+                    t.move_and_insert_subtree( left , left.children( 0 ) );
+                    ++left;
                 }
-                node->remove_child( left.node() );
-                
-                // t.m_size--;
-
-                
-//                 auto val = *left;
-//                 Tree tmp_tree;
-//                 tmp_tree.insert( tmp_tree.root() , val );
-//                 tmp_tree.swap_subtrees( tmp_tree.root() , t , left );
-// 
-//                 t.insert( c.children( 0 ) , val );
-//                 t.insert( c.children( 0 ) , val );
-//                 t.erase( c.children( 2 ) );
-//                 t.swap_subtrees( c.children( 0 ) , tmp_tree , tmp_tree.root().children( 0 ) );
-//                 t.swap_subtrees( c.children( 1 ) , tmp_tree , tmp_tree.root().children( 1 ) );
+                t.erase( left );
                 return gpcxx::repeat;
             }
         }

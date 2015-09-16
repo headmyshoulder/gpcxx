@@ -441,7 +441,7 @@ public:
         parent2->set_child_node( pos2 , node1 );
         node1->set_parent_node( parent2 );
     }
-
+    
     void move_and_insert_subtree( const_cursor position , const_cursor subtree )
     {
         GPCXX_ASSERT( position.valid() && subtree.valid() );

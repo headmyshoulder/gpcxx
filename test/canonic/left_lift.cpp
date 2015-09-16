@@ -17,6 +17,10 @@
 #include <vector>
 #include <functional>
 
+#include <iostream>
+#include <gpcxx/io.hpp>
+
+
 #define TESTNAME left_lift_tests
 
 using node_type = canonic_test_trees::node_type;
@@ -39,10 +43,13 @@ TEST( TESTNAME , TestCase )
         node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" )
         } );
     
+    std::cout << gpcxx::simple( t ) << std::endl;
     rule_container rules { gpcxx::left_lift< algebras_type > { algebras } };
     gpcxx::transform_tree( rules , t );
     
-    // EXPECT_EQ( t.size() , size_t( 4 ) );
+    std::cout << gpcxx::simple( t ) << std::endl;
+    
+    EXPECT_EQ( t.size() , size_t( 4 ) );
 //     EXPECT_EQ( t.root()->name() , "+" );
 //     ASSERT_EQ( t.root().size() , size_t( 3 ) );
 //     EXPECT_EQ( t.root().children(0)->name() , "z" );
