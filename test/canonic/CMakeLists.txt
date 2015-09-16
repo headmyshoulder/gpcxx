@@ -10,6 +10,7 @@ add_executable ( canonic_tests
   algebras.cpp
   group.cpp
   order_commutative.cpp
+  left_lift.cpp
   canonic_complete.cpp
   )
 

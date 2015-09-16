@@ -27,10 +27,6 @@ using rule_container = std::vector< rule >;
 using algebras_type = gpcxx::algebras< node_type >;
 
 
-#include <gpcxx/io.hpp>
-#include <iostream>
-using namespace std;
-using namespace gpcxx;
 
 TEST( TESTNAME , test_tree1 )
 {

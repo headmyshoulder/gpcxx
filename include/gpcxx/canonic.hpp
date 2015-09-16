@@ -17,6 +17,7 @@
 #include <gpcxx/canonic/algebras.hpp>
 #include <gpcxx/canonic/algebras_rule.hpp>
 #include <gpcxx/canonic/group.hpp>
+#include <gpcxx/canonic/left_lift.hpp>
 #include <gpcxx/canonic/order_commutative.hpp>
 
 

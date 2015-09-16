@@ -34,8 +34,19 @@ struct canonic_test_trees
     static tree_type test_tree2( void )
     {
         tree_type tree = test_tree1();
-        /* auto n = */ tree.insert_below( tree.root() , node_type::make_constant_terminal( gpcxx::double_terminal<> { 1.5 } , "1.5" ) );
-        /* auto n = */ tree.insert_below( tree.root() , node_type::make_variable_terminal( gpcxx::array_terminal<2> {} , "z" ) );
+        /* auto n1 = */ tree.insert_below( tree.root() , node_type::make_constant_terminal( gpcxx::double_terminal<> { 1.5 } , "1.5" ) );
+        /* auto n2 = */ tree.insert_below( tree.root() , node_type::make_variable_terminal( gpcxx::array_terminal<2> {} , "z" ) );
+        return tree;
+    }
+    
+    static tree_type test_tree3( void )
+    {
+        tree_type tree;
+        auto root = tree.insert_below( tree.root() , node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
+        auto n1 = tree.insert_below( root , node_type::make_variable_terminal( gpcxx::plus_func {} , "+" ) );
+        /* auto n2 = */ tree.insert_below( root , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "x" ) );
+        /* auto n3 = */ tree.insert_below( n1 , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "z" ) );
+        /* auto n4 = */ tree.insert_below( n1 , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "y" ) );
         return tree;
     }
 

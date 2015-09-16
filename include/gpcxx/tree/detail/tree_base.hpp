@@ -476,6 +476,17 @@ public:
         node1->set_parent_node( parent2 );
     }
     
+    void move_and_insert_subtree( const_cursor position , const_cursor subtree )
+    {
+        GPCXX_ASSERT( position.valid() && subtree.valid() );
+        
+        node_pointer node1 = const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.node() ) );
+        const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.parent_node() ) )->remove_child( node1 );
+        
+        node_pointer node2 = const_cast< node_pointer >( static_cast< const_node_pointer >( position.node() ) );
+        node2->parent_node()->insert_child( position.pos() , node1 );
+    }
+    
     
     
     
