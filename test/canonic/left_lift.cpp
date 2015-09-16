@@ -43,16 +43,13 @@ TEST( TESTNAME , TestCase )
         node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" )
         } );
     
-    std::cout << gpcxx::simple( t ) << std::endl;
     rule_container rules { gpcxx::left_lift< algebras_type > { algebras } };
     gpcxx::transform_tree( rules , t );
     
-    std::cout << gpcxx::simple( t ) << std::endl;
-    
     EXPECT_EQ( t.size() , size_t( 4 ) );
-//     EXPECT_EQ( t.root()->name() , "+" );
-//     ASSERT_EQ( t.root().size() , size_t( 3 ) );
-//     EXPECT_EQ( t.root().children(0)->name() , "z" );
-//     EXPECT_EQ( t.root().children(1)->name() , "y" );
-//     EXPECT_EQ( t.root().children(2)->name() , "x" );
+    EXPECT_EQ( t.root()->name() , "+" );
+    ASSERT_EQ( t.root().size() , size_t( 3 ) );
+    EXPECT_EQ( t.root().children(0)->name() , "z" );
+    EXPECT_EQ( t.root().children(1)->name() , "y" );
+    EXPECT_EQ( t.root().children(2)->name() , "x" );
 }
