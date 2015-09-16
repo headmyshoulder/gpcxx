@@ -723,6 +723,34 @@ TYPED_TEST( general_tree_tests , move_and_insert_subtree3 )
     test_cursor( tree.root().children(2).children(1) , "2" , 0 , 1 , 2 );
 }
 
+TYPED_TEST( general_tree_tests , move_and_insert_subtree4 )
+{
+    auto& tree = this->m_test_trees.data;
+    tree.move_and_insert_subtree( tree.root().children(1) , tree.root().children(1).children(1) );
+    EXPECT_FALSE( tree.empty() );
+    EXPECT_EQ( tree.size() , size_t { 6 } );
+    test_cursor( tree.root() , "plus" , 3 , 3 , 0 );
+    test_cursor( tree.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( tree.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1) , "2" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(2) , "minus" , 1 , 2 , 1 );
+    test_cursor( tree.root().children(2).children(0) , "y" , 0 , 1 , 2 );
+}
+
+TYPED_TEST( general_tree_tests , move_and_insert_subtree5 )
+{
+    auto& tree = this->m_test_trees.data;
+    tree.move_and_insert_subtree( tree.root().children(1) , tree.root().children(1).children(0) );
+    EXPECT_FALSE( tree.empty() );
+    EXPECT_EQ( tree.size() , size_t { 6 } );
+    test_cursor( tree.root() , "plus" , 3 , 3 , 0 );
+    test_cursor( tree.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( tree.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1) , "y" , 0 , 1 , 1 );
+    test_cursor( tree.root().children(2) , "minus" , 1 , 2 , 1 );
+    test_cursor( tree.root().children(2).children(0) , "2" , 0 , 1 , 2 );
+}
+
 
 TYPED_TEST( general_tree_tests , swap_subtrees1 )
 {

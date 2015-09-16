@@ -445,6 +445,7 @@ public:
     void move_and_insert_subtree( const_cursor position , const_cursor subtree )
     {
         GPCXX_ASSERT( position.valid() && subtree.valid() );
+        GPCXX_ASSERT( ( ! position.is_root() ) && ( ! subtree.is_root() ) );
         
         node_pointer node1 = const_cast< node_pointer >( static_cast< const_node_pointer >( subtree.node() ) );
         node_pointer parent1 = static_cast< node_pointer >( node1->parent_node() );
