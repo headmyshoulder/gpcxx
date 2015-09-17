@@ -28,7 +28,6 @@ struct left_lift : protected algebras_rule< Algebras >
     {
         if( this->m_algebras->is_associative( *c ) )
         {
-            
             if( c.size() < 2 )
                 throw gpcxx::gpcxx_exception( "Associative nodes need to have more then 1 children." );
 

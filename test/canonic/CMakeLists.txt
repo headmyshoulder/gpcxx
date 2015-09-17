@@ -11,6 +11,7 @@ add_executable ( canonic_tests
   group.cpp
   order_commutative.cpp
   left_lift.cpp
+  remove_inserve_operations.cpp
   canonic_complete.cpp
   )
 

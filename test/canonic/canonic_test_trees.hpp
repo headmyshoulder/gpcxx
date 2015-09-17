@@ -49,6 +49,17 @@ struct canonic_test_trees
         /* auto n4 = */ tree.insert_below( n1 , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "y" ) );
         return tree;
     }
+    
+    
+    static tree_type test_tree4( void )
+    {
+        tree_type tree;
+        auto root = tree.insert_below( tree.root() , node_type::make_binary_operation( gpcxx::plus_func {} , "-" ) );
+        /* auto n1 = */ tree.insert_below( root , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "x" ) );
+        /* auto n2 = */ tree.insert_below( root , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "y" ) );
+        return tree;
+    }
+
 
 
 //     static tree_type test_tree1( void )
