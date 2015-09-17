@@ -60,27 +60,26 @@ struct canonic_test_trees
         return tree;
     }
 
+    static tree_type test_tree5( void )
+    {
+        tree_type tree;
+        auto root =      tree.insert_below( tree.root() , node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" ) );
+        auto n1 =        tree.insert_below( root , node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" ) );
+        /* auto n2 = */  tree.insert_below( n1 , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "x" ) );
+        return tree;
+    }
+    
+    static tree_type test_tree6( void )
+    {
+        tree_type tree;
+        auto root =      tree.insert_below( tree.root() , node_type::make_unary_operation( gpcxx::sin_func {} , "sin" ) );
+        auto n1 =        tree.insert_below( root , node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" ) );
+        auto n2 =        tree.insert_below( n1 , node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" ) );
+        /* auto n3 = */  tree.insert_below( n2 , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "x" ) );
+        return tree;
+    }
 
 
-//     static tree_type test_tree1( void )
-//     {
-//         tree_type tree;
-//         auto root = tree.insert_below( tree.root() , node_type( "inv" , false , false , false , 10 ) );
-//         auto n1 = tree.insert_below( root , node_type( "inv" , false , false , false , 10 ) );
-//         auto n2 = tree.insert_below( n1 , node_type( "x" , false , false , false , 20 ) );
-//         return tree;
-//     }
-// 
-//     static tree_type test_tree2( void )
-//     {
-//         tree_type tree;
-//         auto root = tree.insert_below( tree.root() , node_type( "sin" , false , false , false , 11 ) );
-//         auto n1 = tree.insert_below( root , node_type( "inv" , false , false , false , 10 ) );
-//         auto n2 = tree.insert_below( n1 , node_type( "inv" , false , false , false , 10 ) );
-//         auto n3 = tree.insert_below( n2 , node_type( "x" , false , false , false , 20 ) );
-//         return tree;
-//     }
-// 
 //     static tree_type test_tree3( void )
 //     {
 //         tree_type tree;

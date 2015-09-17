@@ -33,7 +33,7 @@ struct remove_inverse_operations : protected algebras_rule< Algebras >
             auto const& group = optional_group.get();
             
             if( c.size() != 2 )
-                throw gpcxx::gpcxx_exception( "An inverse operations needs to have exactly 1 children." );
+                throw gpcxx::gpcxx_exception( "An inverse operations needs to have exactly 2 children." );
             
             *c = group.operation();
             t.insert_above( c.children( 1 ) , group.inverse_function() );
