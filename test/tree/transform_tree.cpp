@@ -51,3 +51,15 @@ TEST( TESTNAME , simple_test )
     std::vector< rule_type > rules = { mock_rule { mocker } };
     gpcxx::transform_tree( rules , trees.data );
 }
+
+TEST( TESTNAME , test_2 )
+{
+    test_tree< basic_nary_tree_tag > trees;
+    
+    rule_mocker mocker;
+    EXPECT_CALL( mocker , operation(_,_) )
+        .WillRepeatedly( Return( ascent ) );
+    
+    std::vector< rule_type > rules = { mock_rule { mocker } };
+    gpcxx::transform_tree( rules , trees.data );
+}

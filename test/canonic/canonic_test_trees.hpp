@@ -79,6 +79,34 @@ struct canonic_test_trees
         return tree;
     }
 
+    static tree_type test_tree7( void )
+    {
+        tree_type tree;
+        auto root =      tree.insert_below( tree.root() , node_type::make_unary_operation( gpcxx::sin_func {} , "sin" ) );
+        /* auto n1 = */  tree.insert_below( root , node_type::make_constant_terminal( gpcxx::double_terminal< double > { 1.0 } , "1.0" ) );
+        return tree;
+    }
+    
+    static tree_type test_tree8( void )
+    {
+        tree_type tree;
+        auto root =      tree.insert_below( tree.root() , node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
+        /* auto n1 = */  tree.insert_below( root , node_type::make_variable_terminal( gpcxx::array_terminal<0> {} , "x" ) );
+        auto n2 =        tree.insert_below( root , node_type::make_unary_operation( gpcxx::sin_func {} , "sin" ) );
+        /* auto n3 = */  tree.insert_below( n2 , node_type::make_constant_terminal( gpcxx::double_terminal< double > { 1.0 } , "1.0" ) );
+        return tree;
+    }
+    
+    static tree_type test_tree9( void )
+    {
+        tree_type tree;
+        auto root =      tree.insert_below( tree.root() , node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
+        /* auto n1 = */  tree.insert_below( root , node_type::make_constant_terminal( gpcxx::double_terminal< double > { 1.0 } , "1.0" ) );
+        auto n2 =        tree.insert_below( root , node_type::make_unary_operation( gpcxx::sin_func {} , "sin" ) );
+        /* auto n3 = */  tree.insert_below( n2 , node_type::make_constant_terminal( gpcxx::double_terminal< double > { 1.0 } , "1.0" ) );
+        return tree;
+    }
+
 
 //     static tree_type test_tree3( void )
 //     {

@@ -80,7 +80,7 @@ namespace detail {
                 }
                 else if( ret == ascent )
                 {
-                    return true;
+                    return c.is_root() ? false : true;
                 }
             }
         }
@@ -108,7 +108,7 @@ void transform_tree( Rules const& rules , Tree& tree , size_t max_trials = 1000 
         repeat = detail::apply_rules_to_cursor( rules , tree.root() , tree );
         ++count;
         if( count == max_trials )
-            throw gpcxx_exception( "Maximal number of trials reached in tree_transform." );
+            throw gpcxx_exception( "Maximal number of trials reached in transform_tree." );
     }
 }
 

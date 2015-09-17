@@ -14,6 +14,8 @@
 
 #include <gpcxx/tree/intrusive_nodes/intrusive_named_func_node.hpp>
 #include <gpcxx/tree/intrusive_nodes/intrusive_nary_named_func_node.hpp>
+#include <gpcxx/canonic/algebraic_node.hpp>
+
 #include <gtest/gtest.h>
 
 template< typename T >
@@ -33,6 +35,14 @@ void test_value( gpcxx::intrusive_named_func_node< Res , Context , Allocator > c
 {
     EXPECT_EQ( t.name() , value );
 }
+
+template< typename Res , typename Context , typename Allocator >
+void test_value( gpcxx::algebraic_node< Res , Context , Allocator > const& t , std::string const& value )
+{
+    EXPECT_EQ( t.name() , value );
+}
+
+
 
 
 

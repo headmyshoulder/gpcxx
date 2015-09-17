@@ -13,6 +13,7 @@ add_executable ( canonic_tests
   left_lift.cpp
   remove_inserve_operations.cpp
   remove_double_inverse_functions.cpp
+  summarize_constants.cpp
   canonic_complete.cpp
   )
 

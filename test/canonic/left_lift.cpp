@@ -10,6 +10,7 @@
  */
 
 #include "canonic_test_trees.hpp"
+#include "../common/test_functions.hpp"
 #include <gpcxx/canonic/left_lift.hpp>
 
 #include <gtest/gtest.h>
@@ -47,9 +48,8 @@ TEST( TESTNAME , TestCase )
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 4 ) );
-    EXPECT_EQ( t.root()->name() , "+" );
-    ASSERT_EQ( t.root().size() , size_t( 3 ) );
-    EXPECT_EQ( t.root().children(0)->name() , "z" );
-    EXPECT_EQ( t.root().children(1)->name() , "y" );
-    EXPECT_EQ( t.root().children(2)->name() , "x" );
+    test_cursor( t.root() , "+" , 3 , 2 , 0 );
+    test_cursor( t.root().children(0) , "z" , 0 , 1 , 1 );
+    test_cursor( t.root().children(1) , "y" , 0 , 1 , 1 );
+    test_cursor( t.root().children(2) , "x" , 0 , 1 , 1 );
 }
