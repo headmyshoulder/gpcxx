@@ -11,6 +11,7 @@
 
 
 #include "canonic_test_trees.hpp"
+#include "../common/test_functions.hpp"
 #include <gpcxx/canonic/remove_double_inverse_functions.hpp>
 
 #include <gtest/gtest.h>
@@ -40,8 +41,7 @@ TEST( TESTNAME , test1 )
     gpcxx::transform_tree( rules , t );
 
     EXPECT_EQ( t.size() , size_t( 1 ) );
-    EXPECT_EQ( t.root()->name() , "x" );
-    ASSERT_EQ( t.root().size() , size_t( 0 ) );
+    test_cursor( t.root() , "x" , 0 , 1 , 0 );
 }
 
 TEST( TESTNAME , test2 )
@@ -59,8 +59,6 @@ TEST( TESTNAME , test2 )
     gpcxx::transform_tree( rules , t );
 
     EXPECT_EQ( t.size() , size_t( 2 ) );
-    EXPECT_EQ( t.root()->name() , "sin" );
-    ASSERT_EQ( t.root().size() , size_t( 1 ) );
-    ASSERT_EQ( t.root().children(0).size() , size_t( 0 ) );
-    ASSERT_EQ( t.root().children(0)->name() , "x" );
+    test_cursor( t.root() , "sin" , 1 , 2 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
 }

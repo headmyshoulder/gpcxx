@@ -10,6 +10,7 @@
  */
 
 #include "canonic_test_trees.hpp"
+#include "../common/test_functions.hpp"
 
 #include <gpcxx/canonic/remove_invserse_operations.hpp>
 
@@ -40,11 +41,9 @@ TEST( TESTNAME , test1 )
     gpcxx::transform_tree( rules , t );
 
     EXPECT_EQ( t.size() , size_t( 4 ) );
-    EXPECT_EQ( t.root()->name() , "+" );
-    ASSERT_EQ( t.root().size() , size_t( 2 ) );
-    EXPECT_EQ( t.root().children(0)->name() , "x" );
-    EXPECT_EQ( t.root().children(1)->name() , "um" );
-    EXPECT_EQ( t.root().children(1).size() , size_t { 1 } );
-    EXPECT_EQ( t.root().children(1).children(0)->name() , "y" );
+    test_cursor( t.root() , "+" , 2 , 3 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
+    test_cursor( t.root().children(1) , "um" , 1 , 2 , 1 );
+    test_cursor( t.root().children(1).children(0) , "y" , 0 , 1 , 2 );
 }
 

@@ -10,6 +10,7 @@
  */
 
 #include "canonic_test_trees.hpp"
+#include "../common/test_functions.hpp"
 #include <gpcxx/canonic/order_commutative.hpp>
 
 #include <gtest/gtest.h>
@@ -28,7 +29,7 @@ using algebras_type = gpcxx::algebras< node_type >;
 
 
 
-TEST( TESTNAME , test_tree1 )
+TEST( TESTNAME , test1 )
 {
     auto t = canonic_test_trees::test_tree1();
     
@@ -39,12 +40,12 @@ TEST( TESTNAME , test_tree1 )
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 3 ) );
-    EXPECT_EQ( t.root()->name() , "+" );
-    EXPECT_EQ( t.root().children(0)->name() , "x" );
-    EXPECT_EQ( t.root().children(1)->name() , "y" );
+    test_cursor( t.root() , "+" , 2 , 2 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
+    test_cursor( t.root().children(1) , "y" , 0 , 1 , 1 );
 }
 
-TEST( TESTNAME , test_tree2 )
+TEST( TESTNAME , test2 )
 {
     auto t = canonic_test_trees::test_tree2();
     
@@ -55,10 +56,10 @@ TEST( TESTNAME , test_tree2 )
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 5 ) );
-    EXPECT_EQ( t.root()->name() , "+" );
-    EXPECT_EQ( t.root().children(0)->name() , "x" );
-    EXPECT_EQ( t.root().children(1)->name() , "y" );
-    EXPECT_EQ( t.root().children(2)->name() , "z" );
-    EXPECT_EQ( t.root().children(3)->name() , "1.5" );
+    test_cursor( t.root() , "+" , 4 , 2 , 0 );
+    test_cursor( t.root().children(0) , "x" , 0 , 1 , 1 );
+    test_cursor( t.root().children(1) , "y" , 0 , 1 , 1 );
+    test_cursor( t.root().children(2) , "z" , 0 , 1 , 1 );
+    test_cursor( t.root().children(3) , "1.5" , 0 , 1 , 1 );
 }
 

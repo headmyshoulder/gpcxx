@@ -32,7 +32,7 @@ using algebras_type = gpcxx::algebras< node_type >;
 using group_type = algebras_type::group_type;
 
 
-TEST( TESTNAME , TestCase )
+TEST( TESTNAME , test1 )
 {
     auto t = canonic_test_trees::test_tree3();
     
