@@ -44,7 +44,7 @@ TEST( TESTNAME , test1 )
         node_type::make_identity_operation( gpcxx::unary_minus_func {} , "um" )
         } );
     
-    rule_container rules { gpcxx::left_lift< algebras_type > { algebras } };
+    rule_container rules { gpcxx::make_left_lift( algebras ) };
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 4 ) );

@@ -36,7 +36,7 @@ TEST( TESTNAME , test1 )
     algebras_type algebras { };
     algebras.add_abelian_magma( node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
     
-    rule_container rules { gpcxx::order_commutative< algebras_type > { algebras } };
+    rule_container rules { gpcxx::make_order_commutative( algebras ) };
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 3 ) );
@@ -52,7 +52,7 @@ TEST( TESTNAME , test2 )
     algebras_type algebras { };
     algebras.add_abelian_magma( node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
     
-    rule_container rules { gpcxx::order_commutative< algebras_type > { algebras } };
+    rule_container rules { gpcxx::make_order_commutative( algebras ) };
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 5 ) );

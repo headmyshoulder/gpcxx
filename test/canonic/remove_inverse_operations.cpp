@@ -1,5 +1,5 @@
 /*
- * test/canonic/remove_inserve_operations.cpp
+ * test/canonic/remove_inverse_operations.cpp
  * Date: 2015-09-17
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -12,7 +12,7 @@
 #include "canonic_test_trees.hpp"
 #include "../common/test_functions.hpp"
 
-#include <gpcxx/canonic/remove_invserse_operations.hpp>
+#include <gpcxx/canonic/remove_inverse_operations.hpp>
 
 #include <gtest/gtest.h>
 
@@ -37,7 +37,7 @@ TEST( TESTNAME , test1 )
         } );
 
     auto t = canonic_test_trees::test_tree4();
-    rule_container rules { gpcxx::remove_inverse_operations< algebras_type > { algebras } };
+    rule_container rules { gpcxx::make_remove_inverse_operations( algebras ) };
     gpcxx::transform_tree( rules , t );
 
     EXPECT_EQ( t.size() , size_t( 4 ) );

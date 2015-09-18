@@ -58,6 +58,13 @@ struct remove_double_inverse_functions : protected algebras_rule< Algebras >
     }
 };
 
+template< typename Algebras >
+remove_double_inverse_functions< Algebras > make_remove_double_inverse_functions( Algebras const& algebras )
+{
+    return remove_double_inverse_functions< Algebras > { algebras };
+}
+
+
 
 } // namespace gpcxx
 

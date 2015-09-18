@@ -1,5 +1,5 @@
 /*
- * gpcxx/canonic/remove_invserse_operations.hpp
+ * gpcxx/canonic/remove_inverse_operations.hpp
  * Date: 2015-09-17
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_CANONIC_REMOVE_INVSERSE_OPERATIONS_HPP_INCLUDED
-#define GPCXX_CANONIC_REMOVE_INVSERSE_OPERATIONS_HPP_INCLUDED
+#ifndef GPCXX_CANONIC_REMOVE_INVERSE_OPERATIONS_HPP_INCLUDED
+#define GPCXX_CANONIC_REMOVE_INVERSE_OPERATIONS_HPP_INCLUDED
 
 #include <gpcxx/canonic/algebras_rule.hpp>
 #include <gpcxx/tree/transform_tree.hpp>
@@ -43,8 +43,15 @@ struct remove_inverse_operations : protected algebras_rule< Algebras >
     }
 };
 
+template< typename Algebras >
+remove_inverse_operations< Algebras > make_remove_inverse_operations( Algebras const& algebras )
+{
+    return remove_inverse_operations< Algebras > { algebras };
+}
+
+
 
 } // namespace gpcxx
 
 
-#endif // GPCXX_CANONIC_REMOVE_INVSERSE_OPERATIONS_HPP_INCLUDED
+#endif // GPCXX_CANONIC_REMOVE_INVERSE_OPERATIONS_HPP_INCLUDED

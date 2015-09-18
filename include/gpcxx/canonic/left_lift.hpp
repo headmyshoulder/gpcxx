@@ -48,6 +48,12 @@ struct left_lift : protected algebras_rule< Algebras >
     }    
 };
 
+template< typename Algebras >
+left_lift< Algebras > make_left_lift( Algebras const& algebras )
+{
+    return left_lift< Algebras > { algebras };
+}
+
 
 
 } // namespace gpcxx

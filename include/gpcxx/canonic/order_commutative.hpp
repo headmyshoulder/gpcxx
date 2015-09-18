@@ -42,6 +42,13 @@ struct order_commutative : protected algebras_rule< Algebras >
     }
 };
 
+template< typename Algebras >
+order_commutative< Algebras > make_order_commutative( Algebras const& algebras )
+{
+    return order_commutative< Algebras > { algebras };
+}
+
+
 
 
 } // namespace gpcxx

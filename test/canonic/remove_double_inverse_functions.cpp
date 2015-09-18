@@ -37,7 +37,7 @@ TEST( TESTNAME , test1 )
         } );
 
     auto t = canonic_test_trees::test_tree5();
-    rule_container rules { gpcxx::remove_double_inverse_functions< algebras_type > { algebras } };
+    rule_container rules { gpcxx::make_remove_double_inverse_functions( algebras ) };
     gpcxx::transform_tree( rules , t );
 
     EXPECT_EQ( t.size() , size_t( 1 ) );
@@ -55,7 +55,7 @@ TEST( TESTNAME , test2 )
         } );
 
     auto t = canonic_test_trees::test_tree6();
-    rule_container rules { gpcxx::remove_double_inverse_functions< algebras_type > { algebras } };
+    rule_container rules { gpcxx::make_remove_double_inverse_functions( algebras ) };
     gpcxx::transform_tree( rules , t );
 
     EXPECT_EQ( t.size() , size_t( 2 ) );

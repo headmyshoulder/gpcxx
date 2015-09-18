@@ -20,7 +20,7 @@
 #include <gpcxx/canonic/left_lift.hpp>
 #include <gpcxx/canonic/order_commutative.hpp>
 #include <gpcxx/canonic/remove_double_inverse_functions.hpp>
-#include <gpcxx/canonic/remove_invserse_operations.hpp>
+#include <gpcxx/canonic/remove_inverse_operations.hpp>
 #include <gpcxx/canonic/summarize_constants.hpp>
 
 
