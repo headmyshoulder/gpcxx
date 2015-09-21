@@ -106,6 +106,14 @@ TEST( TESTNAME , read_tree3 )
     EXPECT_EQ( t.size() , size_t { 1 } );
 }
 
+TEST( TESTNAME , read_tree4 )
+{
+    basic_tree< std::string > t;
+    gpcxx::read_bracket( "{a}" , t );
+    EXPECT_EQ( t.size() , size_t { 1 } );
+}
+
+
 TEST( TESTNAME , read_broken1 )
 {
     basic_tree< std::string > t;
