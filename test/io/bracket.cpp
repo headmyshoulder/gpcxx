@@ -98,6 +98,14 @@ TEST( TESTNAME , read_tree2 )
     test_cursor( t.root().children(1).children(1) , "2" , 0 , 1 , 2 );
 }
 
+TEST( TESTNAME , read_tree3 )
+{
+    basic_tree< std::string > t;
+    std::string str { "{a}" };
+    gpcxx::read_bracket( str , t );
+    EXPECT_EQ( t.size() , size_t { 1 } );
+}
+
 TEST( TESTNAME , read_broken1 )
 {
     basic_tree< std::string > t;
