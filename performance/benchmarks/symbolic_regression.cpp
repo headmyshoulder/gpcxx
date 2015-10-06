@@ -36,14 +36,16 @@ int main( int argc , char** argv )
     // auto problem = generate_koza1( rng );  // koza1 - koza3 
     // auto problem = generate_nguyen9( rng );
     auto problem = gpcxx::generate_pagie1();
+    using problem_type = decltype( problem );
+    static const size_t dim = problem_type::dim;
     
     // define_tree_types
-    using context_type = gpcxx::regression_context< double , 1 >;
+    using context_type = gpcxx::regression_context< double , dim >;
     using node_type = gpcxx::intrusive_named_func_node< double , const context_type > ;
     using tree_type = gpcxx::intrusive_tree< node_type >;
     
     // define node types
-    auto node_generator = gpcxx::koza_intrusive_primitve_set< node_type , rng_type , 2 , false >();
+    auto node_generator = gpcxx::koza_intrusive_primitve_set< node_type , rng_type , dim , false >();
         
     // define_gp_parameters
     size_t population_size = 4000;
@@ -69,7 +71,7 @@ int main( int argc , char** argv )
 
     // define_evaluator
     using evaluator = struct {
-        using context_type = gpcxx::regression_context< double , 1 >;
+        using context_type = gpcxx::regression_context< double , dim >;
         using value_type = double;
         value_type operator()( tree_type const& t , context_type const& c ) const {
             return t.root()->eval( c );

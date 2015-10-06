@@ -24,7 +24,7 @@
 namespace gpcxx {
 
     
-namespace detail {
+namespace koza_intrusive_detail {
     
 template< typename Node , size_t NumTerminals >
 struct koza_variable_set_generator;
@@ -83,12 +83,12 @@ constexpr auto koza_terminal_set( std::false_type )
     return gpcxx::make_uniform_symbol( koza_variable_set_generator< Node , NumTerminals >::generate() );
 }
 
-} // namespace detail
+} // namespace koza_intrusive_detail
 
 template< typename Node , typename Rng , size_t NumTerminals , bool Erc >
 constexpr auto koza_intrusive_primitve_set( void )
 {
-    auto terminal_gen = detail::koza_terminal_set< Node , NumTerminals >( std::integral_constant< bool, Erc >{} );
+    auto terminal_gen = koza_intrusive_detail::koza_terminal_set< Node , NumTerminals >( std::integral_constant< bool, Erc >{} );
 
     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< Node > {
         Node { gpcxx::sin_func {}                                               ,      "sin" } ,

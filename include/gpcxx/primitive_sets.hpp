@@ -13,6 +13,7 @@
 #define GPCXX_PRIMITIVE_SETS_HPP_DEFINED
 
 
+#include <gpcxx/app/primitive_sets/koza_algebraic.hpp>
 #include <gpcxx/app/primitive_sets/koza_intrusive.hpp>
 
 
