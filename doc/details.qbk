@@ -2,6 +2,7 @@
 
 [include details_trees.qbk]
 [include details_io.qbk]
+[include details_simplification.qbk]
 
 
 [section Genetic operations on trees]

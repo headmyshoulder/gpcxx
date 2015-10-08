@@ -1,0 +1,43 @@
+[section Algebraic operations on expressions - simplification]
+
+[import ../examples/api/tree_algebra.cpp]
+
+__gpcxx provides a powerful set of algebraic operation to modify and simplify the structure of an expression. Its main aim is to simplify the expressions during evolution.
+But the same techniques can also be used to canonicalize mathematical expressions, that is they can be used to compute a unique representation of a formula. These techniques
+are usually summarized under the term Computer Algebra. In this sense __gpcxx provides a mini Computer Algebra System (CAS).
+
+To use the algebraic operations one needs to use an intrusive tree with a special node type - the algebraic node:
+
+[algebraic_node]
+
+The `result_type` and the `context_type` are needed for evaluation of the expressions. The `algebraic_node` provides two additional methods:
+
+* `node.constant()` - returns if a node is a constant.
+* `node.precedence()` - returns the precedence level of the node. The precedence level is typically used to sort nodes. Hence, an order relation exist which is implemented
+by `bool operator<( node_type const& n1 , node_type const& n2 )` with `n1<n2` if the precendence level of `n1` is smaller then that of `n2`.
+
+Furthermore, the `algebraic node` provides static factory methods to construct correct node with "correct" precedence levels and "correct" constant defintion:
+
+* `node_type::make_binary_operation( func_type t , std::string name )` - constructs a binary operation node from a function `t` and with name `name`. The precedence level is 20.
+* `node_type::make_unary_operation( func_type t , std::string name )` - constructs an unary operation node from a function `t` and with name `name`. The precendece level is 10.
+* `node_type::make_identity_operation( func_type t , std::string  name )` - constructs an identity operation node from a function `t` and with name `name`. The precedence level is 11.
+* `node_type::make_constant_terminal( func_type t , std::string name )` - contructs a constant terminal from a function `t` and with name `name`. The precedence level is 0.
+* `node_type::make_variable_terminal( func_type t , std::stirng name )` - construct a variable terminal from a function `t` and with name `name`. The precedence level is 1.
+
+
+
+define an algebra
+
+define rules
+
+show transformation
+
+show canonicalization
+
+
+
+
+
+
+
+[endsect]
