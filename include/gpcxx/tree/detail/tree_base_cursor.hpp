@@ -211,6 +211,11 @@ public:
         return parent_node()->level();   // level is shifted, because the root is not the very first node.
     }
     
+    size_t num_nodes( void ) const noexcept
+    {
+        return node()->count_nodes();
+    }
+    
     bool is_root( void ) const noexcept
     {
         return ( ( m_node->parent_node() == nullptr ) && ( m_pos == 0 ) );
