@@ -12,6 +12,8 @@
 #ifndef GPCXX_TREE_INTRUSIVE_FUNCTIONS_HPP_INCLUDED
 #define GPCXX_TREE_INTRUSIVE_FUNCTIONS_HPP_INCLUDED
 
+#include <gpcxx/util/assert.hpp>
+
 #include <cmath>
 #include <cstddef>
 
@@ -99,12 +101,37 @@ UNARY_FUNC( log_func , detail::gpcxx_rlog );
 UNARY_FUNC( unary_minus_func , detail::unary_minus );
 UNARY_FUNC( unary_inverse_func , detail::unary_inverse );
 
-BINARY_OPERATOR( plus_func , + );
+// BINARY_OPERATOR( plus_func , + );
+// BINARY_OPERATOR( multiplies_func , * );
 BINARY_OPERATOR( minus_func , - );
-BINARY_OPERATOR( multiplies_func , * );
 BINARY_OPERATOR( divides_func , / );
 
 
+struct plus_func
+{
+    template< typename Context , typename Node >
+    inline typename Node::result_type operator()( Context const& c , Node const& node ) const
+    {
+        GPCXX_ASSERT( node.size() > 1.0 );
+        typename Node::result_type res = node.child( 0 ).eval( c );
+        for( size_t i=1 ; i<node.size() ; ++i )
+            res += node.child( i ).eval( c );
+        return res;
+    }
+};
+
+struct multiplies_func
+{
+    template< typename Context , typename Node >
+    inline typename Node::result_type operator()( Context const& c , Node const& node ) const
+    {
+        GPCXX_ASSERT( node.size() > 1.0 );
+        typename Node::result_type res = node.child( 0 ).eval( c );
+        for( size_t i=1 ; i<node.size() ; ++i )
+            res *= node.child( i ).eval( c );
+        return res;
+    }
+};
 
 
 template< size_t I >

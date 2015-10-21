@@ -1,0 +1,80 @@
+[section Algebraic operations on expressions - simplification]
+
+[import ../examples/simplification/simplification.cpp]
+
+__gpcxx provides a powerful set of algebraic operation to modify and simplify the structure of an expression. Its main aim is to simplify the expressions during evolution.
+But the same techniques can also be used to canonicalize mathematical expressions, that is they can be used to compute a unique representation of a formula. These techniques
+are usually summarized under the term Computer Algebra System. In this sense __gpcxx provides a mini Computer Algebra System (CAS).
+
+To use these kind of operations one needs to use an intrusive tree with a special node type - the algebraic node:
+
+[algebraic_node]
+
+The `result_type` and the `context_type` are needed for evaluation of the expressions. The `algebraic_node` provides two additional methods:
+
+* `node.constant()` - returns if a node is a constant.
+* `node.precedence()` - returns the precedence level of the node. The precedence level is typically used to sort nodes. Hence, an order relation exist which is implemented
+by `bool operator<( node_type const& n1 , node_type const& n2 )` with `n1<n2` if the precendence level of `n1` is smaller then that of `n2`.
+
+Furthermore, the `algebraic node` provides static factory methods to construct correct node with "correct" precedence levels and "correct" constant defintion:
+
+* `node_type::make_binary_operation( func_type t , std::string name )` - constructs a binary operation node from a function `t` and with name `name`. The precedence level is 20.
+* `node_type::make_unary_operation( func_type t , std::string name )` - constructs an unary operation node from a function `t` and with name `name`. The precendece level is 10.
+* `node_type::make_identity_operation( func_type t , std::string  name )` - constructs an identity operation node from a function `t` and with name `name`. The precedence level is 11.
+* `node_type::make_constant_terminal( func_type t , std::string name )` - contructs a constant terminal from a function `t` and with name `name`. The precedence level is 0.
+* `node_type::make_variable_terminal( func_type t , std::stirng name )` - construct a variable terminal from a function `t` and with name `name`. The precedence level is 1.
+
+Simplification of the expressions uses the algebraic properties of the underlying operations. Most of these properties are described by groups and you need to tell __gpcxx which
+operations belongs to which group. This can be done via
+
+[algebras_definition]
+
+The first two typedefs define the types holding all algebraic operations. Then, the additive and the multiplicative group are defined. Each group is defined by its
+operations, its neutral element, the inverse operations and the function which calculates the inverse element. Of course, these definitions happen in terms of __gpcxx nodes.
+
+Then, we need to define which kind of operations we want to apply. We start with defining the containers holding all operations
+
+[simplification_definitions_rule_container]
+
+A rule for simplification is function object which takes an expression and an according cursor pointing to the current position in the tree. It returns a value of
+type `rule_result`. The rule container is simply a `vector` of rules.
+
+Next, we define the rules
+
+[simplification_rules_definitions]
+
+Here, we use five rules.
+
+* `order_commutative<>` - sort the children of node if the node is commutative.
+* `left_lift<>` - performs a lift of a the left child of an associative operations. For example the expression ['plus(plus(a,b),c)] is transformed to ['plus(a,b,c)].
+* `remove_double_inverse_functions<>` - Remove two successive applications of an inverse function. For example ['-(-x)] if transformed to ['x].
+* `remove_inverse_operations<>`- Removes all inverse operations. For example ['a-b] is transformed to ['a+(-b)].
+* `summarize_constant<>`- Summarizes all constants if possible. For example ['1+1] is transformed to ['2].
+
+These five operations can now be used to bring an arbitrary expression into a canonic form. Here are several examples.
+
+The first one is
+
+[simplification_example1]
+
+And the output is
+
+```
+y + ( 2 + ( x * ( 4 * 8 ) ) )
++( x * 32 , y , 2 )
+```
+
+This expression is ordered (in the sense that higher order expressions come first) and the constant expression is summarized.
+
+The second example shows how these rules can be used to create a canonic version of the 
+
+[simplification_example2]
+
+
+
+link to literature
+
+
+
+
+[endsect]
