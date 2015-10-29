@@ -1,5 +1,5 @@
 /*
- * gpcxx/canonic/order_commutative.hpp
+ * gpcxx/canonic/sort_commutative.hpp
  * Date: 2015-09-08
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -9,8 +9,8 @@
  * copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef GPCXX_CANONIC_ORDER_COMMUTATIVE_HPP_INCLUDED
-#define GPCXX_CANONIC_ORDER_COMMUTATIVE_HPP_INCLUDED
+#ifndef GPCXX_CANONIC_SORT_COMMUTATIVE_HPP_INCLUDED
+#define GPCXX_CANONIC_SORT_COMMUTATIVE_HPP_INCLUDED
 
 #include <gpcxx/canonic/algebras_rule.hpp>
 #include <gpcxx/tree/transform_tree.hpp>
@@ -20,7 +20,7 @@
 namespace gpcxx {
 
 template< typename Algebras >
-struct order_commutative : protected algebras_rule< Algebras >
+struct sort_commutative : protected algebras_rule< Algebras >
 {
     using algebras_rule< Algebras >::algebras_rule;
     
@@ -43,9 +43,9 @@ struct order_commutative : protected algebras_rule< Algebras >
 };
 
 template< typename Algebras >
-order_commutative< Algebras > make_order_commutative( Algebras const& algebras )
+sort_commutative< Algebras > make_sort_commutative( Algebras const& algebras )
 {
-    return order_commutative< Algebras > { algebras };
+    return sort_commutative< Algebras > { algebras };
 }
 
 
@@ -54,4 +54,4 @@ order_commutative< Algebras > make_order_commutative( Algebras const& algebras )
 } // namespace gpcxx
 
 
-#endif // GPCXX_CANONIC_ORDER_COMMUTATIVE_HPP_INCLUDED
+#endif // GPCXX_CANONIC_SORT_COMMUTATIVE_HPP_INCLUDED

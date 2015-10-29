@@ -12,7 +12,7 @@
 #include "canonic_test_trees.hpp"
 #include "../common/test_functions.hpp"
 
-#include <gpcxx/canonic/order_commutative.hpp>
+#include <gpcxx/canonic/sort_commutative.hpp>
 #include <gpcxx/canonic/left_lift.hpp>
 #include <gpcxx/canonic/remove_double_inverse_functions.hpp>
 #include <gpcxx/canonic/remove_inverse_operations.hpp>
@@ -70,7 +70,7 @@ protected:
             return node_type::make_constant_terminal( gpcxx::double_terminal< double >( t ) , str.str() ); };
 
         m_rules = rule_container {
-              gpcxx::make_order_commutative( m_algebras )
+              gpcxx::make_sort_commutative( m_algebras )
             , gpcxx::make_left_lift( m_algebras )
             , gpcxx::make_remove_double_inverse_functions( m_algebras )
             , gpcxx::make_remove_inverse_operations( m_algebras )

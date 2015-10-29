@@ -1,5 +1,5 @@
 /*
- * test/canonic/order_commutative.cpp
+ * test/canonic/sort_commutative.cpp
  * Date: 2015-09-08
  * Author: Karsten Ahnert (karsten.ahnert@gmx.de)
  * Copyright: Karsten Ahnert
@@ -11,7 +11,7 @@
 
 #include "canonic_test_trees.hpp"
 #include "../common/test_functions.hpp"
-#include <gpcxx/canonic/order_commutative.hpp>
+#include <gpcxx/canonic/sort_commutative.hpp>
 
 #include <gtest/gtest.h>
 
@@ -19,7 +19,7 @@
 #include <vector>
 #include <functional>
 
-#define TESTNAME order_commutative_tests
+#define TESTNAME sort_commutative_tests
 
 using node_type = canonic_test_trees::node_type;
 using tree_type = canonic_test_trees::tree_type;
@@ -36,7 +36,7 @@ TEST( TESTNAME , test1 )
     algebras_type algebras { };
     algebras.add_abelian_magma( node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
     
-    rule_container rules { gpcxx::make_order_commutative( algebras ) };
+    rule_container rules { gpcxx::make_sort_commutative( algebras ) };
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 3 ) );
@@ -52,7 +52,7 @@ TEST( TESTNAME , test2 )
     algebras_type algebras { };
     algebras.add_abelian_magma( node_type::make_binary_operation( gpcxx::plus_func {} , "+" ) );
     
-    rule_container rules { gpcxx::make_order_commutative( algebras ) };
+    rule_container rules { gpcxx::make_sort_commutative( algebras ) };
     gpcxx::transform_tree( rules , t );
     
     EXPECT_EQ( t.size() , size_t( 5 ) );

@@ -9,7 +9,7 @@ add_executable ( canonic_tests
   algebraic_node.cpp
   algebras.cpp
   group.cpp
-  order_commutative.cpp
+  sort_commutative.cpp
   left_lift.cpp
   remove_inverse_operations.cpp
   remove_double_inverse_functions.cpp

@@ -54,7 +54,7 @@ int main( int argc , char** argv )
         return node_type::make_constant_terminal( gpcxx::double_terminal< double >( t ) , str.str() ); };
 
     rule_container rules {
-          gpcxx::make_order_commutative( algebras )
+          gpcxx::make_sort_commutative( algebras )
         , gpcxx::make_left_lift( algebras )
         , gpcxx::make_remove_double_inverse_functions( algebras )
         , gpcxx::make_remove_inverse_operations( algebras )
