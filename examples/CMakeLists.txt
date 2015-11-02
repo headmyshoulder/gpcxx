@@ -3,4 +3,5 @@
 
 add_subdirectory ( symb_reg )
 add_subdirectory ( artificial_ant )
+add_subdirectory ( simplification )
 add_subdirectory ( api )

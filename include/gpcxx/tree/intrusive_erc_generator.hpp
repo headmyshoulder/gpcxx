@@ -38,10 +38,20 @@ private:
     Dist m_dist;
 };
 
+
 template< typename Value , typename Dist >
 auto make_intrusive_erc_generator( Dist const& dist )
 {
     return intrusive_erc_generator< Value , Dist >( dist );
+}
+
+template< typename ValueFactory , typename Dist >
+auto make_intrusive_erc_factory_generator( ValueFactory value_factory , Dist dist )
+{
+    return [ value_factory , dist ]( auto& rng ) {
+        auto x = dist( rng );
+        return value_factory( [x]( auto const& c , auto const& n ) { return x; } , std::to_string( x ) );
+    };
 }
 
 

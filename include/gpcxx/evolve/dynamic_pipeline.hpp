@@ -36,13 +36,18 @@ public:
     using genetic_operator_type = any_genetic_operator< population_type , fitness_type >;
     using index_vector = std::vector< size_t >;
     using operator_observer_type = std::function< void( int , index_vector const& , index_vector const& ) >;
-    
+    using final_transform_type = std::function< void( individual_type& ) >; // TODO: Find a better name
 
 
-    dynamic_pipeline( rng_type &rng , size_t number_elite , operator_observer_type op = []( int choice , index_vector const& in , index_vector const& out ) {} )
+    dynamic_pipeline(
+        rng_type &rng ,
+        size_t number_elite ,
+        final_transform_type final_transform = []( auto& x ) {} ,
+        operator_observer_type op = []( int choice , index_vector const& in , index_vector const& out ) {} )
         : m_rng( rng )
         , m_number_elite( number_elite ) 
         , m_rates() , m_operators()
+        , m_final_transform( std::move( final_transform ) )
         , m_observer( std::move( op ) )
     { }
     
@@ -112,6 +117,7 @@ private:
             for( auto iter = trees.begin() ; ( iter != trees.end() ) && ( new_pop.size() < n ) ; ++iter )
             {
                 out.push_back( new_pop.size() );
+                m_final_transform( *iter );
                 new_pop.push_back( std::move( *iter ) );
             }
             m_observer( choice , in , out );
@@ -124,6 +130,7 @@ private:
     double m_number_elite;
     std::vector< double > m_rates;
     std::vector< genetic_operator_type > m_operators;
+    final_transform_type m_final_transform;
     operator_observer_type m_observer;
 };
 

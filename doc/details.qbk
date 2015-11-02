@@ -3,7 +3,6 @@
 [include details_trees.qbk]
 [include details_io.qbk]
 
-
 [section Genetic operations on trees]
 
 mutation - pictures
@@ -18,7 +17,11 @@ tree generation - pictures
 
 [section Evaluation of trees]
 
-später
+later
+
+[endsect]
+
+[section Transformations and simplification of trees]
 
 [endsect]
 

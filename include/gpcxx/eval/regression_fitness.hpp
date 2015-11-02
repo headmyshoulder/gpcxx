@@ -79,7 +79,7 @@ struct regression_fitness
     value_type operator()( Tree const & t , TrainingData const& c ) const
     {
         value_type chi2 = get_chi2( t , c );
-        return ( isnan( chi2 ) ? 1.0 : 1.0 - 1.0 / ( 1.0 + chi2 ) );
+        return ( std::isnan( chi2 ) ? 1.0 : 1.0 - 1.0 / ( 1.0 + chi2 ) );
     }
 };
 
