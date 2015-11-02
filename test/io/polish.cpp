@@ -201,6 +201,27 @@ TEST_F( TESTNAME , read_basic_tree2 )
     EXPECT_TRUE( tree == trees.data2 );
 }
 
+TEST_F( TESTNAME , read_basic_tree3 )
+{
+    SCOPED_TRACE( "read_basic_tree3" );
+    
+    using tree_type = typename get_tree_type< basic_tree_tag >::type;
+    string str( "plus|sin|x|minus|y|2" );
+    auto tree = read_polish< tree_type >( str , m_basic_mapper , "|" );
+    
+    EXPECT_EQ( tree.size() , size_t( 6 ) );
+    test_cursor( tree.root() , "plus" , 2 , 3 , 0 );
+    test_cursor( tree.root().children(0) , "sin" , 1 , 2 , 1 );
+    test_cursor( tree.root().children(0).children(0) , "x" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1) , "minus" , 2 , 2 , 1 );
+    test_cursor( tree.root().children(1).children(0) , "y" , 0 , 1 , 2 );
+    test_cursor( tree.root().children(1).children(1) , "2" , 0 , 1 , 2 );
+    
+    test_tree< basic_tree_tag > trees;
+    EXPECT_TRUE( tree == trees.data );
+
+}
+
 
 
 TEST_F( TESTNAME , read_intrusive_tree1 )
