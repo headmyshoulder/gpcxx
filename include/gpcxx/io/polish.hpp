@@ -111,7 +111,15 @@ void read_polish( std::string str , Tree &tree , NodeMapper const& mapper , std:
     
     detail::read_polish_impl( first , tree , tree.root() , mapper );
 }
-    
+
+template< typename Tree , typename NodeMapper >
+Tree read_polish( std::string str , NodeMapper const& mapper , std::string const& sep = "|" , std::string const &opening = "" , std::string const& closing = "" )
+{
+    Tree tree;
+    read_polish( std::move( str ) , tree , mapper , sep , opening , closing );
+    return tree;
+}
+
 
 } // namespace gpcxx
 
