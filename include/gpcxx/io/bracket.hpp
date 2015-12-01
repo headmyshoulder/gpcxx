@@ -15,9 +15,6 @@
 #include <gpcxx/util/identity.hpp>
 #include <gpcxx/io/detail/read_bracket.hpp>
 
-#include <boost/algorithm/string/find.hpp>
-#include <boost/range/algorithm/find.hpp>
-
 #include <ostream>
 #include <string>
 #include <sstream>
@@ -100,19 +97,16 @@ detail::bracket_writer< T , SymbolMapper > bracket( T const& t , std::string con
 
 
 
-template< typename Tree , typename NodeMapper >
-void read_bracket( std::string str , Tree &tree , NodeMapper const& mapper , std::string const &opening = "{" , std::string const& closing = "}" )
+template< typename Rng , typename Tree , typename NodeMapper = gpcxx::identity >
+typename boost::range_iterator< Rng const >::type read_bracket( Rng const& rng , Tree &tree , NodeMapper const& mapper = NodeMapper {} , std::string const &opening = "{" , std::string const& closing = "}" )
 {
-    auto iter = boost::range::find( str , opening );
-    detail::read_bracket_impl( std::make_pair( iter , str.end() ) , tree , tree.root() , opening , closing , mapper() );
-}
-
-template< typename Tree , typename NodeMapper >
-Tree read_bracket( std::string str , NodeMapper const& mapper , std::string const &opening = "{" , std::string const& closing = "}" )
-{
-    Tree tree;
-    read_bracket( std::move( str ) , tree , mapper , opening , closing );
-    return tree;
+    using iterator = typename boost::range_iterator< Rng >::type;
+    if( ! boost::empty( rng ) )
+    {
+        auto irng = boost::make_iterator_range( boost::begin( rng ) , boost::end( rng ) );
+        return detail::read_bracket( irng , tree , mapper , opening , closing );
+    }
+    return iterator {};
 }
 
 
