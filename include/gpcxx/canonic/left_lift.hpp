@@ -34,7 +34,7 @@ struct left_lift : protected algebras_rule< Algebras >
             auto left = c.children( 0 );
             if( this->m_algebras->is_associative( *left ) && ( (*c) == (*left) ) )
             {
-                while( left->size() > 0 )
+                while( left.size() > 0 )
                 {
                     // attention: left get invalidated in this call
                     t.move_and_insert_subtree( left , left.children( 0 ) );

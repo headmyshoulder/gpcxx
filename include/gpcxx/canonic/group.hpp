@@ -32,10 +32,10 @@ public:
     , m_inverse_operation { std::move( inverse_operation ) }
     , m_inverse_function { std::move( inverse_function ) }
     {
-        if( m_operation.count_nodes() > 1 ) throw gpcxx_exception( "Group operation node contains children. It cannot be used as a prototyp." );
-        if( m_identity.count_nodes() > 1 ) throw gpcxx_exception( "Group identity operation node contains children. It cannot be used as a prototyp." );
-        if( m_inverse_operation.count_nodes() > 1 ) throw gpcxx_exception( "Group inverse operation node contains children. It cannot be used as a prototyp." );
-        if( m_inverse_function.count_nodes() > 1 ) throw gpcxx_exception( "Group inverse function node contains children. It cannot be used as a prototyp." );
+//         if( m_operation.count_nodes() > 1 ) throw gpcxx_exception( "Group operation node contains children. It cannot be used as a prototyp." );
+//         if( m_identity.count_nodes() > 1 ) throw gpcxx_exception( "Group identity operation node contains children. It cannot be used as a prototyp." );
+//         if( m_inverse_operation.count_nodes() > 1 ) throw gpcxx_exception( "Group inverse operation node contains children. It cannot be used as a prototyp." );
+//         if( m_inverse_function.count_nodes() > 1 ) throw gpcxx_exception( "Group inverse function node contains children. It cannot be used as a prototyp." );
     }
     
     node_type const& operation( void ) const { return m_operation; }

@@ -28,9 +28,8 @@ struct sort_commutative : protected algebras_rule< Algebras >
     gpcxx::rule_result operator()( Tree& t , Cursor c ) const
     {
         using node_type = typename Tree::node_type;
-        auto get_value = []( auto ptr1 ) {return * static_cast< node_type const* >( ptr1 ); };
-        auto cmp = [get_value]( auto ptr1 , auto ptr2 ) { return get_value( ptr1 ) < get_value( ptr2 ); };
-        
+        auto get_value = []( auto ptr ) { return * static_cast< node_type* >( ptr ); };
+        auto cmp = [get_value]( auto ptr1 , auto ptr2 ) { return ( * get_value( ptr1 ) ) < ( * get_value( ptr2 ) ); };
         auto& cc = c.node()->get_children();
         if( this->m_algebras->is_commutative( *c ) 
             && ! std::is_sorted( cc.begin() , cc.end() , cmp ) )
@@ -40,6 +39,9 @@ struct sort_commutative : protected algebras_rule< Algebras >
         }
         return gpcxx::descent;
     }
+    
+private:
+
 };
 
 template< typename Algebras >

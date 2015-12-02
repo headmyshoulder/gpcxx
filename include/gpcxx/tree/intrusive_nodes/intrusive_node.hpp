@@ -14,7 +14,6 @@
 
 #include <gpcxx/tree/detail/node_base.hpp>
 
-
 #include <array>
 #include <algorithm>
 #include <cassert>
@@ -59,6 +58,16 @@ public:
     intrusive_node( intrusive_node && )
     : node_base_type()
     {
+    }
+    
+    reference operator*( void ) noexcept
+    {
+        return get();
+    }
+    
+    const_reference operator*( void ) const noexcept 
+    {
+        return get();
     }
     
     intrusive_node& operator=( intrusive_node const& )
