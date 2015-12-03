@@ -61,5 +61,5 @@ TEST( TESTNAME , test_2 )
         .WillRepeatedly( Return( ascent ) );
     
     std::vector< rule_type > rules = { mock_rule { mocker } };
-    gpcxx::transform_tree( rules , trees.data );
+    EXPECT_THROW( { gpcxx::transform_tree( rules , trees.data ); } , gpcxx::gpcxx_exception );
 }

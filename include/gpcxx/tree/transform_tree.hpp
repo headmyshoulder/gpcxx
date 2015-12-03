@@ -80,7 +80,13 @@ namespace detail {
                 }
                 else if( ret == ascent )
                 {
-                    return c.is_root() ? false : true;
+                    if( ! c.is_root() ) return true;
+                    else
+                    {
+                        redo = true;
+                        break;
+                    }
+                    
                 }
             }
         }
