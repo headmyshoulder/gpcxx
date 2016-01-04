@@ -68,21 +68,21 @@ public:
     optional_group get_group( node_type const& node ) const
     {
         auto iter = get_group_iter( node );
-        if( iter == m_groups.end() ) return boost::none_t {} ;
+        if( iter == m_groups.end() ) return optional_group {};
         else return optional_group { *iter };
     }
     
     optional_group  get_group_from_inverse_operation( node_type const& node ) const
     {
         auto iter = get_group_from_inverse_operation_iter( node );
-        if( iter == m_groups.end() ) return boost::none_t {} ;
+        if( iter == m_groups.end() ) return optional_group {};
         else return optional_group { *iter };
     }
     
     optional_group  get_group_from_inverse_function( node_type const& node ) const
     {
         auto iter = get_group_from_inverse_function_iter( node );
-        if( iter == m_groups.end() ) return boost::none_t {} ;
+        if( iter == m_groups.end() ) return optional_group {};
         else return optional_group { *iter };
     }
 
