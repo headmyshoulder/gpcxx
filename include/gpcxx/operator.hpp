@@ -15,6 +15,8 @@
 
 #include <gpcxx/operator/any_genetic_operator.hpp>
 #include <gpcxx/operator/crossover.hpp>
+#include <gpcxx/operator/multi_crossover.hpp>
+#include <gpcxx/operator/multi_mutation.hpp>
 #include <gpcxx/operator/mutation.hpp>
 #include <gpcxx/operator/one_point_crossover_pip_strategy.hpp>
 #include <gpcxx/operator/one_point_crossover_strategy.hpp>

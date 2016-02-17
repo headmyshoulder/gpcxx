@@ -35,10 +35,12 @@ public:
     using node_type = Node;
     using generator_type = std::function< node_type( rng_type& ) >;
     using value_type = Value;
-    using weighted_generator_type = struct {
+    struct weighted_generator_type 
+    {
         value_type weight;
         size_t arity;
-        generator_type generator; };
+        generator_type generator;
+    };
     using generator_container = std::array< weighted_generator_type , Dim >;
     
     // construct

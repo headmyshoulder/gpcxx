@@ -4,7 +4,7 @@ The first example is symbolic regression. Symbolic regression can be used to obt
 without a specific a predefined model. Instead one obtains a general "formula" which describes the data. In order to understand 
 symbolic regression and how it can be solved with __gpcxx we will create an artificial test data and apply __gpcxx to this data.
 
-[import ../examples/symb_reg/symb_reg.cpp]
+[import ../examples/symbolic_regression/symb_reg.cpp]
 
 First, we create the artifical test data set
 

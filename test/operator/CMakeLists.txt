@@ -15,6 +15,7 @@ add_executable ( operator_tests
    crossover.cpp
    reproduce.cpp
    point_mutation.cpp
+   multi_mutation.cpp
   )
 
 target_link_libraries ( operator_tests gtest gtest_main gmock )
