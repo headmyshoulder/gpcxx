@@ -43,7 +43,7 @@ include ( CheckHeaders )
 message ( STATUS "Building project ${CMAKE_PROJECT_NAME}" )
 message ( STATUS "Version ${GPCXX_VERSION_SHORT}" )
 
-find_package ( Boost REQUIRED COMPONENTS thread system )
+find_package ( Boost REQUIRED COMPONENTS thread system program_options )
 
 include_directories ( SYSTEM ${Boost_INCLUDE_DIRS} )
 include_directories ( ${CMAKE_CURRENT_SOURCE_DIR}/include )

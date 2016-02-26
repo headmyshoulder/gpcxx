@@ -8,3 +8,11 @@
 #
 
 add_executable ( lorenz lorenz.cpp )
+
+add_executable ( lorenz_multi lorenz_multi.cpp generate_data.cpp )
+add_executable ( lorenz_single lorenz_single.cpp generate_data.cpp )
+add_executable ( lorenz_reconstruct lorenz_reconstruct.cpp )
+
+target_link_libraries ( lorenz_multi ${Boost_PROGRAM_OPTIONS_LIBRARY} )
+target_link_libraries ( lorenz_single ${Boost_PROGRAM_OPTIONS_LIBRARY} )
+target_link_libraries ( lorenz_reconstruct ${Boost_PROGRAM_OPTIONS_LIBRARY} )
