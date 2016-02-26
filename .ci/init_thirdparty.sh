@@ -10,4 +10,4 @@ mv gmock-1.7.0 $GPCXX_ROOT/third_party/gmock
 export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
 cd $BOOST_ROOT
 ./bootstrap.sh
-./b2 --with-thread --with-system --with-program-options -d0
+./b2 --with-thread --with-system --with-program_options -d0
