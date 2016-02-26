@@ -67,7 +67,7 @@ struct lorenz_reconstructed
 data_type generate_data( void )
 {
     data_type data;
-    state_type x { 10.0 , 10.0 , 10.0 };
+    state_type x {{ 10.0 , 10.0 , 10.0 }};
     state_type dxdt;
     double dt = 0.1;
     stepper_type stepper;
@@ -240,15 +240,15 @@ int main( int argc , char** argv )
 
     //[define_evaluator
     auto evaluator = []( auto const& individual , auto const& context ) {
-        return state_type {
+        return state_type {{
             individual[0].root()->eval( context ) ,
             individual[1].root()->eval( context ) ,
-            individual[2].root()->eval( context ) }; };
+            individual[2].root()->eval( context ) }}; };
     auto distance = []( auto const& y , auto const& ytrain ) {
         const double weight_x = 1.0;
         const double weight_y = 1.0;
         const double weight_z = 1.0;
-        state_type diff { y[0] - ytrain[0] , y[1] - ytrain[1] , y[2] - ytrain[2] };
+        state_type diff {{ y[0] - ytrain[0] , y[1] - ytrain[1] , y[2] - ytrain[2] }};
         return weight_x * diff[0] * diff[0] + weight_y * diff[1] * diff[1] + weight_z * diff[2] * diff[2]; };
     //]
         

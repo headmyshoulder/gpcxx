@@ -15,9 +15,8 @@
 #include <cassert>
 #include <utility>
 #include <cmath>
+#include <cstddef>
 
-// #include <iostream>
-// using namespace std;
 
 namespace gpcxx {
 
@@ -46,10 +45,7 @@ struct multi_regression_fitness
             auto yy = m_eval( individual , x[i] );
             auto d = m_dist( y[i] , yy );
             chi2 += d;
-//             cout << d << " " << chi2 << " (" << y[i][0] << " " << y[i][1] << " " << y[i][2] << ") - (" << yy[0] << " " << yy[1] << " " << yy[2] << ") - " ;
-//             cout << "(" << x[i][0] << " " << x[i][1] << " " << x[i][2] << ")" << endl;
         }
-//         cout << "\n\n";
         return chi2 / value_type( x[0].size() );
     }
 
