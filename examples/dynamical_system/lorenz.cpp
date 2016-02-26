@@ -33,6 +33,12 @@ using state_container = std::vector< state_type >;
 using data_type = std::pair< state_container , state_container >;
 
 
+using context_type = gpcxx::regression_context< double , dim >;
+using node_type = gpcxx::intrusive_named_func_node< double , const context_type > ;
+using tree_type = gpcxx::intrusive_tree< node_type >;
+using individual_type = std::array< tree_type , dim >;
+
+
 
 
 void lorenz( const state_type &x , state_type &dxdt , double t )
@@ -44,6 +50,18 @@ void lorenz( const state_type &x , state_type &dxdt , double t )
     dxdt[1] = R * x[0] - x[1] - x[0] * x[2];
     dxdt[2] = -b * x[2] + x[0] * x[1];
 }
+
+struct lorenz_reconstructed
+{
+    lorenz_reconstructed( individual_type individual ) : m_individual( std::move( individual ) ) {}
+    void operator()( state_type const& x , state_type& dxdt , double t ) const
+    {
+        dxdt[0] = m_individual[0].root()->eval( x );
+        dxdt[1] = m_individual[1].root()->eval( x );
+        dxdt[2] = m_individual[2].root()->eval( x );
+    }
+    individual_type m_individual;
+};
 
 
 data_type generate_data( void )
@@ -110,19 +128,24 @@ std::array< std::pair< double , double > , dim > normalize_data( state_container
 }
 
 template< typename Pop , typename Fitness >
-void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f , size_t num_individuals )
+void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f , size_t num_individuals , bool write_individual = false )
 {
     std::vector< size_t > idx;
     gpcxx::sort_indices( f , idx );
-//     bool first = true;
     for( size_t i=0 ; i<num_individuals ; ++i )
     {
-        // if( first ) first = false; else out << "\n";
-        out << i << " " << f[ idx[i] ] << " : \n";
-//         for( auto const& tree : p[ idx[i] ] )
-//             out << "\t" << gpcxx::simple( tree ) << "\n";
+        if( write_individual )
+        {
+            out << i << " " << f[ idx[i] ] << " : \n";
+            for( auto const& tree : p[ idx[i] ] )
+                out << "\t" << gpcxx::simple( tree ) << "\n";
+        }
+        else
+        {
+            out << i << " " << f[ idx[i] ] << "\n";
+        }
     }
-    out << "\n";
+    out << "\n" << std::flush;
 }
 
 
@@ -138,20 +161,16 @@ int main( int argc , char** argv )
     std::cout.precision( 14 );
     using namespace std;
     auto training_data = generate_data();
-//     auto xstat = normalize_data( training_data.first );
-//     auto ystat = normalize_data( training_data.second );
-//     for( size_t j=0 ; j<dim ; ++j )
-//         cout << xstat[j].first << " " << xstat[j].second << " " << ystat[j].first << " " << ystat[j].second << "\n";
-//     cout << endl;
+    auto xstat = normalize_data( training_data.first );
+    auto ystat = normalize_data( training_data.second );
+    for( size_t j=0 ; j<dim ; ++j )
+        cout << xstat[j].first << " " << xstat[j].second << " " << ystat[j].first << " " << ystat[j].second << "\n";
+    cout << endl;
     // plot_data( training_data );
     
     //[ define_the_tree
     using rng_type = std::mt19937;
     rng_type rng;
-    using context_type = gpcxx::regression_context< double , dim >;
-    using node_type = gpcxx::intrusive_named_func_node< double , const context_type > ;
-    using tree_type = gpcxx::intrusive_tree< node_type >;
-    using individual_type = std::array< tree_type , dim >;
     //]
     
     
@@ -165,17 +184,17 @@ int main( int argc , char** argv )
             node_type { gpcxx::array_terminal< 0 >{}                                 ,      "x" } ,
             node_type { gpcxx::array_terminal< 1 >{}                                 ,      "y" } ,
             node_type { gpcxx::array_terminal< 2 >{}                                 ,      "z" } } ,
-        0.25 ,
+        0.5 ,
         erc_gen );
     //]
 
     //[ define_function_set
-    auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
-        node_type { gpcxx::sin_func {}                                               ,      "s" } ,
-        node_type { gpcxx::cos_func {}                                               ,      "c" } 
-//         node_type { gpcxx::exp_func {}                                               ,      "e" } ,
-//         node_type { gpcxx::log_func {}                                               ,      "l" }
-    } );
+//     auto unary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
+//         node_type { gpcxx::sin_func {}                                               ,      "s" } ,
+//         node_type { gpcxx::cos_func {}                                               ,      "c" } 
+// //         node_type { gpcxx::exp_func {}                                               ,      "e" } ,
+// //         node_type { gpcxx::log_func {}                                               ,      "l" }
+//     } );
 
     auto binary_gen = gpcxx::make_uniform_symbol( std::vector< node_type > {
         node_type { gpcxx::plus_func {}                                              ,      "+" } ,
@@ -186,9 +205,9 @@ int main( int argc , char** argv )
     //]
 
     //[ define_node_generator
-    auto node_generator = gpcxx::node_generator< node_type , rng_type , 3 > {
+    auto node_generator = gpcxx::node_generator< node_type , rng_type , 2 > {
         { 1.0 , 0 , terminal_gen } ,
-        { 1.0 , 1 , unary_gen } ,
+//        { 1.0 , 1 , unary_gen } ,
         { 1.0 , 2 , binary_gen } };
     //]
         
@@ -253,46 +272,28 @@ int main( int argc , char** argv )
         , reproduction_rate );
     //]
 
+    
 
     //[init_population
+    std::ofstream fout( "evolution.dat" );
     for( size_t i=0 ; i<population.size() ; )
     {
-        // cout << i << endl;
         for( size_t j=0 ; j<dim ; ++j )
         {
             population[i][j].clear();
             tree_generator( population[i][j] );
         }
-//         cout << gpcxx::simple( population[i][0] ) << endl;
-//         cout << gpcxx::simple( population[i][1] ) << endl;
-//         cout << gpcxx::simple( population[i][2] ) << endl;
         fitness[i] = fitness_f( population[i] , training_data.first , training_data.second );
         if( ! is_number( fitness[i] ) )
         {
-//             for( size_t i=0 ; i<training_data.first.size() ; ++i )
-//             {
-//                 auto const& x = training_data.first[i];
-//                 // auto const& y = training_data.second[i];
-//                 // cout << "Data:" << x[0] << " " << x[1] << " " << x[2] << " " << y[0] << " " << y[1] << " " << y[2] << "\n";
-//                 cout << "Data: " << x[0] << " " << x[1] << " " << x[2] << "\n";
-//                 if( ( std::abs( x[0] ) < 1.0e-5 ) ||
-//                     ( std::abs( x[1] ) < 1.0e-5 ) ||
-//                     ( std::abs( x[2] ) < 1.0e-5 ) )
-//                     cout << "XXX" << endl;
-//             }
-            // return -1;
             continue;
         }
-        // cout << "Fitness " << i << " : " << fitness[i] << endl;
         ++i;
     }
     
-    // return -1;
-    
+    std::cout << "Initial population" << std::endl;
     write_best_individuals( std::cout , population , fitness , 10 );
-    // std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness ) << std::endl;
-    // std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl;
-    std::cout << std::endl << std::endl;
+    write_best_individuals( fout , population , fitness , 10 , true );
     //]
 
     //[main_loop
@@ -304,8 +305,7 @@ int main( int argc , char** argv )
             
         std::cout << "Iteration " << i << std::endl;
         write_best_individuals( std::cout , population , fitness , 10 );
-        // std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
-//         // std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+        write_best_individuals( fout , population , fitness , 10 , true );
     }
     //]
 
@@ -314,20 +314,3 @@ int main( int argc , char** argv )
     
     return 0;
 }
-
-
-
-
-/*
-auto individual_fitness = []( auto const& individual , auto const& x , auto const& y )
-{
-    double f = 0.0;
-    for( size_t i=0 ; i<individual.size() ; ++i )
-        f += my_norm( y[i] - individual[i].eval( x ) ) * weight[i];
-    return f;
-};
-
-auto fitness_vector = []( auto const& individual , auto const& x , auto const& y )
-{
-    
-}*/
