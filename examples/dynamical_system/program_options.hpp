@@ -38,10 +38,11 @@ inline auto get_positional_options( void )
     hidden.add_options()
     ( "evolution" , po::value< std::string >() , "outfile for the evolution" )
     ( "result" , po::value< std::string >() , "outfile for the result" )
+    ( "winner" , po::value< std::string >() , "outfile for the winner" )
     ;
     
     po::positional_options_description positional_options;
-    positional_options.add( "evolution", 1 ).add( "result", 2 );
+    positional_options.add( "evolution", 1 ).add( "result", 1 ).add( "winner" , 1 );
     
     return std::make_pair( positional_options , hidden );
 }

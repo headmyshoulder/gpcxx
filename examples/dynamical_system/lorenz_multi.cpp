@@ -12,6 +12,7 @@
 #include "generate_data.hpp"
 #include "tree_types.hpp"
 #include "program_options.hpp"
+#include "serialize.hpp"
 
 #include <gpcxx/app.hpp>
 #include <gpcxx/eval.hpp>
@@ -187,6 +188,12 @@ int main( int argc , char** argv )
         fout2 << xstat[j].first << " " << xstat[j].second << " " << ystat[j].first << " " << ystat[j].second << "\n";
     fout2 << std::endl << std::endl;
     dynsys::write_best_individuals( fout2 , population , fitness , 10 , true );
+    
+    
+    std::vector< size_t > idx;
+    gpcxx::sort_indices( fitness , idx );
+    std::ofstream winner_out { vm[ "winner" ].as< std::string >() };
+    winner_out << dynsys::serialize_winner( population[ idx[0] ] ) << "\n";
     
 
     return 0;

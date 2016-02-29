@@ -20,12 +20,9 @@
 #include <gpcxx/generate.hpp>
 #include <gpcxx/io.hpp>
 
-// #include <gpcxx/operator.hpp>
-// #include <gpcxx/stat.hpp>
-
-
-
 #include <random>
+
+
 
 namespace dynsys {
 
@@ -37,7 +34,7 @@ using individual_type = std::array< tree_type , dim >;
 using rng_type = std::mt19937;
 
 
-auto create_node_generator( void )
+inline auto create_node_generator( void )
 {
     auto erc_gen = gpcxx::make_intrusive_erc_generator< node_type >( []( auto& rng ) {
         std::normal_distribution<> dist( 0.0 , 1.0 );
@@ -111,11 +108,12 @@ void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f
 }
 
 
-
 inline bool is_number( double t )
 {
     return ( ! std::isnan( t ) ) && ( ! std::isinf( t ) );
 }
+
+
 
 
 } // namespace dynsys

@@ -12,6 +12,7 @@
 #include "generate_data.hpp"
 #include "tree_types.hpp"
 #include "program_options.hpp"
+#include "serialize.hpp"
 
 #include <gpcxx/app.hpp>
 #include <gpcxx/eval.hpp>
@@ -139,12 +140,15 @@ int main( int argc , char** argv )
         fout2 << xstat[j].first << " " << xstat[j].second << " " << ystat[j].first << " " << ystat[j].second << "\n";
     fout2 << std::endl << std::endl;
     
+    
+    
+    std::array< dynsys::tree_type , dynsys::dim > winner;
     for( size_t dimension = 0 ; dimension < dynsys::dim ; ++dimension )
     {
         gpcxx::regression_training_data< double , dynsys::dim > problem;
         for( size_t i=0 ; i<training_data.first.size() ; ++i )
         {
-            problem.y[i] = training_data.second[i][ dimension ];
+            problem.y.push_back( training_data.second[i][ dimension ] );
             for( size_t j=0 ; j<dynsys::dim ; ++j )
                 problem.x[j].push_back( training_data.first[i][j] );
         }
@@ -175,7 +179,14 @@ int main( int argc , char** argv )
         //]
         
         fout2 << gpcxx::best_individuals( population , fitness , 0 ) << std::endl << std::endl;
+        
+        std::vector< size_t > idx;
+        gpcxx::sort_indices( fitness , idx );
+        winner[dimension] = population[ idx[0] ];
     }
+    
+    std::ofstream winner_out { vm[ "winner" ].as< std::string >() };
+    winner_out << dynsys::serialize_winner( winner ) << "\n";
     
     
     return 0;
