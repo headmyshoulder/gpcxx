@@ -18,20 +18,39 @@
 #include <functional>
 #include <unordered_map>
 
+#include <iostream>
+
 namespace dynsys {
     
-std::string serialize_winner( std::array< dynsys::tree_type , dim > const& winner)
+std::string serialize_winner( std::array< dynsys::tree_type , dim > const& winner , norm_type const& xnorm , norm_type const& ynorm )
 {
+    using namespace std;
+    
     boost::property_tree::ptree pt;
     pt.put( "winner.w_1" , gpcxx::polish_string( winner[0] ) );
     pt.put( "winner.w_2" , gpcxx::polish_string( winner[1] ) );
     pt.put( "winner.w_3" , gpcxx::polish_string( winner[2] ) );
+
+    pt.put( "norm.x_1.mean" , xnorm[0].first );
+    pt.put( "norm.x_1.stdev" , xnorm[0].second );
+    pt.put( "norm.x_2.mean" , xnorm[1].first );
+    pt.put( "norm.x_2.stdev" , xnorm[1].second );
+    pt.put( "norm.x_3.mean" , xnorm[2].first );
+    pt.put( "norm.x_3.stdev" , xnorm[2].second );
+
+    pt.put( "norm.y_1.mean" , ynorm[0].first );
+    pt.put( "norm.y_1.stdev" , ynorm[0].second );
+    pt.put( "norm.y_2.mean" , ynorm[1].first );
+    pt.put( "norm.y_2.stdev" , ynorm[1].second );
+    pt.put( "norm.y_3.mean" , ynorm[2].first );
+    pt.put( "norm.y_3.stdev" , ynorm[2].second );
+    
     std::ostringstream str;
     boost::property_tree::write_json( str , pt );
     return str.str();
 }
 
-std::array< dynsys::tree_type, dim > deserialize_winner(const std::string&)
+deserialized_system deserialize_winner(const std::string& str )
 {
     using namespace gpcxx;
     
@@ -68,7 +87,27 @@ std::array< dynsys::tree_type, dim > deserialize_winner(const std::string&)
         }
     };
     
-    std::array< dynsys::tree_type, dim > winner;
+    deserialized_system winner;
+    boost::property_tree::ptree pt;
+    std::istringstream istr { str };
+    boost::property_tree::read_json( istr , pt );
+    gpcxx::read_polish( pt.get< std::string >( "winner.w_1" ) , winner.trees[0] , mapper );
+    gpcxx::read_polish( pt.get< std::string >( "winner.w_2" ) , winner.trees[1] , mapper );
+    gpcxx::read_polish( pt.get< std::string >( "winner.w_3" ) , winner.trees[2] , mapper );
+    
+    winner.xnorm[0].first = pt.get< double >( "norm.x_1.mean" );
+    winner.xnorm[0].second = pt.get< double >( "norm.x_1.stdev" );
+    winner.xnorm[1].first = pt.get< double >( "norm.x_2.mean" );
+    winner.xnorm[1].second = pt.get< double >( "norm.x_2.stdev" );
+    winner.xnorm[2].first = pt.get< double >( "norm.x_3.mean" );
+    winner.xnorm[2].second = pt.get< double >( "norm.x_3.stdev" );
+    
+    winner.ynorm[0].first = pt.get< double >( "norm.y_1.mean" );
+    winner.ynorm[0].second = pt.get< double >( "norm.y_1.stdev" );
+    winner.ynorm[1].first = pt.get< double >( "norm.y_2.mean" );
+    winner.ynorm[1].second = pt.get< double >( "norm.y_2.stdev" );
+    winner.ynorm[2].first = pt.get< double >( "norm.y_3.mean" );
+    winner.ynorm[2].second = pt.get< double >( "norm.y_3.stdev" );
     
     return winner;
 }

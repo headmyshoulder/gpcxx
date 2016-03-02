@@ -50,9 +50,9 @@ void plot_data( data_type const& data , std::ostream& out )
     }
 }
 
-std::array< std::pair< double , double > , dim > normalize_data( state_container& data )
+norm_type normalize_data( state_container& data )
 {
-    std::array< std::pair< double , double > , dim > means;
+    norm_type means;
     for( size_t j=0 ; j<dim ; ++j )
     {
         means[j].first = means[j].second = 0.0;

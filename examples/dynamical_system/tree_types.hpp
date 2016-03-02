@@ -73,19 +73,6 @@ inline auto create_node_generator( void )
     return node_generator;
 }
 
-struct lorenz_reconstructed
-{
-    lorenz_reconstructed( individual_type individual ) : m_individual( std::move( individual ) ) {}
-    
-    void operator()( state_type const& x , state_type& dxdt , double t ) const
-    {
-        dxdt[0] = m_individual[0].root()->eval( x );
-        dxdt[1] = m_individual[1].root()->eval( x );
-        dxdt[2] = m_individual[2].root()->eval( x );
-    }
-    individual_type m_individual;
-};
-
 template< typename Pop , typename Fitness >
 void write_best_individuals( std::ostream &out , const Pop& p , const Fitness &f , size_t num_individuals , bool write_individual = false )
 {

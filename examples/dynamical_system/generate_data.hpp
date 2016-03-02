@@ -23,6 +23,7 @@ namespace dynsys {
     using state_type = std::array< double , dim >;
     using state_container = std::vector< state_type >;
     using data_type = std::pair< state_container , state_container >;
+    using norm_type = std::array< std::pair< double , double > , dim >;
     
     
     inline void lorenz( const state_type &x , state_type &dxdt , double t )
@@ -38,7 +39,7 @@ namespace dynsys {
     
     data_type generate_data( void );
     void plot_data( data_type const& data );
-    std::array< std::pair< double , double > , dim > normalize_data( state_container& data );
+    norm_type normalize_data( state_container& data );
 
 
 } // namespace dynsys 

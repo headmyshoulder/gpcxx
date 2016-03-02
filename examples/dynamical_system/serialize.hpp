@@ -13,16 +13,24 @@
 #define GPCXX_EXAMPLES_DYNAMICAL_SYSTEM_SERIALIZE_HPP_INCLUDED
 
 #include "tree_types.hpp"
+#include "generate_data.hpp"
 
 #include <array>
 #include <string>
 
 
 namespace dynsys {
+    
+struct deserialized_system
+{
+    std::array< tree_type , dim > trees;
+    norm_type xnorm;
+    norm_type ynorm;
+};
 
-std::string serialize_winner( std::array< tree_type , dim > const& winner );
+std::string serialize_winner( std::array< tree_type , dim > const& winner , norm_type const& xnorm , norm_type const& ynorm );
 
-std::array< tree_type , dim > deserialize_winner( std::string const& );
+deserialized_system deserialize_winner( std::string const& );
     
 
 

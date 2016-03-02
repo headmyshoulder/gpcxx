@@ -78,8 +78,8 @@ int main( int argc , char** argv )
     
     
     //[ define_gp_parameters
-    size_t population_size = 256 ;
-    size_t generation_size = 20;
+    size_t population_size = 512 * 32;
+    size_t generation_size = 50;
     //     size_t population_size = 512 * 32;
     //     size_t generation_size = 2000;
     
@@ -94,9 +94,6 @@ int main( int argc , char** argv )
     //[ define_population_and_fitness
     using population_type = std::vector< dynsys::tree_type >;
     using fitness_type = std::vector< double >;
-    
-    fitness_type fitness ( population_size , 0.0 );
-    population_type population ( population_size );
     //]
     
     //[ define_evolution
@@ -145,6 +142,9 @@ int main( int argc , char** argv )
     std::array< dynsys::tree_type , dynsys::dim > winner;
     for( size_t dimension = 0 ; dimension < dynsys::dim ; ++dimension )
     {
+        fitness_type fitness ( population_size , 0.0 );
+        population_type population ( population_size );
+
         gpcxx::regression_training_data< double , dynsys::dim > problem;
         for( size_t i=0 ; i<training_data.first.size() ; ++i )
         {
@@ -186,7 +186,7 @@ int main( int argc , char** argv )
     }
     
     std::ofstream winner_out { vm[ "winner" ].as< std::string >() };
-    winner_out << dynsys::serialize_winner( winner ) << "\n";
+    winner_out << dynsys::serialize_winner( winner , xstat , ystat ) << "\n";
     
     
     return 0;

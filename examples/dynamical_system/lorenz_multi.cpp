@@ -193,7 +193,7 @@ int main( int argc , char** argv )
     std::vector< size_t > idx;
     gpcxx::sort_indices( fitness , idx );
     std::ofstream winner_out { vm[ "winner" ].as< std::string >() };
-    winner_out << dynsys::serialize_winner( population[ idx[0] ] ) << "\n";
+    winner_out << dynsys::serialize_winner( population[ idx[0] ] , xstat , ystat ) << "\n";
     
 
     return 0;
