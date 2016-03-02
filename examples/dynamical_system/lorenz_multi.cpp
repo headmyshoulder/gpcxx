@@ -78,10 +78,10 @@ int main( int argc , char** argv )
     
     
     //[ define_gp_parameters
-    size_t population_size = 256 ;
-    size_t generation_size = 20;
-//     size_t population_size = 512 * 32;
-//     size_t generation_size = 2000;
+//     size_t population_size = 256 ;
+//     size_t generation_size = 20;
+    size_t population_size = 512 * 32;
+    size_t generation_size = 2000;
     
     size_t number_elite = 1;
     double mutation_rate = 0.2;

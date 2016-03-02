@@ -78,10 +78,11 @@ int main( int argc , char** argv )
     
     
     //[ define_gp_parameters
+//     size_t population_size = 256;
+//     size_t generation_size = 20;
     size_t population_size = 512 * 32;
-    size_t generation_size = 50;
-    //     size_t population_size = 512 * 32;
-    //     size_t generation_size = 2000;
+    size_t generation_size = 2000;
+    
     
     size_t number_elite = 1;
     double mutation_rate = 0.2;
@@ -175,6 +176,18 @@ int main( int argc , char** argv )
             std::cout << "Iteration " << i << std::endl;
             std::cout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
             std::cout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+            
+            fout << "Iteration " << i << std::endl;
+            fout << "Best individuals" << std::endl << gpcxx::best_individuals( population , fitness , 1 ) << std::endl;
+            fout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
+            
+            auto min_fitness = * ( std::min_element( fitness.begin() , fitness.end() ) );
+            if( std::abs( min_fitness ) < 1.0e-10 )
+            {
+                std::cout << "Minimal fitness is small then 1.0e-10. Stopping now." << std::endl << std::endl << std::endl << std::endl;
+                fout << "Minimal fitness is small then 1.0e-10. Stopping now." << std::endl << std::endl << std::endl << std::endl;
+                break;
+            }
         }
         //]
         
