@@ -73,7 +73,6 @@ matrix:
 before_install:
   - export GPCXX_ROOT=`pwd`
   - export THIRD_PARTY_ROOT=${GPCXX_ROOT}/third_party
-  - mkdir $THIRD_PARTY_ROOT    
 
   - |
       if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
