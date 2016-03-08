@@ -19,7 +19,7 @@ matrix:
   include:
 
 
-    # Gcc
+    # Gcc 4.9
     - env: GCC_VERSION=4.9 BUILD_TYPE=Debug ASAN=off LIBCXX=off COVERALLS_BUILD=1 COVERITY_BUILD=1
       os: linux
       compiler: gcc-4.9
@@ -39,9 +39,8 @@ matrix:
       compiler: gcc-4.9
       addons: *gcc49
 
-
-    # Clang
-    - env: CLANG_VERSION=3.5 BUILD_TYPE=Debug ASAN=off LIBCXX=on
+    # clang 3.5 release
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release ASAN=off LIBCXX=on
       os: linux
       compiler: clang-3.5
       addons: &clang35
@@ -54,10 +53,33 @@ matrix:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.5
 
-    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release ASAN=off LIBCXX=on
+    # clang 3.5 debug is BROKEN
+    # - env: CLANG_VERSION=3.6 BUILD_TYPE=Release ASAN=off LIBCXX=on
+    #   os: linux
+    #   compiler: clang-3.6
+    #   addons: *clang36
+
+
+
+    # Clang 3.6 debug
+    - env: CLANG_VERSION=3.6 BUILD_TYPE=Debug ASAN=off LIBCXX=on
       os: linux
-      compiler: clang-3.5
-      addons: *clang35
+      compiler: clang-3.6
+      addons: &clang36
+        apt:
+          packages:
+            - util-linux
+            - clang-3.6
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+
+    # Clang 3.6 debug
+    - env: CLANG_VERSION=3.6 BUILD_TYPE=Release ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.6
+      addons: *clang36
 
   
     # # OSX
@@ -101,7 +123,7 @@ before_install:
   - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
 
   - if [ -n "$COVERALLS_BUILD" ]; then echo "This is the coverall build."; fi
-  - if [ -n "$COVERITY_BUILD" ]; then echi "This is the coverity build."; fi
+  - if [ -n "$COVERITY_BUILD" ]; then echo "This is the coverity build."; fi
   - if [ -n "$RUN_VALGRIND" ]; then echo "Running valgrind"; fi
   
   - cd $GPCXX_ROOT
