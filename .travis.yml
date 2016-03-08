@@ -3,17 +3,10 @@ git:
 
 language: cpp
 
-compiler:
-  - gcc
-  - clang
-
-os: 
-  - linux
-  # - osx
+sudo: false
 
 env:
   global:
-    - GCC_VERSION="4.9"
     - RUN_VALGRIND=1
     # GIT_TOKEN
     - secure: "jq8/7MDVz6pZgu62Pfc+/MYlXoMQaSoOHITGZlS0JR71HM1zsMHyRtHbBtW2nuh2a82LmERuNH4iy4oeLJKO8sc6Wj3/glJhnefSd+KS03AEnPNPWfNZBC+GwxXoFaY0imE41CXtb2SzSzgzdh+uDBiPkgRXBzN4zzdV34OOpfc="
@@ -21,35 +14,107 @@ env:
     - secure: "KFTdHiHehYwK2SciIhdv3eDwi6nNWpwyjv8RqfiWs1ItFjr1292kLwKUVcjEz15tVQMmkWz8IbXe1YFMUbd8lswyRFO6Cpeaw9MP8yfnGkOxtdSddEtQyaujY8eiYQPkPjCGXg3uxzmhGdHx7OI4REcrjoWmKZvMXi/01CnXLnU="
     - REPO_PATH="https://headmyshoulder:${GIT_TOKEN}@github.com/Ambrosys/gpcxx.git"
 
-  matrix:
-    - BUILD_TYPE=Debug
-    - BUILD_TYPE=Release
 
 matrix:
-  exclude:
-    # For now disable gcc on osx as g++4.8 is not yet available
-    - os: osx   
-      compiler: gcc
-    # Disable debug build of clang because of compiler errors with auto return types and debug informations
-    - compiler: clang
-      env: BUILD_TYPE=Debug
+  include:
 
-    
-    
+
+    # Gcc
+    - env: GCC_VERSION=4.9 BUILD_TYPE=Debug ASAN=off LIBCXX=off COVERALLS_BUILD=1 COVERITY_BUILD=1
+      os: linux
+      compiler: gcc-4.9
+      addons: &gcc49
+        apt:
+          packages:
+            - g++-4.9
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+      apt:
+        packages:
+          - python-yaml
+
+    - env: GCC_VERSION=4.9 BUILD_TYPE=Release ASAN=off LIBCXX=off
+      os: linux
+      compiler: gcc-4.9
+      addons: *gcc49
+
+
+    # Clang
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Debug ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.5
+      addons: &clang35
+        apt:
+          packages:
+            - util-linux
+            - clang-3.5
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.5
+
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.5
+      addons: *clang35
+
+  
+    # # OSX
+    # - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
+    #   os: osx
+    #   compiler: clang
+
+    # - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
+    #   os: osx
+    #   compiler: clang
+
+
 before_install:
   - export GPCXX_ROOT=`pwd`
-  - cd $GPCXX_ROOT
-  - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ] && [ "$TRAVIS_BRANCH" == "master" ]; then export MASTER_BUILD=1; fi
-  - if [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ]; then export COVERALLS_BUILD=1; fi
-  - if [ -n "$MASTER_BUILD" ]; then echo "This is the Master build"; fi
-  - if [ -n "$COVERALLS_BUILD" ]; then echo "This is the coverall build"; fi
-  - if [ -n "$RUN_VALGRIND" ]; then echo "Running valgrind"; fi
-  - .ci/setup_compiler.sh
-  - .ci/init_thirdparty.sh
-  # some variables need to be set here
+  - export THIRD_PARTY_ROOT=${GPCXX_ROOT}/third_party
+  - mkdir $THIRD_PARTY_ROOT    
+
+  - |
+      if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+        cd $THIRD_PARTY_ROOT
+        CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
+        mkdir cmake
+        wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+        export PATH=${THIRD_PARTY_ROOT}/cmake/bin:${PATH}
+      else
+        brew install cmake
+      fi
+
+  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}" GCOV="/usr/bin/gcov-${GCC_VERSION}"; fi
+  - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+
+  - echo $CXX
+  - echo $CC
+  - if [ -n "GCOV" ]; then echo $GCOV; fi
+  - $CXX --version
+  - $CC --version
+  - if [ -n "$GCOV" ]; then $GCOV --version; fi
+  
+
+  - export BOOST_ROOT=${THIRD_PARTY_ROOT}/boost
+  - export PATH=${THIRD_PARTY_ROOT}/lcov/usr/bin:${PATH}
   - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
 
+  - if [ -n "$COVERALLS_BUILD" ]; then echo "This is the coverall build."; fi
+  - if [ -n "$COVERITY_BUILD" ]; then echi "This is the coverity build."; fi
+  - if [ -n "$RUN_VALGRIND" ]; then echo "Running valgrind"; fi
+  
+  - cd $GPCXX_ROOT
+  - .ci/setup_compiler.sh
 
+  - |
+      if [ "$LIBCXX" == "on" ]; then
+        export CXXFLAGS="-stdlib=libc++ -isystem ${THIRD_PARTY_ROOT}/llvm/install/include/c++/v1"
+        export LDFLAGS="-stdlib=libc++ -L ${THIRD_PARTY_ROOT}/llvm/install/lib -l c++ -l c++abi"
+        export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${THIRD_PARTY_ROOT}/llvm/install/lib"
+      fi
+  - .ci/init_thirdparty.sh
 
 
 install:
@@ -59,7 +124,7 @@ install:
 script:
   - cd $GPCXX_ROOT
   - .ci/build_and_test.sh
-  
+
 after_success:
   - cd $GPCXX_ROOT
   - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coverity_scan.sh; fi
