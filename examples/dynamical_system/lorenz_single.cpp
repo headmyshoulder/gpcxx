@@ -182,10 +182,10 @@ int main( int argc , char** argv )
             fout << "Statistics : " << gpcxx::calc_population_statistics( population ) << std::endl << std::endl;
             
             auto min_fitness = * ( std::min_element( fitness.begin() , fitness.end() ) );
-            if( std::abs( min_fitness ) < 1.0e-10 )
+            if( std::abs( min_fitness ) < 1.0e-7 )
             {
-                std::cout << "Minimal fitness is small then 1.0e-10. Stopping now." << std::endl << std::endl << std::endl << std::endl;
-                fout << "Minimal fitness is small then 1.0e-10. Stopping now." << std::endl << std::endl << std::endl << std::endl;
+                std::cout << "Minimal fitness is small then 1.0e-7. Stopping now." << std::endl << std::endl << std::endl << std::endl;
+                fout << "Minimal fitness is small then 1.0e-7. Stopping now." << std::endl << std::endl << std::endl << std::endl;
                 break;
             }
         }

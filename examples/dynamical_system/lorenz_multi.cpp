@@ -179,6 +179,14 @@ int main( int argc , char** argv )
         std::cout << "Iteration " << i << std::endl;
         dynsys::write_best_individuals( std::cout , population , fitness , 10 );
         dynsys::write_best_individuals( fout , population , fitness , 10 , true );
+        
+        auto min_fitness = * ( std::min_element( fitness.begin() , fitness.end() ) );
+        if( std::abs( min_fitness ) < 1.0e-7 )
+        {
+            std::cout << "Minimal fitness is small then 1.0e-7. Stopping now." << std::endl << std::endl << std::endl << std::endl;
+            fout << "Minimal fitness is small then 1.0e-7. Stopping now." << std::endl << std::endl << std::endl << std::endl;
+            break;
+        }
     }
     //]
 
