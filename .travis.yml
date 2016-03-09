@@ -40,14 +40,14 @@ matrix:
       compiler: gcc-4.9
       addons: *gcc49
 
-    # Gcc 5.3 debug
-    - env: GCC_VERSION=5.3 BUILD_TYPE=Debug ASAN=off LIBCXX=off
+    # Gcc 5 debug
+    - env: GCC_VERSION=5 BUILD_TYPE=Debug ASAN=off LIBCXX=off
       os: linux
-      compiler: gcc-5.3
-      addons: &gcc53
+      compiler: gcc-5
+      addons: &gcc5
         apt:
           packages:
-            - g++-5.3
+            - g++-5
             - valgrind
           sources:
             - ubuntu-toolchain-r-test
@@ -55,11 +55,11 @@ matrix:
         packages:
           - python-yaml
 
-    # Gcc 5.3 release
-    - env: GCC_VERSION=5.3 BUILD_TYPE=Release ASAN=off LIBCXX=off
+    # Gcc 5 release
+    - env: GCC_VERSION=5 BUILD_TYPE=Release ASAN=off LIBCXX=off
       os: linux
-      compiler: gcc-5.3
-      addons: *gcc53
+      compiler: gcc-5
+      addons: *gcc5
 
     # clang 3.5 release
     - env: CLANG_VERSION=3.5 BUILD_TYPE=Release ASAN=off LIBCXX=on
@@ -124,14 +124,14 @@ matrix:
       addons: *clang37
 
   
-    # OSX
-    - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
-      os: osx
-      compiler: clang
+    # # OSX
+    # - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
+    #   os: osx
+    #   compiler: clang
 
-    - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
-      os: osx
-      compiler: clang
+    # - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
+    #   os: osx
+    #   compiler: clang
 
 
 before_install:
