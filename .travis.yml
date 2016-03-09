@@ -43,7 +43,7 @@ matrix:
     # Gcc 5.3 debug
     - env: GCC_VERSION=5.3 BUILD_TYPE=Debug ASAN=off LIBCXX=off
       os: linux
-      compiler: gcc-5.4
+      compiler: gcc-5.3
       addons: &gcc53
         apt:
           packages:
