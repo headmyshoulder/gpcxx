@@ -24,7 +24,7 @@ if [ -n "$CLANG_VERSION" ]; then
     TOOLSET="clang-${CLANG_VERSION}"
 fi
 
-if [ "CXX" == "clang++" ]; then
+if [ "$CXX" == "clang++" ]; then
 	echo "using clang : : ${CXX} ;" >> project-config.jam
     TOOLSET="clang"
 fi	
