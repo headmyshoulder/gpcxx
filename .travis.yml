@@ -7,7 +7,7 @@ sudo: false
 
 env:
   global:
-    - RUN_VALGRIND=1
+    - RUN_VALGRIND=on
     # GIT_TOKEN
     - secure: "jq8/7MDVz6pZgu62Pfc+/MYlXoMQaSoOHITGZlS0JR71HM1zsMHyRtHbBtW2nuh2a82LmERuNH4iy4oeLJKO8sc6Wj3/glJhnefSd+KS03AEnPNPWfNZBC+GwxXoFaY0imE41CXtb2SzSzgzdh+uDBiPkgRXBzN4zzdV34OOpfc="
     # COVERITY_SCAN_TOKEN
@@ -20,7 +20,7 @@ matrix:
 
 
     # Gcc 4.9 debug
-    - env: GCC_VERSION=4.9 BUILD_TYPE=Debug ASAN=off LIBCXX=off COVERALLS_BUILD=1 COVERITY_BUILD=1
+    - env: GCC_VERSION=4.9 BUILD_TYPE=Debug ASAN=off LIBCXX=off COVERALLS_BUILD=on COVERITY_BUILD=on
       os: linux
       compiler: gcc-4.9
       addons: &gcc49
@@ -164,9 +164,9 @@ before_install:
   - export PATH=${THIRD_PARTY_ROOT}/lcov/usr/bin:${PATH}
   - export BOOST_ROOT="$GPCXX_ROOT/third_party/boost"
 
-  - if [ -n "$COVERALLS_BUILD" ]; then echo "This is the coverall build."; fi
-  - if [ -n "$COVERITY_BUILD" ]; then echo "This is the coverity build."; fi
-  - if [ -n "$RUN_VALGRIND" ]; then echo "Running valgrind"; fi
+  - if [ "$COVERALLS_BUILD" == "on" ]; then echo "This is the coverall build."; fi
+  - if [ "$COVERITY_BUILD" == "on" ]; then echo "This is the coverity build."; fi
+  - if [ "$RUN_VALGRIND" == "on" ]; then echo "Running valgrind"; fi
   
   - cd $GPCXX_ROOT
   - .ci/setup_compiler.sh
@@ -190,8 +190,8 @@ script:
 
 after_success:
   - cd $GPCXX_ROOT
-  - if [ -n "$MASTER_BUILD" ]; then .ci/commit_coverity_scan.sh; fi
+  - if [ "$COVERITY_BUILD" == "on" ]; then .ci/commit_coverity_scan.sh; fi
   # - cd $GPCXX_ROOT
   # - if [ -n "$MASTER_BUILD" ]; then .ci/build_docs.sh; fi
   - cd $GPCXX_ROOT
-  - if [ -n "$COVERALLS_BUILD" ]; then .ci/commit_coveralls.sh; fi 
+  - if [ "$COVERALLS_BUILD" == "on" ]; then .ci/commit_coveralls.sh; fi 

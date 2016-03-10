@@ -21,7 +21,7 @@ if [ "$LIBCXX" == "on" ]; then
 fi
 
 
-if [ -n "$COVERALLS_BUILD" ];
+if [ "$COVERALLS_BUILD" == "on" ];
 then
 
     # gcc 4.9 does not work with lcov 1.10, we need to install lcov 1.11

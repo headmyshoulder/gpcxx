@@ -2,15 +2,18 @@ set -x
 set -e
 
 cd build
-export CMAKE_OPTIONS="-DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
-if [ -n "$MASTER_BUILD" ];
+export CMAKE_OPTIONS="-DGPCXX_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DGPCXX_CHECK_HEADER_COMPILE=ON"
+
+if [ "$COVERALLS_BUILD" == "on" ];
 then
-    export CMAKE_OPTIONS="$CMAKE_OPTIONS -DGPCXX_TEST_COVERAGE=ON -DGPCXX_CHECK_HEADER_COMPILE=ON"
+    export CMAKE_OPTIONS="$CMAKE_OPTIONS -DGPCXX_TEST_COVERAGE=ON "
 fi
+
+
 cmake .. $CMAKE_OPTIONS
 make
 
-if [ -n "$RUN_VALGRIND" ];
+if [ "$RUN_VALGRIND" == "on" ];
 then 
     VALGRIND_CMD="valgrind --leak-check=full --show-reachable=yes --error-exitcode=1 "
     $VALGRIND_CMD test/util/util_tests
