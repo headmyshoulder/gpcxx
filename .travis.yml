@@ -124,14 +124,14 @@ matrix:
       addons: *clang37
 
   
-    # # OSX
-    # - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
-    #   os: osx
-    #   compiler: clang
+    # OSX
+    - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
+      os: osx
+      compiler: clang
 
-    # - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
-    #   os: osx
-    #   compiler: clang
+    - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
+      os: osx
+      compiler: clang
 
 
 before_install:

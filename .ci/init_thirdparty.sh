@@ -24,6 +24,11 @@ if [ -n "$CLANG_VERSION" ]; then
     TOOLSET="clang-${CLANG_VERSION}"
 fi
 
+if [ -n "CXX" == "clang++" ]; then
+	echo "using clang : : ${CXX} ;" >> project-config.jam
+    TOOLSET="clang"
+fi	
+
 
 if [ -n "$CXXFLAGS" ]; then
     CXXFLAGS+=" -std=c++14"
