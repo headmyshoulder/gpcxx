@@ -15,6 +15,8 @@ function ( check_if_headers_compile directory )
     
     set ( GPCXX_TEST_INCLUDE_FILE ${f} )
     
+    set ( CXXFLAGS "${CXXFLAGS} -isystem ${Boost_INCLUDE_DIRS}" )
+    
     configure_file ( "${template_file}" "${template_cpp_file}" )
     try_compile ( success "${CMAKE_BINARY_DIR}" "${template_cpp_file}"
         CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${dirs}"
