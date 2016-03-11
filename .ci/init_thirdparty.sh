@@ -25,7 +25,12 @@ if [ -n "$CLANG_VERSION" ]; then
 fi
 
 if [ "$CXX" == "clang++" ]; then
-	echo "using clang : : ${CXX} ;" >> project-config.jam
+	  echo "using clang : : ${CXX} ;" >> project-config.jam
+    if[ -n "$CXXFLAGS" ]; then
+        CXXFLAGS+=" -Wno-error"
+    else
+        CXXFLAGS="-Wno-error"
+    fi
     TOOLSET="clang"
 fi	
 
