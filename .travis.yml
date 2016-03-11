@@ -127,10 +127,12 @@ matrix:
     # OSX
     - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
       os: osx
+      osx_image: xcode7.3
       compiler: clang
 
     - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
       os: osx
+      osx_image: xcode7.3
       compiler: clang
 
 
