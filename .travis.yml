@@ -117,11 +117,11 @@ matrix:
     #         - ubuntu-toolchain-r-test
     #         - llvm-toolchain-precise-3.7
 
-    # Clang 3.7 release
-    - env: CLANG_VERSION=3.7 BUILD_TYPE=Release ASAN=off LIBCXX=on
-      os: linux
-      compiler: clang-3.7
-      addons: *clang37
+    # # Clang 3.7 release
+    # - env: CLANG_VERSION=3.7 BUILD_TYPE=Release ASAN=off LIBCXX=on
+    #   os: linux
+    #   compiler: clang-3.7
+    #   addons: *clang37
 
   
     # OSX
