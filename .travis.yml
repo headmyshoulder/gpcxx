@@ -19,121 +19,121 @@ matrix:
   include:
 
 
-    # # Gcc 4.9 debug
-    # - env: GCC_VERSION=4.9 BUILD_TYPE=Debug ASAN=off LIBCXX=off COVERALLS_BUILD=on COVERITY_BUILD=on
-    #   os: linux
-    #   compiler: gcc-4.9
-    #   addons: &gcc49
-    #     apt:
-    #       packages:
-    #         - g++-4.9
-    #         - valgrind
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #   apt:
-    #     packages:
-    #       - python-yaml
+    # Gcc 4.9 debug
+    - env: GCC_VERSION=4.9 BUILD_TYPE=Debug ASAN=off LIBCXX=off COVERALLS_BUILD=on COVERITY_BUILD=on
+      os: linux
+      compiler: gcc-4.9
+      addons: &gcc49
+        apt:
+          packages:
+            - g++-4.9
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+      apt:
+        packages:
+          - python-yaml
 
-    # # Gcc 4.9 release
-    # - env: GCC_VERSION=4.9 BUILD_TYPE=Release ASAN=off LIBCXX=off
-    #   os: linux
-    #   compiler: gcc-4.9
-    #   addons: *gcc49
+    # Gcc 4.9 release
+    - env: GCC_VERSION=4.9 BUILD_TYPE=Release ASAN=off LIBCXX=off
+      os: linux
+      compiler: gcc-4.9
+      addons: *gcc49
 
-    # # Gcc 5 debug
-    # - env: GCC_VERSION=5 BUILD_TYPE=Debug ASAN=off LIBCXX=off
-    #   os: linux
-    #   compiler: gcc-5
-    #   addons: &gcc5
-    #     apt:
-    #       packages:
-    #         - g++-5
-    #         - valgrind
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #   apt:
-    #     packages:
-    #       - python-yaml
+    # Gcc 5 debug
+    - env: GCC_VERSION=5 BUILD_TYPE=Debug ASAN=off LIBCXX=off
+      os: linux
+      compiler: gcc-5
+      addons: &gcc5
+        apt:
+          packages:
+            - g++-5
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+      apt:
+        packages:
+          - python-yaml
 
-    # # Gcc 5 release
-    # - env: GCC_VERSION=5 BUILD_TYPE=Release ASAN=off LIBCXX=off
-    #   os: linux
-    #   compiler: gcc-5
-    #   addons: *gcc5
+    # Gcc 5 release
+    - env: GCC_VERSION=5 BUILD_TYPE=Release ASAN=off LIBCXX=off
+      os: linux
+      compiler: gcc-5
+      addons: *gcc5
 
-    # # clang 3.5 release
-    # - env: CLANG_VERSION=3.5 BUILD_TYPE=Release ASAN=off LIBCXX=on
-    #   os: linux
-    #   compiler: clang-3.5
-    #   addons: &clang35
-    #     apt:
-    #       packages:
-    #         - util-linux
-    #         - clang-3.5
-    #         - valgrind
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #         - llvm-toolchain-precise-3.5
+    # clang 3.5 release
+    - env: CLANG_VERSION=3.5 BUILD_TYPE=Release ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.5
+      addons: &clang35
+        apt:
+          packages:
+            - util-linux
+            - clang-3.5
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.5
 
-    # # clang 3.5 debug is BROKEN
-    # # - env: CLANG_VERSION=3.6 BUILD_TYPE=Release ASAN=off LIBCXX=on
-    # #   os: linux
-    # #   compiler: clang-3.6
-    # #   addons: *clang36
-
-
-
-    # # Clang 3.6 debug
-    # - env: CLANG_VERSION=3.6 BUILD_TYPE=Debug ASAN=off LIBCXX=on
-    #   os: linux
-    #   compiler: clang-3.6
-    #   addons: &clang36
-    #     apt:
-    #       packages:
-    #         - util-linux
-    #         - clang-3.6
-    #         - valgrind
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #         - llvm-toolchain-precise-3.6
-
-    # # Clang 3.6 release
+    # clang 3.5 debug is BROKEN
     # - env: CLANG_VERSION=3.6 BUILD_TYPE=Release ASAN=off LIBCXX=on
     #   os: linux
     #   compiler: clang-3.6
     #   addons: *clang36
 
-    # # Clang 3.7 debug
-    # - env: CLANG_VERSION=3.7 BUILD_TYPE=Debug ASAN=off LIBCXX=on
-    #   os: linux
-    #   compiler: clang-3.7
-    #   addons: &clang37
-    #     apt:
-    #       packages:
-    #         - util-linux
-    #         - clang-3.7
-    #         - valgrind
-    #       sources:
-    #         - ubuntu-toolchain-r-test
-    #         - llvm-toolchain-precise-3.7
 
-    # # Clang 3.7 release
-    # - env: CLANG_VERSION=3.7 BUILD_TYPE=Release ASAN=off LIBCXX=on
-    #   os: linux
-    #   compiler: clang-3.7
-    #   addons: *clang37
+
+    # Clang 3.6 debug
+    - env: CLANG_VERSION=3.6 BUILD_TYPE=Debug ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.6
+      addons: &clang36
+        apt:
+          packages:
+            - util-linux
+            - clang-3.6
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+
+    # Clang 3.6 release
+    - env: CLANG_VERSION=3.6 BUILD_TYPE=Release ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.6
+      addons: *clang36
+
+    # Clang 3.7 debug
+    - env: CLANG_VERSION=3.7 BUILD_TYPE=Debug ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.7
+      addons: &clang37
+        apt:
+          packages:
+            - util-linux
+            - clang-3.7
+            - valgrind
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+
+    # Clang 3.7 release
+    - env: CLANG_VERSION=3.7 BUILD_TYPE=Release ASAN=off LIBCXX=on
+      os: linux
+      compiler: clang-3.7
+      addons: *clang37
 
   
-    # OSX
-    - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
-      os: osx
-      osx_image: xcode7.3
-      compiler: clang
+    # # OSX
+    # - env: BUILD_TYPE=Debug ASAN=off LIBCXX=off
+    #   os: osx
+    #   osx_image: xcode7.3
+    #   compiler: clang
 
-    - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
-      os: osx
-      osx_image: xcode7.3
-      compiler: clang
+    # - env: BUILD_TYPE=Release ASAN=off LIBCXX=off
+    #   os: osx
+    #   osx_image: xcode7.3
+    #   compiler: clang
 
 
 before_install:
