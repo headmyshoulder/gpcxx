@@ -16,6 +16,7 @@
 #include <gpcxx/util/assert.hpp>
 
 #include <functional>
+#include <vector>
 
 
 
