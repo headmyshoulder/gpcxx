@@ -3,8 +3,8 @@
 [![Coverity](https://scan.coverity.com/projects/4209/badge.svg)](https://scan.coverity.com/projects/4209)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Ambrosys/gpcxx/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
-Introduction
-============
+Introduction to gpcxx
+=====================
 
 gpcxx is a modern C++ framework for genetic programming. It is designed for high performance and high flexibility and uses C++11.
 
@@ -18,7 +18,7 @@ gpcxx is released under the [Boost Software license](http://www.boost.org/users/
 Getting gpcxx
 =============
 
-Download gpcxx:
+Download gpcxx:-
 
 * Latest version - [tar.gz](https://github.com/Ambrosys/gpcxx/tarball/master), [zip](https://github.com/Ambrosys/gpcxx/zipball/master) - unstable
 * Look [here](https://github.com/Ambrosys/gpcxx/releases) for older releases.
